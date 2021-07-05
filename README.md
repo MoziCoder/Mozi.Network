@@ -63,9 +63,9 @@ Mozi.HttpEmbedded在Socket之上使用异步单线程模型,构建了一个HTTP�
 
 ## 项目地址
 
-1. [Github][github]
-2. [Gitee][gitee]
-3. [CSDN][codechina]
+- [Github][github]
+- [Gitee][gitee]
+- [CSDN][codechina]
 
 ## 程序下载
 
