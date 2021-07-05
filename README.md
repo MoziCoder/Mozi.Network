@@ -67,6 +67,13 @@ Mozi.HttpEmbedded在Socket之上使用异步单线程模型,构建了一个HTTP�
 2. [Gitee][gitee]
 3. [CSDN][codechina]
 
+## 程序下载
+
+~~~shell
+
+	dotnet add package Mozi.HttpEmbedded --version 1.2.5
+
+~~~
 ## 功能与版本迭代
 	不定期对Mozi.HttpEmbedded的功能进行完善,解决各种BUG。HTTP标准功能繁多，需要一步步实现。
 
