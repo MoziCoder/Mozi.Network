@@ -94,8 +94,9 @@ namespace Mozi.HttpEmbedded.WebService
         /// </summary>
         /// <param name="envelope"></param>
         /// <returns></returns>
-        public static string CreateDocument(SoapEnvelope envelope)
+        public string CreateDocument()
         {
+            SoapEnvelope envelope = this;
             XmlDocument doc = new XmlDocument();
 
             //declaration

@@ -215,7 +215,7 @@ namespace Mozi.HttpEmbedded
         /// 从缓冲区中取出数据
         /// </summary>
         /// <returns></returns>
-        public byte[] GetBuffer()
+        public byte[] GetBuffer(bool headerKeyUppercase)
         {
             List<byte> data = new List<byte>();
             //注入状态信息
@@ -228,7 +228,7 @@ namespace Mozi.HttpEmbedded
             //注入响应时间
             AddHeader(HeaderProperty.Date, DateTime.Now.ToUniversalTime().ToString("r"));
             //注入默认头部
-            data.AddRange(Headers.GetBuffer());
+            data.AddRange(Headers.GetBuffer(headerKeyUppercase));
             //注入Cookie
             data.AddRange(Cookies.GetBuffer());
             //注入分割符
@@ -236,6 +236,11 @@ namespace Mozi.HttpEmbedded
             //注入响应包体
             data.AddRange(_body);
             return data.ToArray();
+        }
+
+        public byte[] GetBuffer()
+        {
+           return GetBuffer(false);
         }
         /// <summary>
         /// 响应状态

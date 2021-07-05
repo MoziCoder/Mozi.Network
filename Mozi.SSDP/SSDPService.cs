@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net;
 using System.Threading;
 using Mozi.HttpEmbedded;
@@ -11,6 +12,7 @@ namespace Mozi.SSDP
     public delegate void SearchReceived(object sender,SearchPackage pack,string host);
     public delegate void NotifyUpdateReceived(object sender, UpdatePackage pack, string host);
     public delegate void ResponseMessageReceived(object sender, HttpResponse resp, string host);
+    public delegate void MessageReceived(object sender, DataTransferArgs args);
 
     internal delegate void SubscribeReceived(object sender,SubscribePackage pack,string host);
     internal delegate void UnSubscribedReceived(object sender,SubscribePackage pack, string host);
@@ -142,7 +144,7 @@ namespace Mozi.SSDP
         /// </summary>
         public SearchPackage PackDefaultSearch = new SearchPackage() 
         {
-            MX=3,
+            MX=1,
             ST= TargetDesc.All,
         };
         /// <summary>
@@ -169,6 +171,11 @@ namespace Mozi.SSDP
         public event SearchReceived OnSearchReceived;
         public event NotifyUpdateReceived OnNotifyUpdateReceived;
         public event ResponseMessageReceived OnResponseMessageReceived;
+        /// <summary>
+        /// 原始数据包解析
+        /// <para>如果内置的解析结果不能满足应用需求，可以使用该事件进行数据解析</para>
+        /// </summary>
+        public event MessageReceived OnMessageReceived;
         /// <summary>
         /// 构造函数
         /// <para>
@@ -197,6 +204,10 @@ namespace Mozi.SSDP
         private void _socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
             ParsePackage(args);
+            if (OnMessageReceived != null)
+            {
+                OnMessageReceived(this, args);
+            }
             Console.WriteLine("*********收到数据[{0}]*********\r\n{1}\r\n*******END********", args.IP,System.Text.Encoding.UTF8.GetString(args.Data));
         }
         /// <summary>
@@ -437,7 +448,7 @@ namespace Mozi.SSDP
             HttpResponse resp = new HttpResponse();
             resp.SetHeaders(pk.GetHeaders());
             resp.SetStatus(StatusCode.Success);
-            byte[] data = resp.GetBuffer();
+            byte[] data = resp.GetBuffer(true);
             _socket.SocketMain.SendTo(data, _remoteEP);
 
         }
@@ -460,7 +471,7 @@ namespace Mozi.SSDP
             HttpRequest request = new HttpRequest();
             //如果POST被拒绝，则使用M-POST
             request.SetPath(pk.Path).SetMethod(RequestMethod.POST);
-            request.SetBody(HttpEmbedded.Encode.StringEncoder.Encode(SoapEnvelope.CreateDocument(pk.Body)));
+            request.SetBody(HttpEmbedded.Encode.StringEncoder.Encode(pk.Body.CreateDocument()));
             request.SetHeader("CONTENT-LENGTH", request.ContentLength);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();

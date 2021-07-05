@@ -101,6 +101,13 @@ namespace Mozi.HttpEmbedded.Test
         private static void Ssdp_OnSearchReceived(object sender, SSDP.SearchPackage pack, string host)
         {
             Console.WriteLine("Search from {0}", host);
+            SSDP.SearchResponsePackage sr = new SSDP.SearchResponsePackage();
+            var service = (SSDP.SSDPService)sender;
+            sr.CacheTimeout = 3600;
+            sr.USN = service.USN;
+            sr.ST = pack.ST;
+            sr.Server = service.Server;
+            //service.EchoSearch(sr);
         }
 
         private static void Ssdp_OnNotifyAliveReceived(object sender, SSDP.AlivePackage pack,string host)

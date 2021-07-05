@@ -52,8 +52,10 @@ namespace Mozi.HttpEmbedded.WebService
         /// </summary>
         /// <param name="desc"></param>
         /// <returns></returns>
-        public static string CreateDocument(WSDL desc)
+        public string CreateDocument()
         {
+            WSDL desc = this;
+
             XmlDocument doc = new XmlDocument();
             var docPrefix = desc.NS_Document.Prefix;
             var docnsuri = desc.NS_Document.Uri;

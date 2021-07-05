@@ -300,7 +300,7 @@ namespace Mozi.HttpEmbedded.Page
                 envelope.Body.Items.Add("GoodsCode", "123456789");
                 envelope.Body.Items.Add("Price", "1");
                 Context.Response.SetContentType(envelope.Version==WebService.SoapVersion.Ver11?"text/xml":"application/soap+xml");
-                return WebService.SoapEnvelope.CreateDocument(envelope);
+                return envelope.CreateDocument();
             }
             else if(action=="wsdl")
             {
@@ -308,7 +308,7 @@ namespace Mozi.HttpEmbedded.Page
                 envelope.ServiceName = this.GetType().Name;
                 envelope.ApiTypes.Methods.AddRange(this.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly));
                 Context.Response.SetContentType( "text/xml");
-                return WebService.WSDL.CreateDocument(envelope);
+                return envelope.CreateDocument();
             }
             return "";
         }
