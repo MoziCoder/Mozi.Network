@@ -119,6 +119,7 @@ namespace Mozi.HttpEmbedded.Test
             Console.WriteLine("Search from {0}", host);
             SSDP.SearchResponsePackage sr = new SSDP.SearchResponsePackage();
             var service = (SSDP.SSDPService)sender;
+            sr.HOST = string.Format("{0}:{1}", service.MulticastAddress, service.MulticastPort);
             sr.CacheTimeout = 3600;
             sr.USN = service.USN;
             sr.ST = pack.ST;

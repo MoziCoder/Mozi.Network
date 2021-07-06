@@ -101,7 +101,6 @@ namespace Mozi.SSDP
             _multicastGroupAddress = multicastGroupAddress;
             MulticastOption mcastOpt = new MulticastOption(IPAddress.Parse(multicastGroupAddress), _bindingAddress);
             _sc.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, mcastOpt);
-
         }
         /// <summary>
         /// 离开组播

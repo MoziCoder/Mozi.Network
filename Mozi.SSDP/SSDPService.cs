@@ -119,8 +119,8 @@ namespace Mozi.SSDP
             }
             set
             {
-                _remoteEP = new IPEndPoint(IPAddress.Parse(value), MulticastPort);
                 _multicastGroupAddress = value;
+                ApplyMulticastAddressChange(MulticastAddress, MulticastPort);
             }
         }
         /// <summary>
@@ -137,8 +137,8 @@ namespace Mozi.SSDP
             }
             set
             {
-                _remoteEP = new IPEndPoint(IPAddress.Parse(MulticastAddress), value);
                 _multicastGroupPort = value;
+                ApplyMulticastAddressChange(MulticastAddress, MulticastPort);
             }
         }
         public IPAddress BindingAddress
@@ -217,6 +217,15 @@ namespace Mozi.SSDP
             DeviceDefault.Domain = Domain;
             DeviceDefault.ServiceType = ServiceCategory.Device;
             DeviceDefault.Version = 1;
+        }
+
+        private void ApplyMulticastAddressChange(string address,int port)
+        {
+            _remoteEP = new IPEndPoint(IPAddress.Parse(address), port);
+            var host = string.Format("{0}:{1}", address, port);
+            PackDefaultAlive.HOST = host;
+            PackDefaultByebye.HOST = host;
+            PackDefaultSearch.HOST = host;
         }
         /// <summary>
         /// 数据接收时间
@@ -637,16 +646,40 @@ namespace Mozi.SSDP
     public abstract class AbsAdvertisePackage
     {
 
-        public string HOST { get; set; }
+        private string _host = "";
+
+        public string HOST { 
+            get 
+            { 
+                return _host; 
+            }
+            set 
+            {
+                try
+                {
+                    string[] hostItmes = value.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (hostItmes.Length == 2)
+                    {
+                        HostIp = hostItmes[0];
+                        HostPort = int.Parse(hostItmes[1]);
+                    }
+                    _host = value;
+                }catch(Exception ex)
+                {
+
+                }
+            } 
+        }
         public string Path { get; set; }
 
-        public string HostIp { get; set; }
-        public int HostPort { get; set; }
+        public string HostIp { get; private set; }
+        public int HostPort { get; private set; }
 
         public AbsAdvertisePackage()
         {
-            HostIp = SSDPProtocol.MulticastAddress;
-            HostPort = SSDPProtocol.ProtocolPort;
+            _host = string.Format("{0}:{1}",SSDPProtocol.MulticastAddress,SSDPProtocol.ProtocolPort);
+            //HostIp = SSDPProtocol.MulticastAddress;
+            //HostPort = SSDPProtocol.ProtocolPort;
             Path = "*";
         }
 
@@ -725,6 +758,7 @@ namespace Mozi.SSDP
             }
             return result;
         }
+
         public static new TargetDesc Parse(string data)
         {
             //uuid:device-UUID::urn:domain-name:service:serviceType:v

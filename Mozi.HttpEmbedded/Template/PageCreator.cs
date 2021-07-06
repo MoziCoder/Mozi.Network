@@ -46,15 +46,15 @@ namespace Mozi.HttpEmbedded.Template
         public PageCreator Prepare()
         {
             _page = _template;
-            InjectGlobal();
-            InjectValues();
+            InflateGlobal();
+            InflateValues();
             return this;
         }
         /// <summary>
         /// 注入全局数据
         /// </summary>
         /// <returns></returns>
-        private PageCreator InjectGlobal()
+        private PageCreator InflateGlobal()
         {
             return this;
         }
@@ -62,7 +62,7 @@ namespace Mozi.HttpEmbedded.Template
         /// 注入临时数据
         /// </summary>
         /// <returns></returns>
-        private PageCreator InjectValues()
+        private PageCreator InflateValues()
         {
             Regex regParam = new Regex("\\${[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)?}");
             MatchCollection matchesParam = regParam.Matches(_page);
@@ -85,6 +85,23 @@ namespace Mozi.HttpEmbedded.Template
             }
             return this;
         }
+        /// <summary>
+        /// 解析if
+        /// </summary>
+        /// <returns></returns>
+        private PageCreator InflateConditionalIf()
+        {
+            return this;
+        }
+        private PageCreator InflateLoopForeach()
+        {
+            return this;
+        }
+        private PageCreator InflateLoopFor()
+        {
+            return this;
+        }
+
         /// <summary>
         /// 获取参数值
         /// </summary>

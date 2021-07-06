@@ -14,7 +14,7 @@ namespace Mozi.SSDP
         public override TransformHeader GetHeaders()
         {
             TransformHeader headers = new TransformHeader();
-            headers.Add("HOST", $"{HostIp}:{HostPort}");
+            headers.Add("HOST", HOST);
             headers.Add("SERVER", Server);
             headers.Add("NT", NT.ToString());
             headers.Add("NTS", SSDPType.Alive.ToString());
@@ -28,13 +28,6 @@ namespace Mozi.SSDP
             AlivePackage pack = new AlivePackage();
             var sHost = req.Headers.GetValue("HOST");
             pack.HOST = sHost;
-            //IPV4
-            string[] hostItmes = sHost.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-            if (hostItmes.Length == 2)
-            {
-                pack.HostIp = hostItmes[0];
-                pack.HostPort = int.Parse(hostItmes[1]);
-            }
             pack.Server = req.Headers.GetValue("SERVER");
             var sNt = req.Headers.GetValue("NT");
             pack.NT = TargetDesc.Parse(sNt);
@@ -45,10 +38,10 @@ namespace Mozi.SSDP
             var sCacheControl = req.Headers.GetValue("CACHE-CONTROL");
             if (!string.IsNullOrEmpty(sCacheControl))
             {
-                string[] cacheItems = sHost.Split(new char[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] cacheItems = sCacheControl.Split(new char[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
                 if (cacheItems.Length == 2)
                 {
-                    pack.CacheTimeout = int.Parse(hostItmes[1].Trim());
+                    pack.CacheTimeout = int.Parse(cacheItems[1].Trim());
                 }
             }
             return pack;
@@ -67,7 +60,7 @@ namespace Mozi.SSDP
         public override TransformHeader GetHeaders()
         {
             TransformHeader headers = new TransformHeader();
-            headers.Add("HOST", $"{HostIp}:{HostPort}");
+            headers.Add("HOST", HOST);
             headers.Add("MAN", "\"" + SSDPType.Discover.ToString() + "\"");
             headers.Add("ST", ST.ToString());
             headers.Add("CACHE-CONTROL", $"max-age = {CacheTimeout}");
@@ -83,13 +76,6 @@ namespace Mozi.SSDP
             SearchResponsePackage pack = new SearchResponsePackage();
             var sHost = req.Headers.GetValue("HOST");
             pack.HOST = sHost;
-            //IPV4
-            string[] hostItmes = sHost.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-            if (hostItmes.Length == 2)
-            {
-                pack.HostIp = hostItmes[0];
-                pack.HostPort = int.Parse(hostItmes[1]);
-            }
             pack.MAN = req.Headers.GetValue("MAN");
             pack.MX = int.Parse(req.Headers.GetValue("MX"));
             var st = req.Headers.GetValue("ST");
@@ -133,7 +119,7 @@ namespace Mozi.SSDP
         public override TransformHeader GetHeaders()
         {
             TransformHeader headers = new TransformHeader();
-            headers.Add("HOST", $"{HostIp}:{HostPort}");
+            headers.Add("HOST", HOST);
             headers.Add("MAN", "\"" + SSDPType.Discover.ToString() + "\"");
             headers.Add("ST", ST.ToString());
             headers.Add("MX", $"{MX}");
@@ -145,12 +131,6 @@ namespace Mozi.SSDP
             var sHost = req.Headers.GetValue("HOST")??req.Headers.GetValue("Host");
             pack.HOST = sHost;
             //IPV4
-            string[] hostItmes = sHost.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-            if (hostItmes.Length == 2)
-            {
-                pack.HostIp = hostItmes[0];
-                pack.HostPort = int.Parse(hostItmes[1]);
-            }
             pack.MAN = req.Headers.GetValue("MAN");
             pack.MX = int.Parse(req.Headers.GetValue("MX"));
             var st = req.Headers.GetValue("ST");
@@ -173,7 +153,7 @@ namespace Mozi.SSDP
         public override TransformHeader GetHeaders()
         {
             TransformHeader headers = new TransformHeader();
-            headers.Add("HOST", $"{HostIp}:{HostPort}");
+            headers.Add("HOST", HOST);
             headers.Add("NT", NT.ToString());
             headers.Add("NTS", "\"" + SSDPType.Byebye.ToString() + "\"");
             headers.Add("USN", USN.ToString());
@@ -185,13 +165,6 @@ namespace Mozi.SSDP
             ByebyePackage pack = new ByebyePackage();
             var sHost = req.Headers.GetValue("HOST") ?? req.Headers.GetValue("Host");
             pack.HOST = sHost;
-            //IPV4
-            string[] hostItmes = sHost.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-            if (hostItmes.Length == 2)
-            {
-                pack.HostIp = hostItmes[0];
-                pack.HostPort = int.Parse(hostItmes[1]);
-            }
             var sNt = req.Headers.GetValue("NT");
             pack.NT = TargetDesc.Parse(sNt);
             var sNTS = req.Headers.GetValue("NTS");
@@ -208,7 +181,7 @@ namespace Mozi.SSDP
         public override TransformHeader GetHeaders()
         {
             TransformHeader headers = new TransformHeader();
-            headers.Add("HOST", $"{HostIp}:{HostPort}");
+            headers.Add("HOST", HOST);
             headers.Add("SERVER", Server);
             headers.Add("NT", NT.ToString());
             headers.Add("NTS", SSDPType.Update.ToString());
@@ -223,13 +196,6 @@ namespace Mozi.SSDP
             UpdatePackage pack = new UpdatePackage();
             var sHost = req.Headers.GetValue("HOST") ?? req.Headers.GetValue("Host");
             pack.HOST = sHost;
-            //IPV4
-            string[] hostItmes = sHost.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-            if (hostItmes.Length == 2)
-            {
-                pack.HostIp = hostItmes[0];
-                pack.HostPort = int.Parse(hostItmes[1]);
-            }
             pack.Server = req.Headers.GetValue("SERVER");
             var sNt = req.Headers.GetValue("NT");
             pack.NT = TargetDesc.Parse(sNt);
@@ -240,10 +206,10 @@ namespace Mozi.SSDP
             var sCacheControl = req.Headers.GetValue("CACHE-CONTROL");
             if (!string.IsNullOrEmpty(sCacheControl))
             {
-                string[] cacheItems = sHost.Split(new char[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] cacheItems = sCacheControl.Split(new char[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
                 if (cacheItems.Length == 2)
                 {
-                    pack.CacheTimeout = int.Parse(hostItmes[1].Trim());
+                    pack.CacheTimeout = int.Parse(cacheItems[1].Trim());
                 }
             }
             return pack;

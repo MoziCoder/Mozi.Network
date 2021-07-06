@@ -15,10 +15,9 @@
     <h1>${Document.Title}</h1>
     <p>${Document.Content}</p>
     <!--数组类型-->
-    $for(docs)
-    {
-        <h1>${this.Title}</h1>
-        <div>${this.Content}</div>
-    }
+    <#foreach data="goodslist" item="goods">
+        <h1>${goods.Name}</h1>
+        <div>${goods.Price}</div>
+    </#foreach>
 </body>
 </html>
