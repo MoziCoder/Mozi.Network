@@ -19,8 +19,14 @@ namespace Mozi.SSDP.Test
                     {
                         if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
                         {
-                            Console.WriteLine("interface:{0}:{1}", r.Name, ip.Address);
                             SSDPService ssdp = new SSDPService();
+                            ssdp.PackDefaultSearch.ST = new TargetDesc()
+                            {
+                                Domain = ssdp.Domain,
+                                ServiceType=ServiceCategory.Device,
+                                ServiceName="simplehost",
+                                Version=1
+                            };
                             ssdp.MulticastAddress = "239.255.255.250";
                             ssdp.BindingAddress = ip.Address;
                             ssdp.OnNotifyAliveReceived += Ssdp_OnNotifyAliveReceived;
@@ -29,29 +35,52 @@ namespace Mozi.SSDP.Test
                             ssdp.OnNotifyUpdateReceived += Ssdp_OnNotifyUpdateReceived;
                             ssdp.OnResponseMessageReceived += Ssdp_OnResponseMessageReceived;
                             ssdp.AllowLoopbackMessage = true;
+                            //初始化并加入多播组
                             ssdp.Activate();
+                            //开始公告消息
+                            ssdp.StartAdvertise();
                         }
                     }
                 }
             }
             Console.ReadLine();
         }
-
+        /// <summary>
+        /// 消息响应事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="resp"></param>
+        /// <param name="host"></param>
         private static void Ssdp_OnResponseMessageReceived(object sender, HttpResponse resp, string host)
         {
             Console.WriteLine("Response from {0}", host);
         }
-
+        /// <summary>
+        /// update通知
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="pack"></param>
+        /// <param name="host"></param>
         private static void Ssdp_OnNotifyUpdateReceived(object sender, UpdatePackage pack, string host)
         {
             Console.WriteLine("Notify update from {0}", host);
         }
-
+        /// <summary>
+        /// byebye通知
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="pack"></param>
+        /// <param name="host"></param>
         private static void Ssdp_OnNotifyByebyeReceived(object sender, ByebyePackage pack, string host)
         {
             Console.WriteLine("Notify byebye from {0}", host);
         }
-
+        /// <summary>
+        /// m-search消息
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="pack"></param>
+        /// <param name="host"></param>
         private static void Ssdp_OnSearchReceived(object sender, SearchPackage pack, string host)
         {
             SearchResponsePackage search = new SearchResponsePackage();
@@ -78,7 +107,12 @@ namespace Mozi.SSDP.Test
             }
             //service.EchoSearch(search);
         }
-
+        /// <summary>
+        /// alive消息
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="pack"></param>
+        /// <param name="host"></param>
         private static void Ssdp_OnNotifyAliveReceived(object sender, AlivePackage pack, string host)
         {
             Console.WriteLine("Notify alive from {0}", host);

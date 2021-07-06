@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Net;
 using System.Threading;
 using Mozi.HttpEmbedded;
-using Mozi.HttpEmbedded.WebService;
 
 namespace Mozi.SSDP
 {
@@ -46,6 +44,8 @@ namespace Mozi.SSDP
     public class SSDPService
     {
         private const string QueryPath = "*";
+
+        private bool _initialized = false;
 
         private UDPSocket _socket;
         private Timer _timer;
@@ -157,7 +157,7 @@ namespace Mozi.SSDP
         /// </summary>
         public SearchPackage PackDefaultSearch = new SearchPackage() 
         {
-            MX=1,
+            MX=3,
             ST= TargetDesc.All,
         };
         /// <summary>
@@ -183,11 +183,25 @@ namespace Mozi.SSDP
         /// urn:{domain}:device:1
         /// </summary>
         public TargetDesc DeviceDefault = new TargetDesc();
-
+        /// <summary>
+        /// 收到ssdp:alive时触发
+        /// </summary>
         public event NotifyAliveReceived OnNotifyAliveReceived;
+        /// <summary>
+        /// 收到ssdp:byebye时触发
+        /// </summary>
         public event NotifyByebyeReceived OnNotifyByebyeReceived;
+        /// <summary>
+        /// 收到m-search时触发
+        /// </summary>
         public event SearchReceived OnSearchReceived;
+        /// <summary>
+        /// 收到upnp:update时触发
+        /// </summary>
         public event NotifyUpdateReceived OnNotifyUpdateReceived;
+        /// <summary>
+        /// 收到HTTP/1.1 200 OK时触发
+        /// </summary>
         public event ResponseMessageReceived OnResponseMessageReceived;
         /// <summary>
         /// 原始数据包解析
@@ -343,7 +357,7 @@ namespace Mozi.SSDP
         /// <summary>
         /// 激活服务
         /// <para>
-        /// 启动一个定时器，定时发送在线消息并检索指定设备
+        /// 使服务器加入到多播组中，并侦听消息
         /// </para>
         /// </summary>
         /// <returns></returns>
@@ -352,8 +366,7 @@ namespace Mozi.SSDP
             _socket.AllowLoopbackMessage = AllowLoopbackMessage;
             _socket.BindingAddress = BindingAddress;
             _socket.StartServer(_multicastGroupAddress,_multicastGroupPort);
-            //是否接受回环消息
-            _timer.Change(0, NotificationPeriod);
+            _initialized = true;
             return this;
         }
         /// <summary>
@@ -363,6 +376,24 @@ namespace Mozi.SSDP
         public SSDPService Inactivate()
         {
             _socket.StopServer();
+            return this;
+        }
+        /// <summary>
+        /// 广播ssdp:alive信息
+        /// </summary>
+        /// <returns></returns>
+        public SSDPService StartAdvertise()
+        {            
+            //是否接受回环消息
+            _timer.Change(0, NotificationPeriod);
+            return this;
+        }
+        /// <summary>
+        /// 停止广播
+        /// </summary>
+        /// <returns></returns>
+        public SSDPService StopAdvertise()
+        {
             _timer.Change(Timeout.Infinite, Timeout.Infinite);
             return this;
         }
@@ -628,8 +659,11 @@ namespace Mozi.SSDP
         /// <param name="state"></param>
         private void TimeoutCallback(object state)
         {
-            Search(PackDefaultSearch);
-            //NotifyAlive(PackDefaultAlive);
+            if (_initialized)
+            {
+                //Search(PackDefaultSearch);
+                NotifyAlive(PackDefaultAlive);
+            }
         }
     }
 
