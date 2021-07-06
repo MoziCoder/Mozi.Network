@@ -131,10 +131,10 @@ namespace Mozi.SSDP
             _sc.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             _sc.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 10);
             _sc.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastInterface, 0);
-
+            //先绑定 后加入组播，否则XP/2003系统下会报错
+            _sc.Bind(endpoint);
             _sc.MulticastLoopback = AllowLoopbackMessage;
             JoinMulticastGroup(multicastGroupAddress);
-            _sc.Bind(endpoint);
 
             //回调服务器启动事件
             UDPStateObject so = new UDPStateObject()

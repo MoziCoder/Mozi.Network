@@ -19,6 +19,7 @@ namespace Mozi.SSDP.Test
                     {
                         if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
                         {
+                            Console.WriteLine("interface:{0}:{1}", r.Name, ip.Address);
                             SSDPService ssdp = new SSDPService();
                             ssdp.MulticastAddress = "239.255.255.250";
                             ssdp.BindingAddress = ip.Address;
