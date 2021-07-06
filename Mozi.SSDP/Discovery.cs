@@ -71,7 +71,7 @@ namespace Mozi.SSDP
             headers.Add("MAN", "\"" + SSDPType.Discover.ToString() + "\"");
             headers.Add("ST", ST.ToString());
             headers.Add("CACHE-CONTROL", $"max-age = {CacheTimeout}");
-            headers.Add("DATE", DateTime.UtcNow.ToString("r"));
+            //headers.Add("DATE", DateTime.UtcNow.ToString("r"));
             headers.Add("EXT", "");
             headers.Add("LOCATION", Location);
             headers.Add("SERVER", Server);
@@ -142,7 +142,7 @@ namespace Mozi.SSDP
         public static SearchPackage Parse(HttpRequest req)
         {
             SearchPackage pack = new SearchPackage();
-            var sHost = req.Headers.GetValue("HOST");
+            var sHost = req.Headers.GetValue("HOST")??req.Headers.GetValue("Host");
             pack.HOST = sHost;
             //IPV4
             string[] hostItmes = sHost.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
@@ -183,7 +183,7 @@ namespace Mozi.SSDP
         public static ByebyePackage Parse(HttpRequest req)
         {
             ByebyePackage pack = new ByebyePackage();
-            var sHost = req.Headers.GetValue("HOST");
+            var sHost = req.Headers.GetValue("HOST") ?? req.Headers.GetValue("Host");
             pack.HOST = sHost;
             //IPV4
             string[] hostItmes = sHost.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
@@ -221,7 +221,7 @@ namespace Mozi.SSDP
         public new static UpdatePackage Parse(HttpRequest req)
         {
             UpdatePackage pack = new UpdatePackage();
-            var sHost = req.Headers.GetValue("HOST");
+            var sHost = req.Headers.GetValue("HOST") ?? req.Headers.GetValue("Host");
             pack.HOST = sHost;
             //IPV4
             string[] hostItmes = sHost.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);

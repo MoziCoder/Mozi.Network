@@ -59,8 +59,21 @@ Mozi.HttpEmbedded在Socket之上使用异步单线程模型,构建了一个HTTP�
 	支持GZip，Deflate算法
 
 8. 字符编码  
-	字符编码使用UTF-8
+	字符编码使用UTF-8 
 
+## 项目地址
+
+- [Github][github]
+- [Gitee][gitee]
+- [CSDN][codechina]
+
+## 程序下载
+
+~~~shell
+
+	dotnet add package Mozi.HttpEmbedded --version 1.2.5
+
+~~~
 ## 功能与版本迭代
 	不定期对Mozi.HttpEmbedded的功能进行完善,解决各种BUG。HTTP标准功能繁多，需要一步步实现。
 
@@ -90,7 +103,6 @@ Mozi.HttpEmbedded在Socket之上使用异步单线程模型,构建了一个HTTP�
 	hs.SetVirtualDirectory("config", AppDomain.CurrentDomain.BaseDirectory + @"Config\");
 	
 	Router router = Router.Default;
-
 	//注入API
     //1,此方法会扫描程序集内继承自BaseApi或属性标记为[BasicApi]的类
     //2,Http通讯数据标准默认为xml,使用Router.Default.SetDataSerializer(ISerializer ser)更改序列化类型
@@ -107,3 +119,6 @@ Mozi.HttpEmbedded在Socket之上使用异步单线程模型,构建了一个HTTP�
 ### By [Jason][1] on Feb. 5,2020
 
 [1]:mailto:brotherqian@163.com
+[gitee]:https://gitee.com/myui_admin/mozi.git
+[github]:https://github.com/MoziCoder/Mozi.HttpEmbedded.git
+[codechina]:https://codechina.csdn.net/mozi/mozi.httpembedded.git

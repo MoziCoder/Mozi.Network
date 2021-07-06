@@ -107,7 +107,7 @@ namespace Mozi.HttpEmbedded.Test
             sr.USN = service.USN;
             sr.ST = pack.ST;
             sr.Server = service.Server;
-            //service.EchoSearch(sr);
+            service.EchoSearch(sr);
         }
 
         private static void Ssdp_OnNotifyAliveReceived(object sender, SSDP.AlivePackage pack,string host)

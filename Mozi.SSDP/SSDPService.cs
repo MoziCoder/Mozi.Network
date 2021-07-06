@@ -165,6 +165,11 @@ namespace Mozi.SSDP
         { 
             
         };
+        /// <summary>
+        /// 搜索程序定义的默认类型
+        /// urn:{domain}:device:1
+        /// </summary>
+        public TargetDesc DeviceDefault = new TargetDesc();
 
         public event NotifyAliveReceived OnNotifyAliveReceived;
         public event NotifyByebyeReceived OnNotifyByebyeReceived;
@@ -195,6 +200,9 @@ namespace Mozi.SSDP
             
             PackDefaultByebye.USN = new USNDesc() { IsRootDevice = true, DeviceId = UUID.Generate(),Domain="mozi.org" };
 
+            DeviceDefault.Domain = Domain;
+            DeviceDefault.ServiceType = ServiceCategory.Device;
+            DeviceDefault.Version = 1;
         }
         /// <summary>
         /// 数据接收时间
@@ -203,12 +211,14 @@ namespace Mozi.SSDP
         /// <param name="args"></param>
         private void _socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
+            //TODO 如何进行多包分割？
+
             ParsePackage(args);
             if (OnMessageReceived != null)
             {
                 OnMessageReceived(this, args);
             }
-            Console.WriteLine("*********收到数据[{0}]*********\r\n{1}\r\n*******END********", args.IP,System.Text.Encoding.UTF8.GetString(args.Data));
+            Console.WriteLine("{1}", args.IP,System.Text.Encoding.UTF8.GetString(args.Data));
         }
         /// <summary>
         /// 包解析
@@ -346,6 +356,7 @@ namespace Mozi.SSDP
         /// <summary>
         /// 发送查询消息
         /// </summary>
+        /// <param name="pk"></param>
         public void Search(SearchPackage pk)
         {
             HttpRequest request = new HttpRequest();
@@ -354,7 +365,23 @@ namespace Mozi.SSDP
             byte[] data = request.GetBuffer();
             _socket.SocketMain.SendTo(data, _remoteEP);
         }
+        /// <summary>
+        /// 查找设备简化方法，参看<see cref="Search(SearchPackage)"/>
+        /// </summary>
+        /// <param name="desc"></param>
+        public void Search(TargetDesc desc)
+        {
+            SearchPackage pk = new SearchPackage();
+            pk.MX = 1;
+            pk.UserAgent = _server;
+            pk.ST = desc;
 
+            HttpRequest request = new HttpRequest();
+            request.SetPath("*").SetMethod(RequestMethodUPnP.MSEARCH);
+            request.SetHeaders(pk.GetHeaders());
+            byte[] data = request.GetBuffer();
+            _socket.SocketMain.SendTo(data, _remoteEP);
+        }
         //NOTIFY * HTTP/1.1     
         //HOST: 239.255.255.250:1900    
         //CACHE-CONTROL: max-age = {seconds}   
@@ -412,6 +439,10 @@ namespace Mozi.SSDP
             byte[] data = request.GetBuffer();
             _socket.SocketMain.SendTo(data, _remoteEP);
         }
+        /// <summary>
+        /// update信息
+        /// </summary>
+        /// <param name="pk"></param>
         public void NotifyUpdate(UpdatePackage pk)
         {
             HttpRequest request = new HttpRequest();
@@ -443,6 +474,7 @@ namespace Mozi.SSDP
         /// <summary>
         /// 响应 MS-SEARCH 查找
         /// </summary>
+        /// <param name="pk"></param>
         public void EchoSearch(SearchResponsePackage pk)
         {
             HttpResponse resp = new HttpResponse();
@@ -466,6 +498,10 @@ namespace Mozi.SSDP
         //          </u:actionName>
         //      </s:Body> 
         //</s:Envelope>
+        /// <summary>
+        /// 控制信息
+        /// </summary>
+        /// <param name="pk"></param>
         internal void ControlAction(ControlActionPackage pk)
         {
             HttpRequest request = new HttpRequest();
@@ -523,7 +559,10 @@ namespace Mozi.SSDP
         //</e:property> 
         //Other variable names and values(if any) go here.
         //</e:propertyset>
-
+        /// <summary>
+        /// 订阅
+        /// </summary>
+        /// <param name="pk"></param>
         internal void Subscribe(SubscribePackage pk)
         {
             HttpRequest request = new HttpRequest();
@@ -536,7 +575,10 @@ namespace Mozi.SSDP
         //UNSUBSCRIBE publisher path HTTP/1.1 
         //HOST: publisher host:publisher port
         //SID: uuid:subscription UUID
-
+        /// <summary>
+        /// 取消订阅
+        /// </summary>
+        /// <param name="pk"></param>
         internal void UnSubscribe(SubscribePackage pk)
         {
             HttpRequest request = new HttpRequest();
@@ -757,7 +799,11 @@ namespace Mozi.SSDP
             }
             return result;
         }
-
+        /// <summary>
+        /// 包解析
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static USNDesc Parse(string data)
         {
             //uuid:device-UUID::urn:domain-name:service:serviceType:v
