@@ -3,6 +3,9 @@ using Mozi.HttpEmbedded;
 
 namespace Mozi.SSDP
 {
+    /// <summary>
+    /// 在线数据包
+    /// </summary>
     public class AlivePackage : ByebyePackage
     {
         public int CacheTimeout { get; set; }
@@ -47,7 +50,9 @@ namespace Mozi.SSDP
             return pack;
         }
     }
-
+    /// <summary>
+    /// 搜索数据包
+    /// </summary>
     public class SearchResponsePackage : SearchPackage
     {
         public int CacheTimeout { get; set; }
@@ -64,7 +69,7 @@ namespace Mozi.SSDP
             headers.Add("MAN", "\"" + SSDPType.Discover.ToString() + "\"");
             headers.Add("ST", ST.ToString());
             headers.Add("CACHE-CONTROL", $"max-age = {CacheTimeout}");
-            //headers.Add("DATE", DateTime.UtcNow.ToString("r"));
+            headers.Add("DATE", DateTime.UtcNow.ToString("r"));
             headers.Add("EXT", "");
             headers.Add("LOCATION", Location);
             headers.Add("SERVER", Server);
@@ -173,7 +178,9 @@ namespace Mozi.SSDP
             return pack;
         }
     }
-
+    /// <summary>
+    /// 更新数据包
+    /// </summary>
     public class UpdatePackage : AlivePackage
     {
         public int NEXTBOOTID { get; set; }

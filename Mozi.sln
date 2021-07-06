@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mozi.HttpEmbedded.Test.Net5
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mozi.StateService.Test", "Mozi.StateService.Test\Mozi.StateService.Test.csproj", "{170A717F-6719-4EDC-9F89-3CACEC7F9FD9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mozi.SSDP.Test", "Mozi.SSDP.Test\Mozi.SSDP.Test.csproj", "{EFC1A787-5A5D-49DD-8E9F-DF8F74AD65BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -96,6 +98,18 @@ Global
 		{170A717F-6719-4EDC-9F89-3CACEC7F9FD9}.ReleaseBinaries|Any CPU.Build.0 = Release|Any CPU
 		{170A717F-6719-4EDC-9F89-3CACEC7F9FD9}.ReleaseBinaries|x86.ActiveCfg = Release|Any CPU
 		{170A717F-6719-4EDC-9F89-3CACEC7F9FD9}.ReleaseBinaries|x86.Build.0 = Release|Any CPU
+		{EFC1A787-5A5D-49DD-8E9F-DF8F74AD65BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFC1A787-5A5D-49DD-8E9F-DF8F74AD65BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFC1A787-5A5D-49DD-8E9F-DF8F74AD65BB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EFC1A787-5A5D-49DD-8E9F-DF8F74AD65BB}.Debug|x86.Build.0 = Debug|Any CPU
+		{EFC1A787-5A5D-49DD-8E9F-DF8F74AD65BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFC1A787-5A5D-49DD-8E9F-DF8F74AD65BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFC1A787-5A5D-49DD-8E9F-DF8F74AD65BB}.Release|x86.ActiveCfg = Release|Any CPU
+		{EFC1A787-5A5D-49DD-8E9F-DF8F74AD65BB}.Release|x86.Build.0 = Release|Any CPU
+		{EFC1A787-5A5D-49DD-8E9F-DF8F74AD65BB}.ReleaseBinaries|Any CPU.ActiveCfg = Release|Any CPU
+		{EFC1A787-5A5D-49DD-8E9F-DF8F74AD65BB}.ReleaseBinaries|Any CPU.Build.0 = Release|Any CPU
+		{EFC1A787-5A5D-49DD-8E9F-DF8F74AD65BB}.ReleaseBinaries|x86.ActiveCfg = Release|Any CPU
+		{EFC1A787-5A5D-49DD-8E9F-DF8F74AD65BB}.ReleaseBinaries|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

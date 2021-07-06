@@ -57,6 +57,23 @@ namespace Mozi.HttpEmbedded
         /// Cookie
         /// </summary>
         public ResponseCookie Cookies { get; private set; }
+        /// <summary>
+        /// 是否允许自动增加头部信息
+        /// 包含<see cref="HeaderProperty.Date"/>,<see cref="HeaderProperty.ContentType"/>,<see cref="HeaderProperty.ContentLength"/>
+        /// </summary>
+        public bool DontAddAutoHeader = false;
+        ///// <summary>
+        ///// 是否自动生成头 Content-Length
+        ///// </summary>
+        //public bool AutoAddHeaderContentLength = true;
+        ///// <summary>
+        ///// 是否自动生成头 Date
+        ///// </summary>
+        //public bool AutoAddHeaderDate = true;
+        ///// <summary>
+        ///// 是否自动生成头 Content-Type
+        ///// </summary>
+        //public bool AutoAddHeaderContentType = true;
 
         public HttpResponse()
         {
@@ -221,13 +238,16 @@ namespace Mozi.HttpEmbedded
             //注入状态信息
             data.AddRange(GetStatusLine());
             data.AddRange(TransformHeader.Carriage);
-            //注入包体大小 字节长度
-            AddHeader(HeaderProperty.ContentLength, _body.Length.ToString());
-            //注入文档类型
-            AddHeader(HeaderProperty.ContentType, _contentType+(!string.IsNullOrEmpty(Charset)?"; "+ Charset : ""));
-            //注入响应时间
-            AddHeader(HeaderProperty.Date, DateTime.Now.ToUniversalTime().ToString("r"));
-            //注入默认头部
+            if (!DontAddAutoHeader)
+            {
+                //注入包体大小 字节长度
+                AddHeader(HeaderProperty.ContentLength, _body.Length.ToString());
+                //注入文档类型
+                AddHeader(HeaderProperty.ContentType, _contentType + (!string.IsNullOrEmpty(Charset) ? "; " + Charset : ""));
+                //注入响应时间
+                AddHeader(HeaderProperty.Date, DateTime.Now.ToUniversalTime().ToString("r"));
+            }
+            //注入头部
             data.AddRange(Headers.GetBuffer(headerKeyUppercase));
             //注入Cookie
             data.AddRange(Cookies.GetBuffer());

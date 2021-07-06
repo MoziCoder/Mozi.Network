@@ -241,9 +241,9 @@ namespace Mozi.SSDP
             {
                 OnMessageReceived(this, args);
             }
-            Console.WriteLine("==**************{0}*************==", args.IP);
-            Console.WriteLine("{1}", args.IP,System.Text.Encoding.UTF8.GetString(args.Data));
-            Console.WriteLine("==***************************************==");
+            //Console.WriteLine("==**************{0}*************==", args.IP);
+            //Console.WriteLine("{1}", args.IP,System.Text.Encoding.UTF8.GetString(args.Data));
+            //Console.WriteLine("==***************************************==");
         }
         /// <summary>
         /// 包解析
@@ -504,6 +504,7 @@ namespace Mozi.SSDP
         public void EchoSearch(SearchResponsePackage pk)
         {
             HttpResponse resp = new HttpResponse();
+            resp.DontAddAutoHeader = true;
             resp.SetHeaders(pk.GetHeaders());
             resp.SetStatus(StatusCode.Success);
             byte[] data = resp.GetBuffer(true);
@@ -628,7 +629,7 @@ namespace Mozi.SSDP
         private void TimeoutCallback(object state)
         {
             Search(PackDefaultSearch);
-            NotifyAlive(PackDefaultAlive);
+            //NotifyAlive(PackDefaultAlive);
         }
     }
 
@@ -726,7 +727,7 @@ namespace Mozi.SSDP
     public class TargetDesc:USNDesc
     {
 
-        private bool IsAll = false;
+        public bool IsAll = false;
         /// <summary>
         /// upnp:rootdevice
         /// </summary>

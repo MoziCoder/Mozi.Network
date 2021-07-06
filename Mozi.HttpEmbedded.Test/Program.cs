@@ -55,31 +55,6 @@ namespace Mozi.HttpEmbedded.Test
 
             //开启WebDAV
             //hs.UseWebDav("{path}");
-
-            //开启SSDP服务
-            var interfaces = NetworkInterface.GetAllNetworkInterfaces();
-            foreach (var r in interfaces)
-            {
-                if (r.SupportsMulticast&&r.NetworkInterfaceType!=NetworkInterfaceType.Loopback)
-                {
-                    foreach (var ip in r.GetIPProperties().UnicastAddresses)
-                    {
-                        if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                        {
-                            SSDP.SSDPService ssdp = new SSDP.SSDPService();
-                            ssdp.MulticastAddress = "239.255.255.239";
-                            ssdp.BindingAddress = ip.Address;
-                            ssdp.OnNotifyAliveReceived += Ssdp_OnNotifyAliveReceived;
-                            ssdp.OnSearchReceived += Ssdp_OnSearchReceived;
-                            ssdp.OnNotifyByebyeReceived += Ssdp_OnNotifyByebyeReceived;
-                            ssdp.OnNotifyUpdateReceived += Ssdp_OnNotifyUpdateReceived;
-                            ssdp.OnResponseMessageReceived += Ssdp_OnResponseMessageReceived;
-                            ssdp.AllowLoopbackMessage = true;
-                            ssdp.Activate();
-                        }
-                    }
-                }
-            }
             ////开启状态服务
             HeartBeatService state = new HeartBeatService()
             {
@@ -97,39 +72,6 @@ namespace Mozi.HttpEmbedded.Test
 
             //请访问地址 http://{ip}:{port}/admin/index.html
 
-        }
-
-        private static void Ssdp_OnResponseMessageReceived(object sender, HttpResponse resp, string host)
-        {
-            Console.WriteLine("Response from {0}", host);
-        }
-
-        private static void Ssdp_OnNotifyUpdateReceived(object sender, SSDP.UpdatePackage pack, string host)
-        {
-            Console.WriteLine("Notify update from {0}", host);
-        }
-
-        private static void Ssdp_OnNotifyByebyeReceived(object sender, SSDP.ByebyePackage pack, string host)
-        {
-            Console.WriteLine("Notify byebye from {0}", host);
-        }
-
-        private static void Ssdp_OnSearchReceived(object sender, SSDP.SearchPackage pack, string host)
-        {
-            Console.WriteLine("Search from {0}", host);
-            SSDP.SearchResponsePackage sr = new SSDP.SearchResponsePackage();
-            var service = (SSDP.SSDPService)sender;
-            sr.HOST = string.Format("{0}:{1}", service.MulticastAddress, service.MulticastPort);
-            sr.CacheTimeout = 3600;
-            sr.USN = service.USN;
-            sr.ST = pack.ST;
-            sr.Server = service.Server;
-            service.EchoSearch(sr);
-        }
-
-        private static void Ssdp_OnNotifyAliveReceived(object sender, SSDP.AlivePackage pack,string host)
-        {
-            Console.WriteLine("Notify alive from {0}", host);
         }
 
         /// <summary>
