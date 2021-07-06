@@ -53,6 +53,7 @@ namespace Mozi.SSDP
 
         private string _multicastGroupAddress = SSDPProtocol.MulticastAddress;
         private int _multicastGroupPort = SSDPProtocol.ProtocolPort;
+        private IPAddress _bindingAddress = IPAddress.Any;
 
         private string _server = "Mozi/1.2.5 UPnP/2.0 Mozi.SSDP/1.2.5";
 
@@ -110,7 +111,7 @@ namespace Mozi.SSDP
         /// 标准地址为 <see cref="SSDPProtocol.MulticastAddress"/> | <see cref="SSDPProtocol.MulticastAddressIPv6"/>
         /// </para>
         /// </summary>
-        public string MulticastGroupAddress
+        public string MulticastAddress
         {
             get 
             { 
@@ -118,6 +119,7 @@ namespace Mozi.SSDP
             }
             set
             {
+                _remoteEP = new IPEndPoint(IPAddress.Parse(value), MulticastPort);
                 _multicastGroupAddress = value;
             }
         }
@@ -127,7 +129,7 @@ namespace Mozi.SSDP
         /// 标准端口为 <see cref="SSDPProtocol.ProtocolPort"/>
         /// </para>
         /// </summary>
-        public int MulticastGroupPort
+        public int MulticastPort
         {
             get 
             {
@@ -135,10 +137,21 @@ namespace Mozi.SSDP
             }
             set
             {
+                _remoteEP = new IPEndPoint(IPAddress.Parse(MulticastAddress), value);
                 _multicastGroupPort = value;
             }
         }
-
+        public IPAddress BindingAddress
+        {
+            get
+            {
+                return _bindingAddress;
+            }
+            set
+            {
+                _bindingAddress = value;
+            }
+        }
         /// <summary>
         /// 默认查询包
         /// </summary>
@@ -192,6 +205,7 @@ namespace Mozi.SSDP
             _socket = new UDPSocket();
             _socket.AfterReceiveEnd += _socket_AfterReceiveEnd;
             _remoteEP = new IPEndPoint(IPAddress.Parse(SSDPProtocol.MulticastAddress), SSDPProtocol.ProtocolPort);
+
             _timer = new Timer(TimeoutCallback, null, Timeout.Infinite, Timeout.Infinite);
 
             //初始化数据包
@@ -218,7 +232,9 @@ namespace Mozi.SSDP
             {
                 OnMessageReceived(this, args);
             }
+            Console.WriteLine("==**************{0}*************==", args.IP);
             Console.WriteLine("{1}", args.IP,System.Text.Encoding.UTF8.GetString(args.Data));
+            Console.WriteLine("==***************************************==");
         }
         /// <summary>
         /// 包解析
@@ -325,6 +341,7 @@ namespace Mozi.SSDP
         public SSDPService Activate()
         {            
             _socket.AllowLoopbackMessage = AllowLoopbackMessage;
+            _socket.BindingAddress = BindingAddress;
             _socket.StartServer(_multicastGroupAddress,_multicastGroupPort);
             //是否接受回环消息
             _timer.Change(0, NotificationPeriod);

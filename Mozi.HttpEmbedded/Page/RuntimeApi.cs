@@ -46,7 +46,6 @@ namespace Mozi.HttpEmbedded.Page
                     Name=m.Name,
                     VersionName=m.Assembly.GetName().Version.ToString()
                 });
-
             }
             return info;
         }
@@ -72,7 +71,7 @@ namespace Mozi.HttpEmbedded.Page
         /// 列出所有用户
         /// </summary>
         /// <returns></returns>
-        public ResponseMessage GetUsers()
+        internal ResponseMessage GetUsers()
         {
             throw new NotImplementedException();
         }

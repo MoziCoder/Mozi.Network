@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Mozi.HttpEmbedded.Common;
 using Mozi.StateService;
 using System.Reflection;
+using System.Net;
+using System.Net.NetworkInformation;
 
 namespace Mozi.HttpEmbedded.Test
 {
@@ -55,15 +57,29 @@ namespace Mozi.HttpEmbedded.Test
             //hs.UseWebDav("{path}");
 
             //开启SSDP服务
-            SSDP.SSDPService ssdp = new SSDP.SSDPService();
-            ssdp.OnNotifyAliveReceived += Ssdp_OnNotifyAliveReceived;
-            ssdp.OnSearchReceived += Ssdp_OnSearchReceived;
-            ssdp.OnNotifyByebyeReceived += Ssdp_OnNotifyByebyeReceived;
-            ssdp.OnNotifyUpdateReceived += Ssdp_OnNotifyUpdateReceived;
-            ssdp.OnResponseMessageReceived += Ssdp_OnResponseMessageReceived;
-            ssdp.AllowLoopbackMessage = true;
-            ssdp.Activate();
-
+            var interfaces = NetworkInterface.GetAllNetworkInterfaces();
+            foreach (var r in interfaces)
+            {
+                if (r.SupportsMulticast&&r.NetworkInterfaceType!=NetworkInterfaceType.Loopback)
+                {
+                    foreach (var ip in r.GetIPProperties().UnicastAddresses)
+                    {
+                        if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                        {
+                            SSDP.SSDPService ssdp = new SSDP.SSDPService();
+                            ssdp.MulticastAddress = "239.255.255.239";
+                            ssdp.BindingAddress = ip.Address;
+                            ssdp.OnNotifyAliveReceived += Ssdp_OnNotifyAliveReceived;
+                            ssdp.OnSearchReceived += Ssdp_OnSearchReceived;
+                            ssdp.OnNotifyByebyeReceived += Ssdp_OnNotifyByebyeReceived;
+                            ssdp.OnNotifyUpdateReceived += Ssdp_OnNotifyUpdateReceived;
+                            ssdp.OnResponseMessageReceived += Ssdp_OnResponseMessageReceived;
+                            ssdp.AllowLoopbackMessage = true;
+                            ssdp.Activate();
+                        }
+                    }
+                }
+            }
             ////开启状态服务
             HeartBeatService state = new HeartBeatService()
             {

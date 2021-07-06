@@ -19,7 +19,14 @@ namespace Mozi.SSDP
 
         //private EndPoint _remoteEndPoint=new IPEndPoint(IPAddress.Any, 0);
 
+        private IPAddress _bindingAddress = IPAddress.Any;
+        /// <summary>
+        /// 绑定的本地地址
+        /// </summary>
+        public IPAddress BindingAddress { get { return _bindingAddress; } set { _bindingAddress = value; } }
+
         public bool AllowLoopbackMessage { get; set; }
+
 
         public UDPSocket()
         {
@@ -56,14 +63,14 @@ namespace Mozi.SSDP
         /// <summary>
         /// 组播地址
         /// </summary>
-        public string MulticastGroupAddress
+        public string MulticastAddress
         {
             get { return _multicastGroupAddress; }
         }
         /// <summary>
         /// 组播端口
         /// </summary>
-        public int MulticastGroupPort
+        public int MulticastPort
         {
             get { return _multicastGroupPort; }
         }
@@ -92,7 +99,7 @@ namespace Mozi.SSDP
         public void JoinMulticastGroup(string multicastGroupAddress)
         {
             _multicastGroupAddress = multicastGroupAddress;
-            MulticastOption mcastOpt = new MulticastOption(IPAddress.Parse(multicastGroupAddress), IPAddress.Any);
+            MulticastOption mcastOpt = new MulticastOption(IPAddress.Parse(multicastGroupAddress), _bindingAddress);
             _sc.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, mcastOpt);
 
         }
@@ -102,7 +109,7 @@ namespace Mozi.SSDP
         /// <param name="multicastGroupAddress"></param>
         public void LeaveMulticastGroup(string multicastGroupAddress)
         {
-            MulticastOption mcastOpt = new MulticastOption(IPAddress.Parse(multicastGroupAddress), IPAddress.Any);
+            MulticastOption mcastOpt = new MulticastOption(IPAddress.Parse(multicastGroupAddress), _bindingAddress);
             _sc.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.DropMembership, mcastOpt);
         }
         /// <summary>
@@ -120,10 +127,10 @@ namespace Mozi.SSDP
             {
                 _sc.Close();
             }
-            IPEndPoint endpoint = new IPEndPoint(IPAddress.Any, _multicastGroupPort);
+            IPEndPoint endpoint = new IPEndPoint(_bindingAddress, _multicastGroupPort);
             //允许端口复用
             _sc.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            _sc.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 32);
+            _sc.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 10);
             _sc.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastInterface, 0);
 
             _sc.MulticastLoopback = AllowLoopbackMessage;
@@ -137,7 +144,7 @@ namespace Mozi.SSDP
                 Id = Guid.NewGuid().ToString(),
                 //IP = ((System.Net.IPEndPoint)client.RemoteEndPoint).Address.ToString(),
                 //RemotePort = ((System.Net.IPEndPoint)client.RemoteEndPoint).Port,
-                RemoteEndPoint = new IPEndPoint(IPAddress.Any, 0)
+                RemoteEndPoint = new IPEndPoint(_bindingAddress, 0)
             };
 
             if (OnServerStart != null)
@@ -215,7 +222,7 @@ namespace Mozi.SSDP
                 Id = Guid.NewGuid().ToString(),
                 //IP = ((System.Net.IPEndPoint)client.RemoteEndPoint).Address.ToString(),
                 //RemotePort = ((System.Net.IPEndPoint)client.RemoteEndPoint).Port,
-                RemoteEndPoint = new IPEndPoint(IPAddress.Any, 0)
+                RemoteEndPoint = new IPEndPoint(_bindingAddress, 0)
             };
             _sc.BeginReceiveFrom(stateobject.Buffer, 0, stateobject.Buffer.Length, SocketFlags.None, ref stateobject.RemoteEndPoint, new AsyncCallback(CallbackReceive), stateobject);
         }

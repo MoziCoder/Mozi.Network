@@ -14,7 +14,7 @@ namespace Mozi.SSDP
         public static SSDPType Update = new SSDPType("ssdp", "update");
         public static SSDPType Event = new SSDPType("upnp", "event");
         public static SSDPType RootDevice = new SSDPType("upnp", "rootdevice");
-        public static SSDPType PropChange = new SSDPType("upnp", "upnp:propchange");
+        public static SSDPType PropChange = new SSDPType("upnp", "propchange");
 
         private readonly string _name="";
         private readonly string _domain="";
