@@ -12,7 +12,7 @@ namespace Mozi.HttpEmbedded.Template
     /// <summary>
     /// 页面生成器
     /// </summary>
-    public class PageCreator
+    public class PageEngine
     {
 
         private readonly Dictionary<string, object> _params = new Dictionary<string, object>(new StringCompareIgnoreCase());
@@ -23,27 +23,27 @@ namespace Mozi.HttpEmbedded.Template
 
         private string _page = "";
 
-        public PageCreator()
+        public PageEngine()
         {
 
         }
 
-        internal PageCreator Load(string filePath)
+        internal PageEngine Load(string filePath)
         {
             return this;
         }
 
-        internal PageCreator LoadFromStream(Stream stream)
+        internal PageEngine LoadFromStream(Stream stream)
         {
             Prepare();
             return this;
         }
-        public PageCreator LoadFromText(string template)
+        public PageEngine LoadFromText(string template)
         {
             _template = template;
             return this;
         }
-        public PageCreator Prepare()
+        public PageEngine Prepare()
         {
             _page = _template;
             InflateGlobal();
@@ -54,7 +54,7 @@ namespace Mozi.HttpEmbedded.Template
         /// 注入全局数据
         /// </summary>
         /// <returns></returns>
-        private PageCreator InflateGlobal()
+        private PageEngine InflateGlobal()
         {
             return this;
         }
@@ -62,7 +62,7 @@ namespace Mozi.HttpEmbedded.Template
         /// 注入临时数据
         /// </summary>
         /// <returns></returns>
-        private PageCreator InflateValues()
+        private PageEngine InflateValues()
         {
             Regex regParam = new Regex("\\${[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)?}");
             MatchCollection matchesParam = regParam.Matches(_page);
@@ -89,19 +89,49 @@ namespace Mozi.HttpEmbedded.Template
         /// 解析if
         /// </summary>
         /// <returns></returns>
-        private PageCreator InflateConditionalIf()
+        private PageEngine ParseStatementIf()
         {
             return this;
         }
-        private PageCreator InflateLoopForeach()
+        private PageEngine ParseStatementForeach()
         {
             return this;
         }
-        private PageCreator InflateLoopFor()
+        private PageEngine ParseStatementSwitch()
+        {
+            return this;
+        }
+        private PageEngine ParseStatementFor()
         {
             return this;
         }
 
+        private PageEngine ParseExpressionMath()
+        {
+            return this;
+        }
+        private PageEngine ParseExpressionFormat()
+        {
+            return this;
+        }
+        /// <summary>
+        /// == != <> &&　｜｜
+        /// </summary>
+        /// <returns></returns>
+        private PageEngine ParseOperator()
+        {
+            return this;
+        }
+
+        private PageEngine ParseArithmeticOperator()
+        {
+            return this;
+        }
+
+        private PageEngine ParseLogicalOpeartor()
+        {
+            return this;
+        }
         /// <summary>
         /// 获取参数值
         /// </summary>
@@ -124,7 +154,7 @@ namespace Mozi.HttpEmbedded.Template
         /// <param name="paramName">参数名</param>
         /// <param name="paramValue">参数值</param>
         /// <returns></returns>
-        public PageCreator SetParameter(string paramName, object paramValue)
+        public PageEngine SetParameter(string paramName, object paramValue)
         {
             if (_params.ContainsKey(paramName))
             {
@@ -142,7 +172,7 @@ namespace Mozi.HttpEmbedded.Template
         /// <param name="dataName"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        internal PageCreator RegData(string dataName, IEnumerable<object> data)
+        internal PageEngine RegData(string dataName, IEnumerable<object> data)
         {
             if (_datas.ContainsKey(dataName))
             {

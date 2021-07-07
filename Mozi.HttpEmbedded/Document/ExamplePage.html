@@ -15,9 +15,44 @@
     <h1>${Document.Title}</h1>
     <p>${Document.Content}</p>
     <!--数组类型-->
-    <#foreach data="goodslist" item="goods">
+    <!--<#foreach data="goodslist" item="goods">
         <h1>${goods.Name}</h1>
         <div>${goods.Price}</div>
-    </#foreach>
+    </#foreach>-->
+    <!--foreach loop-->
+    <%foreach goods in goodslist%>
+        <h1>${goods.Name}</h1>
+        <div>${goods.Price}</div>
+    <%end%>
+
+    <!--for loop-->
+    <%for(int i=0;i<goods.Length;i++)%>
+        <h1>${goods.Name}</h1>
+        <div>${goods.Price}</div>
+    <%end%>
+
+        <!--if conditional-->
+        <% if page==1 %>
+            <div>if condition</div>
+        <% else if %>
+            <div>else if condition</div>
+        <% end %>
+
+        <!--switch statement-->
+        <% switch(pagecount)%>
+            <% case %>
+
+            <% break %>
+        <% end %>
+
+        <!--Math function-->
+        <p>
+            <div>$math.abs(-1),$math.ceil(1.2)</div>
+        </p>
+
+        <!--format function-->
+        <p>
+            <div>$format("{0},{1}",Title,Content)</div>
+        </p>
 </body>
 </html>

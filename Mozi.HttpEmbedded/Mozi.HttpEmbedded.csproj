@@ -108,7 +108,7 @@
     <Compile Include="Page\AbsPage.cs" />
     <Compile Include="Serialize\DataSerializeType.cs" />
     <Compile Include="Cache\Global.cs" />
-    <Compile Include="Template\PageCreator.cs" />
+    <Compile Include="Template\PageEngine.cs" />
     <Compile Include="Page\Router.cs" />
     <Compile Include="Page\RuntimeApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -260,7 +260,7 @@ namespace Mozi.HttpEmbedded
                 {
                     //返回错误信息页面
                     string doc = DocLoader.Load("Error.html");
-                    PageCreator pc = new PageCreator();
+                    PageEngine pc = new PageEngine();
                     pc.LoadFromText(doc);
                     pc.SetParameter("Error", new
                     {
@@ -361,7 +361,7 @@ namespace Mozi.HttpEmbedded
                 if (path == "/")
                 {
                     var doc = DocLoader.Load("DefaultHome.html");
-                    PageCreator pc = new PageCreator();
+                    PageEngine pc = new PageEngine();
                     pc.LoadFromText(doc);
                     pc.SetParameter("Info", new
                     {

@@ -1,3 +1,73 @@
 ﻿# Mozi.SSDP
 
-Mozi.SSDP是一个SSDP服务组件，基于UDP开发
+Mozi.SSDP是一个SSDP服务组件，基于UDP Socket开发，遵循UPNP/2.0标准。 
+
+## 功能特性
+
+1. 发现-在线
+	- 在线通知
+	- 离线通知
+	- 搜索
+	- 更新
+
+3. 设备和服务描述
+
+3. 控制
+
+4. 事件
+
+## 项目地址
+
+- [Github][github]
+- [Gitee][gitee]
+- [CSDN][codechina]
+
+## 版权说明
+	本项目采用MIT开源协议，引用请注明出处。欢迎复制，引用和修改。意见建议疑问请联系软件作者，或提交ISSUE。
+
+## 用例说明
+
+~~~csharp
+
+        //开启SSDP服务
+        var interfaces = NetworkInterface.GetAllNetworkInterfaces();
+        foreach (var r in interfaces)
+        {
+            if (r.SupportsMulticast && r.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+            {
+                foreach (var ip in r.GetIPProperties().UnicastAddresses)
+                {
+                    if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                    {
+                        SSDPService ssdp = new SSDPService();
+                        ssdp.PackDefaultSearch.ST = new TargetDesc()
+                        {
+                            Domain = ssdp.Domain,
+                            ServiceType=ServiceCategory.Device,
+                            ServiceName="simplehost",
+                            Version=1
+                        };
+                        ssdp.MulticastAddress = "239.255.255.250";
+                        ssdp.BindingAddress = ip.Address;
+                        ssdp.OnNotifyAliveReceived += Ssdp_OnNotifyAliveReceived;
+                        ssdp.OnSearchReceived += Ssdp_OnSearchReceived;
+                        ssdp.OnNotifyByebyeReceived += Ssdp_OnNotifyByebyeReceived;
+                        ssdp.OnNotifyUpdateReceived += Ssdp_OnNotifyUpdateReceived;
+                        ssdp.OnResponseMessageReceived += Ssdp_OnResponseMessageReceived;
+                        ssdp.AllowLoopbackMessage = true;
+                        //初始化并加入多播组
+                        ssdp.Activate();
+                        //开始公告消息
+                        ssdp.StartAdvertise();
+                    }
+                }
+            }
+        }
+
+~~~
+### By [Jason][1] on Feb. 5,2020
+
+[1]:mailto:brotherqian@163.com
+[gitee]:https://gitee.com/myui_admin/mozi.git
+[github]:https://github.com/MoziCoder/Mozi.HttpEmbedded.git
+[codechina]:https://codechina.csdn.net/mozi/mozi.httpembedded.git

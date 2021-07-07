@@ -63,9 +63,14 @@ namespace Mozi.SSDP
         private string _descriptionPath = "";
 
         #region
-
+        /// <summary>
+        /// 服务器描述值
+        /// </summary>
         public string Server { get { return _server; } set { _server = value; } }
-        public string Location { get; set; }
+        ///// <summary>
+        ///// 设备描述信息地址
+        ///// </summary>
+        //public string Location { get; set; }
         /// <summary>
         /// 程序默认的域信息，用于绑定NT,ST,USN，以及设备/服务描述文档中的相关信息
         /// </summary>
