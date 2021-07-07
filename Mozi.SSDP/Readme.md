@@ -31,8 +31,9 @@ Mozi.SSDP是一个SSDP服务组件，基于UDP Socket开发，遵循UPNP/2.0标�
 	dotnet add package Mozi.SSDP --version 1.2.5
 
 ~~~
-## 项目依赖
-    [Mozi.HttpEmbedded][mozi.httpembedded]
+## 项目依赖  
+
+[Mozi.HttpEmbedded][httpembedded] > 1.2.5
 
 ## 版权说明
 	本项目采用MIT开源协议，引用请注明出处。欢迎复制，引用和修改。意见建议疑问请联系软件作者，或提交ISSUE。
@@ -83,4 +84,4 @@ Mozi.SSDP是一个SSDP服务组件，基于UDP Socket开发，遵循UPNP/2.0标�
 [gitee]:https://gitee.com/myui_admin/mozi.git
 [github]:https://github.com/MoziCoder/Mozi.HttpEmbedded.git
 [codechina]:https://codechina.csdn.net/mozi/mozi.httpembedded.git
-[mozi.httpembedded]:https://gitee.com/myui_admin/mozi.git
+[httpembedded]:https://gitee.com/myui_admin/mozi.git
