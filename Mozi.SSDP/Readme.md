@@ -1,6 +1,6 @@
 ﻿# Mozi.SSDP
 
-Mozi.SSDP是一个基于.Net开发的SSDP服务组件，目标是为.Net应用程序提供完善的SSDP服务功能。 项目对UDP Socket进行封装，并遵循UPNP/2.0，实现了UPNP2.0规范中的大部分功能。
+Mozi.SSDP是一个基于.Net开发的SSDP服务组件，目标是为.Net应用程序提供完善的SSDP服务功能。 项目对UDP Socket进行封装，并遵循UPNP/2.0(UPnP Device Architecture 2.0)，实现了UPNP2.0规范中的大部分功能。
 
 ## 功能特性
 

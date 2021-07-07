@@ -145,7 +145,7 @@ namespace Mozi.StateService
         /// </summary>
         /// <param name="client"></param>
         /// <param name="userName"></param>
-        public void SetUserName(ref ClientAliveInfo client, string userName)
+        private void SetUserName(ref ClientAliveInfo client, string userName)
         {
             if (client != null)
             {
@@ -295,6 +295,29 @@ namespace Mozi.StateService
         {
             _clients.RemoveAll(x => x.DeviceName == deviceName && x.DeviceId == deviceId);
         }
+
+        /// <summary>
+        /// 增加订阅者
+        /// 主键为<see cref="Subscriber.Host"/>和<see cref="Subscriber.Port"/>
+        /// </summary>
+        /// <param name="info"></param>
+        public void AddSubscriber(Subscriber info)
+        {
+            if (!Subscribers.Exists(x => x.Host == info.Host && x.Port == info.Port))
+            {
+                info.SubscribeTime = DateTime.Now;
+                Subscribers.Add(info);
+            }
+        }
+        /// <summary>
+        /// 删除订阅者
+        /// 主键为<see cref="Subscriber.Host"/>和<see cref="Subscriber.Port"/>
+        /// </summary>
+        /// <param name="info"></param>
+        public void RemoveSubscriber(Subscriber info)
+        {
+            Subscribers.Exists(x => x.Host == info.Host && x.Port == info.Port);
+        }
         /// <summary>
         /// 数据接收完成回调
         /// </summary>
@@ -331,7 +354,7 @@ namespace Mozi.StateService
         {
             foreach(var sub in Subscribers)
             {
-                //域名过滤
+                //域过滤
                 _socket.SocketMain.SendTo(args.Data, new IPEndPoint(IPAddress.Parse(sub.Host), sub.Port));
             }
         }
