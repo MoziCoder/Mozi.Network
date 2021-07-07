@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace Mozi.HttpEmbedded.Template
 {
+    //TODO 2021/07/06 考虑将这个模板引擎单独剥离成一个项目
     //TODO 需要实现一个模板引擎或考虑通过Razor引擎提高通用性
     //2021/06/08 文档模板仅仅实现类建议参数注入功能
     /// <summary>

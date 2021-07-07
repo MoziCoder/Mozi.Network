@@ -168,7 +168,7 @@
     <Compile Include="WebService\WSDL.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Document\DefaultHome.html" />
+    <EmbeddedResource Include="Document\Home.html" />
     <EmbeddedResource Include="Document\Error.html" />
     <EmbeddedResource Include="Document\ExamplePage.html" />
     <Content Include="Source\mime.data" />

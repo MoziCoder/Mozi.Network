@@ -1,6 +1,6 @@
 ﻿# Mozi.SSDP
 
-Mozi.SSDP是一个SSDP服务组件，基于UDP Socket开发，遵循UPNP/2.0标准。 
+Mozi.SSDP是一个基于.Net开发的SSDP服务组件，目标是为.Net应用程序提供完善的SSDP服务功能。 项目对UDP Socket进行封装，并遵循UPNP/2.0，实现了UPNP2.0规范中的大部分功能。
 
 ## 功能特性
 
@@ -42,40 +42,40 @@ Mozi.SSDP是一个SSDP服务组件，基于UDP Socket开发，遵循UPNP/2.0标�
 
 ~~~csharp
 
-        //开启SSDP服务
-        var interfaces = NetworkInterface.GetAllNetworkInterfaces();
-        foreach (var r in interfaces)
+    //开启SSDP服务
+    var interfaces = NetworkInterface.GetAllNetworkInterfaces();
+    foreach (var r in interfaces)
+    {
+        if (r.SupportsMulticast && r.NetworkInterfaceType != NetworkInterfaceType.Loopback)
         {
-            if (r.SupportsMulticast && r.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+            foreach (var ip in r.GetIPProperties().UnicastAddresses)
             {
-                foreach (var ip in r.GetIPProperties().UnicastAddresses)
+                if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
                 {
-                    if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                    SSDPService ssdp = new SSDPService();
+                    ssdp.PackDefaultSearch.ST = new TargetDesc()
                     {
-                        SSDPService ssdp = new SSDPService();
-                        ssdp.PackDefaultSearch.ST = new TargetDesc()
-                        {
-                            Domain = ssdp.Domain,
-                            ServiceType=ServiceCategory.Device,
-                            ServiceName="simplehost",
-                            Version=1
-                        };
-                        ssdp.MulticastAddress = "239.255.255.250";
-                        ssdp.BindingAddress = ip.Address;
-                        ssdp.OnNotifyAliveReceived += Ssdp_OnNotifyAliveReceived;
-                        ssdp.OnSearchReceived += Ssdp_OnSearchReceived;
-                        ssdp.OnNotifyByebyeReceived += Ssdp_OnNotifyByebyeReceived;
-                        ssdp.OnNotifyUpdateReceived += Ssdp_OnNotifyUpdateReceived;
-                        ssdp.OnResponseMessageReceived += Ssdp_OnResponseMessageReceived;
-                        ssdp.AllowLoopbackMessage = true;
-                        //初始化并加入多播组
-                        ssdp.Activate();
-                        //开始公告消息
-                        ssdp.StartAdvertise();
-                    }
+                        Domain = ssdp.Domain,
+                        ServiceType=ServiceCategory.Device,
+                        ServiceName="simplehost",
+                        Version=1
+                    };
+                    ssdp.MulticastAddress = "239.255.255.250";
+                    ssdp.BindingAddress = ip.Address;
+                    ssdp.OnNotifyAliveReceived += Ssdp_OnNotifyAliveReceived;
+                    ssdp.OnSearchReceived += Ssdp_OnSearchReceived;
+                    ssdp.OnNotifyByebyeReceived += Ssdp_OnNotifyByebyeReceived;
+                    ssdp.OnNotifyUpdateReceived += Ssdp_OnNotifyUpdateReceived;
+                    ssdp.OnResponseMessageReceived += Ssdp_OnResponseMessageReceived;
+                    ssdp.AllowLoopbackMessage = true;
+                    //初始化并加入多播组
+                    ssdp.Activate();
+                    //开始公告消息
+                    ssdp.StartAdvertise();
                 }
             }
         }
+    }
 
 ~~~
 ### By [Jason][1] on Feb. 5,2020

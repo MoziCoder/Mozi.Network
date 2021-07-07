@@ -360,7 +360,7 @@ namespace Mozi.HttpEmbedded
 
                 if (path == "/")
                 {
-                    var doc = DocLoader.Load("DefaultHome.html");
+                    var doc = DocLoader.Load("Home.html");
                     PageEngine pc = new PageEngine();
                     pc.LoadFromText(doc);
                     pc.SetParameter("Info", new
