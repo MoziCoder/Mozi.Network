@@ -11,6 +11,7 @@ Mozi.StateService是一个心跳服务组件，基于UDP开发。项目主要面
 ### HeartBeatGateway
     心跳网关  
     接收终端心跳信息，并检查终端在线状态管理。
+
 ## 使用说明
 
 ~~~csharp
