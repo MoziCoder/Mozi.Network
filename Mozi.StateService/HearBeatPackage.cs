@@ -43,10 +43,6 @@ namespace Mozi.StateService
         /// </summary>
         public byte Version { get; set; }
         /// <summary>
-        /// 包类型<see cref="PackageType"/>
-        /// </summary>
-        public byte PackageType { get; set; }
-        /// <summary>
         /// 包荷载长度
         /// </summary>
         public ushort PackageBodyLength { get; set; }
@@ -55,8 +51,7 @@ namespace Mozi.StateService
         {
             BasicHeartBeatPackage pack = new BasicHeartBeatPackage
             {
-                Version = data[0],
-                PackageType = data[1]
+                Version = data[0]
             };
             return pack;
         }
@@ -132,7 +127,6 @@ namespace Mozi.StateService
             arr.Insert(0, StateName);
 
             arr.InsertRange(0, ((ushort)arr.Count).ToBytes());
-            arr.Insert(0, PackageType);
             arr.Insert(0, Version);
             return arr.ToArray();
         }
@@ -146,11 +140,10 @@ namespace Mozi.StateService
             HeartBeatPackage state = new HeartBeatPackage
             {
                 Version = pg[0],
-                PackageType=pg[1],
                 PackageBodyLength = pg.ToUInt16(2)
             };
             byte[] body = new byte[state.PackageBodyLength];
-            Array.Copy(pg, 1 + 2+1, body, 0, body.Length);
+            Array.Copy(pg, 1 + 2, body, 0, body.Length);
 
             state.StateName = body[0];
             state.DeviceNameLength = body.ToUInt16(1);
@@ -201,7 +194,6 @@ namespace Mozi.StateService
 
             data.InsertRange(0, byteHost);
             data.InsertRange(0, ((ushort)byteHost.Length).ToBytes());
-            data.Insert(0, PackageType);
             data.Insert(0, Version);
 
             return data.ToArray();
@@ -212,7 +204,6 @@ namespace Mozi.StateService
             HeartBeatPublishPackage pack = new HeartBeatPublishPackage
             {
                 Version = data[0],
-                PackageType = data[1],
                 PackageBodyLength = BitConverter.ToUInt16(data, 2)
             };
 
