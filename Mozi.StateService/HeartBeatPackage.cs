@@ -23,16 +23,16 @@ namespace Mozi.StateService
     {
         Version1 = 0x31
     }
-    /// <summary>
-    /// 包类型
-    /// </summary>
-    public enum PackageType
-    {
-        HeartBeat=0x31,
-        Subscribe=0x32,
-        UnSubscribe=0x33,
-        Publish=0x34,
-    }
+    ///// <summary>
+    ///// 包类型
+    ///// </summary>
+    //public enum PackageType
+    //{
+    //    HeartBeat=0x31,
+    //    Subscribe=0x32,
+    //    UnSubscribe=0x33,
+    //    Publish=0x34,
+    //}
     /// <summary>
     /// {version}|{packagetype}
     /// </summary>
@@ -140,7 +140,7 @@ namespace Mozi.StateService
             HeartBeatPackage state = new HeartBeatPackage
             {
                 Version = pg[0],
-                PackageBodyLength = pg.ToUInt16(2)
+                PackageBodyLength = pg.ToUInt16(1)
             };
             byte[] body = new byte[state.PackageBodyLength];
             Array.Copy(pg, 1 + 2, body, 0, body.Length);
@@ -198,31 +198,29 @@ namespace Mozi.StateService
 
             return data.ToArray();
         }
-
+        /// <summary>
+        /// 解析转发包
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static new HeartBeatPublishPackage Parse(byte[] data)
         {
             HeartBeatPublishPackage pack = new HeartBeatPublishPackage
             {
-                Version = data[0],
-                PackageBodyLength = BitConverter.ToUInt16(data, 2)
+                Version = data[0]
             };
-
+            int hostLength = BitConverter.ToUInt16(data, 1);
+            byte[] byteHost = new byte[hostLength];
+            Array.Copy(data, 1 +2, byteHost, 0, hostLength);
+            pack.SrcHost = byteHost.AsString();
+            pack.SrcPort = BitConverter.ToUInt16(data, 1 + 2 + hostLength);
+            pack.PackageBodyLength = BitConverter.ToUInt16(data, 1 + 2 + hostLength+2);
             //TODO 此处未完全解析
             byte[] body = new byte[pack.PackageBodyLength];
-            Array.Copy(data, 4, body, 0, body.Length);
+            Array.Copy(data, 1 + 2 + hostLength + 2+2, body, 0, body.Length);
             pack.HeartBeat = HeartBeatPackage.Parse(body);
             return pack;
         }
-    }
-
-    public class HeartBeatSubscribePackage : BasicHeartBeatPackage
-    {
-
-    }
-
-    public class HeartBeatUnSubscribePackage : BasicHeartBeatPackage
-    {
-
     }
     /// <summary>
     /// 扩展方法

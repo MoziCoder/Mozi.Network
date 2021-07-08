@@ -40,7 +40,7 @@ namespace Mozi.StateService
             UserName="",
         };
 
-        private  IPEndPoint _endPoint;
+        private  IPEndPoint _remoteEndPoint;
         /// <summary>
         /// 套接字是否已初始化
         /// </summary>
@@ -213,7 +213,7 @@ namespace Mozi.StateService
         /// </summary>
         private void InitRemoteEndpoint()
         {
-            _endPoint = new IPEndPoint(IPAddress.Parse(_host), _port);
+            _remoteEndPoint = new IPEndPoint(IPAddress.Parse(_host), _port);
             _socketInitialized = true;
         }
         /// <summary>
@@ -223,7 +223,7 @@ namespace Mozi.StateService
         {
             if (!string.IsNullOrEmpty(_host)&&_socketInitialized)
             {
-                _sc.SendTo(_sp.Pack(), _endPoint);
+                _sc.SendTo(_sp.Pack(), _remoteEndPoint);
             }
         }
         /// <summary>

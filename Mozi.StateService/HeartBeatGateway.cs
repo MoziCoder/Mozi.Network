@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Sockets;
 
 namespace Mozi.StateService
 {
@@ -99,7 +100,7 @@ namespace Mozi.StateService
         /// </summary>
         public List<ClientAliveInfo> Clients { get { return _clients; } }
         /// <summary>
-        /// 订阅者列表
+        /// 订阅者列表 订阅者不能穿透内网，需要网关可以访问
         /// </summary>
         public List<Subscriber> Subscribers = new List<Subscriber>();
         /// <summary>
@@ -297,7 +298,7 @@ namespace Mozi.StateService
         }
 
         /// <summary>
-        /// 增加订阅者
+        /// 增加订阅者 订阅者不能穿透内网，需要网关可以访问
         /// 主键为<see cref="Subscriber.Host"/>和<see cref="Subscriber.Port"/>
         /// </summary>
         /// <param name="info"></param>
@@ -346,16 +347,21 @@ namespace Mozi.StateService
             }
             catch(Exception ex)
             {
-                var ex2 = ex;
+                Console.WriteLine(ex.Message);
             }
         }
 
         private void PostMessageToSubscribers(ref DataTransferArgs args)
-        {
-            foreach(var sub in Subscribers)
+        {   
+            foreach (var sub in Subscribers)
             {
-                //域过滤
-                _socket.SocketMain.SendTo(args.Data, new IPEndPoint(IPAddress.Parse(sub.Host), sub.Port));
+                try
+                {
+                     //域过滤
+                     _socket.SocketMain.SendTo(args.Data,new IPEndPoint(IPAddress.Parse(sub.Host), sub.Port));
+                }catch(Exception ex){
+
+                }
             }
         }
     }

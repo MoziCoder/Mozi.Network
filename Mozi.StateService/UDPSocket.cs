@@ -75,6 +75,11 @@ namespace Mozi.StateService
             if (_sc == null)
             {
                 _sc = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                //设置此处防止转发消息包时出现 UDP 远程主机未连接的问题
+                const uint IOC_IN = 0x80000000;
+                int IOC_VENDOR = 0x18000000;
+                int SIO_UDP_CONNRESET = (int)(IOC_IN | IOC_VENDOR | 12);
+                _sc.IOControl((int)SIO_UDP_CONNRESET, new byte[] { Convert.ToByte(false) }, new byte[4]);
             }
             else
             {

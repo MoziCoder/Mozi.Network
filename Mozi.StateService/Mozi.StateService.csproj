@@ -37,7 +37,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccessManager.cs" />
-    <Compile Include="HearBeatPackage.cs" />
+    <Compile Include="HeartBeatPackage.cs" />
     <Compile Include="HeartBeatGateway.cs" />
     <Compile Include="HeartBeatSubscriber.cs" />
     <Compile Include="Others.cs" />
