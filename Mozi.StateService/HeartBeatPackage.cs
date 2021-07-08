@@ -209,7 +209,7 @@ namespace Mozi.StateService
             {
                 Version = data[0]
             };
-            int hostLength = BitConverter.ToUInt16(data, 1);
+            ushort hostLength = BitConverter.ToUInt16(data, 1);
             byte[] byteHost = new byte[hostLength];
             Array.Copy(data, 1 +2, byteHost, 0, hostLength);
             pack.SrcHost = byteHost.AsString();

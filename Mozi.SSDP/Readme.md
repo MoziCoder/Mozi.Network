@@ -1,8 +1,16 @@
 ﻿# Mozi.SSDP
 
-Mozi.SSDP是一个基于.Net开发的SSDP服务组件，目标是为.Net应用程序提供完善的SSDP服务功能。 项目对UDP Socket进行封装，并遵循UPNP/2.0(UPnP Device Architecture 2.0)，实现了UPNP2.0规范中的大部分功能。
+### 项目简介
 
-## 功能特性
+Mozi.SSDP是一个基于.Net开发的SSDP组件，目标是为.Net应用程序提供完善的SSDP/UPNP服务功能。 项目对UDP Socket进行封装，并遵循UPNP/2.0(UPnP Device Architecture 2.0)，实现了UPNP2.0规范中的大部分功能。
+
+## 特点
+
+1. 精巧
+2. 高度可控
+3. 依赖少，仅依赖于HTTP服务器组件[HttpEmbedded][httpembedded]
+
+## 功能
 
 1. 发现-在线
 	- 在线通知
@@ -11,9 +19,10 @@ Mozi.SSDP是一个基于.Net开发的SSDP服务组件，目标是为.Net应用�
 	- 更新
 
 3. 设备和服务描述
+    内含设备和服务描述文档，使用过程中请自行填写和发布
 
 3. 控制
-
+    
 4. 事件
 
 ## 项目地址
@@ -28,7 +37,7 @@ Mozi.SSDP是一个基于.Net开发的SSDP服务组件，目标是为.Net应用�
 
 ~~~shell
 
-	dotnet add package Mozi.SSDP --version 1.2.5
+	dotnet add package Mozi.SSDP --version 1.2.6
 
 ~~~
 ## 项目依赖  

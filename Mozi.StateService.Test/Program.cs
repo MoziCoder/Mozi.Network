@@ -5,6 +5,7 @@ namespace Mozi.StateService.Test
     class Program
     {
         static readonly HeartBeatGateway hg = new HeartBeatGateway();
+        static readonly HeartBeatSubscriber hbs = new HeartBeatSubscriber();
 
         static void Main(string[] args)
         {
@@ -13,7 +14,7 @@ namespace Mozi.StateService.Test
             //HeartBeatService state = new HeartBeatService()
             //{
             //    Port = 13453,
-            //    RemoteHost = $"{host}"
+            //    RemoteHost = $"100.100.0.111"
             //};
 
             //state.ApplyDevice("Mozi", "80018001", "1.2.3");
@@ -23,13 +24,21 @@ namespace Mozi.StateService.Test
             //state.SetState(ClientLifeState.Idle);
 
             //服务网关
+            hg.AddSubscriber(new Subscriber() { Host = "100.100.0.171", Port = 13452 });
             hg.OnClientOnlineStateChange += Hg_OnClientStateChange;
             hg.OnClientMessageReceive += Hg_OnClientMessageReceive;
             hg.OnClientUserChange += Hg_OnClientUserChange;
             hg.OnClientJoin += Hg_OnClientJoin;
             hg.OnClientLifeStateChange += Hg_OnClientLifeStateChange;
             hg.Start(13453);
-            
+
+            hbs.OnClientOnlineStateChange += Hg_OnClientStateChange;
+            hbs.OnClientMessageReceive += Hg_OnClientMessageReceive;
+            hbs.OnClientUserChange += Hg_OnClientUserChange;
+            hbs.OnClientJoin += Hg_OnClientJoin;
+            hbs.OnClientLifeStateChange += Hg_OnClientLifeStateChange;
+            hbs.Start(13452);
+
             Console.ReadLine();
         }
         /// <summary>

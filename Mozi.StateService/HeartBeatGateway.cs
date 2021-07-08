@@ -82,19 +82,19 @@ namespace Mozi.StateService
         /// <summary>
         /// 终端通知状态变更
         /// </summary>
-        public event ClientLifeStateChange OnClientLifeStateChange;
+        public  ClientLifeStateChange OnClientLifeStateChange;
         /// <summary>
         /// 终端在线状态变更事件
         /// </summary>
-        public event ClientOnlineStateChange OnClientOnlineStateChange;
+        public  ClientOnlineStateChange OnClientOnlineStateChange;
         /// <summary>
         /// 终端在线用户变更
         /// </summary>
-        public event ClientUserChange OnClientUserChange;
+        public  ClientUserChange OnClientUserChange;
         /// <summary>
         /// 终端消息接收事件
         /// </summary>
-        public event ClientMessageReceive OnClientMessageReceive;
+        public  ClientMessageReceive OnClientMessageReceive;
         /// <summary>
         /// 终端列表
         /// </summary>
@@ -324,7 +324,7 @@ namespace Mozi.StateService
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        private void _socket_AfterReceiveEnd(object sender, DataTransferArgs args)
+        protected virtual void _socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
             try
             {
@@ -343,7 +343,7 @@ namespace Mozi.StateService
                 {
                     OnClientMessageReceive.BeginInvoke(this, client,args.IP,args.Port, null, null);
                 }
-                PostMessageToSubscribers(ref args);
+                PostMessageToSubscribers(args.IP,args.Port,pg);
             }
             catch(Exception ex)
             {
@@ -351,14 +351,20 @@ namespace Mozi.StateService
             }
         }
 
-        private void PostMessageToSubscribers(ref DataTransferArgs args)
+        protected virtual void PostMessageToSubscribers(string srcHost,int srcPort,HeartBeatPackage pg)
         {   
             foreach (var sub in Subscribers)
             {
                 try
                 {
+                    HeartBeatPublishPackage hbp = new HeartBeatPublishPackage()
+                    {
+                        SrcHost = srcHost,
+                        SrcPort = (ushort)srcPort,
+                        HeartBeat = pg
+                    };
                      //域过滤
-                     _socket.SocketMain.SendTo(args.Data,new IPEndPoint(IPAddress.Parse(sub.Host), sub.Port));
+                     _socket.SocketMain.SendTo(hbp.Pack(),new IPEndPoint(IPAddress.Parse(sub.Host), sub.Port));
                 }catch(Exception ex){
 
                 }
