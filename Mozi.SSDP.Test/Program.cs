@@ -12,11 +12,12 @@ namespace Mozi.SSDP.Test
             var interfaces = NetworkInterface.GetAllNetworkInterfaces();
             foreach (var r in interfaces)
             {
+                //遍历所有可用网卡，过滤临时地址
                 if (r.SupportsMulticast && r.NetworkInterfaceType != NetworkInterfaceType.Loopback)
                 {
                     foreach (var ip in r.GetIPProperties().UnicastAddresses)
                     {
-                        if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork&&!ip.Address.ToString().StartsWith("169."))
+                        if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork&&!ip.Address.ToString().StartsWith("169.254"))
                         {
                             SSDPService ssdp = new SSDPService();
                             ssdp.PackDefaultSearch.ST = new TargetDesc()
