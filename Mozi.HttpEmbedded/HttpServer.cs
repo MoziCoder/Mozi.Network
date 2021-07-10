@@ -262,7 +262,7 @@ namespace Mozi.HttpEmbedded
                     string doc = DocLoader.Load("Error.html");
                     PageEngine pc = new PageEngine();
                     pc.LoadFromText(doc);
-                    pc.SetParameter("Error", new
+                    pc.Set("Error", new
                     {
                         Code = StatusCode.InternalServerError.Code.ToString(),
                         Title = StatusCode.InternalServerError.Text,
@@ -363,7 +363,7 @@ namespace Mozi.HttpEmbedded
                     var doc = DocLoader.Load("Home.html");
                     PageEngine pc = new PageEngine();
                     pc.LoadFromText(doc);
-                    pc.SetParameter("Info", new
+                    pc.Set("Info", new
                     {
                         VersionName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(),
                     });

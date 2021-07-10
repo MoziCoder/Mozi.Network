@@ -105,7 +105,7 @@
     <Compile Include="HttpVersion.cs" />
     <Compile Include="Common\Log.cs" />
     <Compile Include="Page\BaseApi.cs" />
-    <Compile Include="Page\AbsPage.cs" />
+    <Compile Include="Page\BasePage.cs" />
     <Compile Include="Serialize\DataSerializeType.cs" />
     <Compile Include="Cache\Global.cs" />
     <Compile Include="Template\PageEngine.cs" />
@@ -170,7 +170,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Document\Home.html" />
     <EmbeddedResource Include="Document\Error.html" />
-    <EmbeddedResource Include="Document\ExamplePage.html" />
+    <EmbeddedResource Include="Document\Example.html" />
     <Content Include="Source\mime.data" />
     <Content Include="WebDav\Icon.png" />
   </ItemGroup>

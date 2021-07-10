@@ -31,28 +31,28 @@
         <div>${goods.Price}</div>
     <%end%>
 
-        <!--if conditional-->
-        <% if page==1 %>
-            <div>if condition</div>
-        <% else if %>
-            <div>else if condition</div>
-        <% end %>
+    <!--if conditional-->
+    <% if page==1 %>
+        <div>if condition</div>
+    <% else if %>
+        <div>else if condition</div>
+    <% end %>
 
-        <!--switch statement-->
-        <% switch(pagecount)%>
-            <% case %>
+    <!--switch statement-->
+    <% switch(pagecount)%>
+        <% case %>
 
-            <% break %>
-        <% end %>
+        <% break %>
+    <% end %>
 
-        <!--Math function-->
-        <p>
-            <div>$math.abs(-1),$math.ceil(1.2)</div>
-        </p>
+    <!--Math function-->
+    <p>
+        <div>$math.abs(-1),$math.ceil(1.2)</div>
+    </p>
 
-        <!--format function-->
-        <p>
-            <div>$format("{0},{1}",Title,Content)</div>
-        </p>
+    <!--format function-->
+    <p>
+        <div>$format("{0},{1}",Title,Content)</div>
+    </p>
 </body>
 </html>

@@ -8,8 +8,6 @@ using System.Text.RegularExpressions;
 namespace Mozi.HttpEmbedded.Template
 {
     //TODO 2021/07/06 考虑将这个模板引擎单独剥离成一个项目
-    //TODO 需要实现一个模板引擎或考虑通过Razor引擎提高通用性
-    //2021/06/08 文档模板仅仅实现类建议参数注入功能
     /// <summary>
     /// 页面生成器
     /// </summary>
@@ -36,9 +34,13 @@ namespace Mozi.HttpEmbedded.Template
 
         internal PageEngine LoadFromStream(Stream stream)
         {
-            Prepare();
             return this;
         }
+        /// <summary>
+        /// 从文本载入模板
+        /// </summary>
+        /// <param name="template"></param>
+        /// <returns></returns>
         public PageEngine LoadFromText(string template)
         {
             _template = template;
@@ -47,8 +49,23 @@ namespace Mozi.HttpEmbedded.Template
         public PageEngine Prepare()
         {
             _page = _template;
+            ApplyAll();
+            return this;
+        }
+        /// <summary>
+        /// 应用所有规则
+        /// </summary>
+        /// <returns></returns>
+        private PageEngine ApplyAll()
+        {
+            //首先解析语句
+
+            //填充全局变量
             InflateGlobal();
+            //填充变量
             InflateValues();
+            //填充format指令执行结果
+            InflateExpressionFormat();
             return this;
         }
         /// <summary>
@@ -70,18 +87,10 @@ namespace Mozi.HttpEmbedded.Template
             foreach (var m in matchesParam)
             {
                 var param = m.ToString().Trim(new char[] { '$', '{', '}' });
-                if (!param.Contains("."))
+                var paramValue = GetPatternValue(param);
+                if (paramValue != null)
                 {
-                    _page = _page.Replace(m.ToString(), GetParameter(param).ToString());
-                }
-                else
-                {
-                    string[] target = param.Split(new char[] { '.' });
-                    object pValue = _params[target[0]];
-
-                    PropertyInfo props = pValue.GetType().GetProperty(target[1], BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-                    var targetValue = props.GetValue(pValue, null);
-                    _page = _page.Replace(m.ToString(), targetValue.ToString());
+                    _page = _page.Replace(m.ToString(), paramValue);
                 }
             }
             return this;
@@ -106,13 +115,61 @@ namespace Mozi.HttpEmbedded.Template
         {
             return this;
         }
-
-        private PageEngine ParseExpressionMath()
+        private string GetPatternValue(string pattern)
         {
+            string result =null;
+            if (!pattern.Contains("."))
+            {
+                result=Get(pattern).ToString();
+            }
+            else
+            {
+                string[] target = pattern.Split(new char[] { '.' });
+                object pValue = _params[target[0]];
+
+                PropertyInfo props = pValue.GetType().GetProperty(target[1], BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                var targetValue = props.GetValue(pValue, null);
+                result=targetValue.ToString();
+            }
+            return result;
+        }
+        private PageEngine InflateExpressionMath()
+        {
+            Regex regParam = new Regex("\\$math\\.\\d+\\(.*\\)");
+            MatchCollection matchesParam = regParam.Matches(_page);
+            foreach (var m in matchesParam)
+            {
+                var pattern = m.ToString().Trim(new char[] { '$', '{', '}' });
+                var paramValue = GetPatternValue(pattern);
+                if (paramValue != null)
+                {
+                    _page = _page.Replace(m.ToString(), paramValue);
+                }
+            }
             return this;
         }
-        private PageEngine ParseExpressionFormat()
+        /// <summary>
+        /// 应用函数format
+        /// </summary>
+        /// <returns></returns>
+        private PageEngine InflateExpressionFormat()
         {
+            Regex regParam = new Regex("\\$format\\(.*\\)");
+            MatchCollection matchesParam = regParam.Matches(_page);
+            foreach (var m in matchesParam)
+            {
+                var pattern = m.ToString().Replace("$format", "").Trim(new char[] {  '(', ')' });
+                var splitIndex = pattern.IndexOf("\",");
+                var format = pattern.Substring(1, splitIndex-1);
+                var paramexp = pattern.Substring(splitIndex + 2);
+                var pms = paramexp.Split(new char[] { ',' });
+                var pmvs = new object[pms.Length];
+                for (int i = 0; i < pms.Length; i++)
+                {
+                    pmvs[i] = GetPatternValue(pms[i]);
+                }
+                _page = _page.Replace(m.ToString(),string.Format(format, pmvs));
+            }
             return this;
         }
         /// <summary>
@@ -138,7 +195,7 @@ namespace Mozi.HttpEmbedded.Template
         /// </summary>
         /// <param name="paramName"></param>
         /// <returns></returns>
-        public object GetParameter(string paramName)
+        public object Get(string paramName)
         {
             if (_params.ContainsKey(paramName))
             {
@@ -155,7 +212,7 @@ namespace Mozi.HttpEmbedded.Template
         /// <param name="paramName">参数名</param>
         /// <param name="paramValue">参数值</param>
         /// <returns></returns>
-        public PageEngine SetParameter(string paramName, object paramValue)
+        public PageEngine Set(string paramName, object paramValue)
         {
             if (_params.ContainsKey(paramName))
             {

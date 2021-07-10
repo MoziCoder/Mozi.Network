@@ -3,7 +3,7 @@
     /// <summary>
     /// 页面抽象类
     /// </summary>
-    public abstract class AbsPage
+    public abstract class BasePage
     {
         protected HttpContext Context { get; set; }
         /// <summary>
