@@ -206,14 +206,14 @@ namespace Mozi.SSDP
         {
             if (AfterReceiveEnd != null)
             {
-                AfterReceiveEnd.BeginInvoke(this,
+                AfterReceiveEnd(this,
                     new DataTransferArgs()
                     {
                         Data = so.Data.ToArray(),
                         IP = ((IPEndPoint)remote).Address.ToString(),
                         Port = ((IPEndPoint)remote).Port,
                         Socket = so.WorkSocket
-                    }, null, null);
+                    });
             }
             UDPStateObject stateobject = new UDPStateObject()
             {

@@ -125,10 +125,10 @@ namespace Mozi.HttpEmbedded
             if (OnClientConnect != null)
             {
                 //TODO .NetCore不再支持异步委托，需要重新实现
-                OnClientConnect.BeginInvoke(this, new ClientConnectArgs()
+                OnClientConnect(this, new ClientConnectArgs()
                 {
                     Client = client
-                }, null, null);
+                });
             }
             StateObject so = new StateObject()
             {
@@ -192,7 +192,7 @@ namespace Mozi.HttpEmbedded
             RemoveClientSocket(so);
             if (AfterReceiveEnd != null)
             {
-                AfterReceiveEnd.BeginInvoke(this,
+                AfterReceiveEnd(this,
                     new DataTransferArgs()
                     {
                         Data = so.Data.ToArray(),
@@ -201,7 +201,7 @@ namespace Mozi.HttpEmbedded
                         Socket = so.WorkSocket,
                         Client = client,
                         State = so
-                    }, null, null);
+                    });
             }
         }
         //TODO 此处开启Socket状态监听，对断开的链接进行关闭销毁
