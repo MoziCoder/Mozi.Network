@@ -110,10 +110,16 @@ namespace Mozi.SSDP
         /// </para>
         /// </summary>
         public bool AllowLoopbackMessage { get; set; }
+
+        //224.0.0.0～224.0.0.255为预留的组播地址（永久组地址），地址224.0.0.0保留不做分配，其它地址供路由协议使用；
+        //224.0.1.0～224.0.1.255是公用组播地址，可以用于Internet；
+        //224.0.2.0～238.255.255.255为用户可用的组播地址（临时组地址），全网范围内有效；
+        //239.0.0.0～239.255.255.255为本地管理组播地址，仅在特定的本地范围内有效。
         /// <summary>
         /// 组播地址
         /// <para>
         /// 标准地址为 <see cref="SSDPProtocol.MulticastAddress"/> | <see cref="SSDPProtocol.MulticastAddressIPv6"/>
+        /// 范围为239.0.0.0～239.255.255.255
         /// </para>
         /// </summary>
         public string MulticastAddress
@@ -124,6 +130,7 @@ namespace Mozi.SSDP
             }
             set
             {
+                //值校验
                 _multicastGroupAddress = value;
                 ApplyMulticastAddressChange(MulticastAddress, MulticastPort);
             }

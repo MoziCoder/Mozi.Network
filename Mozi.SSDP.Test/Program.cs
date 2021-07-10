@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.NetworkInformation;
-using Mozi.SSDP;
 using Mozi.HttpEmbedded;
 
 namespace Mozi.SSDP.Test
@@ -17,7 +16,7 @@ namespace Mozi.SSDP.Test
                 {
                     foreach (var ip in r.GetIPProperties().UnicastAddresses)
                     {
-                        if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                        if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork&&!ip.Address.ToString().StartsWith("169."))
                         {
                             SSDPService ssdp = new SSDPService();
                             ssdp.PackDefaultSearch.ST = new TargetDesc()
@@ -29,6 +28,7 @@ namespace Mozi.SSDP.Test
                             };
                             ssdp.MulticastAddress = "239.255.255.250";
                             ssdp.BindingAddress = ip.Address;
+                            Console.WriteLine("binding start:{0},{1}",ip.Address,r.Name);
                             ssdp.OnNotifyAliveReceived += Ssdp_OnNotifyAliveReceived;
                             ssdp.OnSearchReceived += Ssdp_OnSearchReceived;
                             ssdp.OnNotifyByebyeReceived += Ssdp_OnNotifyByebyeReceived;

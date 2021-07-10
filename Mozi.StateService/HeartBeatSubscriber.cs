@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Mozi.StateService
 {
@@ -8,6 +7,10 @@ namespace Mozi.StateService
     /// </summary>
     public class HeartBeatSubscriber:HeartBeatGateway
     {
+        /// <summary>
+        /// 终端消息接收事件
+        /// </summary>
+        public new  event ClientMessageReceived OnClientMessageReceived;
         /// <summary>
         /// 数据接收完成回调
         /// </summary>
@@ -26,12 +29,13 @@ namespace Mozi.StateService
                     DeviceId = hbp.DeviceId,
                     AppVersion = hbp.AppVersion,
                     UserName = hbp.UserName,
-                    State = (ClientLifeState)Enum.Parse(typeof(ClientLifeState), hbp.StateName.ToString())
+                    State = (ClientLifeState)Enum.Parse(typeof(ClientLifeState), hbp.StateName.ToString()),
+                    Host=pg.SrcHost
                 };
                 var client = UpsertClient(ca);
-                if (OnClientMessageReceive != null)
+                if (OnClientMessageReceived != null)
                 {
-                    OnClientMessageReceive.BeginInvoke(this, client, pg.SrcHost, pg.SrcPort, null, null);
+                    OnClientMessageReceived(this, client, pg.SrcHost, pg.SrcPort);
                 }
             }
             catch (Exception ex)

@@ -25,15 +25,16 @@ namespace Mozi.StateService.Test
 
             //服务网关
             hg.AddSubscriber(new Subscriber() { Host = "100.100.0.171", Port = 13452 });
+            hg.AddSubscriber(new Subscriber() { Host = "100.100.0.105", Port = 13452 });
             hg.OnClientOnlineStateChange += Hg_OnClientStateChange;
-            hg.OnClientMessageReceive += Hg_OnClientMessageReceive;
+            hg.OnClientMessageReceived += Hg_OnClientMessageReceived;
             hg.OnClientUserChange += Hg_OnClientUserChange;
             hg.OnClientJoin += Hg_OnClientJoin;
             hg.OnClientLifeStateChange += Hg_OnClientLifeStateChange;
             hg.Start(13453);
 
             hbs.OnClientOnlineStateChange += Hg_OnClientStateChange;
-            hbs.OnClientMessageReceive += Hg_OnClientMessageReceive;
+            hbs.OnClientMessageReceived += Hg_OnClientMessageReceived;
             hbs.OnClientUserChange += Hg_OnClientUserChange;
             hbs.OnClientJoin += Hg_OnClientJoin;
             hbs.OnClientLifeStateChange += Hg_OnClientLifeStateChange;
@@ -80,7 +81,7 @@ namespace Mozi.StateService.Test
         /// <param name="client"></param>
         /// <param name="host"></param>
         /// <param name="port"></param>
-        private static void Hg_OnClientMessageReceive(object sender, ClientAliveInfo client,string host,int port)
+        private static void Hg_OnClientMessageReceived(object sender, ClientAliveInfo client,string host,int port)
         {
             Console.WriteLine("{4:MMdd HH:mm:ss}|N:{0},ID:{1},S:{2},V:{3},{5},{6}", client.DeviceName, client.DeviceId, client.State, client.AppVersion, client.BeatTime, host,client.UserName);
 

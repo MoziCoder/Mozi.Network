@@ -14,7 +14,7 @@ namespace Mozi.StateService
 
     public delegate void ClientJoinQuit(object sender, ClientAliveInfo clientInfo);
 
-    public delegate void ClientMessageReceive(object sender, ClientAliveInfo clientInfo,string host,int port);
+    public delegate void ClientMessageReceived(object sender, ClientAliveInfo clientInfo,string host,int port);
 
     public class ClientStateChangeArgs : EventArgs
     {
@@ -39,6 +39,7 @@ namespace Mozi.StateService
         public DateTime BeatTime  { get; set; }
         public DateTime OnTime    { get; set; }
         public DateTime LeaveTime { get; set; }
+        public string Host { get; set; }
 
         public ClientAliveInfo()
         {
@@ -82,19 +83,19 @@ namespace Mozi.StateService
         /// <summary>
         /// 终端通知状态变更
         /// </summary>
-        public  ClientLifeStateChange OnClientLifeStateChange;
+        public event ClientLifeStateChange OnClientLifeStateChange;
         /// <summary>
         /// 终端在线状态变更事件
         /// </summary>
-        public  ClientOnlineStateChange OnClientOnlineStateChange;
+        public event ClientOnlineStateChange OnClientOnlineStateChange;
         /// <summary>
         /// 终端在线用户变更
         /// </summary>
-        public  ClientUserChange OnClientUserChange;
+        public event ClientUserChange OnClientUserChange;
         /// <summary>
         /// 终端消息接收事件
         /// </summary>
-        public  ClientMessageReceive OnClientMessageReceive;
+        public event ClientMessageReceived OnClientMessageReceived;
         /// <summary>
         /// 终端列表
         /// </summary>
@@ -157,7 +158,7 @@ namespace Mozi.StateService
                     try
                     {
                         //触发终端状态变更事件
-                        OnClientUserChange.BeginInvoke(this, client, clientOldUserName, client.UserName, null, null);
+                        OnClientUserChange(this, client, clientOldUserName, client.UserName);
                     }
                     finally
                     {
@@ -182,7 +183,7 @@ namespace Mozi.StateService
                     try
                     {
                         //触发终端状态变更事件
-                        OnClientLifeStateChange.BeginInvoke(this, client, clientOldState, client.State, null, null);
+                        OnClientLifeStateChange(this, client, clientOldState, client.State);
                     }
                     finally
                     {
@@ -216,7 +217,7 @@ namespace Mozi.StateService
                     try
                     {
                         //触发终端在线状态变更事件
-                        OnClientOnlineStateChange.BeginInvoke(this, client, clientOldState, client.ClientState, null, null);
+                        OnClientOnlineStateChange(this, client, clientOldState, client.ClientState);
                     }
                     finally
                     {
@@ -256,6 +257,7 @@ namespace Mozi.StateService
             var client = _clients.Find(x => x.DeviceName.Equals(ca.DeviceName) && x.DeviceId.Equals(ca.DeviceId));
             if (client != null)
             {
+                client.Host = ca.Host;
                 client.AppVersion = ca.AppVersion;
                 client.UserName = ca.UserName;
                 SetUserName(ref client, ca.UserName);
@@ -269,7 +271,7 @@ namespace Mozi.StateService
                 //终端加入事件
                 if (OnClientJoin != null)
                 {
-                    OnClientJoin.BeginInvoke(this, ca,null,null);
+                    OnClientJoin(this, ca);
                 }
             }
             client.BeatCount++;
@@ -336,12 +338,13 @@ namespace Mozi.StateService
                     DeviceId = pg.DeviceId,
                     AppVersion=pg.AppVersion,
                     UserName=pg.UserName,
-                    State=(ClientLifeState)Enum.Parse(typeof(ClientLifeState),pg.StateName.ToString())
+                    State=(ClientLifeState)Enum.Parse(typeof(ClientLifeState),pg.StateName.ToString()),
+                    Host=args.IP
                 };
                 var client=UpsertClient(ca);
-                if (OnClientMessageReceive != null)
+                if (OnClientMessageReceived != null)
                 {
-                    OnClientMessageReceive.BeginInvoke(this, client,args.IP,args.Port, null, null);
+                    OnClientMessageReceived(this, client,args.IP,args.Port);
                 }
                 PostMessageToSubscribers(args.IP,args.Port,pg);
             }

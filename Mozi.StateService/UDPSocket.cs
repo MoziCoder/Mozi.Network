@@ -110,7 +110,7 @@ namespace Mozi.StateService
                 _sc.BeginReceiveFrom(so.Buffer, 0, StateObject.BufferSize, SocketFlags.None, ref so.RemoteEndPoint, CallbackReceive, so);
                 if (OnReceiveStart != null)
                 {
-                    OnReceiveStart.BeginInvoke(this, new DataTransferArgs(), null, null);
+                    OnReceiveStart(this, new DataTransferArgs());
                 }
             }
             catch (Exception ex)
@@ -154,14 +154,14 @@ namespace Mozi.StateService
         {
             if (AfterReceiveEnd != null)
             {
-                AfterReceiveEnd.BeginInvoke(this,
+                AfterReceiveEnd(this,
                     new DataTransferArgs()
                     {
                         Data = so.Data.ToArray(),
                         IP = ((IPEndPoint)remote).Address.ToString(),
                         Port = ((IPEndPoint)remote).Port,
                         Socket = so.WorkSocket
-                    }, null, null);
+                    });
             }
             UDPStateObject stateobject = new UDPStateObject()
             {
