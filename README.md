@@ -78,9 +78,9 @@ Mozi.HttpEmbedded在Socket之上使用异步单线程模型,构建了一个HTTP�
 
 无
 
-## 程序处理流图
+## 处理流图
 
-![][flowchart]
+<img src="./Mozi.HttpEmbedded/Mozi.HttpEmbedded.svg"/>
 
 ## 功能与版本迭代
 	不定期对Mozi.HttpEmbedded的功能进行完善,解决各种BUG。HTTP标准功能繁多，需要一步步实现。
