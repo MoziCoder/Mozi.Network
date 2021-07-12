@@ -1,25 +1,31 @@
-﻿/*模板示例页面*/
+﻿/**
+ * @author Jason
+ * @date 2020-09-10
+ * @description
+ *    模板示例
+ */
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
     <title>${Title}</title>
-    <meta http-equiv="content-type" charset="UTF-8">
-    <meta http-equiv="Authorization" content="Jason" />
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="Authorization" content="Jason" >
     <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,maximum-scale=1,user-scalable=no">
 </head>
 <body>
+
+    <!--内置变量-->
+
     <!--基本数据类型参数注入-->
     <h1>${Title}</h1>
     <p>${Content}</p>
+
     <!--复杂类型-->
     <h1>${Document.Title}</h1>
     <p>${Document.Content}</p>
+
     <!--数组类型-->
-    <!--<#foreach data="goodslist" item="goods">
-        <h1>${goods.Name}</h1>
-        <div>${goods.Price}</div>
-    </#foreach>-->
-    <!--foreach loop-->
     <%foreach goods in goodslist%>
         <h1>${goods.Name}</h1>
         <div>${goods.Price}</div>
@@ -44,6 +50,10 @@
 
         <% break %>
     <% end %>
+    <!--iif-->
+    <p>
+        <div>$iif(goods.Length>0,goods.Length)</div>
+    </p>
 
     <!--Math function-->
     <p>

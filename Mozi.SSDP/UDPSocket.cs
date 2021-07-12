@@ -155,7 +155,7 @@ namespace Mozi.SSDP
                 _sc.BeginReceiveFrom(so.Buffer, 0, StateObject.BufferSize, SocketFlags.None, ref so.RemoteEndPoint, CallbackReceive, so);
                 if (OnReceiveStart != null)
                 {
-                    OnReceiveStart.BeginInvoke(this, new DataTransferArgs(), null, null);
+                    OnReceiveStart(this, new DataTransferArgs());
                 }
             }
             catch (Exception ex)

@@ -1,5 +1,6 @@
 ﻿using Mozi.HttpEmbedded.Encode;
 using Mozi.HttpEmbedded.Generic;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -133,6 +134,14 @@ namespace Mozi.HttpEmbedded.Template
             }
             return result;
         }
+        /// <summary>
+        /// 内置变量
+        /// </summary>
+        /// <returns></returns>
+        private string InflateVariableSystem()
+        {
+            throw new NotImplementedException();
+        }
         private PageEngine InflateExpressionMath()
         {
             Regex regParam = new Regex("\\$math\\.\\d+\\(.*\\)");
@@ -172,23 +181,44 @@ namespace Mozi.HttpEmbedded.Template
             }
             return this;
         }
+
+        private PageEngine InflateExpressionIIF()
+        {
+            Regex regParam = new Regex("\\$iif\\(.*\\)");
+            MatchCollection matchesParam = regParam.Matches(_page);
+            foreach (var m in matchesParam)
+            {
+                var pattern = m.ToString().Replace("$iif", "").Trim(new char[] { '(', ')' });
+                var splitIndex = pattern.IndexOf("\",");
+                var format = pattern.Substring(1, splitIndex - 1);
+                var paramexp = pattern.Substring(splitIndex + 2);
+                var pms = paramexp.Split(new char[] { ',' });
+                var pmvs = new object[pms.Length];
+                for (int i = 0; i < pms.Length; i++)
+                {
+                    pmvs[i] = GetPatternValue(pms[i]);
+                }
+                _page = _page.Replace(m.ToString(), string.Format(format, pmvs));
+            }
+            return this;
+        }
         /// <summary>
         /// == != <> &&　｜｜
         /// </summary>
         /// <returns></returns>
         private PageEngine ParseOperator()
         {
-            return this;
+            throw new NotImplementedException();
         }
 
         private PageEngine ParseArithmeticOperator()
         {
-            return this;
+            throw new NotImplementedException();
         }
 
         private PageEngine ParseLogicalOpeartor()
         {
-            return this;
+            throw new NotImplementedException();
         }
         /// <summary>
         /// 获取参数值
