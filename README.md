@@ -130,4 +130,4 @@ Mozi.HttpEmbedded在Socket之上使用异步单线程模型,构建了一个HTTP�
 [gitee]:https://gitee.com/myui_admin/mozi.git
 [github]:https://github.com/MoziCoder/Mozi.HttpEmbedded.git
 [codechina]:https://codechina.csdn.net/mozi/mozi.httpembedded.git
-[flowchart]:./handbook/static/img/furionlogo.png
+[flowchart]:./Mozi.HttpEmbedded/Mozi.HttpEmbedded.svg
