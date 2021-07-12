@@ -59,6 +59,12 @@ Mozi.HttpEmbedded在Socket之上使用异步单线程模型,构建了一个HTTP�
 8. 字符编码  
 	字符编码使用UTF-8 
 
+## 处理流图
+  
+
+<img src="./Mozi.HttpEmbedded/Mozi.HttpEmbedded.svg"/>
+  
+
 ## 项目地址
 
 - [Github][github]
@@ -77,10 +83,6 @@ Mozi.HttpEmbedded在Socket之上使用异步单线程模型,构建了一个HTTP�
 ## 项目依赖  
 
 无
-
-## 处理流图
-
-<img src="./Mozi.HttpEmbedded/Mozi.HttpEmbedded.svg"/>
 
 ## 功能与版本迭代
 	不定期对Mozi.HttpEmbedded的功能进行完善,解决各种BUG。HTTP标准功能繁多，需要一步步实现。
