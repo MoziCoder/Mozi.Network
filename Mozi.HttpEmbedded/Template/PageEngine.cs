@@ -142,6 +142,18 @@ namespace Mozi.HttpEmbedded.Template
         {
             throw new NotImplementedException();
         }
+        /// <summary>
+        /// $set表达式
+        /// </summary>
+        /// <returns></returns>
+        private PageEngine InflateExpressionSet()
+        {
+            throw new NotImplementedException();
+        }
+        /// <summary>
+        /// $math表达式
+        /// </summary>
+        /// <returns></returns>
         private PageEngine InflateExpressionMath()
         {
             Regex regParam = new Regex("\\$math\\.\\d+\\(.*\\)");
@@ -158,7 +170,7 @@ namespace Mozi.HttpEmbedded.Template
             return this;
         }
         /// <summary>
-        /// 应用函数format
+        /// $format表达式
         /// </summary>
         /// <returns></returns>
         private PageEngine InflateExpressionFormat()
@@ -181,7 +193,10 @@ namespace Mozi.HttpEmbedded.Template
             }
             return this;
         }
-
+        /// <summary>
+        /// IIF表达式
+        /// </summary>
+        /// <returns></returns>
         private PageEngine InflateExpressionIIF()
         {
             Regex regParam = new Regex("\\$iif\\(.*\\)");
