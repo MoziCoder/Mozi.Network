@@ -60,11 +60,20 @@ namespace Mozi.HttpEmbedded
         private string _serverName = "HttpEmbedded";
 
         //默认首页为index.html,index.htm
-        private string _indexPageMatchPattern = "index.html,index.htm";
+        public string[] _indexPages = new string[] { "index.html","index.htm" };
 
-        //允许和公开的方法
+        /// <summary>
+        /// 默认首页
+        /// </summary>
+        public string IndexPages { get { return string.Join(",",_indexPages); } }
+
+        /// <summary>
+        /// 允许的方法
+        /// </summary>
         private RequestMethod[] MethodAllow = new RequestMethod[] { RequestMethod.OPTIONS, RequestMethod.TRACE, RequestMethod.GET, RequestMethod.HEAD, RequestMethod.POST, RequestMethod.COPY, RequestMethod.PROPFIND, RequestMethod.LOCK, RequestMethod.UNLOCK };
-
+        /// <summary>
+        /// 公开的方法
+        /// </summary>
         private RequestMethod[] MethodPublic = new RequestMethod[] { RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.HEAD, RequestMethod.PROPFIND, RequestMethod.PROPPATCH, RequestMethod.MKCOL, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.COPY, RequestMethod.MOVE, RequestMethod.LOCK, RequestMethod.UNLOCK };
 
         //证书管理器
@@ -358,33 +367,60 @@ namespace Mozi.HttpEmbedded
                 bool isStatic = st.IsStatic(fileext);
                 context.Response.SetContentType(contenttype);
 
-                if (path == "/")
+                var pathReal = path;
+                if (pathReal == "/")
                 {
-                    var doc = DocLoader.Load("Home.html");
-                    PageEngine pc = new PageEngine();
-                    pc.LoadFromText(doc);
-                    pc.Set("Info", new
-                    {
-                        VersionName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(),
-                    });
-                    pc.Prepare();
+                    //var existsIndex = false;
+                    //foreach(var r in _indexPages)
+                    //{
+                    //    if (st.Exists(path+r, ""))
+                    //    {
+                    //        string ifmodifiedsince = context.Request.Headers.GetValue(HeaderProperty.IfModifiedSince.PropertyName);
+                    //        if (st.CheckIfModified(path, ifmodifiedsince))
+                    //        {
+                    //            DateTime dtModified = st.GetLastModifiedTime(path).ToUniversalTime();
+                    //            context.Response.AddHeader(HeaderProperty.LastModified, dtModified.ToString("r"));
+                    //            context.Response.Write(st.Load(path, ""));
 
-                    context.Response.Write(pc.GetBuffer());
-                    context.Response.SetContentType(Mime.GetContentType("html"));
-                    return StatusCode.Success;
+                    //            //ETag 仅测试 不具备判断缓存的能力
+                    //            context.Response.AddHeader(HeaderProperty.ETag, String.Format("{0:x2}:{1:x2}", dtModified.ToUniversalTime().Ticks, context.Response.ContentLength));
+                    //            return StatusCode.Success;
+                    //        }
+                    //    }
+                    //}
+                    //if (!existsIndex)
+                    //{
+                        //优先加载
+                        var doc = DocLoader.Load("Home.html");
+                        PageEngine pc = new PageEngine();
+                        pc.LoadFromText(doc);
+                        pc.Set("Info", new
+                        {
+                            VersionName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(),
+                        });
+                        pc.Prepare();
+
+                        context.Response.Write(pc.GetBuffer());
+                        context.Response.SetContentType(Mime.GetContentType("html"));
+                        return StatusCode.Success;
+                    //}
                 }
                 //静态文件处理
                 else if (st.Enabled && isStatic)
                 {
+                    //if (pathReal.EndsWith("/"))
+                    //{
+
+                    //}
                     //响应静态文件
-                    if (st.Exists(path, ""))
+                    if (st.Exists(pathReal, ""))
                     {
                         string ifmodifiedsince = context.Request.Headers.GetValue(HeaderProperty.IfModifiedSince.PropertyName);
-                        if (st.CheckIfModified(path, ifmodifiedsince))
+                        if (st.CheckIfModified(pathReal, ifmodifiedsince))
                         {
-                            DateTime dtModified = st.GetLastModifiedTime(path).ToUniversalTime();
+                            DateTime dtModified = st.GetLastModifiedTime(pathReal).ToUniversalTime();
                             context.Response.AddHeader(HeaderProperty.LastModified, dtModified.ToString("r"));
-                            context.Response.Write(st.Load(path, ""));                            
+                            context.Response.Write(st.Load(pathReal, ""));                            
                             
                             //ETag 仅测试 不具备判断缓存的能力
                             context.Response.AddHeader(HeaderProperty.ETag, String.Format("{0:x2}:{1:x2}", dtModified.ToUniversalTime().Ticks, context.Response.ContentLength));
@@ -688,7 +724,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="filePath"></param>
         public void SetIndexPage(string pattern)
         {
-            _indexPageMatchPattern = pattern;
+            _indexPages = pattern.Split(new char[] { ',' });
         }
         /// <summary>
         /// 关闭服务器

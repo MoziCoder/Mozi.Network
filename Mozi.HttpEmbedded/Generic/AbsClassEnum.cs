@@ -4,7 +4,7 @@ using System.Reflection;
 namespace Mozi.HttpEmbedded.Generic
 {
     /// <summary>
-    /// 仿枚举
+    /// 仿枚举 抽象类
     /// </summary>
     public abstract class AbsClassEnum
     {

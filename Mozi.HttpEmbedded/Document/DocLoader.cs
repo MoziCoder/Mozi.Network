@@ -3,6 +3,9 @@ using System.Reflection;
 
 namespace Mozi.HttpEmbedded.Docment
 {
+    /// <summary>
+    /// 文档载入器
+    /// </summary>
     public class DocLoader
     {
         public static string Load(string docName)

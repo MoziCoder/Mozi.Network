@@ -33,12 +33,12 @@ namespace Mozi.HttpEmbedded.Page
         public RuntimeInfo Info()
         {
             RuntimeInfo info = new RuntimeInfo();
-            var exeAssembly = Assembly.GetExecutingAssembly();
-            info.Name = exeAssembly.GetName().Name;
-            info.VersionName = exeAssembly.GetName().Version.ToString();
-            info.PlatformName =exeAssembly.ImageRuntimeVersion;
+            var ass = Assembly.GetExecutingAssembly();
+            info.Name = ass.GetName().Name;
+            info.VersionName = ass.GetName().Version.ToString();
+            info.PlatformName =ass.ImageRuntimeVersion;
             info.StartupTime = Context.Server.StartTime.ToUniversalTime().ToString("r");
-            Module[] modules = exeAssembly.GetLoadedModules();
+            Module[] modules = ass.GetLoadedModules();
             foreach(var m in modules)
             {
                 info.LoadedModules.Add(new LoadedModuleInfo()

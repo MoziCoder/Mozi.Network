@@ -144,12 +144,33 @@ namespace Mozi.HttpEmbedded.Template
         }
         /// <summary>
         /// $define表达式
+        /// <para>
+        ///     $define 用于定义常量
+        /// </para>
         /// </summary>
         /// <returns></returns>
         private PageEngine InflateStatementDefine()
         {
             throw new NotImplementedException();
         }
+        /// <summary>
+        /// $undef 表达式
+        /// <para>
+        ///     $undef 用于删除常量定义
+        /// </para>
+        /// </summary>
+        /// <returns></returns>
+        private PageEngine InflateStatementUndef()
+        {
+            throw new NotImplementedException();
+        }
+        /// <summary>
+        /// $set表达式
+        /// <para>
+        ///     $set 用于定义变量
+        /// </para>
+        /// </summary>
+        /// <returns></returns>
         private PageEngine InflateStatementSet()
         {
             throw new NotImplementedException();
@@ -222,7 +243,7 @@ namespace Mozi.HttpEmbedded.Template
             return this;
         }
         /// <summary>
-        /// == != <> &&　｜｜
+        /// == != <> > < >= <=， &&　|| ，+ - * / %
         /// </summary>
         /// <returns></returns>
         private PageEngine ParseOperator()

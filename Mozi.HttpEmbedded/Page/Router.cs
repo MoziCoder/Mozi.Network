@@ -10,7 +10,7 @@ namespace Mozi.HttpEmbedded.Page
 {
     //TODO 增加API下载的功能，允许客户端提取所有API，同时加入鉴权机制
     /// <summary>
-    /// 全局路由
+    /// 全局路由 单例模式
     /// </summary>
     /// <remarks>
     /// 实例化Router时会自动扫描此程序集内部的API
@@ -321,14 +321,18 @@ namespace Mozi.HttpEmbedded.Page
                 return ap;
             }
         }
-
+        /// <summary>
+        /// 访问域
+        /// </summary>
         public class AccessPoint
         {
             public string Domain { get; set; }
             public string Controller { get; set; }
             public string Action { get; set; }
         }
-
+        /// <summary>
+        /// 访问对象
+        /// </summary>
         public class AccessObject
         {
             public Type Target { get; set; }
