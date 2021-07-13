@@ -143,10 +143,14 @@ namespace Mozi.HttpEmbedded.Template
             throw new NotImplementedException();
         }
         /// <summary>
-        /// $set表达式
+        /// $define表达式
         /// </summary>
         /// <returns></returns>
-        private PageEngine InflateExpressionSet()
+        private PageEngine InflateStatementDefine()
+        {
+            throw new NotImplementedException();
+        }
+        private PageEngine InflateStatementSet()
         {
             throw new NotImplementedException();
         }

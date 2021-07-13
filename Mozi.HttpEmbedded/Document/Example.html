@@ -33,36 +33,41 @@
 
     <!--for loop-->
     <%for(int i=0;i<goods.Length;i++)%>
-        <h1>${goods.Name}</h1>
-        <div>${goods.Price}</div>
+    <h1>${goods.Name}</h1>
+    <div>${goods.Price}</div>
     <%end%>
 
     <!--if conditional-->
     <% if page==1 %>
-        <div>if condition</div>
+    <div>if condition</div>
     <% else if %>
-        <div>else if condition</div>
+    <div>else if condition</div>
     <% end %>
 
     <!--switch statement-->
     <% switch(pagecount)%>
-        <% case %>
+    <% case %>
 
-        <% break %>
+    <% break %>
     <% end %>
+
+    <!--define statement-->
+    $define yesertday "2021-07-10"
+    <!--set statement-->
+    $set a=0;
     <!--iif-->
-    <p>
-        <div>$iif(goods.Length>0,goods.Length)</div>
-    </p>
+    <div>
+        <p>$iif(goods.Length>0,goods.Length)</p>
+    </div>
 
-    <!--Math function-->
-    <p>
+    <!--Math expression-->
+    <div>
         <div>$math.abs(-1),$math.ceil(1.2)</div>
-    </p>
+    </div>
 
-    <!--format function-->
-    <p>
-        <div>$format("{0},{1}",Title,Content)</div>
-    </p>
+    <!--format expression-->
+    <div>
+        <p>$format("{0},{1}",Title,Content)</p>
+    </div>
 </body>
 </html>
