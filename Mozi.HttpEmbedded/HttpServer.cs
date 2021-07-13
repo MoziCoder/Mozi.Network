@@ -6,7 +6,7 @@ using Mozi.HttpEmbedded.Cache;
 using Mozi.HttpEmbedded.Cert;
 using Mozi.HttpEmbedded.Common;
 using Mozi.HttpEmbedded.Compress;
-using Mozi.HttpEmbedded.Docment;
+using Mozi.HttpEmbedded.Document;
 using Mozi.HttpEmbedded.Encode;
 using Mozi.HttpEmbedded.Page;
 using Mozi.HttpEmbedded.Secure;

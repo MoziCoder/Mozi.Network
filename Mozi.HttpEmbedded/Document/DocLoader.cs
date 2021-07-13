@@ -1,7 +1,7 @@
 ﻿using Mozi.HttpEmbedded.Encode;
 using System.Reflection;
 
-namespace Mozi.HttpEmbedded.Docment
+namespace Mozi.HttpEmbedded.Document
 {
     /// <summary>
     /// 文档载入器

@@ -60,7 +60,8 @@ namespace Mozi.HttpEmbedded.Template
         private PageEngine ApplyAll()
         {
             //首先解析语句
-
+            InflateStatementDefine();
+            InflateStatementUndef();
             //填充全局变量
             InflateGlobal();
             //填充变量
@@ -116,21 +117,33 @@ namespace Mozi.HttpEmbedded.Template
         {
             return this;
         }
+        /// <summary>
+        /// 获取参数值
+        /// </summary>
+        /// <param name="pattern"></param>
+        /// <returns></returns>
         private string GetPatternValue(string pattern)
         {
             string result =null;
             if (!pattern.Contains("."))
             {
-                result=Get(pattern).ToString();
+                var patternValue=Get(pattern);
+                if (patternValue != null)
+                {
+                    result = patternValue.ToString();
+                }
             }
             else
             {
                 string[] target = pattern.Split(new char[] { '.' });
-                object pValue = _params[target[0]];
+                if (_params.ContainsKey(target[0]))
+                {
+                    object pValue = _params[target[0]];
 
-                PropertyInfo props = pValue.GetType().GetProperty(target[1], BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-                var targetValue = props.GetValue(pValue, null);
-                result=targetValue.ToString();
+                    PropertyInfo props = pValue.GetType().GetProperty(target[1], BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                    var targetValue = props.GetValue(pValue, null);
+                    result = targetValue.ToString();
+                }
             }
             return result;
         }
@@ -151,7 +164,25 @@ namespace Mozi.HttpEmbedded.Template
         /// <returns></returns>
         private PageEngine InflateStatementDefine()
         {
-            throw new NotImplementedException();
+            Regex regParam = new Regex("\\$define\\s+\\b[a-zA-Z0-9_]+\\b\\s+((\\\\?(\"|').*?\\\\?(\"|'))|(.*\\b))");
+
+            MatchCollection matchesParam = regParam.Matches(_page);
+            foreach (var m in matchesParam)
+            {
+                string[] patterns = m.ToString().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                if (patterns.Length == 3)
+                {
+                    var patternKey = patterns[1];
+                    var patternValue = patterns[2];
+                    patternValue=patternValue.Trim(new char[] { '\'', '"' });
+                    if (!_params.ContainsKey(patternKey))
+                    {
+                        _params.Add(patternKey, patternValue);
+                    }
+                }
+                _page = _page.Replace(m.ToString(), "");
+            }
+            return this;
         }
         /// <summary>
         /// $undef 表达式
@@ -162,7 +193,23 @@ namespace Mozi.HttpEmbedded.Template
         /// <returns></returns>
         private PageEngine InflateStatementUndef()
         {
-            throw new NotImplementedException();
+            Regex regParam = new Regex("\\$undef\\s+\\b[a-zA-Z0-9_]+\\b");
+
+            MatchCollection matchesParam = regParam.Matches(_page);
+            foreach (var m in matchesParam)
+            {
+                string[] patterns = m.ToString().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                if (patterns.Length == 2)
+                {
+                    var patternKey = patterns[1];
+                    if (_params.ContainsKey(patternKey))
+                    {
+                        _params.Remove(patternKey);
+                    }
+                }
+                _page = _page.Replace(m.ToString(), "");
+            }
+            return this;
         }
         /// <summary>
         /// $set表达式

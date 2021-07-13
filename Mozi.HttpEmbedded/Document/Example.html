@@ -16,43 +16,28 @@
 <body>
 
     <!--内置变量-->
+    <div>
 
+    </div>
     <!--基本数据类型参数注入-->
-    <h1>${Title}</h1>
-    <p>${Content}</p>
+    <div>
+        <h1>${Title}</h1>
+        <p>${Content}</p>
+    </div>
 
     <!--复杂类型-->
-    <h1>${Document.Title}</h1>
-    <p>${Document.Content}</p>
-
-    <!--数组类型-->
-    <%foreach goods in goodslist%>
-        <h1>${goods.Name}</h1>
-        <div>${goods.Price}</div>
-    <%end%>
-
-    <!--for loop-->
-    <%for(int i=0;i<goods.Length;i++)%>
-    <h1>${goods.Name}</h1>
-    <div>${goods.Price}</div>
-    <%end%>
-
-    <!--if conditional-->
-    <% if page==1 %>
-    <div>if condition</div>
-    <% else if %>
-    <div>else if condition</div>
-    <% end %>
-
-    <!--switch statement-->
-    <% switch(pagecount)%>
-    <% case %>
-
-    <% break %>
-    <% end %>
+    <div>
+        <h1>${Document.Title}</h1>
+        <p>${Document.Content}</p>
+    </div>
 
     <!--define statement-->
     $define yesertday "2021-07-10"
+    <div>
+        <h5>define statement</h5>
+        <p></p>
+    </div>
+
     <!--set statement-->
     $set a=0;
     <!--iif-->
@@ -69,5 +54,34 @@
     <div>
         <p>$format("{0},{1}",Title,Content)</p>
     </div>
+
+    <!--数组类型-->
+    <%foreach goods in goodslist%>
+    <div>
+        <h1>${goods.Name}</h1>
+        <p>${goods.Price}</p>
+    </div>
+    <%end%>
+
+    <!--for loop-->
+    <dl>
+        <%for(int i=0;i
+        <goods.Length;i++)%>
+            <dt>${goods.Name}</dt>:<dd>${goods.Price}</dd>
+            <%end%>
+    </dl>
+    <!--if conditional-->
+    <% if page==1 %>
+    <div>if condition</div>
+    <% else if %>
+    <div>else if condition</div>
+    <% end %>
+
+    <!--switch statement-->
+    <% switch(pagecount)%>
+        <% case %>
+
+        <% break %>
+    <% end %>
 </body>
 </html>
