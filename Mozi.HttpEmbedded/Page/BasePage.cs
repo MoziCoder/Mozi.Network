@@ -15,6 +15,5 @@
         public abstract void Get();
 
         public abstract void Post();
-
     }
 }
