@@ -6,5 +6,6 @@
     public abstract class BaseApi
     {
         public HttpContext Context { get; internal set; }
+
     }
 }
