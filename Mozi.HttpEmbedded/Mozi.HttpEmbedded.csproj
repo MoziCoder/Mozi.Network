@@ -67,6 +67,8 @@
     <Compile Include="Attributes\HttpMethodAttribute.cs" />
     <Compile Include="Attributes\ResponseContentTypeAttribute.cs" />
     <Compile Include="Middleware\IMiddleware.cs" />
+    <Compile Include="Template\Expression.cs" />
+    <Compile Include="Template\Statement.cs" />
     <Compile Include="WebService\Attributes\WebServiceAttribute.cs" />
     <Compile Include="Auth\User.cs" />
     <Compile Include="Cache\MemoryCache.cs" />

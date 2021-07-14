@@ -156,7 +156,7 @@ namespace Mozi.HttpEmbedded.Template
             throw new NotImplementedException();
         }
         /// <summary>
-        /// $define表达式
+        /// $define语句
         /// <para>
         ///     $define 用于定义常量
         /// </para>
@@ -185,7 +185,7 @@ namespace Mozi.HttpEmbedded.Template
             return this;
         }
         /// <summary>
-        /// $undef 表达式
+        /// $undef 语句
         /// <para>
         ///     $undef 用于删除常量定义
         /// </para>
@@ -212,7 +212,7 @@ namespace Mozi.HttpEmbedded.Template
             return this;
         }
         /// <summary>
-        /// $set表达式
+        /// $set语句
         /// <para>
         ///     $set 用于定义变量
         /// </para>
