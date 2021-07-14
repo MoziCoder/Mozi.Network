@@ -57,24 +57,23 @@
 
     <!--数组类型-->
     <%foreach goods in goodslist%>
-    <div>
-        <h1>${goods.Name}</h1>
-        <p>${goods.Price}</p>
-    </div>
+        <div>
+            <h1>${goods.Name}</h1>
+            <p>${goods.Price}</p>
+        </div>
     <%end%>
 
     <!--for loop-->
     <dl>
-        <%for(int i=0;i
-        <goods.Length;i++)%>
+        <%for(int i=0;i<goods.Length;i++)%>
             <dt>${goods.Name}</dt>:<dd>${goods.Price}</dd>
-            <%end%>
+        <%end%>
     </dl>
     <!--if conditional-->
     <% if page==1 %>
-    <div>if condition</div>
+        <div>if condition</div>
     <% else if %>
-    <div>else if condition</div>
+        <div>else if condition</div>
     <% end %>
 
     <!--switch statement-->
