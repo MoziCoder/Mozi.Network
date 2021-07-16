@@ -12,7 +12,7 @@ namespace Mozi.HttpEmbedded.Template
     /// <summary>
     /// 页面生成器
     /// </summary>
-    public class PageEngine
+    public class TemplateEngine
     {
 
         private readonly Dictionary<string, object> _params = new Dictionary<string, object>(new StringCompareIgnoreCase());
@@ -23,17 +23,17 @@ namespace Mozi.HttpEmbedded.Template
 
         private string _page = "";
 
-        public PageEngine()
+        public TemplateEngine()
         {
 
         }
 
-        internal PageEngine Load(string filePath)
+        internal TemplateEngine Load(string filePath)
         {
             return this;
         }
 
-        internal PageEngine LoadFromStream(Stream stream)
+        internal TemplateEngine LoadFromStream(Stream stream)
         {
             return this;
         }
@@ -42,12 +42,12 @@ namespace Mozi.HttpEmbedded.Template
         /// </summary>
         /// <param name="template"></param>
         /// <returns></returns>
-        public PageEngine LoadFromText(string template)
+        public TemplateEngine LoadFromText(string template)
         {
             _template = template;
             return this;
         }
-        public PageEngine Prepare()
+        public TemplateEngine Prepare()
         {
             _page = _template;
             ApplyAll();
@@ -57,7 +57,7 @@ namespace Mozi.HttpEmbedded.Template
         /// 应用所有规则
         /// </summary>
         /// <returns></returns>
-        private PageEngine ApplyAll()
+        private TemplateEngine ApplyAll()
         {
             //首先解析语句
             InflateStatementDefine();
@@ -74,7 +74,7 @@ namespace Mozi.HttpEmbedded.Template
         /// 注入全局数据
         /// </summary>
         /// <returns></returns>
-        private PageEngine InflateGlobal()
+        private TemplateEngine InflateGlobal()
         {
             return this;
         }
@@ -82,7 +82,7 @@ namespace Mozi.HttpEmbedded.Template
         /// 注入临时数据
         /// </summary>
         /// <returns></returns>
-        private PageEngine InflateValues()
+        private TemplateEngine InflateValues()
         {
             Regex regParam = new Regex("\\${[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)?}");
             MatchCollection matchesParam = regParam.Matches(_page);
@@ -101,19 +101,19 @@ namespace Mozi.HttpEmbedded.Template
         /// 解析if
         /// </summary>
         /// <returns></returns>
-        private PageEngine ParseStatementIf()
+        private TemplateEngine ParseStatementIf()
         {
             return this;
         }
-        private PageEngine ParseStatementForeach()
+        private TemplateEngine ParseStatementForeach()
         {
             return this;
         }
-        private PageEngine ParseStatementSwitch()
+        private TemplateEngine ParseStatementSwitch()
         {
             return this;
         }
-        private PageEngine ParseStatementFor()
+        private TemplateEngine ParseStatementFor()
         {
             return this;
         }
@@ -162,7 +162,7 @@ namespace Mozi.HttpEmbedded.Template
         /// </para>
         /// </summary>
         /// <returns></returns>
-        private PageEngine InflateStatementDefine()
+        private TemplateEngine InflateStatementDefine()
         {
             Regex regParam = new Regex("\\$define\\s+\\b[a-zA-Z0-9_]+\\b\\s+((\\\\?(\"|').*?\\\\?(\"|'))|(.*\\b))");
 
@@ -191,7 +191,7 @@ namespace Mozi.HttpEmbedded.Template
         /// </para>
         /// </summary>
         /// <returns></returns>
-        private PageEngine InflateStatementUndef()
+        private TemplateEngine InflateStatementUndef()
         {
             Regex regParam = new Regex("\\$undef\\s+\\b[a-zA-Z0-9_]+\\b");
 
@@ -218,7 +218,7 @@ namespace Mozi.HttpEmbedded.Template
         /// </para>
         /// </summary>
         /// <returns></returns>
-        private PageEngine InflateStatementSet()
+        private TemplateEngine InflateStatementSet()
         {
             throw new NotImplementedException();
         }
@@ -226,7 +226,7 @@ namespace Mozi.HttpEmbedded.Template
         /// $math表达式
         /// </summary>
         /// <returns></returns>
-        private PageEngine InflateExpressionMath()
+        private TemplateEngine InflateExpressionMath()
         {
             Regex regParam = new Regex("\\$math\\.\\d+\\(.*\\)");
             MatchCollection matchesParam = regParam.Matches(_page);
@@ -245,7 +245,7 @@ namespace Mozi.HttpEmbedded.Template
         /// $format表达式
         /// </summary>
         /// <returns></returns>
-        private PageEngine InflateExpressionFormat()
+        private TemplateEngine InflateExpressionFormat()
         {
             Regex regParam = new Regex("\\$format\\(.*\\)");
             MatchCollection matchesParam = regParam.Matches(_page);
@@ -269,7 +269,7 @@ namespace Mozi.HttpEmbedded.Template
         /// IIF表达式
         /// </summary>
         /// <returns></returns>
-        private PageEngine InflateExpressionIIF()
+        private TemplateEngine InflateExpressionIIF()
         {
             Regex regParam = new Regex("\\$iif\\(.*\\)");
             MatchCollection matchesParam = regParam.Matches(_page);
@@ -293,17 +293,17 @@ namespace Mozi.HttpEmbedded.Template
         /// == != <> > < >= <=， &&　|| ，+ - * / %
         /// </summary>
         /// <returns></returns>
-        private PageEngine ParseOperator()
+        private TemplateEngine ParseOperator()
         {
             throw new NotImplementedException();
         }
 
-        private PageEngine ParseArithmeticOperator()
+        private TemplateEngine ParseArithmeticOperator()
         {
             throw new NotImplementedException();
         }
 
-        private PageEngine ParseLogicalOpeartor()
+        private TemplateEngine ParseLogicalOpeartor()
         {
             throw new NotImplementedException();
         }
@@ -329,7 +329,7 @@ namespace Mozi.HttpEmbedded.Template
         /// <param name="paramName">参数名</param>
         /// <param name="paramValue">参数值</param>
         /// <returns></returns>
-        public PageEngine Set(string paramName, object paramValue)
+        public TemplateEngine Set(string paramName, object paramValue)
         {
             if (_params.ContainsKey(paramName))
             {
@@ -347,7 +347,7 @@ namespace Mozi.HttpEmbedded.Template
         /// <param name="dataName"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        internal PageEngine RegData(string dataName, IEnumerable<object> data)
+        internal TemplateEngine RegData(string dataName, IEnumerable<object> data)
         {
             if (_datas.ContainsKey(dataName))
             {

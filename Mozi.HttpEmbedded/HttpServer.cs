@@ -269,7 +269,7 @@ namespace Mozi.HttpEmbedded
                 {
                     //返回错误信息页面
                     string doc = DocLoader.Load("Error.html");
-                    PageEngine pc = new PageEngine();
+                    TemplateEngine pc = new TemplateEngine();
                     pc.LoadFromText(doc);
                     pc.Set("Error", new
                     {
@@ -392,7 +392,7 @@ namespace Mozi.HttpEmbedded
                     //{
                         //优先加载
                         var doc = DocLoader.Load("Home.html");
-                        PageEngine pc = new PageEngine();
+                        TemplateEngine pc = new TemplateEngine();
                         pc.LoadFromText(doc);
                         pc.Set("Info", new
                         {
