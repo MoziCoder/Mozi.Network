@@ -6,7 +6,7 @@ namespace Mozi.HttpEmbedded.Encode
     class HtmlEncoder
     {
         /// <summary>
-        /// HTML字符串转普通字符串
+        /// HTML实体字符串转普通字符串
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
