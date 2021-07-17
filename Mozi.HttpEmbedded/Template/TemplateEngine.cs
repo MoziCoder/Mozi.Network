@@ -27,15 +27,23 @@ namespace Mozi.HttpEmbedded.Template
         {
 
         }
-
         internal TemplateEngine Load(string filePath)
+        {
+            return this.Load(filePath, System.Text.Encoding.UTF8);
+        }
+
+        internal TemplateEngine Load(string filePath,System.Text.Encoding encoding)
         {
             return this;
         }
 
-        internal TemplateEngine LoadFromStream(Stream stream)
+        internal TemplateEngine LoadFromStream(Stream stream, System.Text.Encoding encoding)
         {
             return this;
+        }
+        internal TemplateEngine LoadFromStream(Stream stream)
+        {
+            return this.LoadFromStream(stream, System.Text.Encoding.UTF8);
         }
         /// <summary>
         /// 从文本载入模板
