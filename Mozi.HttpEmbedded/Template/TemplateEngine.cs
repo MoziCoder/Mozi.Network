@@ -367,5 +367,28 @@ namespace Mozi.HttpEmbedded.Template
         {
             return StringEncoder.Encode(_page);
         }
+        /// <summary>
+        /// 将结果保存到流
+        /// </summary>
+        /// <param name="sr"></param>
+        public void Save(Stream sr)
+        {
+            byte[] data=StringEncoder.Encode(_page);
+            sr.Seek(0, SeekOrigin.Begin);
+            sr.Write(data, 0, data.Length);
+            sr.Flush();
+        }
+        /// <summary>
+        /// 将结果保存到文件
+        /// </summary>
+        /// <param name="path"></param>
+        public void Save(string path)
+        {
+            byte[] data = StringEncoder.Encode(_page);
+            FileStream fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+            fs.Write(data, 0, data.Length);
+            fs.Flush();
+            fs.Close();
+        }
     }
 }
