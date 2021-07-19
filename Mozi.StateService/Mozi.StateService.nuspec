@@ -2,7 +2,7 @@
 <package>
   <metadata>
 	<id>Mozi.StateService</id>
-	<version>1.2.7</version>
+	<version>1.2.8</version>
 	<title>Mozi.StateService</title>
 	<authors>JasonWcx</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
