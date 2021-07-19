@@ -107,7 +107,7 @@ namespace Mozi.StateService
             }
             try
             {
-                _sc.BeginReceiveFrom(so.Buffer, 0, StateObject.BufferSize, SocketFlags.None, ref so.RemoteEndPoint, CallbackReceive, so);
+                _sc.BeginReceiveFrom(so.Buffer, 0, StateObject.BufferSize, SocketFlags.None, ref so.RemoteEndPoint, CallbackReceived, so);
                 if (OnReceiveStart != null)
                 {
                     OnReceiveStart(this, new DataTransferArgs());
@@ -122,7 +122,7 @@ namespace Mozi.StateService
         /// 接收数据回调
         /// </summary>
         /// <param name="iar"></param>
-        protected void CallbackReceive(IAsyncResult iar)
+        protected void CallbackReceived(IAsyncResult iar)
         {
             UDPStateObject so = (UDPStateObject)iar.AsyncState;
             Socket client = so.WorkSocket;
@@ -138,7 +138,7 @@ namespace Mozi.StateService
                 if (client.Available > 0)
                 {
                     so.RemoteEndPoint = remote;
-                    client.BeginReceiveFrom(so.Buffer, 0, so.Buffer.Length, SocketFlags.None, ref so.RemoteEndPoint, new AsyncCallback(CallbackReceive), so);
+                    client.BeginReceiveFrom(so.Buffer, 0, so.Buffer.Length, SocketFlags.None, ref so.RemoteEndPoint, new AsyncCallback(CallbackReceived), so);
                 }
                 else
                 {
@@ -170,7 +170,7 @@ namespace Mozi.StateService
                 //IP = ((IPEndPoint)remote).Address.ToString(),
                 RemoteEndPoint = new IPEndPoint(IPAddress.Any, 0)
             };
-            _sc.BeginReceiveFrom(stateobject.Buffer, 0, stateobject.Buffer.Length, SocketFlags.None, ref stateobject.RemoteEndPoint, new AsyncCallback(CallbackReceive), stateobject);
+            _sc.BeginReceiveFrom(stateobject.Buffer, 0, stateobject.Buffer.Length, SocketFlags.None, ref stateobject.RemoteEndPoint, new AsyncCallback(CallbackReceived), stateobject);
         }
     }
 }

@@ -140,7 +140,7 @@ namespace Mozi.HttpEmbedded
             _socketDocker.TryAdd(so.Id, client);
             try
             {
-                client.BeginReceive(so.Buffer, 0, so.Buffer.Length, SocketFlags.None, CallbackReceive, so);
+                client.BeginReceive(so.Buffer, 0, so.Buffer.Length, SocketFlags.None, CallbackReceived, so);
                 if (OnReceiveStart != null)
                 {
                     OnReceiveStart.BeginInvoke(this, new DataTransferArgs(), null, null);
@@ -155,7 +155,7 @@ namespace Mozi.HttpEmbedded
         /// 接收数据回调
         /// </summary>
         /// <param name="iar"></param>
-        internal void CallbackReceive(IAsyncResult iar)
+        internal void CallbackReceived(IAsyncResult iar)
         {
             StateObject so = (StateObject)iar.AsyncState;
             Socket client = so.WorkSocket;
@@ -170,7 +170,7 @@ namespace Mozi.HttpEmbedded
                     if (client.Available > 0)
                     {
                         //Thread.Sleep(10);
-                        client.BeginReceive(so.Buffer, 0, so.Buffer.Length, SocketFlags.None, CallbackReceive, so);
+                        client.BeginReceive(so.Buffer, 0, so.Buffer.Length, SocketFlags.None, CallbackReceived, so);
                     }
                     else
                     {

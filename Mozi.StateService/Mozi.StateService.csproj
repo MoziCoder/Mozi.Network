@@ -40,7 +40,7 @@
     <Compile Include="HeartBeatPackage.cs" />
     <Compile Include="HeartBeatGateway.cs" />
     <Compile Include="HeartBeatSubscriber.cs" />
-    <Compile Include="Others.cs" />
+    <Compile Include="Generic\Others.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="HeartBeatService.cs" />
     <Compile Include="ServerEvent.cs" />

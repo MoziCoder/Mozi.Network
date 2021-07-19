@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mozi.StateService.Generic;
+using System;
 using System.Collections.Generic;
 
 namespace Mozi.StateService

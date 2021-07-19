@@ -252,7 +252,7 @@ namespace Mozi.HttpEmbedded
                     {
                         //TODO 此处是否会形成死循环
                         //继续读流
-                        args.Socket.BeginReceive(args.State.Buffer, 0, args.State.Buffer.Length, SocketFlags.None, _sc.CallbackReceive, args.State);
+                        args.Socket.BeginReceive(args.State.Buffer, 0, args.State.Buffer.Length, SocketFlags.None, _sc.CallbackReceived, args.State);
                         return;
                     }
 

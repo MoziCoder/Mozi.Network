@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Mozi.StateService
+namespace Mozi.StateService.Generic
 {
     internal static class Others
     {
@@ -26,7 +26,7 @@ namespace Mozi.StateService
         }
         public static DateTime ToDateTime(this long timestamp)
         {
-            var dtMin= new DateTime(1970, 1, 1, 0, 0, 0);
+            var dtMin = new DateTime(1970, 1, 1, 0, 0, 0);
             return dtMin.AddMilliseconds(timestamp).ToLocalTime();
         }
         public static byte[] ToBytes(this ushort num)
