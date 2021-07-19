@@ -94,6 +94,9 @@ namespace Mozi.SSDP
         }
         /// <summary>
         /// 加入组播
+        /// <para>
+        /// 239.0.0.0～239.255.255.255为本地管理组播地址，仅在特定的本地范围内有效。
+        /// </para>
         /// </summary>
         /// <param name="multicastGroupAddress"></param>
         public void JoinMulticastGroup(string multicastGroupAddress)

@@ -119,7 +119,7 @@ namespace Mozi.SSDP
         /// 组播地址
         /// <para>
         /// 标准地址为 <see cref="SSDPProtocol.MulticastAddress"/> | <see cref="SSDPProtocol.MulticastAddressIPv6"/>
-        /// 范围为239.0.0.0～239.255.255.255
+        /// 239.0.0.0～239.255.255.255为本地管理组播地址，仅在特定的本地范围内有效。
         /// </para>
         /// </summary>
         public string MulticastAddress
