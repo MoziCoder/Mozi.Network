@@ -12,11 +12,9 @@ namespace Mozi.HttpEmbedded
     /// </summary>
     public class SocketServer
     {
-        //private static SocketServer _mSocketServer;
-
         protected int _iport = 80;
 
-        protected int _maxListenCount = 120;
+        protected int _maxListenCount = 65535;
         protected readonly ConcurrentDictionary<string, Socket> _socketDocker;
         protected Socket _sc;
 
@@ -115,7 +113,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="iar"></param>
         protected void CallbackAccept(IAsyncResult iar)
         {
-            Socket server = (Socket)iar.AsyncState;            
+            Socket server = (Socket)iar.AsyncState; 
             //接受新连接传入
             server.BeginAccept(CallbackAccept, server);
 
@@ -135,6 +133,7 @@ namespace Mozi.HttpEmbedded
                 WorkSocket = client,
                 Id = Guid.NewGuid().ToString(),
                 IP = ((System.Net.IPEndPoint)client.RemoteEndPoint).Address.ToString(),
+                ConnectTime = DateTime.Now,
                 RemotePort = ((System.Net.IPEndPoint)client.RemoteEndPoint).Port,
             };
             _socketDocker.TryAdd(so.Id, client);

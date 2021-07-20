@@ -40,7 +40,8 @@ namespace Mozi.HttpEmbedded
     public class HttpServer
     {
 
-        private readonly SocketServer _sc = new SocketServer();
+        private readonly SocketServerICOP _sc = new SocketServerICOP();
+
         private WebDav.DavServer _davserver;
 
         private int _port = 80;
@@ -252,7 +253,10 @@ namespace Mozi.HttpEmbedded
                     {
                         //TODO 此处是否会形成死循环
                         //继续读流
+
                         args.Socket.BeginReceive(args.State.Buffer, 0, args.State.Buffer.Length, SocketFlags.None, _sc.CallbackReceived, args.State);
+
+                        //_sc.ProcessReceive(args.State);
                         return;
                     }
 
@@ -312,7 +316,6 @@ namespace Mozi.HttpEmbedded
                         context.Response.AddHeader(HeaderProperty.ContentEncoding, "gzip");
                     }
                 }
-
                 args.Socket.Send(context.Response.GetBuffer());
                 args.Socket.Close(100);
             }

@@ -11,13 +11,18 @@ namespace Mozi.HttpEmbedded
     {
         public string Id { get; set; }   //连接标识符
         public Socket WorkSocket = null;
-        public int RemotePort = 0;
+        
         public const int BufferSize = 1024;
         public List<byte> Data = new List<byte>();
         public byte[] Buffer = new byte[BufferSize * 4];
 
         public string IP { get; set; }
 
+        public int RemotePort = 0;
+
+        /// 连接时间  
+        /// </summary>  
+        public DateTime ConnectTime { get; set; }
         //TODO 此处会造成内存占用过大的问题
         //TODO 此处没有完整处理包体，会有多读取的冗余数据
         public void ResetBuffer(int count)

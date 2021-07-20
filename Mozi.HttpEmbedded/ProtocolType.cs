@@ -20,6 +20,8 @@ namespace Mozi.HttpEmbedded
 
         protected override string Tag { get { return _protocol; } }
 
+        public static System.Net.Sockets.ProtocolType Tcp { get; internal set; }
+
         private ProtocolType(string typeName)
         {
             _protocol = typeName;
