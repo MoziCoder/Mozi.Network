@@ -40,7 +40,7 @@ namespace Mozi.HttpEmbedded
     public class HttpServer
     {
 
-        private readonly SocketServerICOP _sc = new SocketServerICOP();
+        private readonly SocketServer _sc = new SocketServer();
 
         private WebDav.DavServer _davserver;
 
@@ -89,7 +89,7 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         public DateTime StartTime { get; set; }
         /// <summary>
-        /// 支持的HTTP服务协议版本
+        /// 服务器HTTP协议版本
         /// </summary>
         public HttpVersion ProtocolVersion { get; set; }
         /// <summary>

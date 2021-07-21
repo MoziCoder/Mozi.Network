@@ -15,6 +15,8 @@ namespace Mozi.StateService
 
     public delegate void ClientMessageReceived(object sender, ClientAliveInfo clientInfo,string host,int port);
 
+    public delegate void ClientVersionChange(object sender, ClientAliveInfo clientInfo, string oldVersion, string newVersion);
+
     public class ClientStateChangeArgs : EventArgs
     {
         public HeartBeatPackage BeatPackage { get; set; }
@@ -95,6 +97,10 @@ namespace Mozi.StateService
         /// 终端消息接收事件
         /// </summary>
         public event ClientMessageReceived OnClientMessageReceived;
+        /// <summary>
+        /// 终端版本变更事件
+        /// </summary>
+        public event ClientVersionChange OnClientVersionChange;
         /// <summary>
         /// 终端列表
         /// </summary>
@@ -256,11 +262,17 @@ namespace Mozi.StateService
             var client = _clients.Find(x => x.DeviceName.Equals(ca.DeviceName) && x.DeviceId.Equals(ca.DeviceId));
             if (client != null)
             {
+                var oldVersion = client.AppVersion;
                 client.Host = ca.Host;
                 client.AppVersion = ca.AppVersion;
                 client.UserName = ca.UserName;
                 SetUserName(ref client, ca.UserName);
                 SetClientLifeState(ref client,ca.State);
+
+                if (oldVersion != ca.AppVersion&&OnClientVersionChange!=null)
+                {
+                    OnClientVersionChange(this, client, oldVersion, client.AppVersion);
+                }
             }
             else
             {

@@ -1,13 +1,10 @@
-﻿using Mozi.HttpEmbedded.Auth;
-using Mozi.HttpEmbedded.Page;
+﻿using Mozi.HttpEmbedded.Page;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Mozi.HttpEmbedded.Common;
 using Mozi.StateService;
 using System.Reflection;
-using System.Net;
-using System.Net.NetworkInformation;
 
 namespace Mozi.HttpEmbedded.Test
 {

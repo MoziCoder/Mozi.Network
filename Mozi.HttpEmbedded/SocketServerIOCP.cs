@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -18,7 +17,7 @@ namespace Mozi.HttpEmbedded
     /// <param name="token">增加用户的信息</param>  
     public delegate void OnClientNumberChange(int num, StateObject token);
 
-    public class SocketServerICOP
+    public class SocketServerIOCP
     {
         private int _maxConnectionCount;    //最大连接数  
         private int _receiveBufferSize;    //最大接收字节数  
@@ -31,7 +30,7 @@ namespace Mozi.HttpEmbedded
 
         protected int _iport = 80;
 
-        List<StateObject> _clients; //客户端列表  
+        private List<StateObject> _clients; //客户端列表  
 
         /// <summary>
         /// 服务器启动事件
@@ -80,7 +79,7 @@ namespace Mozi.HttpEmbedded
         /// </summary>  
         /// <param name="maxConnections">最大连接数</param>  
         /// <param name="receiveBufferSize">缓存区大小</param>  
-        public SocketServerICOP(int maxConnections, int receiveBufferSize)
+        public SocketServerIOCP(int maxConnections, int receiveBufferSize)
         {
             _clientCount = 0;
             _maxConnectionCount = maxConnections;
@@ -91,7 +90,7 @@ namespace Mozi.HttpEmbedded
             Init();
         }
 
-        public SocketServerICOP():this(65535,1024*4)
+        public SocketServerIOCP():this(65535,1024*4)
         {
             
         }
@@ -346,7 +345,8 @@ namespace Mozi.HttpEmbedded
         {
             StateObject token = e.UserToken as StateObject;
 
-            lock (_clients) {
+            lock (_clients) 
+            {
                 _clients.Remove(token); 
             }
             try
@@ -380,16 +380,10 @@ namespace Mozi.HttpEmbedded
             }
             try
             {
-                //对要发送的消息,制定简单协议,头4字节指定包的大小,方便客户端接收(协议可以自己定)  
-                byte[] buff = new byte[message.Length + 4];
-                byte[] len = BitConverter.GetBytes(message.Length);
-                Array.Copy(len, buff, 4);
-                Array.Copy(message, 0, buff, 4, message.Length);
-                //token.Socket.Send(buff);  //这句也可以发送, 可根据自己的需要来选择  
-                //新建异步发送对象, 发送消息  
+                //发送消息  
                 SocketAsyncEventArgs sendArg = new SocketAsyncEventArgs();
                 sendArg.UserToken = token;
-                sendArg.SetBuffer(buff, 0, buff.Length);  //将数据放置进去.  
+                sendArg.SetBuffer(message, 0, message.Length);
                 token.WorkSocket.SendAsync(sendArg);
             }
             catch (Exception e)
@@ -456,13 +450,13 @@ namespace Mozi.HttpEmbedded
             _stack.Clear();
         }
     }
-    class BufferManager
+    internal class BufferManager
     {
-        int m_numBytes;                 // the total number of bytes controlled by the buffer pool  
-        byte[] m_buffer;                // the underlying byte array maintained by the Buffer Manager  
-        Stack<int> m_freeIndexPool;     //   
-        int m_currentIndex;
-        int m_bufferSize;
+        private int m_numBytes;                 // the total number of bytes controlled by the buffer pool  
+        private byte[] m_buffer;                // the underlying byte array maintained by the Buffer Manager  
+        private Stack<int> m_freeIndexPool;     //   
+        private int m_currentIndex;
+        private int m_bufferSize;
 
         public BufferManager(int totalBytes, int bufferSize)
         {

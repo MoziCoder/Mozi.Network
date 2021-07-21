@@ -69,7 +69,7 @@
     <Compile Include="Attributes\ResponseContentTypeAttribute.cs" />
     <Compile Include="Memory\BufferPool.cs" />
     <Compile Include="Middleware\IMiddleware.cs" />
-    <Compile Include="SocketServerICOP.cs" />
+    <Compile Include="SocketServerIOCP.cs" />
     <Compile Include="Template\Expression.cs" />
     <Compile Include="Template\Statement.cs" />
     <Compile Include="UserInfoModel.cs" />
