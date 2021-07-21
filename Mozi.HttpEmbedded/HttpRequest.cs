@@ -219,15 +219,15 @@ namespace Mozi.HttpEmbedded
             {
                 if (formType.Contains("application/x-www-form-urlencoded"))
                 {
-                    ParsePayloadFormUrl(ref req, data);
+                    ParsePayloadFormUrl(ref req,ref data);
                 }
                 else if (formType.Contains("multipart/form-data"))
                 {
-                    ParsePayloadFormData(ref req, data);
+                    ParsePayloadFormData(ref req,ref data);
                 }
                 else
                 {
-                    ParsePayloadText(ref req, data);
+                    ParsePayloadText(ref req,ref data);
                 }
             }
         }
@@ -237,7 +237,7 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         /// <param name="req"></param>
         /// <param name="data"></param>
-        private static void ParsePayloadFormUrl(ref HttpRequest req, byte[] data)
+        private static void ParsePayloadFormUrl(ref HttpRequest req,ref byte[] data)
         {
             req.Post = UrlEncoder.ParseQuery(StringEncoder.Decode(data));
         }
@@ -268,7 +268,7 @@ namespace Mozi.HttpEmbedded
         ///   --{boundary}--\r\n
         /// </code>
         /// </example>
-        private static void ParsePayloadFormData(ref HttpRequest req, byte[] data)
+        private static void ParsePayloadFormData(ref HttpRequest req,ref byte[] data)
         {
             string contentType = req.Headers.GetValue(HeaderProperty.ContentType.PropertyName);
             string boundary = "";
@@ -449,7 +449,7 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         /// <param name="req"></param>
         /// <param name="data"></param>
-        private static void ParsePayloadText(ref HttpRequest req, byte[] data)
+        private static void ParsePayloadText(ref HttpRequest req,ref byte[] data)
         {
 
         }
