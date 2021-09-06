@@ -20,6 +20,7 @@ namespace Mozi.HttpEmbedded
 
         public int RemotePort = 0;
 
+        /// <summary>
         /// 连接时间  
         /// </summary>  
         public DateTime ConnectTime { get; set; }

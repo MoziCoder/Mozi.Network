@@ -229,7 +229,6 @@ namespace Mozi.HttpEmbedded
                     {
                         //SSL解析数据包
                         HelloPackage proto = TLSProtocol.ParseClientHello(args.Data);
-
                     }
                     context.Request = HttpRequest.Parse(args.Data);
                     context.Request.ClientAddress = args.IP;

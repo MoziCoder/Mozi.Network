@@ -181,7 +181,7 @@ namespace Mozi.SSDP
 
             if (iByteRead > 0)
             {
-                //置空数据连接
+                //置空数据缓冲区
                 so.ResetBuffer(iByteRead);
                 if (client.Available > 0)
                 {
