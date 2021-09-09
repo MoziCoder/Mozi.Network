@@ -118,6 +118,26 @@ Mozi.HttpEmbedded在Socket之上使用异步单线程模型,构建了一个HTTP�
 
     Console.ReadLine();
 
+	//路径信息
+    //    首页
+    //      @ip 服务器地址，本机调试使用127.0.0.1
+    //      @port 服务器端口 
+    //      http://{ip}:{port}
+    //    静态文件
+    //      @ip 服务器地址，本机调试使用127.0.0.1
+    //      @port 服务器端口 
+    //      @path 路径名，为静态目录的子级目录名
+    //      @filename 文件名
+    //      http://{ip}:{port}/{path}/{filename} 
+    //    API
+    //      @ip 服务器地址，本机调试使用127.0.0.1
+    //      @port 服务器端口 
+    //      @controller 注册的类名，暂不支持改名
+    //      @action 方法名
+    //      http://{ip}:{port}/{controller}/{action}
+
+    //内置API 请参看Runtime.cs文件
+
 ~~~
 
 ### By [Jason][1] on Feb. 5,2020

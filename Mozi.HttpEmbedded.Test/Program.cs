@@ -17,7 +17,7 @@ namespace Mozi.HttpEmbedded.Test
         /// </summary>
         static void Main(string[] args)
         {
-            
+            string pathStatic = "";
             //AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
             //TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
@@ -33,7 +33,7 @@ namespace Mozi.HttpEmbedded.Test
             //hs.UseAuth(AuthorizationType.Basic).SetUser("admin", "admin");
 
             //开启静态文件支持
-            hs.UseStaticFiles("");
+            hs.UseStaticFiles(pathStatic);
             hs.SetVirtualDirectory("Config", "Config");
             //开启文件压缩
             hs.UseGzip(new Compress.CompressOption() { 
@@ -67,8 +67,26 @@ namespace Mozi.HttpEmbedded.Test
 
             Console.ReadLine();
 
-            //请访问地址 http://{ip}:{port}/admin/index.html
+            //路径信息
+            //    首页
+            //      @ip 服务器地址，本机调试使用127.0.0.1
+            //      @port 服务器端口 
+            //      http://{ip}:{port}
+            //    静态文件
+            //      @ip 服务器地址，本机调试使用127.0.0.1
+            //      @port 服务器端口 
+            //      @path 路径名，为静态目录的子级目录名
+            //      @filename 文件名
+            //      http://{ip}:{port}/{path}/{filename} 
+            //    API
+            //      @ip 服务器地址，本机调试使用127.0.0.1
+            //      @port 服务器端口 
+            //      @controller 注册的类名，暂不支持改名
+            //      @action 方法名
+            //      http://{ip}:{port}/{controller}/{action}
 
+            //内置API 请参看Runtime.cs文件
+            
         }
 
         /// <summary>
