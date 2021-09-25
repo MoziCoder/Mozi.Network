@@ -160,25 +160,32 @@ namespace Mozi.HttpEmbedded
             Socket client = so.WorkSocket;
             if (client.Connected)
             {
-                int iByteRead = client.EndReceive(iar);
-
-                if (iByteRead > 0)
+                try
                 {
-                    //置空数据缓冲区
-                    so.ResetBuffer(iByteRead);
-                    if (client.Available > 0)
+                    int iByteRead = client.EndReceive(iar);
+
+                    if (iByteRead > 0)
                     {
-                        //Thread.Sleep(10);
-                        client.BeginReceive(so.Buffer, 0, so.Buffer.Length, SocketFlags.None, CallbackReceived, so);
+                        //置空数据缓冲区
+                        so.ResetBuffer(iByteRead);
+                        if (client.Available > 0)
+                        {
+                            //Thread.Sleep(10);
+                            client.BeginReceive(so.Buffer, 0, so.Buffer.Length, SocketFlags.None, CallbackReceived, so);
+                        }
+                        else
+                        {
+                            InvokeAfterReceiveEnd(so, client);
+                        }
                     }
                     else
                     {
                         InvokeAfterReceiveEnd(so, client);
                     }
                 }
-                else
+                finally
                 {
-                    InvokeAfterReceiveEnd(so, client);
+
                 }
             }
             else
@@ -188,19 +195,24 @@ namespace Mozi.HttpEmbedded
         }
         private void InvokeAfterReceiveEnd(StateObject so, Socket client)
         {
-            RemoveClientSocket(so);
-            if (AfterReceiveEnd != null)
+            try
             {
-                AfterReceiveEnd(this,
-                    new DataTransferArgs()
-                    {
-                        Data = so.Data.ToArray(),
-                        IP = so.IP,
-                        Port = so.RemotePort,
-                        Socket = so.WorkSocket,
-                        Client = client,
-                        State = so
-                    });
+                RemoveClientSocket(so);
+                if (AfterReceiveEnd != null)
+                {
+                    AfterReceiveEnd(this,
+                        new DataTransferArgs()
+                        {
+                            Data = so.Data.ToArray(),
+                            IP = so.IP,
+                            Port = so.RemotePort,
+                            Socket = so.WorkSocket,
+                            Client = client,
+                            State = so
+                        });
+                }
+            }finally{
+
             }
         }
         //TODO 此处开启Socket状态监听，对断开的链接进行关闭销毁

@@ -151,7 +151,7 @@ namespace Mozi.HttpEmbedded
             int posCaret = 0;
             int count = 0;
 
-            int index = 0;
+            int indLine = 0;
             int dataLength = data.Length;
             while ((posCR < dataLength) && Array.IndexOf(data, ASCIICode.CR, posCR + 1) > 0)
             {
@@ -160,7 +160,7 @@ namespace Mozi.HttpEmbedded
                 //连续两个CR
                 byte[] fragement = new byte[posCR - posCaret];
                 Array.Copy(data, posCaret, fragement, 0, posCR - posCaret);
-                if (index == 0)
+                if (indLine == 0)
                 {
                     ParseRequestLine(ref req, fragement);
                 }
@@ -175,7 +175,7 @@ namespace Mozi.HttpEmbedded
                 }
                 //跳过分割字节段
                 posCaret = posCR + 2;
-                index++;
+                indLine++;
                 //TODO 置空对象
             }
 
@@ -594,7 +594,7 @@ namespace Mozi.HttpEmbedded
             req.Method = rm;
 
             //判断方法是否是已知方法
-            if (object.Equals(req.Method,null))
+            if (Equals(req.Method,null))
             {
                 req.Method = new RequestMethod(sMethod);
             }

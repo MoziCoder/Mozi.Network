@@ -27,7 +27,7 @@ namespace Mozi.HttpEmbedded.Test
             //启用HTTPS 
             //hs.UseHttps().LoadCert(AppDomain.CurrentDomain.BaseDirectory + @"Cert\ServerCert.pfx", "12345678");
             //配置端口并启动服务器
-            hs.SetPort(9000).Start();
+            hs.SetPort(8080).Start();
 
             //开启认证
             //hs.UseAuth(AuthorizationType.Basic).SetUser("admin", "admin");
