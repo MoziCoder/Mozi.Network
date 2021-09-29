@@ -182,6 +182,8 @@ namespace Mozi.HttpEmbedded
                     {
                         InvokeAfterReceiveEnd(so, client);
                     }
+                }catch(SocketException se){
+                    
                 }
                 finally
                 {

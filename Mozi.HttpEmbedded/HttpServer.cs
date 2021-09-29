@@ -316,7 +316,7 @@ namespace Mozi.HttpEmbedded
                     }
                 }
                 args.Socket.Send(context.Response.GetBuffer());
-                args.Socket.Close(100);
+                args.Socket.Close(12);
             }
             GC.Collect();
         }
