@@ -20,6 +20,11 @@ namespace Mozi.HttpEmbedded.Page
         {
             return "Welcome to Mozi.HttpEmbedded";
         }
+        [Description("回应")]
+        public string Echo(string info)
+        {
+            return info;
+        }
         /// <summary>
         /// 取服务器当前时间
         /// </summary>
@@ -38,6 +43,7 @@ namespace Mozi.HttpEmbedded.Page
             info.VersionName = ass.GetName().Version.ToString();
             info.PlatformName =ass.ImageRuntimeVersion;
             info.StartupTime = Context.Server.StartTime.ToUniversalTime().ToString("r");
+            info.StartupPath = ass.Location;
             Module[] modules = ass.GetLoadedModules();
             foreach(var m in modules)
             {
@@ -159,6 +165,15 @@ namespace Mozi.HttpEmbedded.Page
             rm.success = success;
             return rm;
         }
+        [Description("列出指定目录文件")]
+        private ResponseMessage ListFiles(string dir)
+        {
+            throw new NotImplementedException();
+        }
+        private ResponseMessage DeleteFile(string dir,string fileName)
+        {
+            throw new NotImplementedException();
+        }
         /// <summary>
         /// 列出所有API
         /// </summary>
@@ -276,6 +291,7 @@ namespace Mozi.HttpEmbedded.Page
             else
             {
                 rm.success = false;
+                rm.message = "未给定正确的操作方法";
             }
             rm.success = true;
             return rm;
@@ -361,7 +377,7 @@ namespace Mozi.HttpEmbedded.Page
         public string VersionName { get; set; }
         public string PlatformName { get; set; }
         public string StartupTime { get; set; }
-
+        public string StartupPath { get; set; }
         public List<LoadedModuleInfo> LoadedModules {get;set;}
         public RuntimeInfo()
         {
