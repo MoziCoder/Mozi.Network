@@ -175,12 +175,12 @@ namespace Mozi.HttpEmbedded
                         }
                         else
                         {
-                            InvokeAfterReceiveEnd(so, client);
+                            InvokeAfterReceiveComplete(so, client);
                         }
                     }
                     else
                     {
-                        InvokeAfterReceiveEnd(so, client);
+                        InvokeAfterReceiveComplete(so, client);
                     }
                 }catch(SocketException se){
                     
@@ -192,10 +192,10 @@ namespace Mozi.HttpEmbedded
             }
             else
             {
-                InvokeAfterReceiveEnd(so, client);
+                InvokeAfterReceiveComplete(so, client);
             }
         }
-        private void InvokeAfterReceiveEnd(StateObject so, Socket client)
+        private void InvokeAfterReceiveComplete(StateObject so, Socket client)
         {
             try
             {

@@ -295,7 +295,7 @@ namespace Mozi.HttpEmbedded
                 }
             }
             //最后响应数据     
-            if (args.Socket != null && args.Socket.Connected)
+            if (args.Socket != null && args.Socket.Connected&&context.Request!=null)
             {
                 context.Response.AddHeader(HeaderProperty.Server, ServerName);
                 context.Response.SetStatus(sc);

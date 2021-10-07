@@ -17,6 +17,7 @@ namespace Mozi.HttpEmbedded
         {
             FileData = null;
         }
+
     }
     /// <summary>
     /// 文件集合
