@@ -61,13 +61,13 @@ namespace Mozi.HttpEmbedded
         private string _serverName = "HttpEmbedded";
 
         //默认首页为index.html,index.htm
-        public string[] _indexPages = new string[] { "index.html","index.htm" };
+
+        public string[] _indexPages = new string[] {  };
 
         /// <summary>
         /// 默认首页
         /// </summary>
         public string IndexPages { get { return string.Join(",",_indexPages); } }
-
         /// <summary>
         /// 允许的方法
         /// </summary>
@@ -372,40 +372,46 @@ namespace Mozi.HttpEmbedded
                 var pathReal = path;
                 if (pathReal == "/")
                 {
-                    //var existsIndex = false;
-                    //foreach(var r in _indexPages)
-                    //{
-                    //    if (st.Exists(path+r, ""))
-                    //    {
-                    //        string ifmodifiedsince = context.Request.Headers.GetValue(HeaderProperty.IfModifiedSince.PropertyName);
-                    //        if (st.CheckIfModified(path, ifmodifiedsince))
-                    //        {
-                    //            DateTime dtModified = st.GetLastModifiedTime(path).ToUniversalTime();
-                    //            context.Response.AddHeader(HeaderProperty.LastModified, dtModified.ToString("r"));
-                    //            context.Response.Write(st.Load(path, ""));
+                    var existsIndex = false;
+                    foreach (var r in _indexPages)
+                    {
+                        pathReal = path + r;
+                        if (st.Exists(pathReal, ""))
+                        {
+                            existsIndex = true;
+                            string ifmodifiedsince = context.Request.Headers.GetValue(HeaderProperty.IfModifiedSince.PropertyName);
+                            if (st.CheckIfModified(pathReal, ifmodifiedsince))
+                            {
+                                DateTime dtModified = st.GetLastModifiedTime(pathReal).ToUniversalTime();
+                                context.Response.AddHeader(HeaderProperty.LastModified, dtModified.ToString("r"));
+                                context.Response.Write(st.Load(pathReal, ""));
 
-                    //            //ETag 仅测试 不具备判断缓存的能力
-                    //            context.Response.AddHeader(HeaderProperty.ETag, String.Format("{0:x2}:{1:x2}", dtModified.ToUniversalTime().Ticks, context.Response.ContentLength));
-                    //            return StatusCode.Success;
-                    //        }
-                    //    }
-                    //}
-                    //if (!existsIndex)
-                    //{
+                                //ETag 仅测试 不具备判断缓存的能力
+                                context.Response.AddHeader(HeaderProperty.ETag, CacheControl.GenerateETag(dtModified.ToUniversalTime(), context.Response.ContentLength));
+                                context.Response.SetContentType(Mime.GetContentType("html"));
+
+                                return StatusCode.Success;
+                            }
+                            else
+                            {
+                                return StatusCode.NotModified;
+                            }
+                        }
+                    }
+                    if (!existsIndex)
+                    {
+                        //TODO 加载指定首页
                         //优先加载
                         var doc = DocLoader.Load("Home.html");
                         TemplateEngine pc = new TemplateEngine();
                         pc.LoadFromText(doc);
-                        pc.Set("Info", new
-                        {
-                            VersionName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(),
-                        });
+                        pc.Set("Info", new{ VersionName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()});
                         pc.Prepare();
 
                         context.Response.Write(pc.GetBuffer());
                         context.Response.SetContentType(Mime.GetContentType("html"));
                         return StatusCode.Success;
-                    //}
+                    }
                 }
                 //静态文件处理
                 else if (st.Enabled && isStatic)
