@@ -172,6 +172,7 @@
     <Compile Include="WebService\Publisher.cs" />
     <Compile Include="WebService\SOAP.cs" />
     <Compile Include="WebService\WSDL.cs" />
+    <Compile Include="WebSocket.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Document\Home.html" />

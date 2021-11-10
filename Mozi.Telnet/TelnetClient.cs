@@ -3,17 +3,9 @@
 
     public class TelnetConst
     {
-
         public string UsernamePrompt = "Username: ";
         public string PasswordPrompt = "Password: ";
         public string InvalidLogin = "Invalid Login.";
-        public string MaxloginAttempt = "Allowed login attempts exceeded, good bye.";
-        public string NoAuthHandler = "No authentication handler has been specified.";
-        public string WelcomeString = "Indy Telnet Server";
-        public string OnDataAvailableIsNil = "OnDataAvailable event is nil.";
-
-        public string CLIConnectError = "server not responding";
-        public string CLIReadError = "Server did not respond.";
 
     }
 
@@ -38,6 +30,7 @@
         WONT = 0xFC,      // (FC)	拒绝启动选项
         DO = 0xFD,        // (FD)	认可选项请求
         DONT = 0xFE,      // (FE)	拒绝选项请求
+        IAC=0xFF          // (IAC)  指令开始位
     }
 
     public enum Options
@@ -213,11 +206,17 @@
         //same as CAST5_40_OFB64 and CAST128_OFB64 Telnet Encryption types suboption commands
     }
 
+    /// <summary>
+    /// 用户登陆信息
+    /// </summary>
     public class UserInfo
     {
         public string UserName { get; set; }
         public string Password { get; set; }
-        public string Token { get; set; }
+        public string Token { get; set; }        
+        public bool IsValid { get; set; }
+        public int TryCount { get; set; }
+
     }
 
     /// <summary>

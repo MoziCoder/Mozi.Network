@@ -68,6 +68,10 @@ namespace Mozi.Telnet
     /// </summary>
     public class ClientAccessArgs : EventArgs
     {
+        /// <summary>
+        /// 会话标识符
+        /// </summary>
+        public string Id { get; set; }
         public string Path { get; set; }
         public string Query { get; set; }
         public string IP { get; set; }

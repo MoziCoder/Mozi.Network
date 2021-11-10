@@ -13,7 +13,7 @@ namespace Mozi.HttpEmbedded.Attributes
     /// <summary>
     /// 允许访问的动作
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method,AllowMultiple =true)]
     internal class HttpGetAttribute : Attribute
     {
 
@@ -21,8 +21,13 @@ namespace Mozi.HttpEmbedded.Attributes
     /// <summary>
     /// 允许访问的动作
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     internal class HttpPostAttribute : Attribute
+    {
+
+    }
+    [AttributeUsage(AttributeTargets.Method)]
+    internal class UrlRewrite : Attribute
     {
 
     }

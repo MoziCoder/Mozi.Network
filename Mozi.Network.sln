@@ -27,8 +27,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mozi.IoT", "Mozi.IoT\Mozi.I
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mozi.DNS", "Mozi.DNS\Mozi.DNS.csproj", "{5EDD104A-1409-43B8-B2B8-E0C39D4B9D1B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mozi.WebSocket", "Mozi.WebSocket\Mozi.WebSocket.csproj", "{27B38A3C-418C-497E-ACD7-39EE470967EF}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mozi.Telnet.Test", "Mozi.Telnet.Test\Mozi.Telnet.Test.csproj", "{74C4354C-538E-4A89-A58B-2007D4D4FD5D}"
 EndProject
 Global
@@ -184,18 +182,6 @@ Global
 		{5EDD104A-1409-43B8-B2B8-E0C39D4B9D1B}.ReleaseBinaries|Any CPU.Build.0 = Release|Any CPU
 		{5EDD104A-1409-43B8-B2B8-E0C39D4B9D1B}.ReleaseBinaries|x86.ActiveCfg = Release|Any CPU
 		{5EDD104A-1409-43B8-B2B8-E0C39D4B9D1B}.ReleaseBinaries|x86.Build.0 = Release|Any CPU
-		{27B38A3C-418C-497E-ACD7-39EE470967EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{27B38A3C-418C-497E-ACD7-39EE470967EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{27B38A3C-418C-497E-ACD7-39EE470967EF}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{27B38A3C-418C-497E-ACD7-39EE470967EF}.Debug|x86.Build.0 = Debug|Any CPU
-		{27B38A3C-418C-497E-ACD7-39EE470967EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{27B38A3C-418C-497E-ACD7-39EE470967EF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{27B38A3C-418C-497E-ACD7-39EE470967EF}.Release|x86.ActiveCfg = Release|Any CPU
-		{27B38A3C-418C-497E-ACD7-39EE470967EF}.Release|x86.Build.0 = Release|Any CPU
-		{27B38A3C-418C-497E-ACD7-39EE470967EF}.ReleaseBinaries|Any CPU.ActiveCfg = Release|Any CPU
-		{27B38A3C-418C-497E-ACD7-39EE470967EF}.ReleaseBinaries|Any CPU.Build.0 = Release|Any CPU
-		{27B38A3C-418C-497E-ACD7-39EE470967EF}.ReleaseBinaries|x86.ActiveCfg = Release|Any CPU
-		{27B38A3C-418C-497E-ACD7-39EE470967EF}.ReleaseBinaries|x86.Build.0 = Release|Any CPU
 		{74C4354C-538E-4A89-A58B-2007D4D4FD5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{74C4354C-538E-4A89-A58B-2007D4D4FD5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74C4354C-538E-4A89-A58B-2007D4D4FD5D}.Debug|x86.ActiveCfg = Debug|Any CPU
