@@ -205,6 +205,7 @@ namespace Mozi.HttpEmbedded
                     AfterReceiveEnd(this,
                         new DataTransferArgs()
                         {
+                            Id=so.Id,
                             Data = so.Data.ToArray(),
                             IP = so.IP,
                             Port = so.RemotePort,

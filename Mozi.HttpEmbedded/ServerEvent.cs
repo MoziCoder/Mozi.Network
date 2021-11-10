@@ -36,6 +36,10 @@ namespace Mozi.HttpEmbedded
 
     public class DataTransferArgs : EventArgs
     {
+        /// <summary>
+        /// 会话标识符
+        /// </summary>
+        public string Id { get; set; }
         public byte[] Data { get; set; }
         //IPV4
         public string IP { get; set; }

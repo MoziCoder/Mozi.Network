@@ -9,6 +9,9 @@ namespace Mozi.HttpEmbedded
     /// </summary>
     public class StateObject
     {
+        /// <summary>
+        /// 会话标识符
+        /// </summary>
         public string Id { get; set; }   //连接标识符
         public Socket WorkSocket = null;
         
