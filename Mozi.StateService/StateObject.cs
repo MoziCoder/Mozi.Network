@@ -7,7 +7,7 @@ namespace Mozi.StateService
     /// <summary>
     /// 通讯缓冲对象
     /// </summary>
-    public class StateObject:IDisposable
+    public class StateObject : IDisposable
     {
         public string Id { get; set; }   //连接标识符
         public Socket WorkSocket = null;

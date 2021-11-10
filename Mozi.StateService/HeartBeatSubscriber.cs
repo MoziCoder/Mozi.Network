@@ -5,7 +5,7 @@ namespace Mozi.StateService
     /// <summary>
     /// 心跳订阅者 订阅者为已知订阅者
     /// </summary>
-    public class HeartBeatSubscriber:HeartBeatGateway
+    public class HeartBeatSubscriber : HeartBeatGateway
     {
         /// <summary>
         /// 终端消息接收事件
