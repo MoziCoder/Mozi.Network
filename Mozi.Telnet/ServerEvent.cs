@@ -4,15 +4,6 @@ using System.Net.Sockets;
 namespace Mozi.Telnet
 {
 
-    /// <summary>
-    /// 会话对象
-    /// </summary>
-    public class Session
-    {
-        public string Id { get; set;}
-        public UserInfo User { get; set; }
-    }
-
     public delegate void ServerStart(object sender, ServerArgs args);
 
     public delegate void AfterServerStop(object sender, ServerArgs args);
@@ -24,6 +15,7 @@ namespace Mozi.Telnet
     public delegate void ReceiveStart(object sender, DataTransferArgs args);
 
     public delegate void ReceiveEnd(object sender, DataTransferArgs args);
+
 
     public class ServerArgs : EventArgs
     {

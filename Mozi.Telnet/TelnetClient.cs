@@ -1,4 +1,7 @@
-﻿namespace Mozi.Telnet
+﻿using System;
+using System.Net.Sockets;
+
+namespace Mozi.Telnet
 {
 
     public class TelnetConst
@@ -89,12 +92,12 @@
         PRAGMA_LOGON = 0x8A,
         SSPI_LOGON = 0x8B,
         PRAGMA_HEARTBEAT = 0x8C,
-        EOL = 0xFF,       // Extended-Options-List
+        EOL = 0xFF,                 // Extended-Options-List
         // Sub options
-        TNOS_TERM_IS = 0x00,
-        TNOS_TERMTYPE_SEND = 0x01,       // Sub option
-        TNOS_REPLY = 0x02,
-        TNOS_NAME = 0x03,
+        TERM_IS = 0x00,
+        TERMTYPE_SEND = 0x01,       // Sub option
+        REPLY = 0x02,
+        NAME = 0x03,
     }
     //Auth commands
     public enum AuthCommand {       
@@ -216,7 +219,9 @@
         public string Token { get; set; }        
         public bool IsValid { get; set; }
         public int TryCount { get; set; }
-
+        public bool Login { get; set; }
+        public DateTime LoginTime { get; set; }
+        public DateTime LogoutTime { get; set; }
     }
 
     /// <summary>
@@ -226,5 +231,17 @@
     {
         private int _port = 23;
         private string _host = "";
+    }
+
+    /// <summary>
+    /// 会话对象
+    /// </summary>
+    public class Session
+    {
+        public string Id { get; set; }
+        public Socket Console { get; set; }
+        public string TerminalType { get; set; }
+        public UserInfo User { get; set; }
+        public bool Echo { get; set; }
     }
 }
