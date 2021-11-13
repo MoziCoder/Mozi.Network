@@ -120,7 +120,7 @@ namespace Mozi.Telnet
         private string _loginMessage = "Login successed.\r\nPlease enter the command that you want to execute,or  'help' to list commands\r\n";
         private string _username = "Username:", _password = "Password:";
 
-        private SocketServer _sc = new SocketServer();
+        private readonly SocketServer _sc = new SocketServer();
 
         //会话合集
         private List<Session> _session = new List<Session>();
@@ -193,7 +193,7 @@ namespace Mozi.Telnet
 
         private void _sc_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
-            Console.WriteLine(BitConverter.ToString(args.Data));     
+            Console.WriteLine(BitConverter.ToString(args.Data));
             //协商部分
             if (args.Data[0] == (byte)TelnetCommand.IAC)
             {
@@ -212,19 +212,29 @@ namespace Mozi.Telnet
 
         private void _sc_OnReceiveStart(object sender, DataTransferArgs args)
         {
-
+            
         }
 
         private void _sc_OnClientConnect(object sender, ClientConnectArgs args)
         {
-            //发送连接欢迎信息
+
+            List<byte> data=new List<byte>();
+
+            args.Client.Send(new NegotiatePack() { Command = TelnetCommand.WILL, Option = Options.ECHO }.Pack());
+            args.Client.Send(new NegotiatePack() { Command = TelnetCommand.WILL, Option = Options.SGA }.Pack());
+            args.Client.Send(new NegotiatePack() { Command = TelnetCommand.DO, Option = Options.TERMTYPE }.Pack());
+            args.Client.Send(new NegotiatePack() { Command = TelnetCommand.DO, Option = Options.NAWS }.Pack());
+
+            ////发送连接欢迎信息
             args.Client.Send(System.Text.Encoding.ASCII.GetBytes(_welcomeMessage));
-            //发送协商内容
-            args.Client.Send(new NegotiatePack() {  Command = TelnetCommand.DO, Option = Options.TERMTYPE  }.Pack());
-            args.Client.Send(new NegotiatePack() { Command = TelnetCommand.DO, Option = Options.ECHO }.Pack());
-            args.Client.Send(new NegotiatePack() { Command = TelnetCommand.DO, Option = Options.SGA }.Pack());
+            ////发送协商内容
+
+            //args.Client.Send(new NegotiatePack() { Command = TelnetCommand.WILL, Option = Options.LINEMODE }.Pack());
+            args.Client.Send(new NegotiatePack() { Command = TelnetCommand.DO, Option = Options.AUTH }.Pack());
+            args.Client.Send(System.Text.Encoding.ASCII.GetBytes("\r\nAuthorization needed"));
+            args.Client.Send(System.Text.Encoding.ASCII.GetBytes("\r\nUsername:"));
             //发送鉴权要求
-            //args.Client.Send(new NegotiatePack() { Command = TelnetCommand.DO, Option = Options.AUTH }.Pack());
+            
         }
 
         private void _sc_OnServerStart(object sender, ServerArgs args)
@@ -292,6 +302,11 @@ namespace Mozi.Telnet
                     {
                         case Options.TERMTYPE:
                             {
+                                NegotiatePack np2 = new NegotiatePack();
+                                np2.Command = TelnetCommand.DO;
+                                np2.Option = Options.TERMTYPE;
+                                so.Send(np.Pack());
+
                                 NegotiateSubPack nsp = new NegotiateSubPack();          
                                 nsp.Option = Options.TERMTYPE;
                                 nsp.Parameter = new byte[] { 0x01 };

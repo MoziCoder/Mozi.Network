@@ -142,7 +142,7 @@ namespace Mozi.HttpEmbedded
                 client.BeginReceive(so.Buffer, 0, so.Buffer.Length, SocketFlags.None, CallbackReceived, so);
                 if (OnReceiveStart != null)
                 {
-                    OnReceiveStart.BeginInvoke(this, new DataTransferArgs(), null, null);
+                    OnReceiveStart.Invoke(this, new DataTransferArgs() { Id = so.Id, IP = so.IP, Socket = server, Port = so.RemotePort, Client = client, State = so });
                 }
             }
             catch (Exception ex)

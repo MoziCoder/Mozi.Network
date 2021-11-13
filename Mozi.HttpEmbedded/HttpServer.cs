@@ -416,6 +416,7 @@ namespace Mozi.HttpEmbedded
                 //静态文件处理
                 else if (st.Enabled && isStatic)
                 {
+                    //目录加载
                     //if (pathReal.EndsWith("/"))
                     //{
 

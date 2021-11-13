@@ -2,14 +2,13 @@
 
 namespace Mozi.Telnet.Test
 {
-    class Program
+    static class Program
     {
         static void Main(string[] args)
         {
             TelnetServer ts = new TelnetServer();
-            ts.SetPort(23);
-            ts.Start();
-            Console.Read();
+            ts.SetPort(23).Start();
+            Console.ReadLine();
         }
     }
 }

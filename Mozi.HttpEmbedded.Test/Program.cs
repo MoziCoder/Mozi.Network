@@ -31,7 +31,7 @@ namespace Mozi.HttpEmbedded.Test
 
             //开启认证
             //hs.UseAuth(AuthorizationType.Basic).SetUser("admin", "admin");
-
+            hs.SetIndexPage("index.html,index.htm");
             //开启静态文件支持
             hs.UseStaticFiles(pathStatic);
             hs.SetVirtualDirectory("Config", "Config");

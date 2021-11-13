@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace Mozi.Telnet
 {
@@ -79,6 +80,7 @@ namespace Mozi.Telnet
             System.Net.IPEndPoint endpoint = new System.Net.IPEndPoint(System.Net.IPAddress.Any, _iport);
             //允许端口复用
             _sc.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            _sc.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
             _sc.Bind(endpoint);
             _sc.Listen(_maxListenCount);
             //回调服务器启动事件
@@ -120,7 +122,6 @@ namespace Mozi.Telnet
 
             Socket client = server.EndAccept(iar);
 
-
             if (OnClientConnect != null)
             {
                 //TODO .NetCore不再支持异步委托，需要重新实现
@@ -143,7 +144,7 @@ namespace Mozi.Telnet
                 client.BeginReceive(so.Buffer, 0, so.Buffer.Length, SocketFlags.None, CallbackReceived, so);
                 if (OnReceiveStart != null)
                 {
-                    OnReceiveStart.BeginInvoke(this, new DataTransferArgs(), null, null);
+                    OnReceiveStart.Invoke(this, new DataTransferArgs() { Id = so.Id, IP = so.IP, Socket = server, Port = so.RemotePort, Client = client, State = so });
                 }
             }
             catch (Exception ex)
@@ -171,7 +172,6 @@ namespace Mozi.Telnet
                         so.ResetBuffer(iByteRead);
                         if (client.Available > 0)
                         {
-                            //Thread.Sleep(10);
                             client.BeginReceive(so.Buffer, 0, so.Buffer.Length, SocketFlags.None, CallbackReceived, so);
                         }
                         else
@@ -186,7 +186,7 @@ namespace Mozi.Telnet
                 }
                 catch (SocketException se)
                 {
-
+                   
                 }
                 finally
                 {
