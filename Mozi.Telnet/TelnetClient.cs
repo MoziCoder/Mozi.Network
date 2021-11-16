@@ -222,6 +222,14 @@ namespace Mozi.Telnet
         public bool Login { get; set; }
         public DateTime LoginTime { get; set; }
         public DateTime LogoutTime { get; set; }
+
+        public void Retry()
+        {
+            UserName = "";
+            Password = "";
+            Token = "";
+            IsValid = false;
+        }
     }
 
     /// <summary>
@@ -238,10 +246,34 @@ namespace Mozi.Telnet
     /// </summary>
     public class Session
     {
+        /// <summary>
+        /// 会话标识
+        /// </summary>
         public string Id { get; set; }
-        public Socket Console { get; set; }
         public string TerminalType { get; set; }
         public UserInfo User { get; set; }
         public bool Echo { get; set; }
+        public string InputBuffer { get; set; }
+        /// <summary>
+        /// 会话开始时间
+        /// </summary>
+        public DateTime StartTime { get; set; }
+        /// <summary>
+        /// 会话结束时间
+        /// </summary>
+        public DateTime StopTime { get; set; }
+        /// <summary>
+        /// 会话丢失时间
+        /// </summary>
+        public DateTime LostTime { get; set; }
+        /// <summary>
+        /// 会话是否丢失
+        /// </summary>
+        public bool Lost { get; set; }
+
+        public void ResetInput()
+        {
+            InputBuffer = "";
+        }
     }
 }

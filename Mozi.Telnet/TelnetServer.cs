@@ -20,9 +20,9 @@ namespace Mozi.Telnet
             do
             {
                 NegotiatePack np = null;
-                if ((data.Length >= indStart + 3)&&data[indStart] == (byte)TelnetCommand.IAC)
+                if ((data.Length >= indStart + 3) && data[indStart] == (byte)TelnetCommand.IAC)
                 {
-                    byte cmd = data[indStart+1];
+                    byte cmd = data[indStart + 1];
                     byte option = data[indStart + 2];
                     //带子选项的协商
                     if (cmd == (byte)TelnetCommand.SB)
@@ -93,10 +93,11 @@ namespace Mozi.Telnet
     }
 
     public delegate void NegotiateEvent(Socket so, NegotiatePack np);
-    public delegate void AuthEvent(Socket so, UserInfo info);
+    public delegate void AuthEvent(Socket so, Session se);
     public delegate void SessionStart(Session se);
     public delegate void SessionStop(Session se);
-    public delegate void CommandReceived();
+    public delegate void CommandReceived(Socket so, string command);
+    public delegate void DataEvent(Socket so, Session se, byte[] data);
 
     public struct ClientWindowSize
     {
@@ -111,9 +112,6 @@ namespace Mozi.Telnet
     {
         private int _port = 23;
 
-        private int _maxLoginAttempts = 3;
-        private int _maxSessions = 10;
-
         private ClientWindowSize _clientSize = new ClientWindowSize() { Width = 300, Height = 200 };
 
         private string _welcomeMessage = "TelnetServer {0} for .Net Platform\r\nDeveloped by MoziCoder workgroup\r\n";
@@ -122,21 +120,25 @@ namespace Mozi.Telnet
 
         private readonly SocketServer _sc = new SocketServer();
 
-        //会话合集
-        private List<Session> _session = new List<Session>();
-
-        public int MaxLoginAttempts
+        private SessionManager _sm = new SessionManager();
+        private Authenticator _auth = new Authenticator();
+        private List<ITelnetCommand> _commands = new List<ITelnetCommand>();
+        /// <summary>
+        /// 最大会话数
+        /// </summary>
+        public int MaxSessions
         {
-            get
-            {
-                return _maxLoginAttempts;
-            }
-            set
-            {
-                _maxLoginAttempts = value;
-            }
+            get { return _sm.MaxSessions; }
+            set { _sm.MaxSessions = value; }
         }
-
+        /// <summary>
+        /// 登陆最大尝试次数
+        /// </summary>
+        public int MaxLoginTryCount
+        {
+            get { return _sm.MaxLoginTryCount; }
+            set { _sm.MaxLoginTryCount = value; }
+        }
         /// <summary>
         /// 连接时的服务端信息
         /// </summary>
@@ -168,10 +170,26 @@ namespace Mozi.Telnet
             set { _clientSize = value; }
         }
         public DateTime StartTime { get; private set; }
+        /// <summary>
+        /// 时区
+        /// </summary>
         public String Timezone { get; private set; }
-
+        /// <summary>
+        /// 选项协商事件
+        /// </summary>
         public event NegotiateEvent OnNegotiate;
+        /// <summary>
+        /// 用户鉴权事件
+        /// </summary>
         public event AuthEvent OnAuth;
+        /// <summary>
+        /// 用户认证成功后，发送指令事件
+        /// </summary>
+        public event CommandReceived OnCommand;
+        /// <summary>
+        /// 用户认证成功后触发
+        /// </summary>
+        public event DataEvent OnData;
 
         public TelnetServer()
         {
@@ -185,12 +203,17 @@ namespace Mozi.Telnet
             _sc.AfterReceiveEnd += _sc_AfterReceiveEnd;
             _sc.AfterServerStop += _sc_AfterServerStop;
         }
+        public void AddUser(string username, string password)
+        {
+            _auth.SetUser(username, password);
+        }
 
         private void _sc_AfterServerStop(object sender, ServerArgs args)
         {
 
         }
 
+        //TODO 后续数据无法接收，查找原因
         private void _sc_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
             Console.WriteLine(BitConverter.ToString(args.Data));
@@ -200,51 +223,181 @@ namespace Mozi.Telnet
                 var nps = NegotiatePack.Parse(args.Data);
                 foreach (var np in nps)
                 {
-                    Negotiate(args.Socket, np);
+                    Negotiate(args.Id, args.Socket, np);
                 }
             }
             //数据部分
             else
             {
-                args.Socket.Send(args.Data);
+                //CTRL+C 中断连接
+                if (args.Data[0] == 0x03)
+                {
+                    _sm.Remove(args.Id);
+                    CloseSocket(args.Socket);
+                }
+                else
+                {
+                    var session = _sm.GetSession(args.Id);
+                    if (session.User.IsValid == false)
+                    {
+                        session.InputBuffer += System.Text.Encoding.ASCII.GetString(args.Data);
+                        //\r\n
+                        if (args.Data.Length >= 2 && args.Data[0] == 0x0D && args.Data[1] == 0x0A)
+                        {
+                            //用户名
+                            if (String.IsNullOrEmpty(session.User.UserName))
+                            {
+                                session.User.UserName = session.InputBuffer.Trim();
+                                session.ResetInput();
+                                Echo(args.Client, "\r\nPassword:");
+                            }
+
+                            if (string.IsNullOrEmpty(session.User.Password))
+                            {
+                                session.User.Password = session.InputBuffer.Trim();
+                                session.ResetInput();
+                            }
+
+                            if (!string.IsNullOrEmpty(session.User.UserName) && !string.IsNullOrEmpty(session.User.Password))
+                            {
+                                session.User.TryCount++;
+
+                                //开始验证用户密码
+                                if (_auth.Check(session.User.UserName, session.User.Password))
+                                {
+                                    session.User.LoginTime = DateTime.Now;
+                                    session.User.IsValid = true;
+                                    Echo(args.Socket, "\r\nLogin successed.\r\nPlease Enter help to list commands supported by server side.\r\n");
+                                }
+                                else
+                                {
+                                    if (session.User.TryCount >= _sm.MaxLoginTryCount)
+                                    {
+                                        Echo(args.Socket, "\r\nTrying too much times.");
+                                        CloseSocket(args.Socket);
+                                    }
+                                    else
+                                    {
+                                        session.User.Retry();
+                                        Echo(args.Socket, "\r\nUserName:");
+                                    }
+                                }
+                                if (OnAuth != null)
+                                {
+                                    OnAuth(args.Socket, session);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (String.IsNullOrEmpty(session.User.UserName))
+                            {
+                                Echo(args.Socket, args.Data);
+                            }
+                            else
+                            {
+                                Echo(args.Socket, "*");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Echo(args.Socket, args.Data);
+                        session.InputBuffer += System.Text.Encoding.ASCII.GetString(args.Data);
+                        
+                        if (args.Data.Length >= 2 && args.Data[0] == 0x0D && args.Data[1] == 0x0A){
+                            if (session.InputBuffer.Trim().Length > 0)
+                            {
+                                Execute(args.Socket, session);
+                            }
+                            else
+                            {
+                                session.ResetInput();
+                            }
+                        }
+
+                        if (OnData != null)
+                        {
+                            OnData(args.Socket, session, args.Data);
+                        }
+                    }
+                }
+            }
+        }
+        /// <summary>
+        /// 指令需要阻塞式执行
+        /// </summary>
+        /// <param name="sc"></param>
+        /// <param name="session"></param>
+        private void Execute(Socket sc,Session session)
+        {
+            string[] command = session.InputBuffer.Trim().Split(new char[] { ' ' },StringSplitOptions.RemoveEmptyEntries);
+            session.ResetInput();
+            if (command.Length > 0) {
+
+                if ( _commands.Exists(x => x.Name.ToLower().Equals(command[0])))
+                {
+
+                    string[] arrArgs = new string[command.Length - 1];
+                    if (arrArgs.Length > 0)
+                    {
+                        Array.Copy(command, 0, arrArgs, 1, arrArgs.Length);
+                    }
+                    var cmd = _commands.Find(x => x.Name.ToLower().Equals(command[0]));
+                    cmd.Invoke(arrArgs);
+                }
+                else
+                {
+                    Echo(sc, "\r\nThe command is not exists.Please retype the correct words.\r\n");   
+                }
+                //if (OnCommand != null)
+                //{
+                //    OnCommand(sc, System.Text.Encoding.ASCII.GetString(args.Data));
+                //}
             }
         }
 
         private void _sc_OnReceiveStart(object sender, DataTransferArgs args)
         {
-            
+
         }
 
         private void _sc_OnClientConnect(object sender, ClientConnectArgs args)
         {
 
-            List<byte> data=new List<byte>();
+            //List<byte> data = new List<byte>();
 
-            args.Client.Send(new NegotiatePack() { Command = TelnetCommand.WILL, Option = Options.ECHO }.Pack());
-            args.Client.Send(new NegotiatePack() { Command = TelnetCommand.WILL, Option = Options.SGA }.Pack());
-            args.Client.Send(new NegotiatePack() { Command = TelnetCommand.DO, Option = Options.TERMTYPE }.Pack());
-            args.Client.Send(new NegotiatePack() { Command = TelnetCommand.DO, Option = Options.NAWS }.Pack());
+            if (!_sm.Full)
+            {
 
-            ////发送连接欢迎信息
-            args.Client.Send(System.Text.Encoding.ASCII.GetBytes(_welcomeMessage));
-            ////发送协商内容
+                args.Client.Send(new NegotiatePack() { Command = TelnetCommand.WILL, Option = Options.ECHO }.Pack());
+                args.Client.Send(new NegotiatePack() { Command = TelnetCommand.WILL, Option = Options.SGA }.Pack());
+                args.Client.Send(new NegotiatePack() { Command = TelnetCommand.DO, Option = Options.TERMTYPE }.Pack());
+                args.Client.Send(new NegotiatePack() { Command = TelnetCommand.DO, Option = Options.NAWS }.Pack());
 
-            //args.Client.Send(new NegotiatePack() { Command = TelnetCommand.WILL, Option = Options.LINEMODE }.Pack());
-            args.Client.Send(new NegotiatePack() { Command = TelnetCommand.DO, Option = Options.AUTH }.Pack());
-            args.Client.Send(System.Text.Encoding.ASCII.GetBytes("\r\nAuthorization needed"));
-            args.Client.Send(System.Text.Encoding.ASCII.GetBytes("\r\nUsername:"));
-            //发送鉴权要求
-            
+                //发送连接欢迎信息
+                args.Client.Send(System.Text.Encoding.ASCII.GetBytes(_welcomeMessage));
+                //发送协商内容
+
+                //args.Client.Send(new NegotiatePack() { Command = TelnetCommand.WILL, Option = Options.LINEMODE }.Pack());
+                args.Client.Send(new NegotiatePack() { Command = TelnetCommand.DO, Option = Options.AUTH }.Pack());
+                Echo(args.Client, "\r\nAuthorization needed");
+                Echo(args.Client, "\r\nUsername:");
+                //发送鉴权要求
+
+                //开启会话管理
+                var session = _sm.GetSession(args.Id);
+            }
+            else
+            {
+                Echo(args.Client, "Server side session pool is full.Request refused.");
+                CloseSocket(args.Client);
+            }
         }
 
         private void _sc_OnServerStart(object sender, ServerArgs args)
         {
 
-        }
-
-        private Session GetSession(string sessionId)
-        {
-            return _session.Find(x => x.Id == sessionId);
         }
 
         /// <summary>
@@ -276,10 +429,29 @@ namespace Mozi.Telnet
             _sc.StopServer();
         }
 
+        private void Echo(Socket sc, byte[] data)
+        {
+            if (sc.Connected)
+            {
+                sc.Send(data);
+            }
+        }
+        private void Echo(Socket sc, string data)
+        {
+            Echo(sc, System.Text.Encoding.ASCII.GetBytes(data));
+        }
+        private void CloseSocket(Socket sc)
+        {
+            if (sc.Connected)
+            {
+                sc.Close();
+            }
+        }
         //protected bool Auth()
         //{
 
         //}
+
         /// <summary>
         /// 发 收
         /// WILL DO   发送者想激活某选项，接受者接收该选项请求
@@ -291,7 +463,7 @@ namespace Mozi.Telnet
         /// </summary>
         /// <param name="so"></param>
         /// <param name="np"></param>
-        public virtual void Negotiate(Socket so, NegotiatePack np)
+        public virtual void Negotiate(string sessionId, Socket so, NegotiatePack np)
         {
             if (!np.IsSub)
             {
@@ -307,7 +479,7 @@ namespace Mozi.Telnet
                                 np2.Option = Options.TERMTYPE;
                                 so.Send(np.Pack());
 
-                                NegotiateSubPack nsp = new NegotiateSubPack();          
+                                NegotiateSubPack nsp = new NegotiateSubPack();
                                 nsp.Option = Options.TERMTYPE;
                                 nsp.Parameter = new byte[] { 0x01 };
                                 so.Send(nsp.Pack());
@@ -320,7 +492,7 @@ namespace Mozi.Telnet
                                 np2.Option = Options.NAWS;
                                 so.Send(np2.Pack());
                                 NegotiateSubPack nsp = new NegotiateSubPack();
- 
+
                                 nsp.Option = Options.NAWS;
                                 List<byte> data = new List<byte>();
                                 data.AddRange(BitConverter.GetBytes(_clientSize.Width));
@@ -331,12 +503,18 @@ namespace Mozi.Telnet
                             break;
                     }
 
-                }else if(np.Command==TelnetCommand.DO){
+                } else if (np.Command == TelnetCommand.DO) {
 
-                }else if (np.Command == TelnetCommand.WONT){
+                } else if (np.Command == TelnetCommand.WONT) {
 
-                }else if (np.Command == TelnetCommand.DONT){
+                } else if (np.Command == TelnetCommand.DONT) {
 
+                }
+
+                if (np.Command == TelnetCommand.BRK)
+                {
+                    CloseSocket(so);
+                    _sm.Remove(sessionId);
                 }
             }
             else
@@ -355,5 +533,88 @@ namespace Mozi.Telnet
                 OnNegotiate(so, np);
             }
         }
+
+        public void AddCommand<T>() where T:ITelnetCommand
+        {
+           var ins=  Activator.CreateInstance(typeof(T));
+            _commands.Add((ITelnetCommand)ins);
+        }
+    }
+    public class SessionManager
+    {
+        private int _maxSessions = 10;
+        private int _maxLoginTryCount = 3;
+        /// <summary>
+        /// 最大会话数
+        /// </summary>
+        public int MaxSessions
+        {
+            get { return _maxSessions; }
+            set { _maxSessions = value; }
+        }
+        /// <summary>
+        /// 登陆最大尝试次数
+        /// </summary>
+        public int MaxLoginTryCount
+        {
+            get { return _maxLoginTryCount; }
+            set { _maxLoginTryCount = value; }
+        }
+        /// <summary>
+        /// 会话数
+        /// </summary>
+        public int Count
+        {
+            get { return _session.Count; }
+        }
+        /// <summary>
+        /// 会话是否满队
+        /// </summary>
+        public bool Full
+        {
+            get { return _session.Count >= MaxSessions; }
+        }
+        //会话合集
+        private List<Session> _session = new List<Session>();
+
+        public SessionManager()
+        {
+
+        }
+
+        public Session GetSession(string sessionId)
+        {
+            if (_session.Exists(x => x.Id == sessionId))
+            {
+                return _session.Find(x => x.Id == sessionId);
+            }
+            else
+            {
+                if (_session.Count < _maxSessions)
+                {
+                    lock (_session)
+                    {
+                        var se = new Session()
+                        {
+                            Id = sessionId,
+                            StartTime = DateTime.Now,
+                            User=new UserInfo()
+                        };
+                        _session.Add(se);
+                        return se;
+                    }
+                }
+                else
+                {
+                    throw new Exception("Server side session pool is full.");
+                }
+            }
+        }
+
+        public int Remove(string sessionId)
+        {
+            return _session.RemoveAll(x => x.Id.Equals(sessionId));
+        }
+
     }
 }

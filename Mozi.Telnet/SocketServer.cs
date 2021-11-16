@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Net.Sockets;
-using System.Threading;
 
 namespace Mozi.Telnet
 {
@@ -80,7 +79,6 @@ namespace Mozi.Telnet
             System.Net.IPEndPoint endpoint = new System.Net.IPEndPoint(System.Net.IPAddress.Any, _iport);
             //允许端口复用
             _sc.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            _sc.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
             _sc.Bind(endpoint);
             _sc.Listen(_maxListenCount);
             //回调服务器启动事件
@@ -122,14 +120,7 @@ namespace Mozi.Telnet
 
             Socket client = server.EndAccept(iar);
 
-            if (OnClientConnect != null)
-            {
-                //TODO .NetCore不再支持异步委托，需要重新实现
-                OnClientConnect(this, new ClientConnectArgs()
-                {
-                    Client = client
-                });
-            }
+
             StateObject so = new StateObject()
             {
                 WorkSocket = client,
@@ -138,14 +129,28 @@ namespace Mozi.Telnet
                 ConnectTime = DateTime.Now,
                 RemotePort = ((System.Net.IPEndPoint)client.RemoteEndPoint).Port,
             };
+            if (OnClientConnect != null)
+            {
+                //TODO .NetCore不再支持异步委托，需要重新实现
+                OnClientConnect(this, new ClientConnectArgs()
+                {
+                    Id=so.Id,
+                    IP=so.IP,
+                    ConnectTime=so.ConnectTime,
+                    RemotePort=so.RemotePort,
+                    Client = client
+                });
+            }
             _socketDocker.TryAdd(so.Id, client);
             try
             {
+
                 client.BeginReceive(so.Buffer, 0, so.Buffer.Length, SocketFlags.None, CallbackReceived, so);
                 if (OnReceiveStart != null)
                 {
                     OnReceiveStart.Invoke(this, new DataTransferArgs() { Id = so.Id, IP = so.IP, Socket = server, Port = so.RemotePort, Client = client, State = so });
                 }
+
             }
             catch (Exception ex)
             {
@@ -186,7 +191,7 @@ namespace Mozi.Telnet
                 }
                 catch (SocketException se)
                 {
-                   
+
                 }
                 finally
                 {
@@ -198,6 +203,7 @@ namespace Mozi.Telnet
                 InvokeAfterReceiveComplete(so, client);
             }
         }
+
         private void InvokeAfterReceiveComplete(StateObject so, Socket client)
         {
             try
@@ -216,6 +222,19 @@ namespace Mozi.Telnet
                             Client = client,
                             State = so
                         });
+                }
+                //循环等待消息
+                if (so.WorkSocket.Connected)
+                {
+                    StateObject so2 = new StateObject()
+                    {
+                        WorkSocket = so.WorkSocket,
+                        Id = so.Id,
+                        IP = so.IP,
+                        ConnectTime = so.ConnectTime,
+                        RemotePort = so.RemotePort,
+                    };
+                    so.WorkSocket.BeginReceive(so2.Buffer, 0, so2.Buffer.Length, SocketFlags.None, CallbackReceived, so2);
                 }
             }
             finally

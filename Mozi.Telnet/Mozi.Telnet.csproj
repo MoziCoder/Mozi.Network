@@ -38,6 +38,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbsClassEnum.cs" />
+    <Compile Include="Auth.cs" />
+    <Compile Include="ITelnetCommand.cs" />
     <Compile Include="ServerEvent.cs" />
     <Compile Include="SocketServer.cs" />
     <Compile Include="StateObject.cs" />
@@ -45,6 +48,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TelnetServer.cs" />
     <Compile Include="User.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="License.md" />
+    <None Include="Readme.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

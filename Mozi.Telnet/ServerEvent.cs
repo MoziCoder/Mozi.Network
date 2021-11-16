@@ -26,6 +26,21 @@ namespace Mozi.Telnet
 
     public class ClientConnectArgs : EventArgs
     {
+        /// <summary>
+        /// 会话标识符
+        /// </summary>
+        public string Id { get; set; }
+        public string IP { get; set; }
+        /// <summary>
+        /// 远端端口
+        /// </summary>
+        public int RemotePort = 0;
+
+        /// <summary>
+        /// 连接时间  
+        /// </summary>  
+        public DateTime ConnectTime { get; set; }
+
         private Socket _socket;
 
         public Socket Client
