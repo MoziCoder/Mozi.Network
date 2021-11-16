@@ -119,15 +119,6 @@ namespace Mozi.HttpEmbedded
 
             Socket client = server.EndAccept(iar);
 
-
-            if (OnClientConnect != null)
-            {
-                //TODO .NetCore不再支持异步委托，需要重新实现
-                OnClientConnect(this, new ClientConnectArgs()
-                {
-                    Client = client
-                });
-            }
             StateObject so = new StateObject()
             {
                 WorkSocket = client,
@@ -136,6 +127,18 @@ namespace Mozi.HttpEmbedded
                 ConnectTime = DateTime.Now,
                 RemotePort = ((System.Net.IPEndPoint)client.RemoteEndPoint).Port,
             };
+            if (OnClientConnect != null)
+            {
+                //TODO .NetCore不再支持异步委托，需要重新实现
+                OnClientConnect(this, new ClientConnectArgs()
+                {
+                    Id = so.Id,
+                    IP = so.IP,
+                    ConnectTime = so.ConnectTime,
+                    RemotePort = so.RemotePort,
+                    Client = client
+                });
+            }
             _socketDocker.TryAdd(so.Id, client);
             try
             {
