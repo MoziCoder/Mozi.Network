@@ -113,7 +113,7 @@ namespace Mozi.Telnet
         private int _port = 23;
 
         private ClientWindowSize _clientSize = new ClientWindowSize() { Width = 300, Height = 200 };
-
+        private string _serverName = "MoziTelnetServer";
         private string _welcomeMessage = "TelnetServer {0} for .Net Platform\r\nDeveloped by MoziCoder workgroup\r\n";
         private string _loginMessage = "Login successed.\r\nPlease enter the command that you want to execute,or  'help' to list commands\r\n";
         private string _username = "Username:", _password = "Password:";
@@ -123,6 +123,22 @@ namespace Mozi.Telnet
         private SessionManager _sm = new SessionManager();
         private Authenticator _auth = new Authenticator();
         private List<ITelnetCommand> _commands = new List<ITelnetCommand>();
+
+        /// <summary>
+        /// 指令集合
+        /// </summary>
+        protected internal List<ITelnetCommand> Commands
+        {
+            get
+            {
+                return _commands;
+            }
+            set
+            {
+                _commands = value;
+            }
+        }
+
         /// <summary>
         /// 最大会话数
         /// </summary>
@@ -202,6 +218,8 @@ namespace Mozi.Telnet
             _sc.OnReceiveStart += _sc_OnReceiveStart;
             _sc.AfterReceiveEnd += _sc_AfterReceiveEnd;
             _sc.AfterServerStop += _sc_AfterServerStop;
+            Help help = new Help(this);
+            _commands.Add(help);
         }
         public void AddUser(string username, string password)
         {
@@ -240,7 +258,7 @@ namespace Mozi.Telnet
                     var session = _sm.GetSession(args.Id);
                     if (session.User.IsValid == false)
                     {
-                        session.InputBuffer += System.Text.Encoding.ASCII.GetString(args.Data);
+                        session.InputBuffer += System.Text.Encoding.Default.GetString(args.Data);
                         //\r\n
                         if (args.Data.Length >= 2 && args.Data[0] == 0x0D && args.Data[1] == 0x0A)
                         {
@@ -303,7 +321,7 @@ namespace Mozi.Telnet
                     else
                     {
                         Echo(args.Socket, args.Data);
-                        session.InputBuffer += System.Text.Encoding.ASCII.GetString(args.Data);
+                        session.InputBuffer += System.Text.Encoding.Default.GetString(args.Data);
                         
                         if (args.Data.Length >= 2 && args.Data[0] == 0x0D && args.Data[1] == 0x0A){
                             if (session.InputBuffer.Trim().Length > 0)
@@ -331,28 +349,40 @@ namespace Mozi.Telnet
         /// <param name="session"></param>
         private void Execute(Socket sc,Session session)
         {
-            string[] command = session.InputBuffer.Trim().Split(new char[] { ' ' },StringSplitOptions.RemoveEmptyEntries);
+            string[] pattern = session.InputBuffer.Trim().Split(new char[] { ' ' },StringSplitOptions.RemoveEmptyEntries);
             session.ResetInput();
-            if (command.Length > 0) {
+            if (pattern.Length > 0) {
 
-                if ( _commands.Exists(x => x.Name.ToLower().Equals(command[0])))
+                var cmd = pattern[0];
+                var isHelp = cmd.EndsWith("?");
+                cmd = cmd.TrimEnd(new char[] { '?', '/' });
+                if ( _commands.Exists(x => x.Name.ToLower().Equals(cmd)))
                 {
 
-                    string[] arrArgs = new string[command.Length - 1];
+                    string[] arrArgs = new string[pattern.Length - 1];
                     if (arrArgs.Length > 0)
                     {
-                        Array.Copy(command, 0, arrArgs, 1, arrArgs.Length);
+                        Array.Copy(pattern, 1, arrArgs, 0, arrArgs.Length);
                     }
-                    var cmd = _commands.Find(x => x.Name.ToLower().Equals(command[0]));
-                    cmd.Invoke(arrArgs);
+                    var instance = _commands.Find(x => x.Name.ToLower().Equals(cmd));
+                    string message = "";
+                    if (!isHelp)
+                    {
+                        instance.Invoke(ref message, arrArgs);
+                    }
+                    else
+                    {
+                        message = instance.Descript();
+                    }
+                    Echo(sc, message);
                 }
                 else
                 {
-                    Echo(sc, "\r\nThe command is not exists.Please retype the correct words.\r\n");   
+                    Echo(sc, "The command is not exists.Please retype the correct words.\r\n");   
                 }
                 //if (OnCommand != null)
                 //{
-                //    OnCommand(sc, System.Text.Encoding.ASCII.GetString(args.Data));
+                //    OnCommand(sc, System.Text.Encoding.Default.GetString(args.Data));
                 //}
             }
         }
@@ -376,7 +406,7 @@ namespace Mozi.Telnet
                 args.Client.Send(new NegotiatePack() { Command = TelnetCommand.DO, Option = Options.NAWS }.Pack());
 
                 //发送连接欢迎信息
-                args.Client.Send(System.Text.Encoding.ASCII.GetBytes(_welcomeMessage));
+                args.Client.Send(System.Text.Encoding.Default.GetBytes(_welcomeMessage));
                 //发送协商内容
 
                 //args.Client.Send(new NegotiatePack() { Command = TelnetCommand.WILL, Option = Options.LINEMODE }.Pack());
@@ -438,7 +468,7 @@ namespace Mozi.Telnet
         }
         private void Echo(Socket sc, string data)
         {
-            Echo(sc, System.Text.Encoding.ASCII.GetBytes(data));
+            Echo(sc, System.Text.Encoding.Default.GetBytes(data));
         }
         private void CloseSocket(Socket sc)
         {
@@ -523,7 +553,7 @@ namespace Mozi.Telnet
                 {
                     NegotiateSubPack nsp = new NegotiateSubPack();
                     nsp.Option = Options.TERMTYPE;
-                    nsp.Parameter = new byte[] { 0x00, (byte)'M', (byte)'Z' };
+                    nsp.Parameter = System.Text.Encoding.Default.GetBytes(_serverName);
                     so.Send(nsp.Pack());
                 }
             }
@@ -534,16 +564,28 @@ namespace Mozi.Telnet
             }
         }
 
-        public void AddCommand<T>() where T:ITelnetCommand
+        //public void AddCommand<ITelnetCommand>()
+        //{
+
+        //}
+        /// <summary>
+        /// 增加命令，命令必须继承自<see cref="ITelnetCommand"/>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public void AddCommand<T>() where T : ITelnetCommand
         {
-           var ins=  Activator.CreateInstance(typeof(T));
-            _commands.Add((ITelnetCommand)ins);
+            var ins = Activator.CreateInstance(typeof(T));
+            if (!_commands.Exists(x => x.Name.ToLower() == typeof(T).Name))
+            {
+                _commands.Add((ITelnetCommand)ins);
+            }
         }
     }
     public class SessionManager
     {
         private int _maxSessions = 10;
         private int _maxLoginTryCount = 3;
+
         /// <summary>
         /// 最大会话数
         /// </summary>

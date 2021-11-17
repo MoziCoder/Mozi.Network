@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Sockets;
 
 namespace Mozi.Telnet
 {
@@ -235,7 +234,7 @@ namespace Mozi.Telnet
     /// <summary>
     /// Telenet为全ASCII模式
     /// </summary>
-    public class TelnetClient
+    internal class TelnetClient
     {
         private int _port = 23;
         private string _host = "";
