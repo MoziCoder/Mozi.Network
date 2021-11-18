@@ -1,13 +1,16 @@
 # Mozi.Network
 
-Mozi.Network是基于.Net开发的网络应用组件套装。
+Mozi.Network是基于.Net开发的网络应用组件套装。整个项目的主要目标是,实现各种常见的网络应用层协议。所有的模块在实现时均尽可能的考虑到了实际的应用场景，保证模块精巧，功能完备，不破坏宿主程序的逻辑结构。
 
 ## 功能集合
-- [HttpEmbedded][httpembedded] Http服务器
-- [SSDP][ssdp] SSDP/UPNP实现
-- [StateService][stateservice] 心跳服务组件
-- [Telnet][telnet] Telnet服务器及客户端实现
-
+- [HttpEmbedded][httpembedded] 
+	Http服务器
+- [SSDP][ssdp] 
+	SSDP/UPNP实现
+- [StateService][stateservice] 
+	心跳服务组件
+- [Telnet][telnet] 
+	Telnet服务器及客户端实现
 
 ## 项目地址
 
@@ -16,17 +19,6 @@ Mozi.Network是基于.Net开发的网络应用组件套装。
 - [Gitee][gitee]
 
 - [CSDN][codechina]
-
-## 程序下载
-
-~~~shell
-
-	dotnet add package Mozi.HttpEmbedded --version 1.2.5
-
-~~~
-## 项目依赖  
-
-无
 
 ## 功能与版本迭代
 	不定期对Mozi.Network的功能进行完善,解决各种BUG。应用中需要遇到的无法解决的问题，请联系软件作者。
