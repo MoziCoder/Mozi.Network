@@ -1,6 +1,6 @@
 ﻿namespace Mozi.Telnet
 {
-    public interface ITelnetCommand
+    public interface ITelnetShellCommand
     {
         /// <summary>
         /// 命令名
@@ -23,8 +23,10 @@
     }
 
 
-
-    public class Shell : ITelnetCommand
+    /// <summary>
+    /// 系统指令调用入口，调用能力取决于于运行环境
+    /// </summary>
+    public class Shell : ITelnetShellCommand
     {
         public string Name => this.GetType().Name;
 
@@ -43,24 +45,19 @@
     /// <summary>
     /// 内置指令
     /// </summary>
-    internal class Help : ITelnetCommand
+    internal class Help : ITelnetShellCommand
     {
         private TelnetServer _ts;
-
         public Help(TelnetServer ts)
         {
             _ts = ts;
         }
-
         public string Name => this.GetType().Name;
-
         public string Title => "帮助";
-
         public string Descript()
         {
             return $"{Title}\r\n列出所有命令\r\n";
         }
-
         public bool Invoke(ref string message,params string[] args)
         {
             message = "";

@@ -56,7 +56,6 @@ namespace Mozi.Telnet
         {
             return (object)b != null && (object)a != null && a.Tag.Equals(b.Tag);
         }
-
         /// <summary>
         /// жиди!=
         /// <para>
