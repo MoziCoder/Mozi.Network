@@ -25,6 +25,8 @@ namespace Mozi.HttpEmbedded
     //TODO 2021/11/22 增加禁用缓存的功能 禁止304
     //TODO 2021/11/22 增加流量统计/访问统计功能
 
+    //TODO 2021/11/22 实现简易的API处理能力,OnRequest("{action}/{id}",Func<T,T>{});
+
     //Transfer-Encoding: chunked 主要是为解决服务端无法预测Content-Length的问题
 
     /*断点续传*/
@@ -48,7 +50,10 @@ namespace Mozi.HttpEmbedded
 
         private int _port = 80;
         private int _iporthttps = 443;
+
+        //最大文件大小
         private long _maxFileSize = 10 * 1024 * 1024;
+        //最大请求尺寸
         private long _maxRequestSize = 10 * 1024 * 1024;
 
         //禁止直接IP访问，但应排除本地地址127.0.0.1
@@ -608,8 +613,8 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 配置虚拟目录
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="path"></param>
+        /// <param name="name">访问名</param>
+        /// <param name="path">真实相对路径</param>
         /// <returns></returns>
         public HttpServer SetVirtualDirectory(string name, string path)
         {
@@ -672,7 +677,7 @@ namespace Mozi.HttpEmbedded
             _serverName = serverName;
             return this;
         }
-        //TODO HTTPS
+        //TODO HTTPS 功能尚未完全实现
         public CertManager UseHttps()
         {
             _certMg = new CertManager();

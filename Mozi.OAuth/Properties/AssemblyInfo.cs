@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // 有关程序集的一般信息由以下
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("Mozi.DNS")]
-[assembly: AssemblyDescription("DNS服务器")]
+[assembly: AssemblyTitle("Mozi.OAuth")]
+[assembly: AssemblyDescription("OAuth认证系统")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("MoziCoder workgroup")]
-[assembly: AssemblyProduct("Mozi.DNS")]
-[assembly: AssemblyCopyright("Copyright © MoziCoder  2021")]
+[assembly: AssemblyProduct("Mozi.OAuth")]
+[assembly: AssemblyCopyright("Copyright ©  MoziCode 2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // 如果此项目向 COM 公开，则下列 GUID 用于类型库的 ID
-[assembly: Guid("5edd104a-1409-43b8-b2b8-e0c39d4b9d1b")]
+[assembly: Guid("9796360f-5754-4179-99ad-a655e7872bf8")]
 
 // 程序集的版本信息由下列四个值组成: 
 //

@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="License.md" />
+    <None Include="Mozi.Telnet.nuspec" />
     <None Include="Readme.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

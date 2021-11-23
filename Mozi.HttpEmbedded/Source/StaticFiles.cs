@@ -76,7 +76,7 @@ namespace Mozi.HttpEmbedded.Source
         /// 设置虚拟目录
         /// </summary>
         /// <param name="name">虚拟路径名</param>
-        /// <param name="realpath">磁盘路径</param>
+        /// <param name="realpath">磁盘路径 相对程序目录</param>
         /// <returns></returns>
         /// <remarks>虚拟路径名不能与ROOT路径的子路径名重复，否则设置会被忽略</remarks>
         public StaticFiles SetVirtualDirectory(string name, string realpath)

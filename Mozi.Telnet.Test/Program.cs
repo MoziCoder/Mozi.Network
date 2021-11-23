@@ -16,6 +16,8 @@ namespace Mozi.Telnet.Test
             ts.AddCommand<Shell>();
             //配置端口及启动服务
             ts.SetPort(23).Start();
+            short a=0b10000000;
+            Console.WriteLine(a << 1);
             Console.ReadLine();
         }
     }
