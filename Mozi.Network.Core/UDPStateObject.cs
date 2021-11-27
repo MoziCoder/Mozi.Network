@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using Mozi.Network.Core;
 
 namespace Mozi.NTP
 {

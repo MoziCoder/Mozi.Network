@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using Mozi.NTP;
 
-namespace Mozi.NTP
+namespace Mozi.Network.Core
 {
     /// <summary>
     /// UDP套接字

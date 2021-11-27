@@ -1,21 +1,35 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using Mozi.NTP;
 
-namespace Mozi.NTP
+namespace Mozi.Network.Core
 {
+    //TODO 多网卡绑定IPAddress.Any会出现无法接收的问题
+
     /// <summary>
     /// UDP套接字
     /// </summary>
-    public class UDPSocket
+    public class UDPSocketBroadcast
     {
-        protected int _iport = 123;
+
+        protected int _multicastGroupPort = 0;
+        protected string _multicastGroupAddress = "255.255.255.255";
 
         protected Socket _sc;
 
-        private EndPoint _endPoint;
+        //private EndPoint _remoteEndPoint=new IPEndPoint(IPAddress.Any, 0);
 
-        public UDPSocket()
+        private IPAddress _bindingAddress = IPAddress.Any;
+        /// <summary>
+        /// 绑定的本地地址
+        /// </summary>
+        public IPAddress BindingAddress { get { return _bindingAddress; } set { _bindingAddress = value; } }
+
+        public bool AllowLoopbackMessage { get; set; }
+
+
+        public UDPSocketBroadcast()
         {
 
         }
@@ -41,16 +55,30 @@ namespace Mozi.NTP
         /// </summary>
         public int Port
         {
-            get { return _iport; }
+            get { return _multicastGroupPort; }
         }
         public Socket SocketMain
         {
             get { return _sc; }
         }
         /// <summary>
+        /// 组播地址
+        /// </summary>
+        public string MulticastAddress
+        {
+            get { return _multicastGroupAddress; }
+        }
+        /// <summary>
+        /// 组播端口
+        /// </summary>
+        public int MulticastPort
+        {
+            get { return _multicastGroupPort; }
+        }
+        /// <summary>
         /// 关闭服务器
         /// </summary>
-        public void Shutdown()
+        public void StopServer()
         {
             try
             {
@@ -66,30 +94,51 @@ namespace Mozi.NTP
             }
         }
         /// <summary>
+        /// 加入组播
+        /// <para>
+        /// 239.0.0.0～239.255.255.255为本地管理组播地址，仅在特定的本地范围内有效。
+        /// </para>
+        /// </summary>
+        /// <param name="multicastGroupAddress"></param>
+        public void JoinMulticastGroup(string multicastGroupAddress)
+        {
+            _multicastGroupAddress = multicastGroupAddress;
+            MulticastOption mcastOpt = new MulticastOption(IPAddress.Parse(multicastGroupAddress), _bindingAddress);
+            _sc.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, mcastOpt);
+        }
+        /// <summary>
+        /// 离开组播
+        /// </summary>
+        /// <param name="multicastGroupAddress"></param>
+        public void LeaveMulticastGroup(string multicastGroupAddress)
+        {
+            MulticastOption mcastOpt = new MulticastOption(IPAddress.Parse(multicastGroupAddress), _bindingAddress);
+            _sc.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.DropMembership, mcastOpt);
+        }
+        /// <summary>
         /// 启动服务器
         /// </summary>
-        /// <param name="port"></param>
-        public void Start(int port)
+        /// <param name="multicastGroupPort"></param>
+        public void StartServer(string multicastGroupAddress, int multicastGroupPort)
         {
-            _iport = port;
+            _multicastGroupPort = multicastGroupPort;
             if (_sc == null)
             {
                 _sc = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                //设置此处防止转发消息包时出现 UDP 远程主机未连接的问题
-                const uint IOC_IN = 0x80000000;
-                int IOC_VENDOR = 0x18000000;
-                int SIO_UDP_CONNRESET = (int)(IOC_IN | IOC_VENDOR | 12);
-                _sc.IOControl(SIO_UDP_CONNRESET, new byte[] { Convert.ToByte(false) }, new byte[4]);
             }
             else
             {
                 _sc.Close();
             }
-            _endPoint = new IPEndPoint(IPAddress.Any, _iport);
+            IPEndPoint endpoint = new IPEndPoint(_bindingAddress, _multicastGroupPort);
             //允许端口复用
             _sc.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            _sc.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.IpTimeToLive, 32);
-            _sc.Bind(_endPoint);
+            _sc.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 10);
+            _sc.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastInterface, 0);
+            //先绑定 后加入组播，否则XP/2003系统下会报错
+            _sc.Bind(endpoint);
+            _sc.MulticastLoopback = AllowLoopbackMessage;
+            JoinMulticastGroup(multicastGroupAddress);
 
             //回调服务器启动事件
             UDPStateObject so = new UDPStateObject()
@@ -98,7 +147,7 @@ namespace Mozi.NTP
                 Id = Guid.NewGuid().ToString(),
                 //IP = ((System.Net.IPEndPoint)client.RemoteEndPoint).Address.ToString(),
                 //RemotePort = ((System.Net.IPEndPoint)client.RemoteEndPoint).Port,
-                RemoteEndPoint = new IPEndPoint(IPAddress.Any, 0)
+                RemoteEndPoint = new IPEndPoint(_bindingAddress, 0)
             };
 
             if (OnServerStart != null)
@@ -150,6 +199,13 @@ namespace Mozi.NTP
                 InvokeAfterReceiveEnd(so, client, (IPEndPoint)remote);
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="so"></param>
+        /// <param name="client"></param>
+        /// <param name="remote"></param>
+
         private void InvokeAfterReceiveEnd(UDPStateObject so, Socket client, EndPoint remote)
         {
             if (AfterReceiveEnd != null)
@@ -167,8 +223,9 @@ namespace Mozi.NTP
             {
                 WorkSocket = _sc,
                 Id = Guid.NewGuid().ToString(),
-                //IP = ((IPEndPoint)remote).Address.ToString(),
-                RemoteEndPoint = new IPEndPoint(IPAddress.Any, 0)
+                //IP = ((System.Net.IPEndPoint)client.RemoteEndPoint).Address.ToString(),
+                //RemotePort = ((System.Net.IPEndPoint)client.RemoteEndPoint).Port,
+                RemoteEndPoint = new IPEndPoint(_bindingAddress, 0)
             };
             _sc.BeginReceiveFrom(stateobject.Buffer, 0, stateobject.Buffer.Length, SocketFlags.None, ref stateobject.RemoteEndPoint, new AsyncCallback(CallbackReceived), stateobject);
         }
