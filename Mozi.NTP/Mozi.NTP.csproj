@@ -49,5 +49,13 @@
     <Compile Include="UDPSocketBroadcast.cs" />
     <Compile Include="UDPStateObject.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Readme.md" />
+    <None Include="rfc1305.pdf" />
+    <None Include="rfc5905.txt.pdf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="RFC5905 Network Time Protocol Version 4 Protocol and Algorithms Specification.htm" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
