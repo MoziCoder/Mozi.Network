@@ -12,7 +12,7 @@ namespace Mozi.NTP
     public class UDPSocketBroadcast
     {
 
-        protected int _multicastGroupPort = NTPProtocol.ProtocolPort;
+        protected int _multicastGroupPort = NTPProtocol.Port;
         protected string _multicastGroupAddress = NTPProtocol.MulticastAddress;
 
         protected Socket _sc;

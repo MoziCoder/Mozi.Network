@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 
 namespace Mozi.NTP
 {
@@ -17,7 +18,7 @@ namespace Mozi.NTP
     {
         private readonly UDPSocket _socket;
 
-        private int _port = NTPProtocol.ProtocolPort;
+        private int _port = NTPProtocol.Port;
         /// <summary>
         /// 服务端端口
         /// </summary>
@@ -66,6 +67,8 @@ namespace Mozi.NTP
         {
             try
             {
+                DateTime dtNow = DateTime.Now.ToUniversalTime();
+
                 NTPPackage np = NTPPackage.Parse(args.Data);
                 TimeSyncArgs ta = new TimeSyncArgs()
                 {
@@ -79,15 +82,30 @@ namespace Mozi.NTP
                 };
                 if (OnTimePackageReceived == null)
                 {
+                    
+                    //theta = T(B) - T(A) = 1 / 2 * [(T2 - T1) + (T3 - T4)]
+                    //delta = T(ABA) = (T4 - T1) - (T3 - T2).
+
                     NTPPackage npr = new NTPPackage()
                     {
-                        LeapIndicator=0,
-                        VersionNumber=3,
-                        Mode=4,
-                        Stratum=0,
-                        Pool=10,
-                        //Precision=Dateti
+                        //TODO 系统闰秒判断
+                        LeapIndicator = 0,
+                        VersionNumber = np.VersionNumber > (int)NTPVersion.Ver4 ? (byte)NTPVersion.Ver4 : np.VersionNumber,
+                        Mode = (int)NTPWorkMode.Server,
+                        //时钟层数为1
+                        Stratum = 1,
+                        Pool = 10,
+                        //本地时钟精度 约15.6ms
+                        Precision = 250,
+                        RootDelay = new ShortTime() { Integer = 0, Fraction = 0 },
+                        //RootDispersion = new ShortTime() { Seconds = 10.0156m },
+                        ReferenceTime=new TimeStamp() { UniversalTime=dtNow},
+                        Origin =np.TransmitTime,
+                        ReceiveTime = np.LocalReceiveTime,
+                        TransmitTime = new TimeStamp() { UniversalTime = dtNow },
                     };
+                    Array.Copy(ClockIdentifier.LOCL.Pack, npr.ReferenceIdentifier, npr.ReferenceIdentifier.Length);
+                    args.Socket.SendTo(npr.Pack(), new IPEndPoint(IPAddress.Parse(args.IP), args.Port));
                 }
                 else
                 {

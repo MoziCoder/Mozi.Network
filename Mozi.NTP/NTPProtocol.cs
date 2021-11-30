@@ -4,13 +4,27 @@ using System.ComponentModel;
 
 namespace Mozi.NTP
 {
+
+    //TODO 加密验证部分未处理
+    //TODO KOD包未处理
+    //TODO NTP控制包未实现
+
     //RFC1305 1992 NTP Version3 
     //RFC5905 2010 NTP Version4 修订 RFC7822,8573,9109  
 
     //参考RFC NTPv4实现 并向下兼容NTPv3
+    //| org  | T1      | origin timestamp   |
+    //| rec  | T2      | receive timestamp  |
+    //| xmt  | T3      | transmit timestamp |
+    //| dst  | T4      | destination timestamp
+    //| t    | t       | packet time
 
     //T(t) = T(t_0) + R(t_0)(t-t_0) + 1/2 * D(t_0)(t-t_0)^2 + e,
+    //NTP控制报文
+    public class NTPControlPackage
+    {
 
+    }
     /// <summary>
     /// NTP协议采取定长数据包格式
     /// </summary>
@@ -53,7 +67,7 @@ namespace Mozi.NTP
         /// Poll：8bits,轮询时间，即两个连续NTP报文之间的时间间隔。
         /// 值为log2N的值，取值范围为v3 6-10 v4 4-17
         /// </summary>
-        public byte Pool { get; set; }               
+        public byte Pool { get; set; }
         public ushort PoolInterval
         {
             get
@@ -64,12 +78,13 @@ namespace Mozi.NTP
         /// <summary>
         /// Precision：时钟精度,8bits,系统时钟的精度。
         /// </summary>
-        public byte Precision { get; set; }  
+        public byte Precision { get; set; }
+        //TODO 此处算法是否有问题？
         public double PrecisionSecond
         {
-            get 
+            get
             {
-                return Math.Round(1d / (1L << -Precision), 6,MidpointRounding.AwayFromZero);
+                return Math.Round(1d / (1L << -Precision), 6, MidpointRounding.AwayFromZero);
             }
             set
             {
@@ -98,7 +113,7 @@ namespace Mozi.NTP
         /// 0 - DTS Digital Time Service
         /// 1 - ATOM    Atomic clock (calibrated)
         /// 1 - VLF VLF radio (OMEGA, etc.)
-        /// 1 - callsign    Generic radio
+        /// 1 - call sign    Generic radio
         /// 1 - LORC    LORAN-C radionavigation
         /// 1 - GOES    GOES UHF environment satellite
         /// 1 - GPS GPS UHF satellite positioning
@@ -124,29 +139,23 @@ namespace Mozi.NTP
         /// USNO - USNO telephone modem                                    
         /// PTB  - European telephone modem
         /// </summary>
-        public readonly byte[] ReferenceIdentifier = new byte[4]; 
+        public readonly byte[] ReferenceIdentifier = new byte[4];
         /// <summary>
         /// Reference Timestamp：64bits,系统时钟最后一次被设定或更新的时间。
         /// </summary>
-        public TimeStamp ReferenceTime = new TimeStamp();  
+        public TimeStamp ReferenceTime = new TimeStamp();
         /// <summary>
         /// Originate Timestamp：64bits,NTP请求报文离开发送端时发送端的本地时间。
         /// </summary>
-        public TimeStamp OriginateTime = new TimeStamp();   
+        public TimeStamp Origin = new TimeStamp();
         /// <summary>
         /// Receive Timestamp：64bits,NTP请求报文到达接收端时接收端的本地时间。
         /// </summary>
-        public TimeStamp ReceiveTime = new TimeStamp();     
+        public TimeStamp ReceiveTime = new TimeStamp();
         /// <summary>
         /// Transmit Timestamp：64bits,应答报文离开应答者时应答者的本地时间。
         /// </summary>
         public TimeStamp TransmitTime = new TimeStamp();
-        /// <summary>
-        /// Destination Timestamp:64bits
-        /// NTPv4扩展
-        /// </summary>
-        public TimeStamp DestinationTime = new TimeStamp();   // 
-
         /// <summary>
         /// 验证信息 
         /// V3版本采用DES加密算法
@@ -156,8 +165,36 @@ namespace Mozi.NTP
         /// </summary>
         public byte[] Authenticator;   //Authenticator：96bits,验证信息。
 
+        internal TimeStamp LocalReceiveTime = new TimeStamp();
+
         public byte[] Pack()
         {
+            double skew=0d;
+            //TODO 系统最大时钟误差有问题
+            //if (LeapIndicator == 0x11 || (DateTime.UtcNow - ReferenceTime.UniversalTime).TotalSeconds > NTPProtocol.MaxAge)
+            //{
+            //    skew = NTPProtocol.MasSkew;
+            //}
+            //else
+            //{
+            //    skew = (DateTime.UtcNow - ReferenceTime.UniversalTime).TotalSeconds / 2;
+            //}
+            //RootDispersion.Seconds = (decimal)Math.Round((1 << Precision) + skew,5);
+            //if (sys.leap = 112or(sys.clock – sys.reftime) > NTP.MAXAGE)
+            //        skew← NTP.MAXSKEW;
+            //else
+            //    skew←φ(sys.clock − sys.reftime);
+            //pkt.rootdispersion ←sys.rootdispersion + (1 << sys.precision) + skew;
+                  // | s.leap < --p.leap |
+                  //| s.stratum < --p.stratum + 1 |
+                  //| s.offset < --THETA |
+                  //| s.jitter < --PSI |
+                  //| s.rootdelay < --p.delta_r + delta |
+                  //| s.rootdisp < --p.epsilon_r + p.epsilon + |p.psi + PHI * (s.t - p.t) |+ | THETA |
+                  //| s.refid < --p.refid |
+                  //| s.reftime < --p.reftime |
+                  //| s.t < --p.t
+
             List<byte> data = new List<byte>();
             byte head = 0b00000000;
             //默认11未同步
@@ -168,19 +205,13 @@ namespace Mozi.NTP
             data.Add(Stratum);
             data.Add(Pool);
             data.Add(Precision);
-            data.AddRange(BitConverter.GetBytes(RootDelay.Integer).Revert());
-            data.AddRange(BitConverter.GetBytes(RootDelay.Fraction).Revert());
-            data.AddRange(BitConverter.GetBytes(RootDispersion.Integer).Revert());
-            data.AddRange(BitConverter.GetBytes(RootDispersion.Fraction).Revert());
+            data.AddRange(RootDelay.Pack);
+            data.AddRange(RootDispersion.Pack);
             data.AddRange(ReferenceIdentifier);
-            data.AddRange(BitConverter.GetBytes(ReferenceTime.Seconds).Revert());
-            data.AddRange(BitConverter.GetBytes(ReferenceTime.Fraction).Revert());
-            data.AddRange(BitConverter.GetBytes(OriginateTime.Seconds).Revert());
-            data.AddRange(BitConverter.GetBytes(OriginateTime.Fraction).Revert());
-            data.AddRange(BitConverter.GetBytes(ReceiveTime.Seconds).Revert());
-            data.AddRange(BitConverter.GetBytes(ReceiveTime.Fraction).Revert());
-            data.AddRange(BitConverter.GetBytes(TransmitTime.Seconds).Revert());
-            data.AddRange(BitConverter.GetBytes(TransmitTime.Fraction).Revert());
+            data.AddRange(ReferenceTime.Pack);
+            data.AddRange(Origin.Pack);
+            data.AddRange(ReceiveTime.Pack);
+            data.AddRange(TransmitTime.Pack);
 
             if (Authenticator != null)
             {
@@ -194,6 +225,9 @@ namespace Mozi.NTP
         public static NTPPackage Parse(byte[] data)
         {
             NTPPackage np = new NTPPackage();
+            //赋值本地接收时间
+            np.LocalReceiveTime.UniversalTime = DateTime.Now.ToUniversalTime();
+
             byte head = data[0];
             np.LeapIndicator = (byte)(head >> 6);
             np.VersionNumber = (byte)((byte)(head << 2) >> 5);
@@ -203,41 +237,27 @@ namespace Mozi.NTP
             np.Pool = data[2];
             np.Precision = data[3];
 
-            byte[] arrRootDelay = new byte[2], arrRootDelayFrac = new byte[2], arrRootDispersion = new byte[2], arrRootDispersionFrac = new byte[2];
-            Array.Copy(data, 4, arrRootDelay, 0, 2);
-            Array.Copy(data, 6, arrRootDelayFrac, 0, 2);
-            Array.Copy(data, 8, arrRootDispersion, 0, 2);
-            Array.Copy(data, 10, arrRootDispersionFrac, 0, 2);
+            byte[] arrRootDelay = new byte[4], arrRootDispersion = new byte[4];
 
-            np.RootDelay.Integer = BitConverter.ToUInt16(arrRootDelay.Revert(), 0);
-            np.RootDelay.Fraction = BitConverter.ToUInt16(arrRootDelayFrac.Revert(), 0);
-            np.RootDispersion.Integer = BitConverter.ToUInt16(arrRootDispersion.Revert(), 0);
-            np.RootDispersion.Fraction = BitConverter.ToUInt16(arrRootDispersionFrac.Revert(), 0);
+            Array.Copy(data, 4, arrRootDelay, 0, 2);
+            Array.Copy(data, 8, arrRootDispersion, 0, 2);
+
+            np.RootDelay.Pack = arrRootDelay;
+            np.RootDispersion.Pack = arrRootDispersion;
 
             Array.Copy(data, 12, np.ReferenceIdentifier, 0, 4);
 
-            byte[] arrRefSec = new byte[4], arrRefMicro = new byte[4], arrOriSec = new byte[4], arrOriMicro = new byte[4], arrRecSec = new byte[4], arrRecMicro = new byte[4], arrTranSec = new byte[4], arrTranMicro = new byte[4];
+            byte[] arrRef = new byte[8], arrOri = new byte[8], arrRec = new byte[8], arrTran = new byte[8];
 
-            Array.Copy(data, 16, arrRefSec, 0, 4);
-            Array.Copy(data, 20, arrRefMicro, 0, 4);
-            Array.Copy(data, 24, arrOriSec, 0, 4);
-            Array.Copy(data, 28, arrOriMicro, 0, 4);
-            Array.Copy(data, 32, arrRecSec, 0, 4);
-            Array.Copy(data, 36, arrRecMicro, 0, 4);
-            Array.Copy(data, 40, arrTranSec, 0, 4);
-            Array.Copy(data, 44, arrTranMicro, 0, 4);
+            Array.Copy(data, 16, arrRef, 0, 8);
+            Array.Copy(data, 24, arrOri, 0, 8);
+            Array.Copy(data, 32, arrRec, 0, 8);
+            Array.Copy(data, 40, arrTran, 0, 8);
 
-            np.ReferenceTime.Seconds = BitConverter.ToUInt32(arrRefSec.Revert(), 0);
-            np.ReferenceTime.Fraction = BitConverter.ToUInt32(arrRefMicro.Revert(), 0);
-
-            np.OriginateTime.Seconds = BitConverter.ToUInt32(arrOriSec.Revert(), 0);
-            np.OriginateTime.Fraction = BitConverter.ToUInt32(arrOriMicro.Revert(), 0);
-
-            np.ReceiveTime.Seconds = BitConverter.ToUInt32(arrRecSec.Revert(), 0);
-            np.ReceiveTime.Fraction = BitConverter.ToUInt32(arrRecMicro.Revert(), 0);
-
-            np.TransmitTime.Seconds = BitConverter.ToUInt32(arrTranSec.Revert(), 0);
-            np.TransmitTime.Fraction = BitConverter.ToUInt32(arrTranMicro.Revert(), 0);
+            np.ReferenceTime.Pack = arrRef;
+            np.Origin.Pack = arrOri;
+            np.ReceiveTime.Pack = arrRec;
+            np.TransmitTime.Pack = arrTran;
 
             if (data.Length > 48)
             {
@@ -264,7 +284,29 @@ namespace Mozi.NTP
         /// 小数部分
         /// </summary>
         public uint Fraction;
+
         public const long FractionSecondRate = (long)1 + uint.MaxValue;
+
+        public byte[] Pack
+        {
+            get
+            {
+                byte[] data = new byte[8];
+                Array.Copy(BitConverter.GetBytes(Seconds).Revert(), data, 4);
+                Array.Copy(BitConverter.GetBytes(Fraction).Revert(), 0, data, 4, 4);
+                return data;
+            }
+            set
+            {
+                byte[] data = new byte[8];
+                Array.Copy(value, data, value.Length < 8 ? value.Length : 8);
+                byte[] di = new byte[4], df = new byte[4];
+                Array.Copy(data, di, 4);
+                Array.Copy(data, 4, df, 0, 4);
+                Seconds = BitConverter.ToUInt32(di.Revert(), 0);
+                Fraction = BitConverter.ToUInt32(df.Revert(), 0);
+            }
+        }
 
         /// <summary>
         /// 时间设置统一使用UTC+0:00
@@ -273,21 +315,31 @@ namespace Mozi.NTP
         {
             get
             {
-                DateTime dateTimeStart = new DateTime(1900, 1, 1);
-                dateTimeStart = dateTimeStart.AddSeconds(Seconds);
-                //100纳秒=0.1微秒 
-                dateTimeStart=dateTimeStart.AddTicks((long)((double)Fraction / FractionSecondRate * 1e7));
-                return dateTimeStart;
+                if (Seconds == 0 && Fraction == 0)
+                {
+                    return NTPProtocol.JAN_1970;
+                }
+                else
+                {
+                    DateTime dateTimeStart = new DateTime(1900, 1, 1);
+                    dateTimeStart = dateTimeStart.AddSeconds(Seconds);
+                    //100纳秒=0.1微秒 
+                    dateTimeStart = dateTimeStart.AddTicks((long)((double)Fraction / FractionSecondRate * 1e7));
+                    return dateTimeStart;
+                }
             }
             set
             {
                 DateTime dateTimeStart = new DateTime(1900, 1, 1);
                 var dtDiff = (value - dateTimeStart);
                 Seconds = (uint)dtDiff.TotalSeconds;
-                Fraction = (uint)(((double)(dtDiff.Ticks/1e7)-Seconds)*1e7*FractionSecondRate);
+                Fraction = (uint)(((double)(dtDiff.Ticks / 1e7) - Seconds) * 1e7 * FractionSecondRate);
             }
         }
-
+        public override string ToString()
+        {
+            return UniversalTime.ToString("yyyy-MM-dd HH:mm:ss.fffffffff UTC");
+        }
     };
 
     /// <summary>
@@ -298,6 +350,29 @@ namespace Mozi.NTP
     {
         public ushort Integer;
         public ushort Fraction { get; set; }
+
+        public byte[] Pack
+        {
+            get
+            {
+                byte[] data = new byte[4];
+                Array.Copy(BitConverter.GetBytes(Integer).Revert(), data, 2);
+                Array.Copy(BitConverter.GetBytes(Fraction).Revert(), 0, data, 2, 2);
+                return data;
+            }
+
+            set
+            {
+                byte[] data = new byte[4];
+                Array.Copy(value, data, value.Length < 4 ? value.Length : 4);
+                byte[] di = new byte[2], df = new byte[2];
+                Array.Copy(data, di, 2);
+                Array.Copy(data, 2, df, 0, 2);
+                Seconds = BitConverter.ToUInt16(di.Revert(), 0);
+                Fraction = BitConverter.ToUInt16(df.Revert(), 0);
+            }
+        }
+
         public decimal Seconds
         {
             get
@@ -306,10 +381,11 @@ namespace Mozi.NTP
             }
             set
             {
-                Integer = (ushort)((ushort)(Seconds * 10) / 10);
-                Fraction = (ushort)((Seconds - Integer) * FractionSecondRate);
+                Integer = (ushort)((ushort)(value * 10) / 10);
+                Fraction = (ushort)((value - Integer) * FractionSecondRate);
             }
         }
+
         public const int FractionSecondRate = ushort.MaxValue + 1;
 
     }
@@ -323,16 +399,69 @@ namespace Mozi.NTP
         Ver3 = 0x03,
         Ver4 = 0x04
     }
+    /// <summary>
+    /// V3版本常量
+    /// </summary>
     public class NTPProtocol
     {
-        public static int ProtocolPort = 123;
+        public const int Port = 123;
         /// <summary>
         /// 组播地址
         /// </summary>
-        public static string MulticastAddress = "224.0.0.1";
+        public const string MulticastAddress = "224.0.0.1";
 
-        public int LeapIndicator { get; set; }
+        public static DateTime JAN_1970 = new DateTime(1970, 01, 01);
 
+        /// <summary>
+        /// Version Number
+        /// </summary>
+        public const int Version = 3;
+        ///Max Stratum
+        public const int MaxStratum = 15;
+        ///Max Clock Age in seconds
+        public const int MaxAge = 86400;
+        ///Max Skew in seconds
+        public const int MasSkew = 1;
+        ///Max Distance in seconds
+        public const int MaxDistance = 1;
+        //V3版本中取值范围为6-10，V4版本中Pool取值范围为4-17
+        ///Min Polling Interval power of 2 in seconds
+        public const int MinPool = 6;// (64 sec)
+        ///Max Polling Interval power of 2 in seconds
+        public const int MaxPool = 10;// (1024 sec)
+        /// <summary>
+        /// 时钟频率 Hz
+        /// </summary>
+        public const int ClockRate = 1000;
+        ///Min Select Clocks
+        public const int MinClock = 3;
+        ///Max Select Clocks
+        public const int MaxClock = 10;
+        ///Min Dispersion in seconds
+        public const double MinDispersion = 0.01d;
+        ///Max Dispersion in seconds
+        public const double MaxDispersion = 16d;
+        /// Reachability Reg Size
+        public const int Window = 8;
+        ///Filter Size
+        public const int Shift = 8;
+        ///Filter Weight
+        public const double Filter = 1 / 2;
+        ///Select Weight
+        public const double Select = 3 / 4;
+    }
+    /// <summary>
+    /// V4版本中的常量
+    /// </summary>
+    public class NTPProtocolV4:NTPProtocol
+    {
+        public const int TTLMax = 8;       /* max ttl manycast */
+        public const int Beacon = 15;      /* max interval between beacons */
+        public const double PHI = 15e-6;   /* % frequency tolerance (15 ppm) */
+        public const int NSTAGE = 8;       /* clock register stages */
+        public const int NMAX = 50;      /* maximum number of peers */
+        public const int NSANE = 1;       /* % minimum intersection survivors */
+        public const int NMIN = 3;      /* % minimum cluster survivors */
     }
 
     public enum NTPWorkMode
@@ -362,5 +491,65 @@ namespace Mozi.NTP
             Array.Reverse(d2);
             return d2;
         }
+    }
+
+    public class ClockIdentifier : AbsClassEnum
+    {
+        public static ClockIdentifier GOES = new ClockIdentifier("GOES", "Geostationary Orbit Environment Satellite");
+        public static ClockIdentifier GPS = new ClockIdentifier("GPS\0", "Global Position System");
+        public static ClockIdentifier GAL = new ClockIdentifier("GAL\0", "Galileo Positioning System");
+        public static ClockIdentifier PPS = new ClockIdentifier("PPS\0", "Generic pulse-per-second");
+        public static ClockIdentifier IRIG = new ClockIdentifier("IRIG", "Inter-Range Instrumentation Group");
+        public static ClockIdentifier WWVB = new ClockIdentifier("WWVB", "LF Radio WWVB Ft. Collins, CO 60 kHz");
+        public static ClockIdentifier DCF = new ClockIdentifier("DCF\0", "LF Radio DCF77 Mainflingen, DE 77.5 kHz");
+        public static ClockIdentifier HBG = new ClockIdentifier("HBG\0", "LF Radio HBG Prangins, HB 75 kHz");
+        public static ClockIdentifier MSF = new ClockIdentifier("MSF\0", "LF Radio MSF Anthorn, UK 60 kHz");
+        public static ClockIdentifier JJY = new ClockIdentifier("JJY\0", "LF Radio JJY Fukushima, JP 40 kHz, Saga, JP 60 kHz");
+        public static ClockIdentifier LORC = new ClockIdentifier("LORC", "MF Radio LORAN C station, 100 kHz");
+        public static ClockIdentifier TDF = new ClockIdentifier("TDF\0", "MF Radio Allouis, FR 162 kHz");
+        public static ClockIdentifier CHU = new ClockIdentifier("CHU\0", "HF Radio CHU Ottawa, Ontario");
+        public static ClockIdentifier WWV = new ClockIdentifier("WWV\0", "HF Radio WWV Ft. Collins, CO");
+        public static ClockIdentifier WWVH = new ClockIdentifier("WWVH", "HF Radio WWVH Kauai, HI");
+        public static ClockIdentifier NIST = new ClockIdentifier("NIST", "NIST telephone modem");
+        public static ClockIdentifier ACTS = new ClockIdentifier("ACTS", "NIST telephone modem");
+        public static ClockIdentifier USNO = new ClockIdentifier("USNO", "USNO telephone modem");
+        public static ClockIdentifier PTB = new ClockIdentifier("PTB\0", "European telephone modem");
+        public static ClockIdentifier LOCL = new ClockIdentifier("LOCL", "uncalibrated local clock");
+        public static ClockIdentifier CESM = new ClockIdentifier("CESM", "calibrated Cesium clock");
+        public static ClockIdentifier RBDM = new ClockIdentifier("RBDM", "calibrated Rubidium clock");
+        public static ClockIdentifier OMEG = new ClockIdentifier("OMEG", "OMEGA radionavigation system");
+        public static ClockIdentifier DCN = new ClockIdentifier("DCN\0", "DCN routing protocol");
+        public static ClockIdentifier TSP = new ClockIdentifier("TSP\0", "TSP time protocol");
+        public static ClockIdentifier DTS = new ClockIdentifier("DTS\0", "Digital Time Service");
+        public static ClockIdentifier ATOM = new ClockIdentifier("ATOM", "Atomic clock (calibrated)");
+        public static ClockIdentifier VLF = new ClockIdentifier("VLF\0", "VLF radio (OMEGA,, etc.)");
+        public static ClockIdentifier FREE = new ClockIdentifier("FREE", "(Internal clock)");
+        public static ClockIdentifier INIT = new ClockIdentifier("INIT", "(Initialization)");
+        public static ClockIdentifier Unknown = new ClockIdentifier("\0\0\0\0", "NULL");
+
+        public string Name { get; set; }
+        public string Description { get; set; }
+        protected override string Tag { get { return Name; } }
+
+        public byte[] Pack
+        {
+            get
+            {
+                byte[] data = new byte[4];
+                Array.Copy(System.Text.ASCIIEncoding.ASCII.GetBytes(Name), data, Name.Length > 4 ? 4 : Name.Length);
+                return data;
+            }
+        }
+
+        public ClockIdentifier(string name, string desc)
+        {
+            Name = name;
+            Description = desc;
+        }
+
+        //public static ClockIdentifier Parse()
+        //{
+
+        //}
     }
 }
