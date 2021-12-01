@@ -9,6 +9,7 @@ namespace Mozi.Telnet.Test
     {
         static void Main(string[] args)
         {
+            
             TelnetServer ts = new TelnetServer();
             //设置用户
             ts.AddUser("admin", "admin");
@@ -17,6 +18,7 @@ namespace Mozi.Telnet.Test
             //配置端口及启动服务
             ts.SetPort(23).Start();
             Console.ReadLine();
+
         }
     }
 }

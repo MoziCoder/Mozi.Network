@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Jason")]
 [assembly: AssemblyProduct("Mozi.StateService")]
-[assembly: AssemblyCopyright("Copyright © Jason 2021")]
+[assembly: AssemblyCopyright("Copyright © Jason 2021-2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -147,7 +147,7 @@ namespace Mozi.NTP
         /// <summary>
         /// Originate Timestamp：64bits,NTP请求报文离开发送端时发送端的本地时间。
         /// </summary>
-        public TimeStamp Origin = new TimeStamp();
+        public TimeStamp OriginTime = new TimeStamp();
         /// <summary>
         /// Receive Timestamp：64bits,NTP请求报文到达接收端时接收端的本地时间。
         /// </summary>
@@ -173,27 +173,30 @@ namespace Mozi.NTP
             //TODO 系统最大时钟误差有问题
             //if (LeapIndicator == 0x11 || (DateTime.UtcNow - ReferenceTime.UniversalTime).TotalSeconds > NTPProtocol.MaxAge)
             //{
-            //    skew = NTPProtocol.MasSkew;
+            //    skew = NTPProtocol.MaxSkew;
             //}
             //else
             //{
             //    skew = (DateTime.UtcNow - ReferenceTime.UniversalTime).TotalSeconds / 2;
             //}
+            //r.rho-客户机精度  s.rho服务器精度 
+            //epsilon(t_0) = r.rho + s.rho + PHI * (T4 - T1)
+
             //RootDispersion.Seconds = (decimal)Math.Round((1 << Precision) + skew,5);
             //if (sys.leap = 112or(sys.clock – sys.reftime) > NTP.MAXAGE)
             //        skew← NTP.MAXSKEW;
             //else
             //    skew←φ(sys.clock − sys.reftime);
             //pkt.rootdispersion ←sys.rootdispersion + (1 << sys.precision) + skew;
-                  // | s.leap < --p.leap |
-                  //| s.stratum < --p.stratum + 1 |
-                  //| s.offset < --THETA |
-                  //| s.jitter < --PSI |
-                  //| s.rootdelay < --p.delta_r + delta |
-                  //| s.rootdisp < --p.epsilon_r + p.epsilon + |p.psi + PHI * (s.t - p.t) |+ | THETA |
-                  //| s.refid < --p.refid |
-                  //| s.reftime < --p.reftime |
-                  //| s.t < --p.t
+            // | s.leap < --p.leap |
+            //| s.stratum < --p.stratum + 1 |
+            //| s.offset < --THETA |
+            //| s.jitter < --PSI |
+            //| s.rootdelay < --p.delta_r + delta |
+            //| s.rootdisp < --p.epsilon_r + p.epsilon + |p.psi + PHI * (s.t - p.t) |+ | THETA |
+            //| s.refid < --p.refid |
+            //| s.reftime < --p.reftime |
+            //| s.t < --p.t
 
             List<byte> data = new List<byte>();
             byte head = 0b00000000;
@@ -209,7 +212,7 @@ namespace Mozi.NTP
             data.AddRange(RootDispersion.Pack);
             data.AddRange(ReferenceIdentifier);
             data.AddRange(ReferenceTime.Pack);
-            data.AddRange(Origin.Pack);
+            data.AddRange(OriginTime.Pack);
             data.AddRange(ReceiveTime.Pack);
             data.AddRange(TransmitTime.Pack);
 
@@ -255,7 +258,7 @@ namespace Mozi.NTP
             Array.Copy(data, 40, arrTran, 0, 8);
 
             np.ReferenceTime.Pack = arrRef;
-            np.Origin.Pack = arrOri;
+            np.OriginTime.Pack = arrOri;
             np.ReceiveTime.Pack = arrRec;
             np.TransmitTime.Pack = arrTran;
 
@@ -373,11 +376,11 @@ namespace Mozi.NTP
             }
         }
 
-        public decimal Seconds
+        public double Seconds
         {
             get
             {
-                return Integer + Math.Round((decimal)Fraction / FractionSecondRate, 4, MidpointRounding.AwayFromZero);
+                return Integer + Math.Round((double)Fraction / FractionSecondRate, 4, MidpointRounding.AwayFromZero);
             }
             set
             {
@@ -421,7 +424,7 @@ namespace Mozi.NTP
         ///Max Clock Age in seconds
         public const int MaxAge = 86400;
         ///Max Skew in seconds
-        public const int MasSkew = 1;
+        public const int MaxSkew = 1;
         ///Max Distance in seconds
         public const int MaxDistance = 1;
         //V3版本中取值范围为6-10，V4版本中Pool取值范围为4-17
@@ -449,6 +452,8 @@ namespace Mozi.NTP
         public const double Filter = 1 / 2;
         ///Select Weight
         public const double Select = 3 / 4;
+
+        public const double PHI = 15e-6;
     }
     /// <summary>
     /// V4版本中的常量
@@ -457,7 +462,6 @@ namespace Mozi.NTP
     {
         public const int TTLMax = 8;       /* max ttl manycast */
         public const int Beacon = 15;      /* max interval between beacons */
-        public const double PHI = 15e-6;   /* % frequency tolerance (15 ppm) */
         public const int NSTAGE = 8;       /* clock register stages */
         public const int NMAX = 50;      /* maximum number of peers */
         public const int NSANE = 1;       /* % minimum intersection survivors */

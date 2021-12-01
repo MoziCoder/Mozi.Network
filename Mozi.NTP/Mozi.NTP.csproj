@@ -41,6 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbsClassEnum.cs" />
+    <Compile Include="IClock.cs" />
+    <Compile Include="KissCodes.cs" />
     <Compile Include="NTPServer.cs" />
     <Compile Include="NTPProtocol.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -51,6 +53,7 @@
     <Compile Include="UDPStateObject.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Mozi.NTP.nuspec" />
     <None Include="Readme.md" />
     <None Include="rfc1305.pdf" />
     <None Include="rfc5905.txt.pdf" />

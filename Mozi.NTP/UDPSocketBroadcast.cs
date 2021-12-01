@@ -5,7 +5,6 @@ using System.Net.Sockets;
 namespace Mozi.NTP
 {
     //TODO 多网卡绑定IPAddress.Any会出现无法接收的问题
-
     /// <summary>
     /// UDP套接字
     /// </summary>
@@ -13,6 +12,7 @@ namespace Mozi.NTP
     {
 
         protected int _multicastGroupPort = NTPProtocol.Port;
+
         protected string _multicastGroupAddress = NTPProtocol.MulticastAddress;
 
         protected Socket _sc;
@@ -26,7 +26,6 @@ namespace Mozi.NTP
         public IPAddress BindingAddress { get { return _bindingAddress; } set { _bindingAddress = value; } }
 
         public bool AllowLoopbackMessage { get; set; }
-
 
         public UDPSocketBroadcast()
         {
@@ -48,7 +47,6 @@ namespace Mozi.NTP
         /// 服务器停用事件
         /// </summary>
         public event AfterServerStop AfterServerStop;
-
         /// <summary>
         /// 端口
         /// </summary>
