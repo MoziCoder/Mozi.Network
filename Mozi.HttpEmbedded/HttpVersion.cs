@@ -33,6 +33,9 @@ namespace Mozi.HttpEmbedded
         ///     通过推送那些服务器任务客户端将会需要的内容到客户端的缓存中，避免往返的延迟
         /// </summary>
         public static readonly HttpVersion Version20 = new HttpVersion("2.0");
+        /// <summary>
+        /// Http3.0在Http2.0的基础上使用QUIC控制协议，UDP协议
+        /// </summary>
         public static readonly HttpVersion Version30 = new HttpVersion("3.0");
 
         public string Version { get { return _vervalue; } }

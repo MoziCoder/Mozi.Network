@@ -22,6 +22,10 @@ namespace Mozi.HttpEmbedded
     //TODO 2021/05/07 增加分块传输 chunked
     //TODO 2021/06/21 实现多端口监听
     //TODO 2021/06/21 是否考虑增加中间件功能
+    //TODO 2021/11/22 增加禁用缓存的功能 禁止304
+    //TODO 2021/11/22 增加流量统计/访问统计功能
+
+    //TODO 2021/11/22 实现简易的API处理能力,OnRequest("{action}/{id}",Func<T,T>{});
 
     //Transfer-Encoding: chunked 主要是为解决服务端无法预测Content-Length的问题
 
@@ -46,7 +50,10 @@ namespace Mozi.HttpEmbedded
 
         private int _port = 80;
         private int _iporthttps = 443;
+
+        //最大文件大小
         private long _maxFileSize = 10 * 1024 * 1024;
+        //最大请求尺寸
         private long _maxRequestSize = 10 * 1024 * 1024;
 
         //禁止直接IP访问，但应排除本地地址127.0.0.1
@@ -252,7 +259,7 @@ namespace Mozi.HttpEmbedded
                     {
                         //TODO 此处是否会形成死循环
                         //继续读流
-
+                        //TODO 网络数据包在传输时往往会受MTU/MSS值影响而分成多片断传输，故此处要继续读流,直到读取到指定的流长度
                         args.Socket.BeginReceive(args.State.Buffer, 0, args.State.Buffer.Length, SocketFlags.None, _sc.CallbackReceived, args.State);
 
                         //_sc.ProcessReceive(args.State);
@@ -305,7 +312,7 @@ namespace Mozi.HttpEmbedded
                 //判断客户机支持的压缩类型
                 var acceptEncoding = context.Request.Headers.GetValue(HeaderProperty.AcceptEncoding.PropertyName) ?? "";
                 var acceptEncodings = acceptEncoding.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries).ToList();
-                //忽略对媒体类型的压缩
+                //忽略对媒体类型的压缩 默认GZIP作为压缩类型
                 if (EnableCompress && !Mime.IsMedia(context.Response.ContentType) && acceptEncodings.Contains("gzip"))
                 {
                     if (body.Length > ZipOption.MinContentLength)
@@ -316,6 +323,7 @@ namespace Mozi.HttpEmbedded
                     }
                 }
                 args.Socket.Send(context.Response.GetBuffer());
+                //等待指定的秒数，以发送完剩余数据
                 args.Socket.Close(12);
             }
             GC.Collect();
@@ -605,8 +613,8 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 配置虚拟目录
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="path"></param>
+        /// <param name="name">访问名</param>
+        /// <param name="path">真实相对路径</param>
         /// <returns></returns>
         public HttpServer SetVirtualDirectory(string name, string path)
         {
@@ -669,7 +677,7 @@ namespace Mozi.HttpEmbedded
             _serverName = serverName;
             return this;
         }
-        //TODO HTTPS
+        //TODO HTTPS 功能尚未完全实现
         public CertManager UseHttps()
         {
             _certMg = new CertManager();

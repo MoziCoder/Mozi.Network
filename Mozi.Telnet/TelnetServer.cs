@@ -8,7 +8,7 @@ namespace Mozi.Telnet
     {
         public TelnetCommand Head = TelnetCommand.IAC;
         public virtual TelnetCommand Command { get; set; }
-        public Options Option { get; set; }
+        public TelnetSubOptions Option { get; set; }
 
         public bool IsSub = false;
         public static NegotiatePack[] Parse(byte[] data)
@@ -29,7 +29,7 @@ namespace Mozi.Telnet
                     {
                         np = new NegotiateSubPack();
                         np.IsSub = true;
-                        np.Option = (Options)Enum.Parse(typeof(Options), option.ToString());
+                        np.Option = (TelnetSubOptions)Enum.Parse(typeof(TelnetSubOptions), option.ToString());
                         int indEnd = Array.IndexOf(data, (byte)TelnetCommand.IAC, indStart + 1);
                         byte[] parameter = new byte[indEnd - 3];
                         Array.Copy(data, 3, parameter, 0, parameter.Length);
@@ -41,7 +41,7 @@ namespace Mozi.Telnet
                     {
                         np = new NegotiatePack();
                         np.Command = (TelnetCommand)Enum.Parse(typeof(TelnetCommand), cmd.ToString());
-                        np.Option = (Options)Enum.Parse(typeof(Options), option.ToString());
+                        np.Option = (TelnetSubOptions)Enum.Parse(typeof(TelnetSubOptions), option.ToString());
                         indStart += 3;
                     }
                     packs.Add(np);
@@ -92,19 +92,12 @@ namespace Mozi.Telnet
         }
     }
 
-    public delegate void NegotiateEvent(Socket so, NegotiatePack np);
-    public delegate void AuthEvent(Socket so, Session se);
-    public delegate void SessionStart(Session se);
-    public delegate void SessionStop(Session se);
-    public delegate void CommandReceived(Socket so, string command);
-    public delegate void DataEvent(Socket so, Session se, byte[] data);
-
     public struct ClientWindowSize
     {
         public ushort Width;
         public ushort Height;
     }
-
+    //TODO Telnet功能还需要进一步完善，但基本功能已具备
     /// <summary>
     /// Telnet服务端
     /// </summary>
@@ -122,12 +115,12 @@ namespace Mozi.Telnet
 
         private SessionManager _sm = new SessionManager();
         private Authenticator _auth = new Authenticator();
-        private List<ITelnetCommand> _commands = new List<ITelnetCommand>();
+        private List<ITelnetShellCommand> _commands = new List<ITelnetShellCommand>();
 
         /// <summary>
         /// 指令集合
         /// </summary>
-        protected internal List<ITelnetCommand> Commands
+        protected internal List<ITelnetShellCommand> Commands
         {
             get
             {
@@ -234,6 +227,10 @@ namespace Mozi.Telnet
         //TODO 后续数据无法接收，查找原因
         private void _sc_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
+            if (args.Data.Length == 0)
+            {
+                return;
+            }
             Console.WriteLine(BitConverter.ToString(args.Data));
             //协商部分
             if (args.Data[0] == (byte)TelnetCommand.IAC)
@@ -400,17 +397,17 @@ namespace Mozi.Telnet
             if (!_sm.Full)
             {
 
-                args.Client.Send(new NegotiatePack() { Command = TelnetCommand.WILL, Option = Options.ECHO }.Pack());
-                args.Client.Send(new NegotiatePack() { Command = TelnetCommand.WILL, Option = Options.SGA }.Pack());
-                args.Client.Send(new NegotiatePack() { Command = TelnetCommand.DO, Option = Options.TERMTYPE }.Pack());
-                args.Client.Send(new NegotiatePack() { Command = TelnetCommand.DO, Option = Options.NAWS }.Pack());
+                args.Client.Send(new NegotiatePack() { Command = TelnetCommand.WILL, Option = TelnetSubOptions.ECHO }.Pack());
+                args.Client.Send(new NegotiatePack() { Command = TelnetCommand.WILL, Option = TelnetSubOptions.SGA }.Pack());
+                args.Client.Send(new NegotiatePack() { Command = TelnetCommand.DO, Option = TelnetSubOptions.TERMTYPE }.Pack());
+                args.Client.Send(new NegotiatePack() { Command = TelnetCommand.DO, Option = TelnetSubOptions.NAWS }.Pack());
 
                 //发送连接欢迎信息
                 args.Client.Send(System.Text.Encoding.Default.GetBytes(_welcomeMessage));
                 //发送协商内容
 
                 //args.Client.Send(new NegotiatePack() { Command = TelnetCommand.WILL, Option = Options.LINEMODE }.Pack());
-                args.Client.Send(new NegotiatePack() { Command = TelnetCommand.DO, Option = Options.AUTH }.Pack());
+                args.Client.Send(new NegotiatePack() { Command = TelnetCommand.DO, Option = TelnetSubOptions.AUTH }.Pack());
                 Echo(args.Client, "\r\nAuthorization needed");
                 Echo(args.Client, "\r\nUsername:");
                 //发送鉴权要求
@@ -431,7 +428,7 @@ namespace Mozi.Telnet
         }
 
         /// <summary>
-        /// 配置服务端口 
+        /// 配置服务端口 默认端口为23
         /// <para>
         /// 在调用<see cref="Start"/>之前设置参数
         /// </para>
@@ -502,28 +499,28 @@ namespace Mozi.Telnet
                 {
                     switch (np.Option)
                     {
-                        case Options.TERMTYPE:
+                        case TelnetSubOptions.TERMTYPE:
                             {
                                 NegotiatePack np2 = new NegotiatePack();
                                 np2.Command = TelnetCommand.DO;
-                                np2.Option = Options.TERMTYPE;
+                                np2.Option = TelnetSubOptions.TERMTYPE;
                                 so.Send(np.Pack());
 
                                 NegotiateSubPack nsp = new NegotiateSubPack();
-                                nsp.Option = Options.TERMTYPE;
+                                nsp.Option = TelnetSubOptions.TERMTYPE;
                                 nsp.Parameter = new byte[] { 0x01 };
                                 so.Send(nsp.Pack());
                             }
                             break;
-                        case Options.NAWS:
+                        case TelnetSubOptions.NAWS:
                             {
                                 NegotiatePack np2 = new NegotiatePack();
                                 np2.Command = TelnetCommand.DO;
-                                np2.Option = Options.NAWS;
+                                np2.Option = TelnetSubOptions.NAWS;
                                 so.Send(np2.Pack());
                                 NegotiateSubPack nsp = new NegotiateSubPack();
 
-                                nsp.Option = Options.NAWS;
+                                nsp.Option = TelnetSubOptions.NAWS;
                                 List<byte> data = new List<byte>();
                                 data.AddRange(BitConverter.GetBytes(_clientSize.Width));
                                 data.AddRange(BitConverter.GetBytes(_clientSize.Height));
@@ -549,10 +546,10 @@ namespace Mozi.Telnet
             }
             else
             {
-                if (np.Option == Options.TERMTYPE)
+                if (np.Option == TelnetSubOptions.TERMTYPE)
                 {
                     NegotiateSubPack nsp = new NegotiateSubPack();
-                    nsp.Option = Options.TERMTYPE;
+                    nsp.Option = TelnetSubOptions.TERMTYPE;
                     nsp.Parameter = System.Text.Encoding.Default.GetBytes(_serverName);
                     so.Send(nsp.Pack());
                 }
@@ -572,12 +569,12 @@ namespace Mozi.Telnet
         /// 增加命令，命令必须继承自<see cref="ITelnetCommand"/>
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public void AddCommand<T>() where T : ITelnetCommand
+        public void AddCommand<T>() where T : ITelnetShellCommand
         {
             var ins = Activator.CreateInstance(typeof(T));
             if (!_commands.Exists(x => x.Name.ToLower() == typeof(T).Name))
             {
-                _commands.Add((ITelnetCommand)ins);
+                _commands.Add((ITelnetShellCommand)ins);
             }
         }
     }
@@ -657,6 +654,5 @@ namespace Mozi.Telnet
         {
             return _session.RemoveAll(x => x.Id.Equals(sessionId));
         }
-
     }
 }

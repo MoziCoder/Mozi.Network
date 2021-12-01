@@ -26,26 +26,32 @@ namespace Mozi.HttpEmbedded.Test
 
             //启用HTTPS 
             //hs.UseHttps().LoadCert(AppDomain.CurrentDomain.BaseDirectory + @"Cert\ServerCert.pfx", "12345678");
-            //配置端口并启动服务器
+
+            //配置端口并启动服务器 默认80
             hs.SetPort(9090).Start();
 
             //开启认证
             //hs.UseAuth(AuthorizationType.Basic).SetUser("admin", "admin");
+
+            //设置默认首页 可选 不设置首页为空，打开首页返回默认页面
             hs.SetIndexPage("index.html,index.htm");
-            //开启静态文件支持
+
+            //开启静态文件支持 可选
             hs.UseStaticFiles(pathStatic);
             hs.SetVirtualDirectory("Config", "Config");
-            //开启文件压缩
+
+            //开启文件压缩 可选 不设置则没有压缩效果
             hs.UseGzip(new Compress.CompressOption() { 
                 MinContentLength=1024,
                 CompressLevel=2
             });
+
             //程序集注入
             //1,此方法会扫描程序集内继承自BaseApi或属性标记为[BasicApi]的类
             //2,Http通讯数据标准默认为xml,使用Router.Default.SetDataSerializer(ISerializer ser)更改序列化类型
             //Router.Default.Register("./test.dll");
 
-            //路由映射
+            //路由映射 可选
             Router router = Router.Default;
             router.Register(Assembly.GetExecutingAssembly());
             router.Map("services/{controller}/{action}");
@@ -68,6 +74,7 @@ namespace Mozi.HttpEmbedded.Test
             Console.ReadLine();
 
             //路径信息
+
             //    首页
             //      @ip 服务器地址，本机调试使用127.0.0.1
             //      @port 服务器端口 

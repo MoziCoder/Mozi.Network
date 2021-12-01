@@ -231,6 +231,7 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 从缓冲区中取出数据
         /// </summary>
+        /// <param name="headerKeyUppercase">头属性 键名是否大写</param>
         /// <returns></returns>
         public byte[] GetBuffer(bool headerKeyUppercase)
         {
@@ -257,7 +258,10 @@ namespace Mozi.HttpEmbedded
             data.AddRange(_body);
             return data.ToArray();
         }
-
+        /// <summary>
+        /// 取出缓存的数据
+        /// </summary>
+        /// <returns></returns>
         public byte[] GetBuffer()
         {
            return GetBuffer(false);

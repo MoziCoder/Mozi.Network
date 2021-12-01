@@ -5,14 +5,16 @@ namespace Mozi.HttpEmbedded.Extension
     public static class Others
     {
         /// <summary>
-        /// 数据翻转
+        /// 数据翻转，不改变原始数据
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
         public static byte[] Revert(this byte[] data)
         {
-            Array.Reverse(data);
-            return data;
+            byte[] d2 = new byte[data.Length];
+            Array.Copy(data, d2, d2.Length);
+            Array.Reverse(d2);
+            return d2;
         }
 
         public static long ToTimestamp(this DateTime date)
