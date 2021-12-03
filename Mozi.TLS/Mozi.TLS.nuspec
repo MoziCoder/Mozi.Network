@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package >
   <metadata>
-    <id>$id$</id>
+    <id>Mozi.TLS</id>
     <version>1.3.2</version>
     <title>$title$</title>
     <authors>Jason</authors>

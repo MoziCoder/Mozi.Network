@@ -101,6 +101,7 @@
         public ushort MesssageId { get; set; }
         /// <summary>
         /// 凭据 0-8bytes
+        /// 典型应用场景需>=4bytes
         /// </summary>
         public byte[] Token { get; set; }
 
@@ -210,5 +211,15 @@
         public int MAX_RTT           = 202 ;
         public int EXCHANGE_LIFETIME = 247;
         public int NON_LIFETIME = 145  ;
+    }
+
+    public class CoAPRequest : HttpEmbedded.HttpRequest
+    {
+
+    }
+
+    public class CoAPResponse : HttpEmbedded.HttpResponse
+    {
+
     }
 }
