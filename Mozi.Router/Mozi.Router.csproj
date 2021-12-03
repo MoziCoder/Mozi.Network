@@ -44,6 +44,7 @@
     <Compile Include="RouterServer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Mozi.Router.nuspec" />
     <None Include="Readme.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

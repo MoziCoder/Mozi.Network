@@ -34,8 +34,6 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -43,10 +41,25 @@
     <Compile Include="CoAPServer.cs" />
     <Compile Include="DDSServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServerEvent.cs" />
+    <Compile Include="StateObject.cs" />
+    <Compile Include="UDPSocket.cs" />
+    <Compile Include="UDPStateObject.cs" />
     <Compile Include="XMPPServer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="License.md" />
+    <None Include="Mozi.IoT.nuspec" />
     <None Include="Readme.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Mozi.HttpEmbedded\Mozi.HttpEmbedded.csproj">
+      <Project>{051c3f42-0a53-4a78-a961-28ffa8c17b46}</Project>
+      <Name>Mozi.HttpEmbedded</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="RFC 7252 The Constrained Application Protocol %28CoAP%29.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

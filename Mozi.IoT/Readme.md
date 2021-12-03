@@ -1,2 +1,1 @@
-﻿# Mozi.IoT
-项目规划中
+﻿# Mozi.IoT物联网

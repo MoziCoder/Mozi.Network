@@ -11,6 +11,8 @@ Mozi.Network是基于.Net开发的网络应用组件套装。整个项目的主�
 	心跳服务组件
 ### [Telnet][telnet] 　　
 	Telnet服务器及客户端实现
+### [NTP][ntp]
+	NTP授时服务器，目前仅有SNTP功能
 
 ## 规划与展望
 	规划中的项目待总体设计完成后再进行开发，暂时不会冒进进行推进。
@@ -39,3 +41,4 @@ Mozi.Network是基于.Net开发的网络应用组件套装。整个项目的主�
 [ssdp]:./Mozi.SSDP
 [stateservice]:./Mozi.StateService
 [telnet]:./Mozi.Telnet
+[ntp]:./Mozi.NTP
