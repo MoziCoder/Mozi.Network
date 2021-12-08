@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Mozi.NTP;
+using System;
 using System.Net.Sockets;
 
-namespace Mozi.NTP
+namespace Mozi.IoT
 {
     public delegate void ServerStart(object sender, ServerArgs args);
 

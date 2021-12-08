@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Mozi.NTP;
+using System;
 using System.Net;
 using System.Net.Sockets;
 
-namespace Mozi.NTP
+namespace Mozi.IoT
 {
     /// <summary>
     /// UDP套接字

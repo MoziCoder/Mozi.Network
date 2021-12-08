@@ -1,6 +1,7 @@
-﻿using System.Net;
+﻿using Mozi.NTP;
+using System.Net;
 
-namespace Mozi.NTP
+namespace Mozi.IoT
 {
     /// <summary>
     /// UDP通讯缓冲对象

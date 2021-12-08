@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace Mozi.IoT.Test
 {
@@ -6,7 +9,9 @@ namespace Mozi.IoT.Test
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            CoAPServer cs = new CoAPServer();
+            cs.Start();
+            Console.ReadLine();
         }
     }
 }

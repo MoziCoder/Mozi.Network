@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbsClassEnum.cs" />
+    <Compile Include="CoAPPackage.cs" />
     <Compile Include="CoAPServer.cs" />
     <Compile Include="DDSServer.cs" />
     <Compile Include="Others.cs" />
