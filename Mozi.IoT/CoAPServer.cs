@@ -4,6 +4,12 @@ using System.Net;
 
 namespace Mozi.IoT
 {
+    //TODO 即时响应ACK，延迟响应CON,消息可即时响应也可处理完成后响应，延迟消息需要后端缓存支撑
+    //TODO 拥塞算法
+    //TODO 安全认证
+    //TODO 消息缓存
+    //TODO 分块传输 RFC 7959
+    //TODO 对象安全
 
     /// <summary>
     /// CoAP基于UDP,可工作的C/S模式，多播，单播，任播（IPV6）
@@ -73,6 +79,7 @@ namespace Mozi.IoT
             _socket.Shutdown();
             StartTime = DateTime.MinValue;
         }
+
         /// <summary>
         /// 数据接收完成回调
         /// </summary>
@@ -86,14 +93,15 @@ namespace Mozi.IoT
             {
                 CoAPPackage pack = CoAPPackage.Parse(args.Data,true);
 
-                pack2 = new CoAPPackage() { 
+                pack2 = new CoAPPackage()
+                {
                     Version = 1, 
                     MessageType = CoAPMessageType.Acknowledgement,
                     Token = pack.Token,
                     MesssageId = pack.MesssageId,
                 };
 
-                //进一步处理
+                //判断是否受支持的方法
                 if (IsSupportedMethod(pack))
                 {
                     if (pack.MessageType==CoAPMessageType.Confirmable||pack.MessageType == CoAPMessageType.Acknowledgement)
@@ -105,6 +113,11 @@ namespace Mozi.IoT
                 {
                     pack2.Code = CoAPResponseCode.MethodNotAllowed;
                 }
+
+                //检查分块
+
+                //检查内容类型
+
             }
             catch (Exception ex)
             {

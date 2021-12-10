@@ -41,16 +41,15 @@
     <Compile Include="AbsClassEnum.cs" />
     <Compile Include="CoAPPackage.cs" />
     <Compile Include="CoAPServer.cs" />
-    <Compile Include="DDSServer.cs" />
     <Compile Include="Others.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerEvent.cs" />
     <Compile Include="StateObject.cs" />
     <Compile Include="UDPSocket.cs" />
     <Compile Include="UDPStateObject.cs" />
-    <Compile Include="XMPPServer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Howto.md" />
     <None Include="License.md" />
     <None Include="Mozi.IoT.nuspec" />
     <None Include="Readme.md" />

@@ -468,7 +468,7 @@ namespace Mozi.HttpEmbedded
         }
  
         /// <summary>
-        /// 路由页面
+        /// 路由API和页面
         /// </summary>
         /// <param name="context"></param>
         private StatusCode HandleRequestRoutePages(ref HttpContext context)

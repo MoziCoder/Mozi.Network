@@ -116,6 +116,7 @@ namespace Mozi.IoT
             {
                 CoAPOption option = new CoAPOption();
                 option.OptionHead = data[bodySplitterPos];
+                byte delta = (byte)(option.OptionHead >> 4);
                 int lenDelta = 0, lenLength = 0;
                 if (option.Delta <= 12)
                 {
@@ -138,7 +139,7 @@ namespace Mozi.IoT
                 option.DeltaValue += deltaSum;
                 //赋默认值
                 option.Option = AbsClassEnum.Get<CoAPOptionDefine>(option.DeltaValue.ToString());
-                if (option == null)
+                if (object.ReferenceEquals(null, option.Option))
                 {
                     option.Option = CoAPOptionDefine.Unknown;
                 }
@@ -162,11 +163,10 @@ namespace Mozi.IoT
                 }
 
                 option.Value = new byte[option.LengthValue];
-                Array.Copy(data, bodySplitterPos + lenDelta + lenLength + 1, option.Value, 0, option.Value.Length);
-                
+                Array.Copy(data, bodySplitterPos + 1 + lenDelta + lenLength , option.Value, 0, option.Value.Length);
                 pack.Options.Add(option);
-                deltaSum += option.DeltaValue;
-                bodySplitterPos +=  lenDelta + lenLength + option.Value.Length + 1;
+                deltaSum += delta;
+                bodySplitterPos += 1 + lenDelta + lenLength + option.Value.Length ;
 
             }
             //有效荷载
@@ -181,22 +181,6 @@ namespace Mozi.IoT
         }
     }
 
-
-
-    ///CoAP Content-Formats Registry
-    ///       0-255 | Expert Review                        
-    ///    256-9999 | IETF Review or IESG Approval         
-    /// 10000-64999 | First Come First Served              
-    /// 65000-65535 | Experimental use(no operational use) 
-    ///
-    /// text/plain;              | -        |  0 | [RFC2046] [RFC3676]    |
-    /// charset=utf-8            |          |    | [RFC5147]              |
-    /// application/link-format  | -        | 40 | [RFC6690]              |
-    /// application/xml          | -        | 41 | [RFC3023]              |
-    /// application/octet-stream | -        | 42 | [RFC2045] [RFC2046]    |
-    /// application/exi          | -        | 47 | [REC-exi-20140211]     |
-    /// application/json         | -        | 50 | [RFC7159]              |
-    /// applicaiton/cbor         | -        | 60 | [RFC7159]              |
 
     ///CoAP Option Numbers Registry
     ///|       0-255 | IETF Review or IESG Approval         
@@ -217,7 +201,11 @@ namespace Mozi.IoT
     ///     15 | Uri-Query        | [RFC7252] |
     ///     17 | Accept           | [RFC7252] |
     ///     20 | Location-Query   | [RFC7252] |
-    ///     28 | Size2            | [RFC7252] |   
+    ///     
+    ///     23 | Block2           | [RFC7959] |
+    ///     27 | Block1           | [RFC7959] |
+    ///     
+    ///     28 | Size2            | [RFC7959] |   
     ///     35 | Proxy-Uri        | [RFC7252] |
     ///     39 | Proxy-Scheme     | [RFC7252] |
     ///     60 | Size1            | [RFC7252] |
@@ -252,11 +240,21 @@ namespace Mozi.IoT
         public static CoAPOptionDefine UriQuery = new CoAPOptionDefine("Uri-Query", 15);
         public static CoAPOptionDefine Accept = new CoAPOptionDefine("Accept", 17);
         public static CoAPOptionDefine LocationQuery = new CoAPOptionDefine("Location-Query", 20);
+        //服务端
+        public static CoAPOptionDefine Block2 = new CoAPOptionDefine("Block2", 23);    //RFC 7959
+        //客户端
+        public static CoAPOptionDefine Block1 = new CoAPOptionDefine("Block1", 27);    //RFC 7959
+        //服务端响应的块大小
+        public static CoAPOptionDefine Size2 = new CoAPOptionDefine("Location-Query", 28); //RFC 7959
         public static CoAPOptionDefine ProxyUri = new CoAPOptionDefine("Proxy-Uri", 35);
         public static CoAPOptionDefine ProxyScheme = new CoAPOptionDefine("Proxy-Scheme", 39);
+        //客户端请取的块大小
         public static CoAPOptionDefine Size1 = new CoAPOptionDefine("Size1", 60);
 
-        public static CoAPOptionDefine Unknown = new CoAPOptionDefine("", 0);
+
+
+        public static CoAPOptionDefine Unknown = new CoAPOptionDefine("Unknown", 0);
+
         public string Name
         {
             get
@@ -272,10 +270,39 @@ namespace Mozi.IoT
 
         protected override string Tag => OptionNumber.ToString();
 
-        public CoAPOptionDefine(string name, ushort optionNumber)
+        internal CoAPOptionDefine(string name, ushort optionNumber)
         {
             _name = name;
             OptionNumber = optionNumber;
+        }
+
+        public bool Critical
+        {
+            get
+            {
+                return (((byte)OptionNumber) & 0x01) == 0x01;
+            }
+        }
+
+        public bool UnSafe
+        {
+            get
+            {
+                return (((byte)OptionNumber) & 0x02) == 0x02;
+            }
+        }
+
+        public bool NoCacheKey
+        {
+            get
+            {
+                return (((byte)OptionNumber) & 0x1e) == 0x1e;
+            }
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Option Name:{0},OptionNumber:{1},Figure:{2}", Name, OptionNumber, string.Join(",",Critical ? "Critical" : "" , UnSafe ? "UnSafe" : "" , NoCacheKey ? "NoCacheKey" : ""));
         }
     }
 
@@ -376,7 +403,7 @@ namespace Mozi.IoT
         public ushort LengthExtend { get; set; }
         /// <summary>
         /// 选项值>=0 bytes
-        /// 空 字节 数字 ASCII/UTF-8字符串
+        /// 空 字节数组 数字 ASCII/UTF-8字符串
         /// </summary>
         public byte[] Value { get; set; }
 
@@ -406,6 +433,119 @@ namespace Mozi.IoT
                 }
                 return data.ToArray();
             }
+        }
+    }
+    ///CoAP Content-Formats Registry
+    ///       0-255 | Expert Review                        
+    ///    256-9999 | IETF Review or IESG Approval         
+    /// 10000-64999 | First Come First Served              
+    /// 65000-65535 | Experimental use(no operational use) 
+    ///
+    /// text/plain;              | -        |  0 | [RFC2046] [RFC3676]    |
+    /// charset=utf-8            |          |    | [RFC5147]              |
+    /// application/link-format  | -        | 40 | [RFC6690]              |
+    /// application/xml          | -        | 41 | [RFC3023]              |
+    /// application/octet-stream | -        | 42 | [RFC2045] [RFC2046]    |
+    /// application/exi          | -        | 47 | [REC-exi-20140211]     |
+    /// application/json         | -        | 50 | [RFC7159]              |
+    /// applicaiton/cbor         | -        | 60 | [RFC7159]              |
+    public class ContentFormatOptionValue : AbsClassEnum
+    {
+        private ushort _num=0;
+        private string _contentType = "";
+
+        public String ContentType
+        {
+            get
+            {
+                return _contentType;
+            }
+        }
+
+        public ushort OptionValue
+        {
+            get
+            {
+                return _num;
+            }
+        }
+
+        protected override string Tag => _num.ToString();
+
+        public ContentFormatOptionValue TextPlain   = new ContentFormatOptionValue("text/plain",0 );
+        public ContentFormatOptionValue LinkFormat = new ContentFormatOptionValue("application/link-format", 40 );
+        public ContentFormatOptionValue XML    = new ContentFormatOptionValue("application/xml", 41 );
+        public ContentFormatOptionValue Stream = new ContentFormatOptionValue("application/octet-stream", 42);
+        public ContentFormatOptionValue EXI        = new ContentFormatOptionValue("application/exi",47 );
+        public ContentFormatOptionValue JSON        = new ContentFormatOptionValue("application/json", 50 );
+        public ContentFormatOptionValue CBOR        = new ContentFormatOptionValue("applicaiton/cbor",60 );
+
+        internal ContentFormatOptionValue(string contentType, ushort num)
+        {
+            _contentType = contentType;
+            _num = num;
+        }
+    }
+
+    /// <summary>
+    /// 分块选项 数据结构 适用Block1 Block2 总长度uint24
+    /// </summary>
+    public class BlockOptionValue
+    {
+        /// <summary>
+        /// 块内位置 占位4-20bits
+        /// </summary>
+        public uint Num { get; set; }
+        /// <summary>
+        /// 是否最后一个包 占位1bit
+        /// </summary>
+        public bool MoreFlag { get; set; }
+        /// <summary>
+        /// 数据包总大小 占位3bits 值大小为1-6，表值范围16bytes-1024bytes
+        /// </summary>
+        public ushort Size { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public byte[] Pack
+        {
+            get
+            {
+                byte[] data;
+                uint num = (Num << 4) | (byte)((byte)Math.Log(Size, 2) - 4);
+                if (MoreFlag)
+                {
+                    num |= 8;
+                }
+
+                if (Num < 16)
+                {
+                    data = new byte[1];
+                    data[0] = (byte)Num;
+                }else if (Num < 4096){
+                    data = BitConverter.GetBytes((ushort)num).Revert();
+                }
+                else
+                {
+                    data = new byte[3];
+                    Array.Copy(BitConverter.GetBytes(num).Revert(), 1, data, 0, data.Length);
+                }
+                return data;
+            }
+            set
+            {
+
+                Size = (ushort)Math.Pow(2,(((byte)(value[0] << 5)) >> 5)+4) ;
+                MoreFlag = (value[0] & 8) == 8;
+                byte[] data = new byte[4];
+                Array.Copy(value.Revert(),0, data, data.Length - value.Length, value.Length);
+                Num = BitConverter.ToUInt32(data,0);
+            }
+        }
+
+        public override string ToString()
+        {
+            return Pack == null ? "null" : String.Format("{0},Num:{1},M:{2},SZX:{3}(bytes)","Block",Num,MoreFlag?1:0,Size);
         }
     }
 
@@ -536,7 +676,7 @@ namespace Mozi.IoT
             }
         }
 
-        public CoAPCode(string name, string description, byte category, byte detail)
+        internal CoAPCode(string name, string description, byte category, byte detail)
         {
             _name = name;
             _description = description;
@@ -553,7 +693,7 @@ namespace Mozi.IoT
         public static CoAPRequestCode Put = new CoAPRequestCode("PUT", "", 0, 3);
         public static CoAPRequestCode Delete = new CoAPRequestCode("DELETE", "", 0, 4);
 
-        public CoAPRequestCode(string name, string description, byte category, byte detail) : base(name, description, category, detail)
+        internal CoAPRequestCode(string name, string description, byte category, byte detail) : base(name, description, category, detail)
         {
 
         }
@@ -590,7 +730,7 @@ namespace Mozi.IoT
         public static CoAPResponseCode GatewayTimeout = new CoAPResponseCode("GatewayTimeout", "Gateway Timeout", 5, 4);
         public static CoAPResponseCode ProxyingNotSupported = new CoAPResponseCode("ProxyingNotSupported", "Proxying Not Supported", 5, 5);
 
-        public CoAPResponseCode(string name, string description, byte category, byte detail) : base(name, description, category, detail)
+        internal CoAPResponseCode(string name, string description, byte category, byte detail) : base(name, description, category, detail)
         {
 
         }
@@ -632,7 +772,7 @@ namespace Mozi.IoT
             }
         }
 
-        public CoAPMessageType(string name, byte typeValue)
+        internal CoAPMessageType(string name, byte typeValue)
         {
             _name = name;
             _typeValue = typeValue;
