@@ -5,11 +5,8 @@ using System.Net.Sockets;
 namespace Mozi.IoT
 {
     public delegate void ServerStart(object sender, ServerArgs args);
-
     public delegate void AfterServerStop(object sender, ServerArgs args);
-
     public delegate void ReceiveStart(object sender, DataTransferArgs args);
-
     public delegate void ReceiveEnd(object sender, DataTransferArgs args);
 
     public class ServerArgs : EventArgs

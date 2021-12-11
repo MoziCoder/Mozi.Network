@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbsClassEnum.cs" />
+    <Compile Include="CoAPOption.cs" />
     <Compile Include="CoAPPackage.cs" />
     <Compile Include="CoAPServer.cs" />
     <Compile Include="Others.cs" />
@@ -53,9 +54,12 @@
     <None Include="License.md" />
     <None Include="Mozi.IoT.nuspec" />
     <None Include="Readme.md" />
+    <None Include="rfc8974.pdf" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="RFC 7252 The Constrained Application Protocol %28CoAP%29.html" />
+    <Content Include="RFC 7959 Block-Wise Transfers in the Constrained Application Protocol %28CoAP%29.htm" />
+    <Content Include="RFC 8613 Object Security for Constrained RESTful Environments %28OSCORE%29.htm" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
