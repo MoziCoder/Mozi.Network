@@ -342,19 +342,19 @@ namespace Mozi.IoT
         public override byte[] Pack { get => _pack; set => _pack = value; }
     }
 
-    //public class IntegerOptionValue : OptionValue
-    //{
-    //    private byte[] _pack;
+//    public class IntegerOptionValue : OptionValue
+//    {
+//        private byte[] _pack;
 
-    //    public override object Value => 
-    //        {
+//        public override object Value =>
+//            {
                
-    //        };
+//            };
 
-    //    public override byte[] Pack { get => _pack; set => _pack = value; }
-    //}
+//    public override byte[] Pack { get => _pack; set => _pack = value; }
+//}
 
-    public class StringOptionValue : OptionValue
+public class StringOptionValue : OptionValue
     {
         private byte[] _pack;
 

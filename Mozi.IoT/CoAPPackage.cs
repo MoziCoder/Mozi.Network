@@ -191,6 +191,7 @@ namespace Mozi.IoT
     {
         public const ushort Port = 5683;
         public const ushort SecurePort = 5684;
+        public const ushort TcpPort = 5685;
 
         public const byte HeaderEnd = 0xFF;
         /// <summary>
@@ -214,7 +215,10 @@ namespace Mozi.IoT
         /// 查看频率byte/second
         /// </summary>
         public int PROBING_RATE = 1;
-
+        /// <summary>
+        /// 最大缓存时间 seconds
+        /// </summary>
+        public int MAX_AGE = 60;
         public int MAX_TRANSMIT_SPAN = 45;
         public int MAX_TRANSMIT_WAIT = 93;
         public int MAX_LATENCY = 100;

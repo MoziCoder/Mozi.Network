@@ -121,7 +121,7 @@ namespace Mozi.IoT
             }
             catch (Exception ex)
             {
-                
+                Console.WriteLine(ex.Message);
             }
             finally
             {
