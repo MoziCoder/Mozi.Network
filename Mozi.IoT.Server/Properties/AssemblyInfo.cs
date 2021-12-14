@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // 有关程序集的一般信息由以下
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("Mozi.IoT.Core")]
-[assembly: AssemblyDescription("IoT物联网协议核心")]
+[assembly: AssemblyTitle("Mozi.IoT.Server")]
+[assembly: AssemblyDescription("IoT物联网服务器")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("MoziCoder workgroup")]
-[assembly: AssemblyProduct("Mozi.IoT")]
-[assembly: AssemblyCopyright("Copyright © MoziCoder  2021-2022")]
+[assembly: AssemblyProduct("Mozi.IoT.Server")]
+[assembly: AssemblyCopyright("Copyright © MoziCoder 2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // 如果此项目向 COM 公开，则下列 GUID 用于类型库的 ID
-[assembly: Guid("a59e18f0-30e5-41e7-9504-02993bca949b")]
+[assembly: Guid("e82d3587-e2c1-4ea9-8494-7dc3e4d4a5ea")]
 
 // 程序集的版本信息由下列四个值组成: 
 //
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 //可以指定所有这些值，也可以使用“生成号”和“修订号”的默认值
 //通过使用 "*"，如下所示:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.3.2.0")]
-[assembly: AssemblyFileVersion("1.3.2.0")]
+[assembly: AssemblyVersion("1.3.1.0")]
+[assembly: AssemblyFileVersion("1.3.1.0")]

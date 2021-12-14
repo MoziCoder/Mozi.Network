@@ -23,7 +23,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mozi.SMTP", "Mozi.SMTP\Mozi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mozi.TFTP", "Mozi.TFTP\Mozi.TFTP.csproj", "{6C4C5C07-4C48-4BF1-921F-E8E352BDF379}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mozi.IoT", "Mozi.IoT\Mozi.IoT.csproj", "{A59E18F0-30E5-41E7-9504-02993BCA949B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mozi.IoT.Core", "Mozi.IoT\Mozi.IoT.Core.csproj", "{A59E18F0-30E5-41E7-9504-02993BCA949B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mozi.DNS", "Mozi.DNS\Mozi.DNS.csproj", "{5EDD104A-1409-43B8-B2B8-E0C39D4B9D1B}"
 EndProject
@@ -46,6 +46,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mozi.IoT.DebugTool", "Mozi.IoT.DebugTool\Mozi.IoT.DebugTool.csproj", "{4AB49A45-AF32-47D6-B8EB-EBAE34D51872}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mozi.IoT.Test", "Mozi.IoT.Test\Mozi.IoT.Test.csproj", "{EC235155-135F-489D-84B7-A4DEAAEB8F35}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mozi.IoT.Server", "Mozi.IoT.Server\Mozi.IoT.Server.csproj", "{E82D3587-E2C1-4EA9-8494-7DC3E4D4A5EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -320,6 +322,18 @@ Global
 		{EC235155-135F-489D-84B7-A4DEAAEB8F35}.ReleaseBinaries|Any CPU.Build.0 = Release|Any CPU
 		{EC235155-135F-489D-84B7-A4DEAAEB8F35}.ReleaseBinaries|x86.ActiveCfg = Release|Any CPU
 		{EC235155-135F-489D-84B7-A4DEAAEB8F35}.ReleaseBinaries|x86.Build.0 = Release|Any CPU
+		{E82D3587-E2C1-4EA9-8494-7DC3E4D4A5EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E82D3587-E2C1-4EA9-8494-7DC3E4D4A5EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E82D3587-E2C1-4EA9-8494-7DC3E4D4A5EA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E82D3587-E2C1-4EA9-8494-7DC3E4D4A5EA}.Debug|x86.Build.0 = Debug|Any CPU
+		{E82D3587-E2C1-4EA9-8494-7DC3E4D4A5EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E82D3587-E2C1-4EA9-8494-7DC3E4D4A5EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E82D3587-E2C1-4EA9-8494-7DC3E4D4A5EA}.Release|x86.ActiveCfg = Release|Any CPU
+		{E82D3587-E2C1-4EA9-8494-7DC3E4D4A5EA}.Release|x86.Build.0 = Release|Any CPU
+		{E82D3587-E2C1-4EA9-8494-7DC3E4D4A5EA}.ReleaseBinaries|Any CPU.ActiveCfg = Release|Any CPU
+		{E82D3587-E2C1-4EA9-8494-7DC3E4D4A5EA}.ReleaseBinaries|Any CPU.Build.0 = Release|Any CPU
+		{E82D3587-E2C1-4EA9-8494-7DC3E4D4A5EA}.ReleaseBinaries|x86.ActiveCfg = Release|Any CPU
+		{E82D3587-E2C1-4EA9-8494-7DC3E4D4A5EA}.ReleaseBinaries|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

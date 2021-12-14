@@ -36,7 +36,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -45,9 +44,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Mozi.IoT\Mozi.IoT.csproj">
+    <ProjectReference Include="..\Mozi.IoT.Server\Mozi.IoT.Server.csproj">
+      <Project>{e82d3587-e2c1-4ea9-8494-7dc3e4d4a5ea}</Project>
+      <Name>Mozi.IoT.Server</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mozi.IoT\Mozi.IoT.Core.csproj">
       <Project>{a59e18f0-30e5-41e7-9504-02993bca949b}</Project>
-      <Name>Mozi.IoT</Name>
+      <Name>Mozi.IoT.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
