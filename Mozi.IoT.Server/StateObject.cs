@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Sockets;
 
-namespace Mozi.NTP
+namespace Mozi.IoT
 {
     /// <summary>
     /// 通讯缓冲对象

@@ -48,9 +48,9 @@
       <Project>{e82d3587-e2c1-4ea9-8494-7dc3e4d4a5ea}</Project>
       <Name>Mozi.IoT.Server</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Mozi.IoT\Mozi.IoT.Core.csproj">
+    <ProjectReference Include="..\Mozi.IoT\Mozi.IoT.csproj">
       <Project>{a59e18f0-30e5-41e7-9504-02993bca949b}</Project>
-      <Name>Mozi.IoT.Core</Name>
+      <Name>Mozi.IoT</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

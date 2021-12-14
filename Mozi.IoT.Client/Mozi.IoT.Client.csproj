@@ -41,9 +41,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Mozi.IoT\Mozi.IoT.Core.csproj">
+    <ProjectReference Include="..\Mozi.IoT\Mozi.IoT.csproj">
       <Project>{a59e18f0-30e5-41e7-9504-02993bca949b}</Project>
-      <Name>Mozi.IoT.Core</Name>
+      <Name>Mozi.IoT</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

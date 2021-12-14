@@ -1,5 +1,4 @@
-﻿using Mozi.NTP;
-using System.Net;
+﻿using System.Net;
 
 namespace Mozi.IoT
 {
