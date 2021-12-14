@@ -114,31 +114,31 @@ namespace Mozi.IoT
             uint deltaSum = 0;
             while (bodySplitterPos < data.Length && data[bodySplitterPos] != CoAPProtocol.HeaderEnd)
             {
+                
                 CoAPOption option = new CoAPOption();
                 option.OptionHead = data[bodySplitterPos];
-                byte delta = (byte)(option.OptionHead >> 4);
-                int lenDelta = 0, lenLength = 0;
+                //byte len=(byte)(option.OptionHead)
+                int lenDeltaExt = 0, lenLengthExt = 0;
                 if (option.Delta <= 12)
                 {
 
                 }
                 else if (option.Delta == 13)
                 {
-                    lenDelta = 1;
+                    lenDeltaExt = 1;
                 }
                 else if (option.Delta == 14)
                 {
-                    lenDelta += 2;
+                    lenDeltaExt = 2;
                 }
-                if (lenDelta > 0)
+                if (lenDeltaExt > 0)
                 {
                     byte[] arrDeltaExt = new byte[2];
-                    Array.Copy(data, bodySplitterPos + 1, arrDeltaExt, 0, lenDelta);
+                    Array.Copy(data, bodySplitterPos + 1, arrDeltaExt, arrDeltaExt.Length-lenDeltaExt, lenDeltaExt);
                     option.DeltaExtend = BitConverter.ToUInt16(arrDeltaExt.Revert(), 0);
                 }
-                option.DeltaValue += deltaSum;
                 //赋默认值
-                option.Option = AbsClassEnum.Get<CoAPOptionDefine>(option.DeltaValue.ToString());
+                option.Option = AbsClassEnum.Get<CoAPOptionDefine>((option.DeltaValue + deltaSum).ToString());
                 if (object.ReferenceEquals(null, option.Option))
                 {
                     option.Option = CoAPOptionDefine.Unknown;
@@ -149,24 +149,25 @@ namespace Mozi.IoT
                 }
                 else if (option.Length == 13)
                 {
-                    lenLength = 1;
+                    lenLengthExt = 1;
                 }
                 else if (option.Length == 14)
                 {
-                    lenLength = 2;
+                    lenLengthExt = 2;
                 }
-                if (lenLength > 0)
+                if (lenLengthExt > 0) 
                 {
-                    byte[] arrDeltaExt = new byte[2];
-                    Array.Copy(data, bodySplitterPos + 1 + lenDelta + 1, arrDeltaExt, 0, lenDelta);
-                    option.DeltaExtend = BitConverter.ToUInt16(arrDeltaExt.Revert(), 0);
+                    byte[] arrLengthExt = new byte[2];
+                    Array.Copy(data, bodySplitterPos + 1 + lenDeltaExt, arrLengthExt, arrLengthExt.Length-lenLengthExt, lenLengthExt);
+                    option.LengthExtend = BitConverter.ToUInt16(arrLengthExt.Revert(), 0);
                 }
 
                 option.Value = new byte[option.LengthValue];
-                Array.Copy(data, bodySplitterPos + 1 + lenDelta + lenLength, option.Value, 0, option.Value.Length);
+                Array.Copy(data, bodySplitterPos + 1 + lenDeltaExt + lenLengthExt, option.Value, 0, option.Value.Length);
                 pack.Options.Add(option);
-                deltaSum += delta;
-                bodySplitterPos += 1 + lenDelta + lenLength + option.Value.Length;
+                deltaSum += option.Delta;
+                //头长度+delta扩展长度+len
+                bodySplitterPos += 1+lenDeltaExt + lenLengthExt + option.Value.Length;
 
             }
             //有效荷载

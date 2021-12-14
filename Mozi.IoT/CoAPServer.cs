@@ -89,8 +89,8 @@ namespace Mozi.IoT
         {
             CoAPPackage pack2=null;
 
-            try
-            {
+            //try
+            //{
                 CoAPPackage pack = CoAPPackage.Parse(args.Data,true);
 
                 pack2 = new CoAPPackage()
@@ -118,18 +118,18 @@ namespace Mozi.IoT
 
                 //检查内容类型
 
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            finally
-            {
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine(ex.Message);
+            //}
+            //finally
+            //{
                 if (pack2 != null)
                 {
                     args.Socket.SendTo(pack2.Pack(), new IPEndPoint(IPAddress.Parse(args.IP), args.Port));
                 }
-            }
+            //}
         }
         /// <summary>
         /// 是否受支持的请求方法<see cref="CoAPRequestCode"/>

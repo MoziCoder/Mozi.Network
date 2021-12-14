@@ -163,9 +163,10 @@ namespace Mozi.IoT
             set
             {
                 _deltaValue = value;
-                if (_deltaValue < 12)
+                if (_deltaValue <= 12)
                 {
                     Delta = (byte)_deltaValue;
+                    DeltaExtend = 0;
                 }
                 else if (_deltaValue < 269)
                 {
@@ -188,9 +189,10 @@ namespace Mozi.IoT
             set
             {
                 _lenValue = value;
-                if (_lenValue < 12)
+                if (_lenValue <= 12)
                 {
                     Length = (byte)_lenValue;
+                    Length = 0;
                 }
                 else if (_lenValue < 269)
                 {
