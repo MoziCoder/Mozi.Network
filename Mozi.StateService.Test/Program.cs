@@ -4,7 +4,9 @@ namespace Mozi.StateService.Test
 {
     class Program
     {
+        //网关
         static readonly HeartBeatGateway hg = new HeartBeatGateway();
+        //订阅者
         static readonly HeartBeatSubscriber hbs = new HeartBeatSubscriber();
 
         static void Main(string[] args)
@@ -24,6 +26,7 @@ namespace Mozi.StateService.Test
             //state.SetState(ClientLifeState.Idle);
 
             //服务网关
+
             hg.AddSubscriber(new Subscriber() { Host = "100.100.0.171", Port = 13452 });
             hg.AddSubscriber(new Subscriber() { Host = "100.100.0.105", Port = 13452 });
             hg.OnClientOnlineStateChange += Hg_OnClientStateChange;
@@ -33,6 +36,8 @@ namespace Mozi.StateService.Test
             hg.OnClientLifeStateChange += Hg_OnClientLifeStateChange;
             hg.Start(13453);
 
+            //订阅者
+
             hbs.OnClientOnlineStateChange += Hg_OnClientStateChange;
             hbs.OnClientMessageReceived += Hg_OnClientMessageReceived;
             hbs.OnClientUserChange += Hg_OnClientUserChange;
@@ -40,7 +45,17 @@ namespace Mozi.StateService.Test
             hbs.OnClientLifeStateChange += Hg_OnClientLifeStateChange;
             hbs.Start(13452);
 
+            //客户端 为不干扰主线程运行，建议对HeartBeatService进行再次封装.可直接调用包内 StateServiceHost运行单例模式
+
+            HeartBeatService stateHost =new HeartBeatService();
+            stateHost.StateChangeNotifyImmediately = true;
+            stateHost.ApplyDevice("Mozi", "0000-0001", "1.3.2");
+            stateHost.RemoteHost = "100.100.0.111";
+            stateHost.Port = 13453;
+            stateHost.Activate();
+
             Console.ReadLine();
+
         }
         /// <summary>
         /// 终端心跳状态变化事件

@@ -90,7 +90,7 @@ namespace Mozi.StateService
         /// </summary>
         public bool UserChangeNotifyImmediately { get; set; }
         /// <summary>
-        /// 端口
+        /// 网关服务端口
         /// </summary>
         public int Port
         {
@@ -173,7 +173,7 @@ namespace Mozi.StateService
             return this;
         }
         /// <summary>
-        /// 设置终端状态
+        /// 设置终端状态，此方法会实时发送客户机状态到网关
         /// </summary>
         /// <param name="stateName"></param>
         /// <returns></returns>
