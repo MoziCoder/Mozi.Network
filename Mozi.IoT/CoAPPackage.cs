@@ -65,7 +65,10 @@ namespace Mozi.IoT
         /// 包体
         /// </summary>
         public byte[] Payload { get; set; }
-
+        /// <summary>
+        /// 打包|转为字节流
+        /// </summary>
+        /// <returns></returns>
         public byte[] Pack()
         {
             List<byte> data = new List<byte>();
@@ -91,9 +94,125 @@ namespace Mozi.IoT
                 data.AddRange(Payload);
             }
             return data.ToArray();
-
         }
 
+        /// <summary>
+        /// 转为HTTP包,ASCII字符串数据包
+        /// </summary>
+        /// <returns></returns>
+        //public byte[] ToHttp()
+        //{
+            //List<string> data = new List<string>();
+            //string head = string.Format("{0} ");
+        //}
+
+        /// <summary>
+        /// 设置空选项值
+        /// </summary>
+        /// <param name="define"></param>
+        /// <returns></returns>
+        public CoAPPackage SetOption(CoAPOptionDefine define)
+        {
+           return SetOption(define, new EmptyOptionValue());
+        }
+
+        /// <summary>
+        /// 设置选项值，此方法可以设置自定义的选项值类型
+        /// </summary>
+        /// <param name="define"></param>
+        /// <param name="optionValue"></param>
+        /// <returns></returns>
+        public CoAPPackage SetOption(CoAPOptionDefine define,OptionValue optionValue)
+        {
+            CoAPOption option = new CoAPOption()
+            {
+                Option = define,
+                Value = optionValue
+            };
+            Options.Add(option);
+            return this;
+        }
+        /// <summary>
+        /// 设置字节流选项值
+        /// </summary>
+        /// <param name="define"></param>
+        /// <param name="optionValue"></param>
+        /// <returns></returns>
+        public CoAPPackage SetOption(CoAPOptionDefine define, byte[] optionValue)
+        {
+            CoAPOption option = new CoAPOption()
+            {
+                Option = define,
+                Value = new ArrayByteOptionValue() { Value = optionValue }
+            };
+            Options.Add(option);
+            return this;
+        }
+        /// <summary>
+        /// 设置uint(32)选项值
+        /// </summary>
+        /// <param name="define"></param>
+        /// <param name="optionValue"></param>
+        /// <returns></returns>
+        public CoAPPackage SetOption(CoAPOptionDefine define, uint optionValue)
+        {
+            UnsignIntegerOptionValue v = new UnsignIntegerOptionValue() { Value = optionValue };
+            return SetOption(define, v);
+        }
+        /// <summary>
+        /// 设置字符串选项值
+        /// </summary>
+        /// <param name="define"></param>
+        /// <param name="optionValue"></param>
+        /// <returns></returns>
+        public CoAPPackage SetOption(CoAPOptionDefine define,string optionValue)
+        {
+            StringOptionValue v = new StringOptionValue() { Value = optionValue };
+            return SetOption(define, v);
+        }
+        /// <summary>
+        /// 设置Block1|Block2选项值，此处会作去重处理。设置非Block1|Block2会被忽略掉
+        /// </summary>
+        /// <param name="define"></param>
+        /// <param name="optionValue"></param>
+        /// <returns></returns>
+        public CoAPPackage SetOption(CoAPOptionDefine define, BlockOptionValue optionValue)
+        {
+            if (define == CoAPOptionDefine.Block1 || define ==  CoAPOptionDefine.Block2)
+            {
+                var opt = Options.Find(x => x.Option == define);
+                StringOptionValue v = new StringOptionValue() { Value = optionValue };
+                if (opt == null)
+                {
+                    opt = new CoAPOption() { Option = define, Value = v };
+                }
+                else
+                {
+                    opt.Value = v;
+                }
+
+                return SetOption(define, v);
+            }
+            else
+            {
+                return this;
+            }
+        }
+        /// <summary>
+        /// 设置内容格式类型Content-Format,Http中的Content-Type
+        /// </summary>
+        /// <param name="ft"></param>
+        /// <returns></returns>
+        public CoAPPackage SetContentType(ContentFormatType ft)
+        {
+            return SetOption(CoAPOptionDefine.ContentFormat, ft.Num);
+        }
+        /// <summary>
+        /// 解析数据包
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="isRequest"></param>
+        /// <returns></returns>
         public static CoAPPackage Parse(byte[] data, bool isRequest)
         {
             CoAPPackage pack = new CoAPPackage();
@@ -162,8 +281,8 @@ namespace Mozi.IoT
                     option.LengthExtend = BitConverter.ToUInt16(arrLengthExt.Revert(), 0);
                 }
 
-                option.Value = new byte[option.LengthValue];
-                Array.Copy(data, bodySplitterPos + 1 + lenDeltaExt + lenLengthExt, option.Value, 0, option.Value.Length);
+                option.Value.Pack = new byte[option.LengthValue];
+                Array.Copy(data, bodySplitterPos + 1 + lenDeltaExt + lenLengthExt, option.Value.Pack, 0, option.Value.Length);
                 pack.Options.Add(option);
                 deltaSum += option.Delta;
                 //头长度+delta扩展长度+len
@@ -322,7 +441,9 @@ namespace Mozi.IoT
             _detail = detail;
         }
     }
-
+    /// <summary>
+    /// 请求码
+    /// </summary>
     public class CoAPRequestCode : CoAPCode
     {
 
@@ -336,7 +457,9 @@ namespace Mozi.IoT
 
         }
     }
-
+    /// <summary>
+    /// 响应码
+    /// </summary>
     public class CoAPResponseCode : CoAPCode
     {
 
@@ -375,10 +498,14 @@ namespace Mozi.IoT
     }
 
     /// <summary>
-    /// 0-Confirmable
-    /// 1-Non-confirmable 
-    /// 2-Acknowledgement
-    //  3-Reset
+    /// 消息类型
+    /// <list type="table">
+    ///     <listheader>取值范围</listheader>
+    ///     <item><term>0</term><see cref="Confirmable"/></item>
+    ///     <item><term>1</term><see cref="NonConfirmable"/></item>
+    ///     <item><term>2</term><see cref="Acknowledgement"/></item>
+    ///     <item><term>3</term><see cref="Reset"/></item>
+    /// </list>
     /// </summary>
     public class CoAPMessageType : AbsClassEnum
     {

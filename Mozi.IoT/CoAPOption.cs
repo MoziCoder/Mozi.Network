@@ -93,7 +93,7 @@ namespace Mozi.IoT
 
         protected override string Tag => OptionNumber.ToString();
 
-        internal CoAPOptionDefine(string name, ushort optionNumber)
+        public CoAPOptionDefine(string name, ushort optionNumber)
         {
             _name = name;
             OptionNumber = optionNumber;
@@ -230,8 +230,7 @@ namespace Mozi.IoT
         /// 选项值>=0 bytes
         /// 空 字节数组 数字 ASCII/UTF-8字符串
         /// </summary>
-        public byte[] Value { get; set; }
-
+        public OptionValue Value { get; set; }
         public byte[] Pack
         {
             get
@@ -240,6 +239,7 @@ namespace Mozi.IoT
 
                 List<byte> data = new List<byte>();
                 data.Add(head);
+                //delta
                 if (Delta == 14)
                 {
                     data.AddRange(BitConverter.GetBytes(DeltaExtend));
@@ -248,6 +248,7 @@ namespace Mozi.IoT
                 {
                     data.AddRange(BitConverter.GetBytes((byte)(DeltaExtend)));
                 }
+                //length
                 if (LengthExtend == 14)
                 {
                     data.AddRange(BitConverter.GetBytes(LengthExtend));
@@ -256,8 +257,14 @@ namespace Mozi.IoT
                 {
                     data.AddRange(BitConverter.GetBytes((byte)(LengthExtend)));
                 }
+                data.AddRange(Value.Pack);
                 return data.ToArray();
+
             }
+        }
+        public CoAPOption()
+        {
+            Value = new ArrayByteOptionValue();
         }
     }
     ///CoAP Content-Formats Registry
@@ -294,7 +301,7 @@ namespace Mozi.IoT
                 return _num;
             }
         }
-
+        public ushort Num { get { return _num; } }
         protected override string Tag => _num.ToString();
 
         public ContentFormatType TextPlain = new ContentFormatType("text/plain", 0);
@@ -311,123 +318,5 @@ namespace Mozi.IoT
             _num = num;
         }
     }
-    /// <summary>
-    /// 选项值>=0 bytes
-    /// 空 字节数组 数字 ASCII/UTF-8字符串
-    /// </summary>
-    public abstract class OptionValue
-    {
-        public abstract object Value { get; }
-        public abstract byte[] Pack { get; set; }
-    }
 
-    public class NullOptionValue : OptionValue
-    {
-        public override object Value => null;
-
-        public override byte[] Pack
-        {
-            get => null;
-            set
-            {
-
-            }
-        }
-    }
-
-    public class ArrayByteOptionValue : OptionValue
-    {
-        private byte[] _pack;
-
-        public override object Value => _pack;
-
-        public override byte[] Pack { get => _pack; set => _pack = value; }
-    }
-
-//    public class IntegerOptionValue : OptionValue
-//    {
-//        private byte[] _pack;
-
-//        public override object Value =>
-//            {
-               
-//            };
-
-//    public override byte[] Pack { get => _pack; set => _pack = value; }
-//}
-
-public class StringOptionValue : OptionValue
-    {
-        private byte[] _pack;
-
-        public override object Value => System.Text.Encoding.UTF8.GetString(_pack);
-
-        public override byte[] Pack { get => _pack; set => _pack = value; }
-    }
-
-    /// <summary>
-    /// 分块选项 数据结构 适用Block1 Block2 总长度uint24
-    /// </summary>
-    public class BlockOptionValue : OptionValue
-    {
-        /// <summary>
-        /// 块内位置 占位4-20bits
-        /// </summary>
-        public uint Num { get; set; }
-        /// <summary>
-        /// 是否最后一个包 占位1bit
-        /// </summary>
-        public bool MoreFlag { get; set; }
-        /// <summary>
-        /// 数据包总大小 占位3bits 值大小为1-6，表值范围16bytes-1024bytes
-        /// </summary>
-        public ushort Size { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public override byte[] Pack
-        {
-            get
-            {
-                byte[] data;
-                uint num = (Num << 4) | (byte)((byte)Math.Log(Size, 2) - 4);
-                if (MoreFlag)
-                {
-                    num |= 8;
-                }
-
-                if (Num < 16)
-                {
-                    data = new byte[1];
-                    data[0] = (byte)Num;
-                }
-                else if (Num < 4096)
-                {
-                    data = BitConverter.GetBytes((ushort)num).Revert();
-                }
-                else
-                {
-                    data = new byte[3];
-                    Array.Copy(BitConverter.GetBytes(num).Revert(), 1, data, 0, data.Length);
-                }
-                return data;
-            }
-            set
-            {
-
-                Size = (ushort)Math.Pow(2, (((byte)(value[0] << 5)) >> 5) + 4);
-                MoreFlag = (value[0] & 8) == 8;
-                byte[] data = new byte[4];
-                Array.Copy(value.Revert(), 0, data, data.Length - value.Length, value.Length);
-                Num = BitConverter.ToUInt32(data, 0);
-            }
-        }
-
-        public override object Value { get => Size; }
-
-        public override string ToString()
-        {
-            return Pack == null ? "null" : String.Format("{0},Num:{1},M:{2},SZX:{3}(bytes)", "Block", Num, MoreFlag ? 1 : 0, Size);
-        }
-    }
 }
