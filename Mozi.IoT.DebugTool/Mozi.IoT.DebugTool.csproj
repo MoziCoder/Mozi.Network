@@ -6,4 +6,9 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Mozi.IoT.Client\Mozi.IoT.Client.csproj" />
+    <ProjectReference Include="..\Mozi.IoT.Server\Mozi.IoT.Server.csproj" />
+  </ItemGroup>
+
 </Project>

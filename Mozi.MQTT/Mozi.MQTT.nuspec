@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package >
   <metadata>
-    <id>Mozi.IoT</id>
+    <id>Mozi.MQTT</id>
     <version>1.3.2</version>
-    <title>Mozi.IoT</title>
+    <title>Mozi.MQTT</title>
     <authors>Jason</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
     <projectUrl>https://gitee.com/myui_admin/mozi</projectUrl>
-    <description>物联网IoT标准通讯件，核心组件</description>
+    <description>MQTT消息队列服务器</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright © Jason 2020-2022</copyright>
-    <tags>物联网 IoT CoAP</tags>
+    <copyright>Copyright © Jason 2021-2022</copyright>
+    <tags>MQTT MQTTServer</tags>
   </metadata>
 </package>

@@ -51,5 +51,9 @@
       <Name>Mozi.IoT</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Mozi.IoT.Server.nuspec" />
+    <None Include="Readme.md" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

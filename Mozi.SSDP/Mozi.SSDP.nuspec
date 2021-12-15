@@ -10,7 +10,7 @@
     <projectUrl>https://gitee.com/myui_admin/mozi</projectUrl>
     <description>SSDP-UPNP实现，遵循UPNP/1.0 UPNP/2.0规范</description>
     <releaseNotes>SSDP-UPNP实现</releaseNotes>
-    <copyright>Copyright © Jason 2020-2021</copyright>
+    <copyright>Copyright © Jason 2020-2022</copyright>
     <tags>SSDP UPNP</tags>
 	  <dependencies>
 		  <!--<group targetFramework=".NetFramework4.0">

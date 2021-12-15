@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Mozi.StateService")]
 [assembly: AssemblyDescription("心跳服务及心跳网关")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Jason")]
+[assembly: AssemblyCompany("MoziCoder workgroup")]
 [assembly: AssemblyProduct("Mozi.StateService")]
 [assembly: AssemblyCopyright("Copyright © Jason 2021-2022")]
 [assembly: AssemblyTrademark("")]

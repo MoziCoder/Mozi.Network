@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
 [assembly: AssemblyTitle("Mozi.IoT.Server")]
-[assembly: AssemblyDescription("IoT物联网服务器")]
+[assembly: AssemblyDescription("IoT物联网服务器网关")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("MoziCoder workgroup")]
 [assembly: AssemblyProduct("Mozi.IoT.Server")]
-[assembly: AssemblyCopyright("Copyright © MoziCoder 2021-2022")]
+[assembly: AssemblyCopyright("Copyright © Jason 2021-2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

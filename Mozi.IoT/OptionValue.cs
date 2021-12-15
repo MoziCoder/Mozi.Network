@@ -12,19 +12,21 @@ namespace Mozi.IoT
         public abstract byte[] Pack { get; set; }
         public abstract int Length { get; }
     }
-
+    /// <summary>
+    /// 空选项值
+    /// </summary>
     public class EmptyOptionValue : OptionValue
     {
         public override object Value { get { return null; } set { } }
-
         public override byte[] Pack
         {
             get => new byte[0];set { }
         }
-
         public override int Length => 0;
     }
-
+    /// <summary>
+    /// 字节数组选项值
+    /// </summary>
     public class ArrayByteOptionValue : OptionValue
     {
         private byte[] _pack;
@@ -36,9 +38,9 @@ namespace Mozi.IoT
         public override int Length => _pack!=null?_pack.Length:0;
     }
     /// <summary>
-    /// uint选项值，.Net的数值类型与网络包数据类型不同，故字节数组会进行翻转
+    /// uint选项值，.Net的数值类型与网络包数据包排序不同，故字节数组会进行数组翻转
     /// </summary>
-    public class UnsignIntegerOptionValue : OptionValue
+    public class UnsignedIntegerOptionValue : OptionValue
     {
         private byte[] _pack;
 
@@ -62,15 +64,15 @@ namespace Mozi.IoT
                 uint num = (uint)value;
                 byte[] data = BitConverter.GetBytes(num);
 
-                if (num < 256)
+                if (num < 256) //2~8
                 {
                     _pack = new byte[1] { data[3] };
                 }
-                else if (num < 65536)
+                else if (num < 65536) //2~16
                 {
                     _pack = new byte[2] { data[2], data[3] }.Revert();
                 }
-                else if (num < 16777216)
+                else if (num < 16777216) //2~24
                 {
                     _pack = new byte[3] { data[1], data[2], data[3] }.Revert();
                 }
@@ -88,7 +90,9 @@ namespace Mozi.IoT
 
         public override int Length => _pack != null ? _pack.Length : 0;
     }
-
+    /// <summary>
+    /// string选项值
+    /// </summary>
     public class StringOptionValue : OptionValue
     {
         private byte[] _pack;
@@ -103,7 +107,6 @@ namespace Mozi.IoT
 
         public override int Length => _pack != null ? _pack.Length : 0;
     }
-
     /// <summary>
     /// 分块选项 数据结构 适用Block1 Block2 总长度uint24
     /// </summary>
@@ -170,7 +173,7 @@ namespace Mozi.IoT
 
         public override string ToString()
         {
-            return Pack == null ? "null" : String.Format("{0},Num:{1},M:{2},SZX:{3}(bytes)", "Block", Num, MoreFlag ? 1 : 0, Size);
+            return Pack == null ? "null" : string.Format("{0},Num:{1},M:{2},SZX:{3}(bytes)", "Block", Num, MoreFlag ? 1 : 0, Size);
         }
     }
 }

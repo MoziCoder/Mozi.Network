@@ -11,6 +11,7 @@ namespace Mozi.IoT
 
     //内容采用UTF-8编码
     //头部截断使用0xFF填充
+
     public class CoAPPackage
     {
         /// <summary>
@@ -156,7 +157,7 @@ namespace Mozi.IoT
         /// <returns></returns>
         public CoAPPackage SetOption(CoAPOptionDefine define, uint optionValue)
         {
-            UnsignIntegerOptionValue v = new UnsignIntegerOptionValue() { Value = optionValue };
+            UnsignedIntegerOptionValue v = new UnsignedIntegerOptionValue() { Value = optionValue };
             return SetOption(define, v);
         }
         /// <summary>

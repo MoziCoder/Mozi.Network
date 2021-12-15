@@ -7,11 +7,11 @@
     <authors>Jason</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
-    <projectUrl>http://project_url_here_or_delete_this_line/</projectUrl>
+    <projectUrl>https://gitee.com/myui_admin/mozi</projectUrl>
     <iconUrl>http://icon_url_here_or_delete_this_line/</iconUrl>
     <description>$description$</description>
     <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
-    <copyright>Copyright © Jason 2020-2021</copyright>
+    <copyright>Copyright © Jason 2020-2022</copyright>
     <tags>Tag1 Tag2</tags>
   </metadata>
 </package>

@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("MoziCoder workgroup")]
 [assembly: AssemblyProduct("Mozi.TLS")]
-[assembly: AssemblyCopyright("Copyright © MoziCoder  2021-2022")]
+[assembly: AssemblyCopyright("Copyright © Jason 2021-2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

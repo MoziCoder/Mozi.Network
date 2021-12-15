@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Mozi.HttpEmbedded")]
 [assembly: AssemblyDescription("HTTP服务器组件，嵌入式WEB")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Jason")]
+[assembly: AssemblyCompany("MoziCoder workgroup")]
 [assembly: AssemblyProduct("Mozi.HttpEmbedded")]
 [assembly: AssemblyCopyright("Copyright © Jason 2020-2022")]
 [assembly: AssemblyTrademark("")]

@@ -41,6 +41,7 @@
     <Compile Include="AbsClassEnum.cs" />
     <Compile Include="CoAPOption.cs" />
     <Compile Include="CoAPPackage.cs" />
+    <Compile Include="ContentFormatType.cs" />
     <Compile Include="OptionValue.cs" />
     <Compile Include="Others.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
