@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Mozi.IoT
+﻿namespace Mozi.IoT
 {
 
     ///<summary>
@@ -22,7 +20,7 @@ namespace Mozi.IoT
     ///     application/json         | -        | 50 | [RFC7159]              |
     ///     applicaiton/cbor         | -        | 60 | [RFC7159]              |
     ///     
-    public class ContentFormatType : AbsClassEnum
+    public class ContentFormat : AbsClassEnum
     {
         private ushort _num = 0;
         private string _contentType = "";
@@ -45,15 +43,15 @@ namespace Mozi.IoT
         public ushort Num { get { return _num; } }
         protected override string Tag => _num.ToString();
 
-        public ContentFormatType TextPlain = new ContentFormatType("text/plain", 0);
-        public ContentFormatType LinkFormat = new ContentFormatType("application/link-format", 40);
-        public ContentFormatType XML = new ContentFormatType("application/xml", 41);
-        public ContentFormatType Stream = new ContentFormatType("application/octet-stream", 42);
-        public ContentFormatType EXI = new ContentFormatType("application/exi", 47);
-        public ContentFormatType JSON = new ContentFormatType("application/json", 50);
-        public ContentFormatType CBOR = new ContentFormatType("applicaiton/cbor", 60);
+        public ContentFormat TextPlain = new ContentFormat("text/plain", 0);
+        public ContentFormat LinkFormat = new ContentFormat("application/link-format", 40);
+        public ContentFormat XML = new ContentFormat("application/xml", 41);
+        public ContentFormat Stream = new ContentFormat("application/octet-stream", 42);
+        public ContentFormat EXI = new ContentFormat("application/exi", 47);
+        public ContentFormat JSON = new ContentFormat("application/json", 50);
+        public ContentFormat CBOR = new ContentFormat("applicaiton/cbor", 60);
 
-        internal ContentFormatType(string contentType, ushort num)
+        internal ContentFormat(string contentType, ushort num)
         {
             _contentType = contentType;
             _num = num;

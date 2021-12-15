@@ -39,9 +39,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbsClassEnum.cs" />
+    <Compile Include="CoAPMethod.cs" />
     <Compile Include="CoAPOption.cs" />
     <Compile Include="CoAPPackage.cs" />
-    <Compile Include="ContentFormatType.cs" />
+    <Compile Include="CoAPProtocol.cs" />
+    <Compile Include="ContentFormat.cs" />
     <Compile Include="OptionValue.cs" />
     <Compile Include="Others.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

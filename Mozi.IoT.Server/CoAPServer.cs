@@ -40,7 +40,7 @@ namespace Mozi.IoT
 
         private int _port = CoAPProtocol.Port;
 
-        private List<CoAPCode> _supported = new List<CoAPCode> { CoAPRequestCode.Get, CoAPRequestCode.Post, CoAPRequestCode.Put, CoAPRequestCode.Delete };
+        private List<CoAPCode> _supported = new List<CoAPCode> { CoAPRequestMethod.Get, CoAPRequestMethod.Post, CoAPRequestMethod.Put, CoAPRequestMethod.Delete };
 
         /// <summary>
         /// 服务端端口
@@ -132,7 +132,7 @@ namespace Mozi.IoT
             //}
         }
         /// <summary>
-        /// 是否受支持的请求方法<see cref="CoAPRequestCode"/>
+        /// 是否受支持的请求方法<see cref="CoAPRequestMethod"/>
         /// </summary>
         /// <param name="pack"></param>
         /// <returns></returns>
