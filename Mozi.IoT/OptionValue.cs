@@ -176,4 +176,28 @@ namespace Mozi.IoT
             return Pack == null ? "null" : string.Format("{0},Num:{1},M:{2},SZX:{3}(bytes)", "Block", Num, MoreFlag ? 1 : 0, Size);
         }
     }
+    //RFC8974
+    ///// <summary>
+    ///// Extended-Token-Length Option 长度0-3 bytes
+    ///// </summary>
+    //internal class ExtendedTokenLengthOptionValue : UnsignedIntegerOptionValue
+    //{
+    //    public override object Value
+    //    {
+    //        get { return base.Value; }
+    //        set
+    //        {
+    //            if ((uint)value< 8){
+    //                base.Value = 8;
+    //            }else if((uint)value> 65804)
+    //            {
+    //                base.Value = 65804;
+    //            }
+    //            else
+    //            {
+    //                base.Value = value;
+    //            }
+    //        }
+    //    }
+    //}
 }

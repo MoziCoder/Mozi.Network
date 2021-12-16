@@ -8,7 +8,9 @@
     public class CoAPProtocol
     {
         public const ushort Port = 5683;
+
         public const ushort SecurePort = 5684;
+        
         public const ushort TcpPort = 5685;
 
         public const byte HeaderEnd = 0xFF;
@@ -24,6 +26,7 @@
         /// 最大重传次数
         /// </summary>
         public int MAX_RETRANSMIT = 4;
+
         public int NSTART = 1;
         /// <summary>
         /// seconds
@@ -37,12 +40,20 @@
         /// 最大缓存时间 seconds
         /// </summary>
         public int MAX_AGE = 60;
+
         public int MAX_TRANSMIT_SPAN = 45;
+        
         public int MAX_TRANSMIT_WAIT = 93;
+        
         public int MAX_LATENCY = 100;
+        
         public int PROCESSING_DELAY = 2;
+        
         public int MAX_RTT = 202;
+        
         public int EXCHANGE_LIFETIME = 247;
+        
         public int NON_LIFETIME = 145;
+    
     }
 }

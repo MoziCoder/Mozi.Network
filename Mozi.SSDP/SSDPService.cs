@@ -52,7 +52,7 @@ namespace Mozi.SSDP
         private IPEndPoint _remoteEP;
 
         private string _multicastGroupAddress = SSDPProtocol.MulticastAddress;
-        private int _multicastGroupPort = SSDPProtocol.ProtocolPort;
+        private ushort _multicastGroupPort = SSDPProtocol.ProtocolPort;
         private IPAddress _bindingAddress = IPAddress.Any;
 
         private string _server = "Mozi/1.2.5 UPnP/2.0 Mozi.SSDP/1.2.5";
@@ -141,7 +141,7 @@ namespace Mozi.SSDP
         /// 标准端口为 <see cref="SSDPProtocol.ProtocolPort"/>
         /// </para>
         /// </summary>
-        public int MulticastPort
+        public ushort MulticastPort
         {
             get 
             {
@@ -708,7 +708,7 @@ namespace Mozi.SSDP
                     if (hostItmes.Length == 2)
                     {
                         HostIp = hostItmes[0];
-                        HostPort = int.Parse(hostItmes[1]);
+                        HostPort = ushort.Parse(hostItmes[1]);
                     }
                     _host = value;
                 }catch(Exception ex)
@@ -720,7 +720,7 @@ namespace Mozi.SSDP
         public string Path { get; set; }
 
         public string HostIp { get; private set; }
-        public int HostPort { get; private set; }
+        public ushort HostPort { get; private set; }
 
         public AbsAdvertisePackage()
         {
@@ -749,7 +749,7 @@ namespace Mozi.SSDP
         /// <summary>
         /// SSDP组播端口
         /// </summary>
-        public const int ProtocolPort = 1900;
+        public const ushort ProtocolPort = 1900;
         /// <summary>
         /// 事件组播地址
         /// </summary>
@@ -757,7 +757,7 @@ namespace Mozi.SSDP
         /// <summary>
         /// 事件组播端口
         /// </summary>
-        public const int EventMulticastPort = 7900;
+        public const ushort EventMulticastPort = 7900;
 
     }
 

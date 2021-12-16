@@ -5,7 +5,7 @@
     /// </summary>
     internal class TelnetClient
     {
-        private int _port = 23;
+        private ushort _port = 23;
         private string _host = "";
 
         public void Connect()

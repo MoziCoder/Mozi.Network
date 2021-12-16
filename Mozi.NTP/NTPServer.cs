@@ -19,11 +19,11 @@ namespace Mozi.NTP
     {
         private readonly UDPSocket _socket;
 
-        private int _port = NTPProtocol.Port;
+        private ushort _port = NTPProtocol.Port;
         /// <summary>
         /// 服务端端口
         /// </summary>
-        public int Port { get { return _port; } }
+        public ushort Port { get { return _port; } }
 
         public DateTime StartTime { get; private set; }
         /// <summary>
@@ -50,7 +50,7 @@ namespace Mozi.NTP
         /// 启动网关
         /// </summary>
         /// <param name="port"></param>
-        public void Start(int port)
+        public void Start(ushort port)
         {
             _port = port;
             _socket.Start(_port);

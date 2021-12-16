@@ -16,7 +16,7 @@ namespace Mozi.StateService
     public class HeartBeatService
     {
         
-        private int _port = DefaultPort;
+        private ushort _port = DefaultPort;
 
         private string _host = "127.0.0.1";
 
@@ -92,7 +92,7 @@ namespace Mozi.StateService
         /// <summary>
         /// 网关服务端口
         /// </summary>
-        public int Port
+        public ushort Port
         {
             get { return _port; }
             set { 

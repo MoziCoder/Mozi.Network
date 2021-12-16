@@ -10,8 +10,10 @@
     ///     0.02  POST   | [RFC7252] 
     ///     0.03  PUT    | [RFC7252] 
     ///     0.04  DELETE | [RFC7252]
+    ///     
     ///  1.00-1.31 Reserved
     ///  2.00-5.31 Indicates a response.Values in this range are assigned bythe "CoAP Response Codes" sub-registry(see Section 12.1.2).
+    ///  
     ///     2.01 | Created                      | [RFC7252] |
     ///     2.02 | Deleted                      | [RFC7252] |
     ///     2.03 | Valid                        | [RFC7252] |
@@ -39,6 +41,7 @@
     ///     5.03 | Service Unavailable          | [RFC7252] |
     ///     5.04 | Gateway Timeout              | [RFC7252] |
     ///     5.05 | Proxying Not Supported       | [RFC7252] |
+    ///     
     ///  6.00-7.31 Reserved
     /// <summary>
     /// CoAP操作代码

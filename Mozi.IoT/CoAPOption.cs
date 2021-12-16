@@ -9,31 +9,32 @@ namespace Mozi.IoT
     ///|  2048-64999 | Expert Review                        
     ///| 65000-65535 | Experimental use(no operational use) 
 
-    ///      0 | (Reserved)       | [RFC7252] |
-    ///      1 | If-Match         | [RFC7252] |
-    ///      3 | Uri-Host         | [RFC7252] |
-    ///      4 | ETag             | [RFC7252] |
-    ///      5 | If-None-Match    | [RFC7252] |
-    ///      7 | Uri-Port         | [RFC7252] |
-    ///      8 | Location-Path    | [RFC7252] |
-    ///     11 | Uri-Path         | [RFC7252] |
-    ///     12 | Content-Format   | [RFC7252] |
-    ///     14 | Max-Age          | [RFC7252] |
-    ///     15 | Uri-Query        | [RFC7252] |
-    ///     17 | Accept           | [RFC7252] |
-    ///     20 | Location-Query   | [RFC7252] |
+    ///      0 | (Reserved)             | [RFC7252] |
+    ///      1 | If-Match               | [RFC7252] |
+    ///      3 | Uri-Host               | [RFC7252] |
+    ///      4 | ETag                   | [RFC7252] |
+    ///      5 | If-None-Match          | [RFC7252] |
+    ///      6 | Extended-Token-Length  | [RFC8974] |
+    ///      7 | Uri-Port               | [RFC7252] |
+    ///      8 | Location-Path          | [RFC7252] |
+    ///     11 | Uri-Path               | [RFC7252] |
+    ///     12 | Content-Format         | [RFC7252] |
+    ///     14 | Max-Age                | [RFC7252] |
+    ///     15 | Uri-Query              | [RFC7252] |
+    ///     17 | Accept                 | [RFC7252] |
+    ///     20 | Location-Query         | [RFC7252] |
     ///     
-    ///     23 | Block2           | [RFC7959] |
-    ///     27 | Block1           | [RFC7959] |    
-    ///     28 | Size2            | [RFC7959] |  
+    ///     23 | Block2                 | [RFC7959] |
+    ///     27 | Block1                 | [RFC7959] |    
+    ///     28 | Size2                  | [RFC7959] |  
     ///     
-    ///     35 | Proxy-Uri        | [RFC7252] |
-    ///     39 | Proxy-Scheme     | [RFC7252] |
-    ///     60 | Size1            | [RFC7252] |
-    ///    128 | (Reserved)       | [RFC7252] |
-    ///    132 | (Reserved)       | [RFC7252] |
-    ///    136 | (Reserved)       | [RFC7252] |
-    ///    140 | (Reserved)       | [RFC7252] |
+    ///     35 | Proxy-Uri              | [RFC7252] |
+    ///     39 | Proxy-Scheme           | [RFC7252] |
+    ///     60 | Size1                  | [RFC7252] |
+    ///    128 | (Reserved)             | [RFC7252] |
+    ///    132 | (Reserved)             | [RFC7252] |
+    ///    136 | (Reserved)             | [RFC7252] |
+    ///    140 | (Reserved)             | [RFC7252] |
     ///    
     ///Option Delta代表Option的类型，该值代表了上表中Option类型的代码值与上一个Option代码值之间的差值
     ///（如果该Option为第一个Option，则直接表达该Option的Option Delta）
@@ -53,6 +54,8 @@ namespace Mozi.IoT
         public static CoAPOptionDefine UriHost = new CoAPOptionDefine("Uri-Host", 3);
         public static CoAPOptionDefine ETag = new CoAPOptionDefine("ETag", 4);
         public static CoAPOptionDefine IfNoneMatch = new CoAPOptionDefine("If-None-Match", 5);
+        public static CoAPOptionDefine ExtendedTokenLength=new CoAPOptionDefine("Extended-Token-Length",6);
+
         public static CoAPOptionDefine UriPort = new CoAPOptionDefine("Uri-Port", 7);
         public static CoAPOptionDefine LocationPath = new CoAPOptionDefine("Location-Path", 8);
         public static CoAPOptionDefine UriPath = new CoAPOptionDefine("Uri-Path", 11);

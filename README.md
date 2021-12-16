@@ -5,19 +5,24 @@ Mozi.Network是基于.Net开发的网络应用组件套装。整个项目的主�
 ## 功能集合
 ### [HttpEmbedded][httpembedded]　　
 	Http服务器
+
 ### [IoT][iot]　　
-	IoT标准通讯套件，网关，客户端
+	IoT物联网标准通讯套件 网关，客户端，调试工具
+
 ### [SSDP][ssdp] 　　
 	SSDP/UPNP实现
+
 ### [StateService][stateservice]　　
-	自行设计的心跳服务组件，服务端及客户端
+	自行设计的心跳服务组件，服务端,观察者及客户端
+
 ### [Telnet][telnet] 　　
 	Telnet服务器及客户端实现
+
 ### [NTP][ntp]
 	NTP授时服务器，目前仅有SNTP功能
 
 ## [规划与展望][roadmap]
-	规划中的项目待总体设计完成后再进行开发，暂时不会冒进进行推进。
+	规划中的项目待总体设计完成后再进行开发，暂时不会冒进进行推进，项目规划详情请查阅[Roadmap.md]。
 
 ## 项目地址
 
@@ -45,4 +50,4 @@ Mozi.Network是基于.Net开发的网络应用组件套装。整个项目的主�
 [telnet]:./Mozi.Telnet
 [ntp]:./Mozi.NTP
 [iot]:./Mozi.IoT
-[roadmap]:../RoadMap.md
+[roadmap]:./RoadMap.md

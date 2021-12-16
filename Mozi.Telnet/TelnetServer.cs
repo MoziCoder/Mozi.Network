@@ -103,7 +103,7 @@ namespace Mozi.Telnet
     /// </summary>
     public class TelnetServer
     {
-        private int _port = 23;
+        private ushort _port = 23;
 
         private ClientWindowSize _clientSize = new ClientWindowSize() { Width = 300, Height = 200 };
         private string _serverName = "MoziTelnetServer";
@@ -435,7 +435,7 @@ namespace Mozi.Telnet
         /// </summary>
         /// <param name="port"></param>
         /// <returns></returns>
-        public TelnetServer SetPort(int port)
+        public TelnetServer SetPort(ushort port)
         {
             _port = port;
             return this;

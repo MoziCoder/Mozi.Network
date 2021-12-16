@@ -47,8 +47,8 @@ namespace Mozi.HttpEmbedded
 
         private WebDav.DavServer _davserver;
 
-        private int _port = 80;
-        private int _iporthttps = 443;
+        private ushort _port = 80;
+        private ushort _iporthttps = 443;
 
         //最大文件大小
         private long _maxFileSize = 10 * 1024 * 1024;
@@ -129,7 +129,7 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 服务端口
         /// </summary>
-        public int Port
+        public ushort Port
         {
             get { return _port; }
             private set { _port = value; }
@@ -137,7 +137,7 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// HTTPS服务端口
         /// </summary>
-        internal int PortHTTPS
+        internal ushort PortHTTPS
         {
             get { return _iporthttps; }
             private set { _iporthttps = value; }
@@ -555,7 +555,7 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         /// <param name="port"></param>
         /// <returns></returns>
-        public HttpServer SetPort(int port)
+        public HttpServer SetPort(ushort port)
         {
             _port = port;
             return this;
