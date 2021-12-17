@@ -63,7 +63,7 @@ namespace Mozi.IoT
             _socket.AfterReceiveEnd += Socket_AfterReceiveEnd;
         }
         /// <summary>
-        /// 以默认端口启动<see cref="F:Port"/>
+        /// 以指定端口启动<see cref="F:Port"/>，如果不配置端口则使用默认端口
         /// </summary>
         public void Start()
         {

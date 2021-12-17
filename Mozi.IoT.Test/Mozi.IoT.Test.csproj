@@ -44,6 +44,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Mozi.IoT.Client\Mozi.IoT.Client.csproj">
+      <Project>{f6c4d266-c83b-40e6-980f-771cb438ad45}</Project>
+      <Name>Mozi.IoT.Client</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Mozi.IoT.Server\Mozi.IoT.Server.csproj">
       <Project>{e82d3587-e2c1-4ea9-8494-7dc3e4d4a5ea}</Project>
       <Name>Mozi.IoT.Server</Name>

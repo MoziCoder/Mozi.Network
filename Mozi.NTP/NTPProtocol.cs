@@ -407,7 +407,7 @@ namespace Mozi.NTP
     /// </summary>
     public class NTPProtocol
     {
-        public const ushort Port = 123;
+        public const int Port = 123;
         /// <summary>
         /// 组播地址
         /// </summary>

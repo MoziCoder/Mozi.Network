@@ -43,13 +43,13 @@
         public ushort Num { get { return _num; } }
         protected override string Tag => _num.ToString();
 
-        public ContentFormat TextPlain = new ContentFormat("text/plain", 0);
-        public ContentFormat LinkFormat = new ContentFormat("application/link-format", 40);
-        public ContentFormat XML = new ContentFormat("application/xml", 41);
-        public ContentFormat Stream = new ContentFormat("application/octet-stream", 42);
-        public ContentFormat EXI = new ContentFormat("application/exi", 47);
-        public ContentFormat JSON = new ContentFormat("application/json", 50);
-        public ContentFormat CBOR = new ContentFormat("applicaiton/cbor", 60);
+        public static ContentFormat TextPlain = new ContentFormat("text/plain", 0);
+        public static ContentFormat LinkFormat = new ContentFormat("application/link-format", 40);
+        public static ContentFormat XML = new ContentFormat("application/xml", 41);
+        public static ContentFormat Stream = new ContentFormat("application/octet-stream", 42);
+        public static ContentFormat EXI = new ContentFormat("application/exi", 47);
+        public static ContentFormat JSON = new ContentFormat("application/json", 50);
+        public static ContentFormat CBOR = new ContentFormat("applicaiton/cbor", 60);
 
         internal ContentFormat(string contentType, ushort num)
         {

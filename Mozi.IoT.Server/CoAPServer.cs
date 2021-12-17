@@ -102,9 +102,4 @@ namespace Mozi.IoT
             //}
         }
     }
-
-    public class CoAPClient
-    {
-
-    }
 }

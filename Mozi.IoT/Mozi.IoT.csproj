@@ -45,6 +45,11 @@
     <Compile Include="CoAPProtocol.cs" />
     <Compile Include="CoAPPeer.cs" />
     <Compile Include="ContentFormat.cs" />
+    <Compile Include="Encode\Base64.cs" />
+    <Compile Include="Encode\Hex.cs" />
+    <Compile Include="Encode\HtmlEncoder.cs" />
+    <Compile Include="Encode\StringEncoder.cs" />
+    <Compile Include="Encode\UrlEncoder.cs" />
     <Compile Include="OptionValue.cs" />
     <Compile Include="Others.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

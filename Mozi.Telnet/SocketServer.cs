@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Net;
 using System.Net.Sockets;
 
 namespace Mozi.Telnet
@@ -247,6 +248,16 @@ namespace Mozi.Telnet
         {
             Socket client;
             _socketDocker.TryRemove(so.Id, out client);
+        }
+        /// <summary>
+        /// 向指定地址发送数据
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        public void SendTo(byte[] buffer, string host, int port)
+        {
+            _sc.SendTo(buffer, new IPEndPoint(IPAddress.Parse(host), port));
         }
     }
 }

@@ -134,6 +134,7 @@ namespace Mozi.IoT
     public class CoAPOption
     {
         private uint _deltaValue = 0, _lenValue = 0;
+        private OptionValue _optValue;
 
         /// <summary>
         /// 选项序号
@@ -191,7 +192,7 @@ namespace Mozi.IoT
                 if (_lenValue <= 12)
                 {
                     Length = (byte)_lenValue;
-                    Length = 0;
+                    LengthExtend = 0;
                 }
                 else if (_lenValue < 269)
                 {
@@ -229,7 +230,15 @@ namespace Mozi.IoT
         /// 选项值>=0 bytes
         /// 空 字节数组 数字 ASCII/UTF-8字符串
         /// </summary>
-        public OptionValue Value { get; set; }
+        public OptionValue Value { 
+            get { return _optValue; } 
+            set 
+            { 
+                _optValue = value; 
+                LengthValue = value != null ? (uint)value.Length : 0;
+                int a = 1;
+            } 
+        }
         public byte[] Pack
         {
             get
