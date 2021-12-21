@@ -171,12 +171,12 @@ namespace Mozi.IoT
                 else if (_deltaValue < 269)
                 {
                     Delta = 13;
-                    DeltaExtend = (ushort)(_deltaValue - 13);
+                    DeltaExtend = (byte)(_deltaValue-13);
                 }
                 else if (_deltaValue < 65804)
                 {
                     Delta = 14;
-                    DeltaExtend = (ushort)(_deltaValue - 269);
+                    DeltaExtend = (ushort)(_deltaValue-269);
                 }
             }
         }
@@ -197,12 +197,12 @@ namespace Mozi.IoT
                 else if (_lenValue < 269)
                 {
                     Length = 13;
-                    LengthExtend = (ushort)(_lenValue - 13);
+                    LengthExtend = (byte)(_lenValue-13);
                 }
                 else if (_lenValue < 65804)
                 {
                     Length = 14;
-                    LengthExtend = (ushort)(_lenValue - 269);
+                    LengthExtend = (ushort)(_lenValue-269);
                 }
             }
         }
@@ -254,20 +254,19 @@ namespace Mozi.IoT
                 }
                 else if (Delta == 13)
                 {
-                    data.AddRange(BitConverter.GetBytes((byte)(DeltaExtend)));
+                    data.Add((byte)DeltaExtend);
                 }
                 //length
-                if (LengthExtend == 14)
+                if (Length == 14)
                 {
                     data.AddRange(BitConverter.GetBytes(LengthExtend));
                 }
-                else if (LengthExtend == 13)
+                else if (Length == 13)
                 {
-                    data.AddRange(BitConverter.GetBytes((byte)(LengthExtend)));
+                    data.Add((byte)LengthExtend);
                 }
                 data.AddRange(Value.Pack);
                 return data.ToArray();
-
             }
         }
         public CoAPOption()

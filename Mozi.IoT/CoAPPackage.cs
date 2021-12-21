@@ -15,7 +15,6 @@ namespace Mozi.IoT
     public class CoAPPackage
     {
         private byte _version = 1;
-
         /// <summary>
         /// 版本 2bits 
         /// </summary>
@@ -52,7 +51,7 @@ namespace Mozi.IoT
         /// </summary>
         public CoAPCode Code { get; set; }
         /// <summary>
-        /// 用于消息确认防重，消息确认-重置
+        /// 用于消息确认防重，消息确认-重置 16bits
         /// </summary>
         public ushort MesssageId { get; set; }
         /// <summary>
@@ -68,6 +67,14 @@ namespace Mozi.IoT
         /// 包体
         /// </summary>
         public byte[] Payload { get; set; }
+        ///// <summary>
+        ///// 链接地址
+        ///// </summary>
+        //public string Url 
+        //{ 
+        //    get; 
+        //    set; 
+        //}
         /// <summary>
         /// 打包|转为字节流
         /// </summary>
@@ -83,7 +90,6 @@ namespace Mozi.IoT
             data.Add((byte)(((byte)Code.Category << 5) | ((byte)(Code.Detail << 3) >> 3)));
             data.AddRange(BitConverter.GetBytes(MesssageId).Revert());
             data.AddRange(Token);
-            Options.Sort((x, y) => x.Option.OptionNumber.CompareTo(y.Option.OptionNumber));
             uint delta = 0;
             foreach (var op in Options)
             {
@@ -132,7 +138,12 @@ namespace Mozi.IoT
                 Option = define,
                 Value = optionValue
             };
-            Options.Add(option);
+            var optGreater = Options.FindIndex(x => x.DeltaValue > option.DeltaValue);
+            if (optGreater < 0)
+            {
+                optGreater = Options.Count;
+            }
+            Options.Insert(optGreater, option);
             return this;
         }
         /// <summary>

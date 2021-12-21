@@ -24,7 +24,7 @@ namespace Mozi.IoT.Test
             //cp.SetOption(CoAPOptionDefine.UriPath, "summit");
             //cp.SetContentType(ContentFormat.TextPlain);
             //cc.SendMessage("100.100.0.105", 5683, cp);
-            cc.Get("coap://100.100.0.105:5683/sensor/summit?s%7F");
+            cc.Get("coap://coap.phodal.com/id/1");
             Console.ReadLine();
         }
     }

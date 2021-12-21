@@ -10,7 +10,7 @@ namespace Mozi.HttpEmbedded.Generic
     {
         protected abstract string Tag { get; }
         /// <summary>
-        /// 获取方法
+        /// 获取方法 不区分标识符大小写
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
