@@ -1,18 +1,18 @@
 ﻿using System;
-using System.Text.RegularExpressions;
-using System.Net;
+using Mozi.IoT.Encode;
 
 namespace Mozi.IoT
 {
 
-
     //CoAP拥塞机制由请求方进行自主控制，故请求方需要实现拥塞控制算法
+
     /// <summary>
     /// CoAP客户端
     /// </summary>
     public class CoAPClient : CoAPPeer
     {
         private bool _randomPort = true;
+
         //private ushort _remotePort = CoAPProtocol.Port;
         //private string _remotehost = "";
 
@@ -74,157 +74,131 @@ namespace Mozi.IoT
         {
             _socket.SendTo(pack.Pack(), host, port);
         }
+        /// <summary>
+        /// 注入URL相关参数,domain,port,paths,queries
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="cp"></param>
+        private void PackUrl(ref UriInfo uri,ref CoAPPackage cp)
+        {
+            //注入域名
+            if (!string.IsNullOrEmpty(uri.Domain))
+            {
+                cp.SetOption(CoAPOptionDefine.UriHost, uri.Domain);
+            }
+            //注入端口号
+            if (uri.Port > 0 && (uri.Port != CoAPProtocol.Port || uri.Port != CoAPProtocol.SecurePort))
+            {
+                cp.SetOption(CoAPOptionDefine.UriPort, (uint)uri.Port);
+            }
+            //注入路径
+            for (int i = 0; i < uri.Paths.Length; i++)
+            {
+                cp.SetOption(CoAPOptionDefine.UriPath, uri.Paths[i]);
+            }
+            //注入查询参数
+            for (int i = 0; i < uri.Queries.Length; i++)
+            {
+                cp.SetOption(CoAPOptionDefine.UriQuery, uri.Queries[i]);
+            }
+        }
 
         ///<summary>
-        /// 填入指定格式的URI，如果是域名，程序会调用DNS进行解析
-        /// <list type="table">
-        /// <listheader>URI格式:{host}-IPV4地址,IPV6地址,Domain域名;{path}-路径,请使用REST样式路径;{query}为查询参数字符串</listheader>
-        ///     <item><term>格式1：</term>coap://{host}[:{port}]/{path}</item>
-        ///     <item><term>格式2：</term>coap://{host}[:{port}]/{path}[?{query}]</item>
-        ///     <item><term>格式3：</term>coap://{host}[:{port}]/{path1}[/{path2}]...[/{pathN}][?{query}]</item> 
-        /// </list>
+        /// Get提交 填入指定格式的URI，如果是域名，程序会调用DNS进行解析
         /// </summary>
-        public void Get(string url,CoAPMessageType msgType)
+        /// <param name="url">
+        ///     <list type="table">
+        ///         <listheader>URI格式:{host}-IPV4地址,IPV6地址,Domain域名;{path}-路径,请使用REST样式路径;{query}为查询参数字符串</listheader>
+        ///         <item><term>格式1：</term>coap://{host}[:{port}]/{path}</item>
+        ///         <item><term>格式2：</term>coap://{host}[:{port}]/{path}[?{query}]</item>
+        ///         <item><term>格式3：</term>coap://{host}[:{port}]/{path1}[/{path2}]...[/{pathN}][?{query}]</item> 
+        /// </list>
+        /// </param>
+        /// <param name="msgType">消息类型，默认为<see cref="CoAPMessageType.Confirmable"/></param>
+        /// <returns>MessageId</returns>
+        public ushort Get(string url,CoAPMessageType msgType)
         {
-            string proto = "", host = "", address = "",domain="",sPort="", path = "", query = "";
-            int port = CoAPProtocol.Port;
-            string[] paths, queries;
-            bool isDomain=false;
 
-            CoAPPackage cp = new CoAPPackage();
-            cp.Code = CoAPRequestMethod.Get;
-            cp.Token = new byte[] { 0x01, 0x02, 0x03, 0x04 };
-            cp.MesssageId = 12345;
-            cp.MessageType = msgType??CoAPMessageType.Confirmable;
-
-            Regex reg = new Regex("^(coap|coaps)://((([a-zA-Z0-9\\.-]+){2,})|(\\[?[a-zA-Z0-9\\.:]+){2,}\\]?)(:\\d+)?((/[a-zA-Z0-9-\\.%]+){0,}(\\?)?([%=a-zA-Z0-9]+(&)?){0,})$");
-            Regex regProto = new Regex("(coap|coaps)(?=://)");
-            Regex regHost = new Regex("(?<=\\://)(([a-zA-Z0-9-]+\\.?){2,}|(\\[?[a-zA-Z0-9-\\.:]+){2,}]?)(:\\d+)?");
-
-            Regex regIPV4 = new Regex("^(\\d+\\.\\d+\\.\\d+\\.\\d+(?=:\\d+))|(\\d+\\.\\d+\\.\\d+\\.\\d+)$");
-            Regex regIPV6 = new Regex("^((?<=\\[)(([a-zA-Z0-9]+(\\.|:)?){2,})(?=\\]))|([a-zA-Z0-9]+(\\.|:)?){2,}$");
-            Regex regDomain = new Regex("^(([a-zA-Z0-9-]+(\\.)?){2,})|(([a-zA-Z0-9-]+(\\.)?){2,}(?=:\\d+))$");
-
-            Regex regPath = new Regex("(?<=(://(([a-zA-Z0-9-]+\\.?){2,}|(\\[?[a-zA-Z0-9-\\.:]+){2,}]?)(:\\d+)?))(/[a-zA-Z0-9-\\.%]+){1,}((?=\\?))?");
-            Regex regQuery = new Regex("(?<=\\?)([%=a-zA-Z0-9-]+(&)?){1,}");
-
-            if (reg.IsMatch(url))
+            CoAPPackage cp = new CoAPPackage
             {
+                Code = CoAPRequestMethod.Get,
+                Token = Cache.CacheControl.GenerateToken(8),
+                MesssageId = 12345,
+                MessageType = msgType ?? CoAPMessageType.Confirmable
+            };
 
-                //分离协议类型
-                proto=regProto.Match(url).Value;
+            UriInfo uri = UriInfo.Parse(url);
 
-                //分离域名和端口
-                address = regHost.Match(url).Value;
-
-                //IPV4
-                if (regIPV4.IsMatch(address))
+            if (!string.IsNullOrEmpty(uri.Url))
+            {
+                PackUrl(ref uri,ref cp);
+                //发起通讯
+                if (!string.IsNullOrEmpty(uri.Host))
                 {
-                    host = regIPV4.Match(address).Value;
-                    sPort = address.Replace(host, "").Replace(":","");
-
-                //domain
-                }else if (regDomain.IsMatch(address)){
-                    host = regDomain.Match(address).Value;
-                    domain = host;
-                    sPort = address.Replace(host, "").Replace(":","");
-                    isDomain = true;
-                }
-                //IPV6
-                else
-                {
-                    host = regIPV6.Match(address).Value;
-                    
-                    sPort= address.Replace(host, "").Replace("[]:","");
-                }
-                if(!int.TryParse(sPort,out port))
-                {
-                    port = 0;
-                }
-
-                if (isDomain)
-                {
-                    host = GetDomainAddress(host);
-                    cp.SetOption(CoAPOptionDefine.UriHost, domain);
-                }
-
-                if (port > 0 && (port != CoAPProtocol.Port || port != CoAPProtocol.SecurePort))
-                {
-                    cp.SetOption(CoAPOptionDefine.UriPort, (uint)port);
-                }
-
-                //分离路径地址
-                path = regPath.Match(url).Value;
-                paths = path.Split(new char[] { '/' });
-                if (paths.Length > 0)
-                {
-                    //第一项为空分割，故抛弃
-                    for (int i = 1; i < paths.Length; i++)
-                    {
-                        cp.SetOption(CoAPOptionDefine.UriPath, paths[i]);
-                    }
-                }
-
-                //分离查询参数
-                query = regQuery.Match(url).Value;
-
-                if (query.Length > 0)
-                {
-                    queries = query.Split(new char[] { '&' });
-
-                    for (int i = 0; i < queries.Length; i++)
-                    {
-                        cp.SetOption(CoAPOptionDefine.UriQuery, queries[i]);
-                    }
-                }
-                if (!string.IsNullOrEmpty(host))
-                {
-                    SendMessage(host, port==0?CoAPProtocol.Port:port, cp);
+                    SendMessage(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
                 }
                 else
                 {
-                    throw new Exception($"DNS无法解析指定的域名:{domain}");
+                    throw new Exception($"DNS无法解析指定的域名:{uri.Domain}");
                 }
             }
             else
             {
-                throw new Exception($"URL格式不正确{url}");
+                throw new Exception($"本地无法解析指定的链接地址:{url}");
             }
-        }
-
-        public void Get(string url)
-        {
-            Get(url, CoAPMessageType.Confirmable);
-        }
-        public void Post(string url)
-        {
-
+            return cp.MesssageId;
         }
         /// <summary>
-        /// DNS解析指定域名
         /// </summary>
-        /// <param name="domain"></param>
-        /// <returns></returns>
-        protected virtual string GetDomainAddress(string domain)
+        /// <param name="url"></param>
+        /// <returns>MessageId</returns>
+        public ushort Get(string url)
         {
-            try
-            {
-                IPHostEntry entry = Dns.GetHostEntry(domain);
-                IPAddress[] addresses = entry.AddressList;
+            return Get(url, CoAPMessageType.Confirmable);
+        }
 
-                if (addresses.Length > 0)
+        public ushort Post(string url, CoAPMessageType msgType,byte[] postBody)
+        {
+            CoAPPackage cp = new CoAPPackage
+            {
+                Code = CoAPRequestMethod.Post,
+                Token = Cache.CacheControl.GenerateToken(8),
+                MesssageId = 12345,
+                MessageType = msgType ?? CoAPMessageType.Confirmable
+            };
+
+            UriInfo uri = UriInfo.Parse(url);
+
+            if (!string.IsNullOrEmpty(uri.Url))
+            {
+                PackUrl(ref uri, ref cp);
+                cp.Payload = postBody;
+                //发起通讯
+                if (!string.IsNullOrEmpty(uri.Host))
                 {
-                    return addresses[0].ToString();
+                    SendMessage(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
                 }
                 else
                 {
-                    return null;
+                    throw new Exception($"DNS无法解析指定的域名:{uri.Domain}");
                 }
             }
-            catch
+            else
             {
-                return null;
+                throw new Exception($"本地无法解析指定的链接地址:{url}");
             }
+            return cp.MesssageId;
+        }
+
+        //TODO 是否会出现安全问题
+        private void Put(string url)
+        {
+
+        }
+        //TODO 是否会出现安全问题
+        private void Delete(string url)
+        {
+
         }
     }
 }

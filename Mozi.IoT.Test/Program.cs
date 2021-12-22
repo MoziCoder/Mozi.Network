@@ -23,7 +23,7 @@ namespace Mozi.IoT.Test
             //cp.SetOption(CoAPOptionDefine.UriPath, "sensor");
             //cp.SetOption(CoAPOptionDefine.UriPath, "summit");
             //cp.SetContentType(ContentFormat.TextPlain);
-            //cc.SendMessage("100.100.0.105", 5683, cp);
+            //cc.SendMessage("127.0.0.1", 5683, cp);
             cc.Get("coap://coap.phodal.com/id/1");
             Console.ReadLine();
         }

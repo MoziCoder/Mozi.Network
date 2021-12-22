@@ -39,12 +39,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbsClassEnum.cs" />
+    <Compile Include="Cache\CacheControl.cs" />
+    <Compile Include="Cache\Global.cs" />
+    <Compile Include="Cache\MemoryCache.cs" />
     <Compile Include="CoAPMethod.cs" />
     <Compile Include="CoAPOption.cs" />
     <Compile Include="CoAPPackage.cs" />
     <Compile Include="CoAPProtocol.cs" />
     <Compile Include="CoAPPeer.cs" />
     <Compile Include="ContentFormat.cs" />
+    <Compile Include="DNSClient.cs" />
     <Compile Include="Encode\Base64.cs" />
     <Compile Include="Encode\Hex.cs" />
     <Compile Include="Encode\HtmlEncoder.cs" />
