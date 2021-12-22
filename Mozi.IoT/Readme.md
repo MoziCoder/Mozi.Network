@@ -31,6 +31,21 @@ Coap（Constrained Application Protocol）受限应用协议，是一种在物�
 - 分块传输 RFC 7959
 - 对象安全
 
+## 用例说明
+~~~csharp
+	    //服务端
+        CoAPServer cs = new CoAPServer();
+        cs.Start();
+        Console.ReadLine();
+
+        //客户端
+        CoAPClient cc = new CoAPClient();
+        cc.SetPort(12341);
+        cc.Start();
+        cc.Get("coap://127.0.0.1/id/1");
+        Console.ReadLine();
+
+~~~
 ### By [Jason][1] on Dec. 5,2021
 
 [1]:mailto:brotherqian@163.com
