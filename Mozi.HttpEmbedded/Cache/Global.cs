@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Mozi.HttpEmbedded.Page
+namespace Mozi.HttpEmbedded.Cache
 {
     /// <summary>
     /// 全局数据

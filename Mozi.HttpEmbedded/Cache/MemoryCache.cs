@@ -3,7 +3,20 @@ using System.Collections.Generic;
 
 namespace Mozi.HttpEmbedded.Cache
 {
-    public class MemoryCache
+
+    public interface ICache
+    {
+        void Add(string name, string param, string data);
+        void Add(string name, string param, string data, long expire, string owner, byte isprivate);
+        void Clear();
+        void ClearExpired();
+        CacheInfo Find(string name, string param);
+        void Remove(string name, string param);
+        void ReStore();
+        void Store();
+    }
+
+    public class MemoryCache:ICache
     {
         private List<CacheInfo> _caches = new List<CacheInfo>();
 
@@ -87,6 +100,23 @@ namespace Mozi.HttpEmbedded.Cache
             {
                 _caches.RemoveAll(x => x.Expire!=0&&(DateTime.UtcNow-x.CacheTime).TotalMilliseconds>x.Expire);
             }
+        }
+        public void Clear()
+        {
+            lock (_sync)
+            {
+                _caches.RemoveAll(x => x != null);
+            }
+        }
+
+        public void Store()
+        {
+
+        }
+
+        public void ReStore()
+        {
+
         }
     }
     /// <summary>

@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Mozi.NTP</id>
-    <version>1.3.1</version>
+    <version>1.3.2</version>
     <title>Mozi.NTP</title>
     <authors>Jason</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -10,7 +10,7 @@
     <projectUrl>https://gitee.com/myui_admin/mozi</projectUrl>
     <description>NTP授时服务器，低精度(15ms)互联网授时可直接应用，高精度授时需配合高精度时钟硬件,应用高精度授时场景前请先进行测试验证。</description>
     <releaseNotes>NTP授时服务器</releaseNotes>
-    <copyright>Copyright © Jason 2020-2021</copyright>
+    <copyright>Copyright © Jason 2020-2022</copyright>
     <tags>NTP SNTP</tags>
   </metadata>
 </package>

@@ -172,5 +172,15 @@ namespace Mozi.StateService
             };
             _sc.BeginReceiveFrom(stateobject.Buffer, 0, stateobject.Buffer.Length, SocketFlags.None, ref stateobject.RemoteEndPoint, new AsyncCallback(CallbackReceived), stateobject);
         }
+        /// <summary>
+        /// 向指定地址发送数据
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        public void SendTo(byte[] buffer, string host, int port)
+        {
+            _sc.SendTo(buffer, new IPEndPoint(IPAddress.Parse(host), port));
+        }
     }
 }

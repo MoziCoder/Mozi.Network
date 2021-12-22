@@ -16,7 +16,7 @@ namespace Mozi.StateService
     public class HeartBeatService
     {
         
-        private int _port = DefaultPort;
+        private ushort _port = DefaultPort;
 
         private string _host = "127.0.0.1";
 
@@ -90,9 +90,9 @@ namespace Mozi.StateService
         /// </summary>
         public bool UserChangeNotifyImmediately { get; set; }
         /// <summary>
-        /// 端口
+        /// 网关服务端口
         /// </summary>
-        public int Port
+        public ushort Port
         {
             get { return _port; }
             set { 
@@ -173,7 +173,7 @@ namespace Mozi.StateService
             return this;
         }
         /// <summary>
-        /// 设置终端状态
+        /// 设置终端状态，此方法会实时发送客户机状态到网关
         /// </summary>
         /// <param name="stateName"></param>
         /// <returns></returns>

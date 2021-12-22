@@ -53,6 +53,7 @@
     <Compile Include="UDPStateObject.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="License.md" />
     <None Include="Mozi.NTP.nuspec" />
     <None Include="Readme.md" />
     <None Include="rfc1305.pdf" />

@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Mozi.Telnet</id>
-    <version>1.2.9</version>
+    <version>1.3.2</version>
     <title>Mozi.Telnet</title>
     <authors>Jason</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>

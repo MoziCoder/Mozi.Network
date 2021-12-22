@@ -80,12 +80,7 @@
     <Compile Include="Cert\CertManager.cs" />
     <Compile Include="Common\Encrypt.cs" />
     <Compile Include="Encode\Hex.cs" />
-    <Compile Include="Secure\CipherSuiteType.cs" />
     <Compile Include="Extension\Others.cs" />
-    <Compile Include="Secure\SessionManager.cs" />
-    <Compile Include="Secure\TLSHandShakeType.cs" />
-    <Compile Include="Secure\TLSProtocol.cs" />
-    <Compile Include="Secure\TLSVersion.cs" />
     <Compile Include="Common\UrlTree.cs" />
     <Compile Include="Compress\Deflate.cs" />
     <Compile Include="Cookie\CookieManager.cs" />
@@ -180,6 +175,7 @@
     <EmbeddedResource Include="Document\Error.html" />
     <EmbeddedResource Include="Document\Example.html" />
     <None Include="Mozi.HttpEmbedded.svg" />
+    <Content Include="RFC 3986 Uniform Resource Identifier %28URI%29 Generic Syntax.html" />
     <Content Include="Source\mime.data" />
     <Content Include="WebDav\Icon.png" />
   </ItemGroup>
@@ -194,7 +190,9 @@
     <None Include="WebDav\packages.config" />
     <None Include="WebDav\README.md" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Secure\" />
+  </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
       <Visible>False</Visible>

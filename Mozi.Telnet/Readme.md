@@ -43,13 +43,34 @@ Mozi.Telnet是一个基于.Net开发的Telnet组件，基于UDP Socket开发，�
             TelnetServer ts = new TelnetServer();
             //设置用户
             ts.AddUser("admin", "admin");
-            //指令注册
+            //调用命令注册
             ts.AddCommand<Shell>();
             //配置端口及启动服务
             ts.SetPort(23).Start();
             Console.ReadLine();
         }
     }
+
+    /// <summary>
+    /// 调用命令必须继承<see cref="ITelnetShellCommand"/>
+    /// </summary>
+    public class Shell : ITelnetShellCommand
+    {
+        public string Name => this.GetType().Name;
+
+        public string Title => "系统指令调用入口";
+
+        public string Descript()
+        {
+            return "";
+        }
+
+        public bool Invoke(ref string message,params string[] args)
+        {
+            return false;   
+        }
+    }
+
 ~~~
 ### By [Jason][1] on Jun. 5,2021
 

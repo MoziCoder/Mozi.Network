@@ -69,13 +69,13 @@ namespace Mozi.StateService
     {
         private readonly UDPSocket _socket;
         private int _timeoutOffline = 180;
-        private int _port = 13453;
+        private ushort _port = 13453;
         private List<ClientAliveInfo> _clients = new List<ClientAliveInfo>();
 
         /// <summary>
         /// 服务端端口
         /// </summary>
-        public  int Port { get { return _port; } }
+        public ushort Port { get { return _port; } }
         public DateTime StartTime { get; private set; }
         /// <summary>
         /// 终端加入事件
@@ -133,7 +133,7 @@ namespace Mozi.StateService
         /// 启动网关
         /// </summary>
         /// <param name="port"></param>
-        public void Start(int port)
+        public void Start(ushort port)
         {
             _port = port;
             _socket.Start(_port);

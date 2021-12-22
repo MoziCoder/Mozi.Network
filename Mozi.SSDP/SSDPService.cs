@@ -708,7 +708,7 @@ namespace Mozi.SSDP
                     if (hostItmes.Length == 2)
                     {
                         HostIp = hostItmes[0];
-                        HostPort = int.Parse(hostItmes[1]);
+                        HostPort = ushort.Parse(hostItmes[1]);
                     }
                     _host = value;
                 }catch(Exception ex)

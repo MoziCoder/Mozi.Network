@@ -1,19 +1,28 @@
 # Mozi.Network
 
-Mozi.Network是基于.Net开发的网络应用组件套装。整个项目的主要目标是,实现各种常见的网络应用层协议。所有的模块在实现时均以应用场景为出发点进行开发，保证模块精巧，功能完备，调用不破坏宿主程序的逻辑结构。
+Mozi.Network是基于.Net开发的网络应用组件套装。整个项目的主要目标是,实现各种常见的网络应用层协议。所有的模块在实现时均以应用场景为出发点进行开发，保证模块精巧，功能完备，调用简单，且调用不破坏宿主程序的逻辑结构。
 
 ## 功能集合
 ### [HttpEmbedded][httpembedded]　　
 	Http服务器
+
+### [IoT][iot]　　
+	IoT物联网标准通讯套件 网关，客户端，调试工具
+
 ### [SSDP][ssdp] 　　
 	SSDP/UPNP实现
+
 ### [StateService][stateservice]　　
-	心跳服务组件
+	自行设计的心跳服务组件，服务端,观察者及客户端
+
 ### [Telnet][telnet] 　　
 	Telnet服务器及客户端实现
 
-## 规划与展望
-	规划中的项目待总体设计完成后再进行开发，暂时不会冒进进行推进。
+### [NTP][ntp]
+	NTP授时服务器，目前仅有SNTP功能
+
+## [规划与展望][roadmap]
+	规划中的项目待总体设计完成后再进行开发，暂时不会冒进进行推进，项目规划详情请查阅[Roadmap.md]。
 
 ## 项目地址
 
@@ -22,6 +31,9 @@ Mozi.Network是基于.Net开发的网络应用组件套装。整个项目的主�
 - [Gitee][gitee]
 
 - [CSDN][codechina]
+
+## 项目下载
+	所有可用项目均会发布到Nuget,并同步发布到Gitee发行版
 
 ## 版本迭代
 	不定期对Mozi.Network的功能进行完善,解决各种BUG。应用中如果遇到无法解决的问题，请联系软件作者。
@@ -39,3 +51,6 @@ Mozi.Network是基于.Net开发的网络应用组件套装。整个项目的主�
 [ssdp]:./Mozi.SSDP
 [stateservice]:./Mozi.StateService
 [telnet]:./Mozi.Telnet
+[ntp]:./Mozi.NTP
+[iot]:./Mozi.IoT
+[roadmap]:./RoadMap.md

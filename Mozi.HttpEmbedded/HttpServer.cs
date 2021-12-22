@@ -9,7 +9,6 @@ using Mozi.HttpEmbedded.Compress;
 using Mozi.HttpEmbedded.Document;
 using Mozi.HttpEmbedded.Encode;
 using Mozi.HttpEmbedded.Page;
-using Mozi.HttpEmbedded.Secure;
 using Mozi.HttpEmbedded.Source;
 using Mozi.HttpEmbedded.Template;
 
@@ -235,7 +234,7 @@ namespace Mozi.HttpEmbedded
                     if (_httpsEnabled)
                     {
                         //SSL解析数据包
-                        HelloPackage proto = TLSProtocol.ParseClientHello(args.Data);
+                        ///HelloPackage proto = TLSProtocol.ParseClientHello(args.Data);
                     }
                     context.Request = HttpRequest.Parse(args.Data);
                     context.Request.ClientAddress = args.IP;
@@ -469,7 +468,7 @@ namespace Mozi.HttpEmbedded
         }
  
         /// <summary>
-        /// 路由页面
+        /// 路由API和页面
         /// </summary>
         /// <param name="context"></param>
         private StatusCode HandleRequestRoutePages(ref HttpContext context)

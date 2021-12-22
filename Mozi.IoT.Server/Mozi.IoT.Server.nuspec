@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>Mozi.IoT.Server</id>
+    <version>1.3.2</version>
+    <title>Mozi.IoT.Server</title>
+    <authors>Jason</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <projectUrl>https://gitee.com/myui_admin/mozi</projectUrl>
+    <description>IoT(CoAP)Server物联网网关服务器</description>
+    <releaseNotes>IoT(CoAP)Server物联网网关服务器</releaseNotes>
+    <copyright>Copyright © Jason 2021-2022</copyright>
+    <tags>IoT CoAP Server 物联网网关服务器</tags>
+  </metadata>
+</package>
