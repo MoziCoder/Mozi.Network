@@ -94,49 +94,50 @@ namespace Mozi.IoT
         /// <param name="args"></param>
         protected virtual void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
-            CoAPPackage pack2=null;
+            //CoAPPackage pack2=null;
 
-            //try
-            //{
-                CoAPPackage pack = CoAPPackage.Parse(args.Data,true);
+            ////try
+            ////{
+            //    CoAPPackage pack = CoAPPackage.Parse(args.Data,true);
 
-                pack2 = new CoAPPackage()
-                {
-                    Version = 1,
-                    MessageType = CoAPMessageType.Acknowledgement,
-                    Token = pack.Token,
-                    MesssageId = pack.MesssageId,
-                };
+            //    pack2 = new CoAPPackage()
+            //    {
+            //        Version = 1,
+            //        MessageType = CoAPMessageType.Acknowledgement,
+            //        Token = pack.Token,
+            //        MesssageId = pack.MesssageId,
+            //    };
 
-                //判断是否受支持的方法
-                if (IsSupportedRequest(pack))
-                {
-                    if (pack.MessageType==CoAPMessageType.Confirmable||pack.MessageType == CoAPMessageType.Acknowledgement)
-                    {
-                        pack2.Code = CoAPResponseCode.Content;
-                    }
-                }
-                else
-                {
-                    pack2.Code = CoAPResponseCode.MethodNotAllowed;
-                }
+            //    //判断是否受支持的方法
+            //    if (IsSupportedRequest(pack))
+            //    {
+            //        if (pack.MessageType==CoAPMessageType.Confirmable||pack.MessageType == CoAPMessageType.Acknowledgement)
+            //        {
+            //            pack2.Code = CoAPResponseCode.Content;
+            //        }
+            //    }
+            //    else
+            //    {
+            //        pack2.Code = CoAPResponseCode.MethodNotAllowed;
+            //    }
 
-                //检查分块
+            //    //检查分块
 
-                //检查内容类型
+            //    //检查内容类型
 
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine(ex.Message);
-            //}
-            //finally
-            //{
-                if (pack2 != null)
-                {
-                    args.Socket.SendTo(pack2.Pack(), new IPEndPoint(IPAddress.Parse(args.IP), args.Port));
-                }
-            //}
+            ////}
+            ////catch (Exception ex)
+            ////{
+            ////    Console.WriteLine(ex.Message);
+            ////}
+            ////finally
+            ////{
+            //    if (pack2 != null)
+            //    {
+            //        _socket.SendTo(pack2.Pack(), args.IP, args.Port);
+            //    }
+            ////}
+            
         }
         /// <summary>
         /// 是否受支持的请求方法<see cref="CoAPRequestMethod"/>

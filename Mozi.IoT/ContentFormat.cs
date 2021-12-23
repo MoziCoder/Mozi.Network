@@ -19,7 +19,6 @@
     ///     application/exi          | -        | 47 | [REC-exi-20140211]     |
     ///     application/json         | -        | 50 | [RFC7159]              |
     ///     applicaiton/cbor         | -        | 60 | [RFC7159]              |
-    ///     
     public class ContentFormat : AbsClassEnum
     {
         private ushort _num = 0;

@@ -39,6 +39,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoAPServer.cs" />
+    <Compile Include="LwM2MServer.cs" />
+    <Compile Include="LwM2M\Bootstrap.cs" />
+    <Compile Include="LwM2M\ConnectionManage.cs" />
+    <Compile Include="LwM2M\Control.cs" />
+    <Compile Include="LwM2M\DataReporting.cs" />
+    <Compile Include="LwM2M\DeviceConfig.cs" />
+    <Compile Include="LwM2M\Diagnostics.cs" />
+    <Compile Include="LwM2M\FirmwareUpdate.cs" />
+    <Compile Include="LwM2M\LockWipe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
