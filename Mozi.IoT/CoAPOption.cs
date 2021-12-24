@@ -141,7 +141,9 @@ namespace Mozi.IoT
         /// 选项序号
         /// </summary>
         public CoAPOptionDefine Option { get; set; }
-
+        /// <summary>
+        /// 首部字节码
+        /// </summary>
         public byte OptionHead
         {
             get
@@ -154,7 +156,9 @@ namespace Mozi.IoT
                 Length = (byte)((byte)(value << 4) >> 4);
             }
         }
-
+        /// <summary>
+        /// Delta总值<see cref="Delta"/>+<see cref="DeltaExtend"/>
+        /// </summary>
         public uint DeltaValue
         {
             get
@@ -181,6 +185,9 @@ namespace Mozi.IoT
                 }
             }
         }
+        /// <summary>
+        /// 长度总值<see cref="Length"/>+<see cref="LengthExtend"/>
+        /// </summary>
         public uint LengthValue
         {
             get
@@ -216,6 +223,9 @@ namespace Mozi.IoT
         ///     15:  Reserved for the Payload Marker.If the field is set to thisvalue but the entire byte is not the payload marker, this MUST be processed as a message format error.
         /// </summary>
         public byte Delta { get; set; }
+        /// <summary>
+        /// Delta扩展值
+        /// </summary>
         public ushort DeltaExtend { get; set; }
 
         /// <summary>
@@ -226,13 +236,20 @@ namespace Mozi.IoT
         ///     15:  Reserved for future use.If the field is set to this value, it MUST be processed as a message format error.
         /// </summary>
         public byte Length { get; set; }
+        /// <summary>
+        /// Length扩展值
+        /// </summary>
         public ushort LengthExtend { get; set; }
         /// <summary>
         /// 选项值>=0 bytes
         /// 空 字节数组 数字 ASCII/UTF-8字符串
         /// </summary>
-        public OptionValue Value { 
-            get { return _optValue; } 
+        public OptionValue Value 
+        { 
+            get 
+            { 
+                return _optValue; 
+            } 
             set 
             { 
                 _optValue = value; 
