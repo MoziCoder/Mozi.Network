@@ -42,6 +42,7 @@
     <Compile Include="Cache\CacheControl.cs" />
     <Compile Include="Cache\Global.cs" />
     <Compile Include="Cache\MemoryCache.cs" />
+    <Compile Include="Cache\MessageCache.cs" />
     <Compile Include="CoAPMethod.cs" />
     <Compile Include="CoAPOption.cs" />
     <Compile Include="CoAPPackage.cs" />
@@ -54,7 +55,7 @@
     <Compile Include="Encode\HtmlEncoder.cs" />
     <Compile Include="Encode\StringEncoder.cs" />
     <Compile Include="Encode\UrlEncoder.cs" />
-    <Compile Include="OptionValue.cs" />
+    <Compile Include="CoAPOptionValue.cs" />
     <Compile Include="Others.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerEvent.cs" />
@@ -63,9 +64,18 @@
     <Compile Include="UDPStateObject.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Changelog.md" />
     <None Include="Howto.md" />
     <None Include="License.md" />
+    <None Include="Lightweight_Machine_to_Machine-v1_1-OMASpecworks.pdf" />
     <None Include="Mozi.IoT.nuspec" />
+    <None Include="OMA-ERELD-LightweightM2M-V1_2-20201110-A.pdf" />
+    <None Include="OMA-RD-LightweightM2M-V1_2-20201110-A.pdf" />
+    <None Include="OMA-SUP-XML_LWM2M-V1_1-20180710-A.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="OMA-TS-LightweightM2M_Core-V1_2-20201110-A.pdf" />
+    <None Include="OMA-TS-LightweightM2M_Transport-V1_2-20201110-A.pdf" />
     <None Include="Readme.md" />
     <None Include="rfc8974.pdf" />
   </ItemGroup>

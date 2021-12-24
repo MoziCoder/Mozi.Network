@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace Mozi.IoT
+﻿namespace Mozi.IoT
 {
     //TODO 即时响应ACK，延迟响应CON,消息可即时响应也可处理完成后响应，延迟消息需要后端缓存支撑
     //TODO 拥塞算法
@@ -97,7 +95,7 @@ namespace Mozi.IoT
             //{
                 if (pack2 != null)
                 {
-                    args.Socket.SendTo(pack2.Pack(), new IPEndPoint(IPAddress.Parse(args.IP), args.Port));
+                     _socket.SendTo(pack2.Pack(), args.IP, args.Port);
                 }
             //}
         }

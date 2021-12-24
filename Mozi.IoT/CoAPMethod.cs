@@ -43,6 +43,7 @@
     ///     5.05 | Proxying Not Supported       | [RFC7252] |
     ///     
     ///  6.00-7.31 Reserved
+    
     /// <summary>
     /// CoAP操作代码
     /// </summary>
@@ -51,7 +52,9 @@
         private string _name = "", _description;
 
         private byte _category = 0, _detail = 0;
-
+        /// <summary>
+        /// 分类
+        /// </summary>
         public int Category
         {
             get
@@ -59,7 +62,9 @@
                 return _category;
             }
         }
-
+        /// <summary>
+        /// 明细
+        /// </summary>
         public byte Detail
         {
             get
@@ -67,15 +72,23 @@
                 return _detail;
             }
         }
+        /// <summary>
+        /// 代码名称
+        /// </summary>
         public string Name
         {
             get { return _name; }
         }
+        /// <summary>
+        /// 标识符
+        /// </summary>
         protected override string Tag
         {
             get { return ((byte)(_category << 5) + _detail).ToString(); }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public byte Pack
         {
             get
@@ -151,5 +164,6 @@
         {
 
         }
+
     }
 }

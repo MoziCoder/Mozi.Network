@@ -124,7 +124,6 @@ namespace Mozi.IoT
         {
             return SetOption(define, new EmptyOptionValue());
         }
-
         /// <summary>
         /// 设置选项值，此方法可以设置自定义的选项值类型
         /// </summary>
@@ -211,6 +210,24 @@ namespace Mozi.IoT
             {
                 return this;
             }
+        }
+        /// <summary>
+        /// 设置Block1
+        /// </summary>
+        /// <param name="optionValue"></param>
+        /// <returns></returns>
+        public CoAPPackage SetBlock1(BlockOptionValue optionValue)
+        {
+           return SetOption(CoAPOptionDefine.Block1, optionValue);
+        }
+        /// <summary>
+        /// 设置Block2
+        /// </summary>
+        /// <param name="optionValue"></param>
+        /// <returns></returns>
+        public CoAPPackage SetBlock2(BlockOptionValue optionValue)
+        {
+            return SetOption(CoAPOptionDefine.Block2, optionValue);
         }
         /// <summary>
         /// 设置内容格式类型Content-Format,Http中的Content-Type

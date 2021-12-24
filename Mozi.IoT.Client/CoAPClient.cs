@@ -1,4 +1,5 @@
 ﻿using System;
+using Mozi.IoT.Cache;
 using Mozi.IoT.Encode;
 
 namespace Mozi.IoT
@@ -12,6 +13,10 @@ namespace Mozi.IoT
     public class CoAPClient : CoAPPeer
     {
         private bool _randomPort = true;
+        
+        private CoAPTransmissionConfig _transConfig = new CoAPTransmissionConfig();
+
+        private MessageCacheManager _cacheManager;
 
         //private ushort _remotePort = CoAPProtocol.Port;
         //private string _remotehost = "";
@@ -28,6 +33,7 @@ namespace Mozi.IoT
 
         public CoAPClient() 
         {
+            _cacheManager = new MessageCacheManager(this);
             //配置本地服务口地址
         }
         /// <summary>
@@ -41,39 +47,73 @@ namespace Mozi.IoT
             _randomPort = false;
             return this;
         }
-        ///// <summary>
-        ///// 设置远端地址
-        ///// 格式{host}:{port}
-        ///// </summary>
-        ///// <param name="remoteAddress"></param>
-        ///// <returns></returns>
-        //public CoAPClient SetRemote(string remoteAddress)
-        //{
-        //    string[] info = remoteAddress.Split(new char[] { ':' });
-        //    SetRemoteHost(info[0]);
-        //    SetRemotePort(ushort.Parse(info[1]));
-        //    return this;
-        //}
+        /// <summary>
+        /// 数据接收完成回调
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        protected override void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
+        {
+            CoAPPackage pack2 = null;
 
-        //public CoAPClient SetRemotePort(ushort port)
-        //{
-        //    RemotePort = port;
-        //    return this;
-        //}
-        //public CoAPClient SetRemoteHost(string host)
-        //{
-        //    RemoteAddress = host;
-        //    return this;
-        //}
+            //try
+            //{
+            CoAPPackage pack = CoAPPackage.Parse(args.Data, false);
+
+            //pack2 = new CoAPPackage()
+            //{
+            //    Version = 1,
+            //    MessageType = CoAPMessageType.Acknowledgement,
+            //    Token = pack.Token,
+            //    MesssageId = pack.MesssageId,
+            //};
+
+            ////判断是否受支持的方法
+            //if (IsSupportedRequest(pack))
+            //{
+            //    if (pack.MessageType == CoAPMessageType.Confirmable || pack.MessageType == CoAPMessageType.Acknowledgement)
+            //    {
+            //        pack2.Code = CoAPResponseCode.Content;
+            //    }
+            //}
+            //else
+            //{
+            //    pack2.Code = CoAPResponseCode.MethodNotAllowed;
+            //}
+
+            ////检查分块
+
+            ////检查内容类型
+
+            ////}
+            ////catch (Exception ex)
+            ////{
+            ////    Console.WriteLine(ex.Message);
+            ////}
+            ////finally
+            ////{
+            //if (pack2 != null)
+            //{
+            //    _socket.SendTo(pack2.Pack(), args.IP, args.Port);
+            //}
+            ////}
+        }
         /// <summary>
         /// 发送请求消息,此方法为高级方法。如果对协议不够了解，请不要调用。
         /// DOMAIN地址请先转换为IP地址，然后填充到Uri-Host选项中
         /// </summary>
         /// <param name="pack"></param>
-        public virtual void SendMessage(string host,int port,CoAPPackage pack)
+        /// <returns>MessageId</returns>
+        public virtual ushort SendMessage(string host,int port,CoAPPackage pack)
         {
+            if (pack.MesssageId == 0)
+            {
+                pack.MesssageId = _cacheManager.GenerateMessageId();
+            }
             _socket.SendTo(pack.Pack(), host, port);
+            return pack.MesssageId;
         }
+
         /// <summary>
         /// 注入URL相关参数,domain,port,paths,queries
         /// </summary>
@@ -123,7 +163,7 @@ namespace Mozi.IoT
             {
                 Code = CoAPRequestMethod.Get,
                 Token = Cache.CacheControl.GenerateToken(8),
-                MesssageId = 12345,
+                MesssageId = _cacheManager.GenerateMessageId(),
                 MessageType = msgType ?? CoAPMessageType.Confirmable
             };
 
@@ -149,6 +189,7 @@ namespace Mozi.IoT
             return cp.MesssageId;
         }
         /// <summary>
+        /// Get方法，默认消息类型为<see cref="CoAPMessageType.Confirmable"/>
         /// </summary>
         /// <param name="url"></param>
         /// <returns>MessageId</returns>
@@ -157,13 +198,13 @@ namespace Mozi.IoT
             return Get(url, CoAPMessageType.Confirmable);
         }
 
-        public ushort Post(string url, CoAPMessageType msgType,byte[] postBody)
+        public ushort Post(string url, CoAPMessageType msgType, ContentFormat contentType,byte[] postBody)
         {
             CoAPPackage cp = new CoAPPackage
             {
                 Code = CoAPRequestMethod.Post,
                 Token = Cache.CacheControl.GenerateToken(8),
-                MesssageId = 12345,
+                MesssageId = _cacheManager.GenerateMessageId(),
                 MessageType = msgType ?? CoAPMessageType.Confirmable
             };
 
@@ -172,7 +213,11 @@ namespace Mozi.IoT
             if (!string.IsNullOrEmpty(uri.Url))
             {
                 PackUrl(ref uri, ref cp);
+                
+                cp.SetContentType(contentType);
+
                 cp.Payload = postBody;
+                
                 //发起通讯
                 if (!string.IsNullOrEmpty(uri.Host))
                 {
