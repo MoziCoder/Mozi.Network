@@ -24,7 +24,7 @@ namespace Mozi.IoT.Test
             //cp.SetOption(CoAPOptionDefine.UriPath, "summit");
             //cp.SetContentType(ContentFormat.TextPlain);
             //cc.SendMessage("127.0.0.1", 5683, cp);
-            cc.Get("coap://127.0.0.1/sensor/test");
+            cc.Get("coap://www.boshentech.com/sensor/test");
             Console.ReadLine();
         }
     }

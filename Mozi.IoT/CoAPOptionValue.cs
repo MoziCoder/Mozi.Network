@@ -108,24 +108,24 @@ namespace Mozi.IoT
         public override int Length => _pack != null ? _pack.Length : 0;
     }
     /// <summary>
-    /// 分块选项 数据结构 适用Block1 Block2 总长度uint24
+    /// 分块选项 数据结构 适用Block1 Block2 长度为可变长度，可为8bits 16bits 24bits
     /// </summary>
     public class BlockOptionValue : OptionValue
     {
         /// <summary>
-        /// 块内位置 占位4-20bits
+        /// 块内位置 占位4-20bits 4 12 20
         /// </summary>
         public uint Num { get; set; }
         /// <summary>
-        /// 是否最后一个包 占位1bit
+        /// 是否最后一个包 占位1bit 倒数第4位
         /// </summary>
         public bool MoreFlag { get; set; }
         /// <summary>
-        /// 数据包总大小 占位3bits 值大小为1-6，表值范围16bytes-1024bytes
+        /// 数据包总大小 占位3bits 低3位为其储存区间 值大小为1-6，表值范围16bytes-1024bytes 
         /// </summary>
         public ushort Size { get; set; }
         /// <summary>
-        /// 
+        /// 字节流
         /// </summary>
         public override byte[] Pack
         {
@@ -157,8 +157,8 @@ namespace Mozi.IoT
             set
             {
 
-                Size = (ushort)Math.Pow(2, (((byte)(value[0] << 5)) >> 5) + 4);
-                MoreFlag = (value[0] & 8) == 8;
+                Size = (ushort)Math.Pow(2, (((byte)(value[value.Length-1] << 5)) >> 5) + 4);
+                MoreFlag = (value[value.Length-1] & 8) == 8;
                 byte[] data = new byte[4];
                 Array.Copy(value.Revert(), 0, data, data.Length - value.Length, value.Length);
                 Num = BitConverter.ToUInt32(data, 0);

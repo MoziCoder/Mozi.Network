@@ -1,4 +1,5 @@
 ﻿using System;
+using Mozi.IoT.Cache;
 using Mozi.IoT.Encode;
 
 namespace Mozi.IoT
@@ -12,6 +13,10 @@ namespace Mozi.IoT
     public class CoAPClient : CoAPPeer
     {
         private bool _randomPort = true;
+        
+        private CoAPTransmissionConfig _transConfig = new CoAPTransmissionConfig();
+
+        private MessageCacheManager _cacheManager;
 
         //private ushort _remotePort = CoAPProtocol.Port;
         //private string _remotehost = "";
@@ -28,6 +33,7 @@ namespace Mozi.IoT
 
         public CoAPClient() 
         {
+            _cacheManager = new MessageCacheManager(this);
             //配置本地服务口地址
         }
         /// <summary>
@@ -97,10 +103,17 @@ namespace Mozi.IoT
         /// DOMAIN地址请先转换为IP地址，然后填充到Uri-Host选项中
         /// </summary>
         /// <param name="pack"></param>
-        public virtual void SendMessage(string host,int port,CoAPPackage pack)
+        /// <returns>MessageId</returns>
+        public virtual ushort SendMessage(string host,int port,CoAPPackage pack)
         {
+            if (pack.MesssageId == 0)
+            {
+                pack.MesssageId = _cacheManager.GenerateMessageId();
+            }
             _socket.SendTo(pack.Pack(), host, port);
+            return pack.MesssageId;
         }
+
         /// <summary>
         /// 注入URL相关参数,domain,port,paths,queries
         /// </summary>
@@ -150,7 +163,7 @@ namespace Mozi.IoT
             {
                 Code = CoAPRequestMethod.Get,
                 Token = Cache.CacheControl.GenerateToken(8),
-                MesssageId = 12345,
+                MesssageId = _cacheManager.GenerateMessageId(),
                 MessageType = msgType ?? CoAPMessageType.Confirmable
             };
 
@@ -191,7 +204,7 @@ namespace Mozi.IoT
             {
                 Code = CoAPRequestMethod.Post,
                 Token = Cache.CacheControl.GenerateToken(8),
-                MesssageId = 12345,
+                MesssageId = _cacheManager.GenerateMessageId(),
                 MessageType = msgType ?? CoAPMessageType.Confirmable
             };
 

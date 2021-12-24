@@ -68,7 +68,7 @@ namespace Mozi.IoT
         public static CoAPOptionDefine Block2 = new CoAPOptionDefine("Block2", 23);    //RFC 7959
         public static CoAPOptionDefine Block1 = new CoAPOptionDefine("Block1", 27);    //RFC 7959
 
-        public static CoAPOptionDefine Size2 = new CoAPOptionDefine("Location-Query", 28); //RFC 7959
+        public static CoAPOptionDefine Size2 = new CoAPOptionDefine("Size2", 28); //RFC 7959
 
         public static CoAPOptionDefine ProxyUri = new CoAPOptionDefine("Proxy-Uri", 35);
         public static CoAPOptionDefine ProxyScheme = new CoAPOptionDefine("Proxy-Scheme", 39);
@@ -134,6 +134,7 @@ namespace Mozi.IoT
     public class CoAPOption
     {
         private uint _deltaValue = 0, _lenValue = 0;
+
         private OptionValue _optValue;
 
         /// <summary>

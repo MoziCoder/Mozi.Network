@@ -43,6 +43,7 @@
     ///     5.05 | Proxying Not Supported       | [RFC7252] |
     ///     
     ///  6.00-7.31 Reserved
+    
     /// <summary>
     /// CoAP操作代码
     /// </summary>
@@ -151,5 +152,6 @@
         {
 
         }
+
     }
 }
