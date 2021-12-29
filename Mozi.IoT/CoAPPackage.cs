@@ -67,14 +67,60 @@ namespace Mozi.IoT
         /// 包体
         /// </summary>
         public byte[] Payload { get; set; }
-        ///// <summary>
-        ///// 链接地址
-        ///// </summary>
-        //public string Url 
-        //{ 
-        //    get; 
-        //    set; 
-        //}
+        /// <summary>
+        /// 域名，该域名为包内域名，无法判定真实性，有被篡改的可能性
+        /// </summary>
+        public string Domain
+        {
+            get
+            {
+                string domain = "";
+                foreach (var op in Options)
+                {
+                    if (op.Option == CoAPOptionDefine.UriHost)
+                    {
+                        domain = (string)(op.Value.Value);
+                    }
+                }
+                return domain;
+            }
+        }
+        /// <summary>
+        /// 链接地址
+        /// </summary>
+        public string Path
+        {
+            get
+            {
+                string path = "";
+                foreach(var op in Options)
+                {
+                    if (op.Option == CoAPOptionDefine.UriPath)
+                    {
+                        path+="/"+(string)(op.Value.Value);
+                    }
+                }
+                return path;
+            }
+        }
+        /// <summary>
+        /// 查询字符串
+        /// </summary>
+        public string Query
+        {
+            get
+            {
+                List<string> query = new List<string>();
+                foreach (var op in Options)
+                {
+                    if (op.Option == CoAPOptionDefine.UriQuery)
+                    {
+                        query.Add((string)(op.Value.Value));
+                    }
+                }
+                return string.Join("&",query);
+            }
+        }
         /// <summary>
         /// 打包|转为字节流
         /// </summary>
