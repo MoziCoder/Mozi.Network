@@ -8,15 +8,15 @@ Coap（Constrained Application Protocol）受限应用协议，是一种在物�
 ## 功能模块
 ### .Net 
 
-#### [IoT.Server][iotserver]网关服务器
+#### [IoT.Server][iotserver] 网关服务器
 	IoT.Server是服务端实现，CoAPServer是CoAP协议的服务端,其主要职能是承载CoAP网关功能。
 
-#### [IoT.Client][iotclient]客户端 
+#### [IoT.Client][iotclient] 客户端 
 	IoT.Client是客户端实现，CoAPClient是CoAP协议的客户端，鉴于.Net项目基本不用于嵌入式场景，此客户端实现可作为测试工具。
 
 ### Java
 
-### iot4j
+### [iot4j][iot4j]
     iot4j是IoT(CoAP)的Java客户端实现
 
 ## CoAP协议实现完成度
@@ -63,3 +63,4 @@ Coap（Constrained Application Protocol）受限应用协议，是一种在物�
 [1]:mailto:brotherqian@163.com
 [iotserver]:../Mozi.IoT.Server
 [iotclient]:../Mozi.IoT.Client
+[iot4j]:https://gitee.com/myui/mozi.iot4j
