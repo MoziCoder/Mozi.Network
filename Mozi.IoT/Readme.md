@@ -3,7 +3,7 @@
 Mozi.IoT是一个物联网标准通讯组件(CoAP协议)，包含网关服务器和客户端。该项目并不是一个应用框架,而是CoAP的标准通协议实现，项目目前是Mozi.Network的子项目，有可能发展成为一个独立的项目。精力有限，当前仅实现和充实CoAP相关功能。
 
 ## CoAP协议简介
-Coap（Constrained Application Protocol）受限应用协议，是一种在物联网世界的类web协议，RFC规范定义为RFC7252,7959,8613,8974。该协议使用在资源受限的物联网设备上。物联网设备的ram，rom都通常非常小，不能运行消耗资源比较多的TCP和HTTP。
+CoAP（Constrained Application Protocol）受限应用协议，是一种在物联网世界的类web协议，RFC规范定义为RFC7252,7959,8613,8974。该协议使用在资源受限的物联网设备上。物联网设备的ram，rom都通常非常小，不能运行消耗资源比较多的TCP和HTTP。
 
 ## 功能模块
 ### .Net 
@@ -54,6 +54,7 @@ Coap（Constrained Application Protocol）受限应用协议，是一种在物�
     CoAPClient cc = new CoAPClient();
     cc.SetPort(12341);
     cc.Start();
+    //调用Get方法，向服务器发起通讯
     cc.Get("coap://127.0.0.1/id/1");
     Console.ReadLine();
 

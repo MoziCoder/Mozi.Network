@@ -1,5 +1,19 @@
 ﻿namespace Mozi.DNS
 {
+    public class DNSProtocol
+    {
+
+    }
+
+    public class DNSRequest 
+    {
+        
+    }
+
+    public class DNSResponse
+    {
+
+    }
     /// <summary>
     /// 资源记录
     /// </summary>
@@ -42,14 +56,18 @@
     {
 
     }
+
     class DNSPackageQuestion
     {
 
     }
+
     class DNSPackageAuthority
     {
 
+    
     }
+    
     class DNSPackageAdditional
     {
         
