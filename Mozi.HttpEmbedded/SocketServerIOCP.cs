@@ -133,7 +133,7 @@ namespace Mozi.HttpEmbedded
 
                 _clients.Clear();
                 _sc = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                IPEndPoint endpoint = new IPEndPoint(System.Net.IPAddress.Any, _iport);
+                IPEndPoint endpoint = new IPEndPoint(IPAddress.Any, _iport);
                 //允许端口复用
                 _sc.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                 _sc.Bind(endpoint);

@@ -8,6 +8,7 @@ namespace Mozi.IoT
     /// </summary>
     public abstract class OptionValue
     {
+        protected byte[] _pack;
         public abstract object Value { get; set; }
         public abstract byte[] Pack { get; set; }
         public abstract int Length { get; }
@@ -29,8 +30,6 @@ namespace Mozi.IoT
     /// </summary>
     public class ArrayByteOptionValue : OptionValue
     {
-        private byte[] _pack;
-
         public override object Value { get => _pack; set => _pack = (byte[])value; }
 
         public override byte[] Pack { get => _pack; set => _pack = value; }
@@ -42,7 +41,6 @@ namespace Mozi.IoT
     /// </summary>
     public class UnsignedIntegerOptionValue : OptionValue
     {
-        private byte[] _pack;
 
         public override object Value
         {
@@ -95,7 +93,6 @@ namespace Mozi.IoT
     /// </summary>
     public class StringOptionValue : OptionValue
     {
-        private byte[] _pack;
 
         public override object Value
         {
@@ -131,6 +128,7 @@ namespace Mozi.IoT
         {
             get
             {
+
                 byte[] data;
                 uint num = (Num << 4) | (byte)((byte)Math.Log(Size, 2) - 4);
                 if (MoreFlag)
@@ -153,6 +151,7 @@ namespace Mozi.IoT
                     Array.Copy(BitConverter.GetBytes(num).Revert(), 1, data, 0, data.Length);
                 }
                 return data;
+
             }
             set
             {
@@ -162,6 +161,7 @@ namespace Mozi.IoT
                 byte[] data = new byte[4];
                 Array.Copy(value.Revert(), 0, data, data.Length - value.Length, value.Length);
                 Num = BitConverter.ToUInt32(data, 0);
+
             }
         }
         /// <summary>

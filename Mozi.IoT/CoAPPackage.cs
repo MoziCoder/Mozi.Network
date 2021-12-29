@@ -16,7 +16,7 @@ namespace Mozi.IoT
     {
         private byte _version = 1;
         /// <summary>
-        /// 版本 2bits 
+        /// 版本 2bits 目前版本为1
         /// </summary>
         public byte Version { get => _version; set => _version = value; }
         /// <summary>
@@ -289,7 +289,7 @@ namespace Mozi.IoT
                 }
                 //赋默认值
                 option.Option = AbsClassEnum.Get<CoAPOptionDefine>((option.DeltaValue + deltaSum).ToString());
-                if (object.ReferenceEquals(null, option.Option))
+                if (ReferenceEquals(null, option.Option))
                 {
                     option.Option = CoAPOptionDefine.Unknown;
                 }

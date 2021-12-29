@@ -55,7 +55,7 @@ namespace Mozi.SSDP
         private int _multicastGroupPort = SSDPProtocol.ProtocolPort;
         private IPAddress _bindingAddress = IPAddress.Any;
 
-        private string _server = "Mozi/1.2.5 UPnP/2.0 Mozi.SSDP/1.2.5";
+        private string _server = "Mozi/1.3.4 UPnP/2.0 Mozi.SSDP/1.3.4";
 
         /// <summary>
         /// 设备描述文档地址

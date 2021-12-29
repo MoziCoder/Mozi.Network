@@ -6,7 +6,7 @@ namespace Mozi.HttpEmbedded.Test
     {
         public string Guid()
         {
-            return Mozi.SSDP.UUID.Generate();
+            return SSDP.UUID.Generate();
         }
     }
 }

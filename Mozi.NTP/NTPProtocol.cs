@@ -540,7 +540,7 @@ namespace Mozi.NTP
             get
             {
                 byte[] data = new byte[4];
-                Array.Copy(System.Text.ASCIIEncoding.ASCII.GetBytes(Name), data, Name.Length > 4 ? 4 : Name.Length);
+                Array.Copy(System.Text.Encoding.ASCII.GetBytes(Name), data, Name.Length > 4 ? 4 : Name.Length);
                 return data;
             }
         }

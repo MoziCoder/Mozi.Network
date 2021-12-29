@@ -162,7 +162,7 @@ namespace Mozi.IoT
             CoAPPackage cp = new CoAPPackage
             {
                 Code = CoAPRequestMethod.Get,
-                Token = Cache.CacheControl.GenerateToken(8),
+                Token = CacheControl.GenerateToken(8),
                 MesssageId = _cacheManager.GenerateMessageId(),
                 MessageType = msgType ?? CoAPMessageType.Confirmable
             };
@@ -203,7 +203,7 @@ namespace Mozi.IoT
             CoAPPackage cp = new CoAPPackage
             {
                 Code = CoAPRequestMethod.Post,
-                Token = Cache.CacheControl.GenerateToken(8),
+                Token = CacheControl.GenerateToken(8),
                 MesssageId = _cacheManager.GenerateMessageId(),
                 MessageType = msgType ?? CoAPMessageType.Confirmable
             };

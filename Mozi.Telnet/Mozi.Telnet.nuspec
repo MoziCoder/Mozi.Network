@@ -8,7 +8,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
     <projectUrl>https://gitee.com/myui_admin/mozi</projectUrl>
-    <description>Telnet服务器,Telnet服务器及客户端</description>
+    <description>Telnet服务器及客户端</description>
     <releaseNotes>Telnet服务器</releaseNotes>
     <copyright>Copyright © Jason 2021</copyright>
     <tags>Telnet Telnet服务器 NVT</tags>
