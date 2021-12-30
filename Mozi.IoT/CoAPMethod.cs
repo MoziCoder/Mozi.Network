@@ -79,6 +79,13 @@
         {
             get { return _name; }
         }
+        public string Description
+        {
+            get
+            {
+                return _description;
+            }
+        }
         /// <summary>
         /// 标识符
         /// </summary>
@@ -125,6 +132,10 @@
         {
 
         }
+        public override string ToString()
+        {
+            return Name;
+        }
     }
     /// <summary>
     /// 响应码
@@ -167,6 +178,9 @@
         {
 
         }
-
+        public override string ToString()
+        {
+            return Category+"."+Detail+" "+Description;
+        }
     }
 }

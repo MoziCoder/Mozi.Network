@@ -41,7 +41,7 @@ namespace Mozi.IoT
         /// </summary>
         /// <param name="port"></param>
         /// <returns></returns>
-        public CoAPClient SetPort(ushort port)
+        public CoAPClient SetPort(int port)
         {
             BindPort = port;
             _randomPort = false;

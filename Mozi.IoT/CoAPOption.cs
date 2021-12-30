@@ -251,11 +251,10 @@ namespace Mozi.IoT
                 return _optValue; 
             } 
             set 
-            { 
+            {
                 _optValue = value; 
                 LengthValue = value != null ? (uint)value.Length : 0;
-                int a = 1;
-            } 
+            }
         }
         public byte[] Pack
         {

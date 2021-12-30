@@ -43,14 +43,14 @@ namespace Mozi.IoT
     {
         protected readonly UDPSocket _socket;
 
-        protected ushort BindPort = CoAPProtocol.Port;
+        protected int BindPort = CoAPProtocol.Port;
 
         protected List<CoAPCode> SupportedRequest = new List<CoAPCode> { CoAPRequestMethod.Get, CoAPRequestMethod.Post, CoAPRequestMethod.Put, CoAPRequestMethod.Delete };
 
         /// <summary>
         /// 服务端口
         /// </summary>
-        public ushort Port { get { return BindPort; } protected set { BindPort = value; } }
+        public int Port { get { return BindPort; } protected set { BindPort = value; } }
         /// <summary>
         /// 启动时间
         /// </summary>
@@ -72,7 +72,7 @@ namespace Mozi.IoT
         /// 启动本端服务
         /// </summary>
         /// <param name="port"></param>
-        public void Start(ushort port)
+        public void Start(int port)
         {
             BindPort = port;
             _socket.Start(BindPort);

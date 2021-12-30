@@ -75,6 +75,5 @@ namespace Mozi.IoT.Cache
         {
             return 12345;
         }
-
     }
 }
