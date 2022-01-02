@@ -1,4 +1,6 @@
-﻿namespace Mozi.IoT
+﻿using System;
+
+namespace Mozi.IoT
 {
     //TODO 即时响应ACK，延迟响应CON,消息可即时响应也可处理完成后响应，延迟消息需要后端缓存支撑
     //TODO 拥塞算法
@@ -33,6 +35,7 @@
     /// </summary>
     public class CoAPServer:CoAPPeer
     {
+        private ulong _packageReceived = 0, _totalFlowsize;
 
         public CoAPServer()
         {
@@ -56,6 +59,9 @@
         protected override void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
             CoAPPackage pack2=null;
+            _packageReceived++;
+            _totalFlowsize = _totalFlowsize+(uint)args.Data.Length;
+            Console.WriteLine($"Received package:{_packageReceived} pic,current:{args.Data.Length}bytes,total:{_totalFlowsize}bytes");
 
             //try
             //{

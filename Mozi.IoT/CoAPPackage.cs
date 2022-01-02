@@ -143,6 +143,7 @@ namespace Mozi.IoT
                 data.AddRange(op.Pack);
                 delta += op.DeltaValue;
             }
+            //如果没有Payload就不加截断标识
             if (Payload != null)
             {
                 data.Add(CoAPProtocol.HeaderEnd);
@@ -284,6 +285,7 @@ namespace Mozi.IoT
         {
             return SetOption(CoAPOptionDefine.ContentFormat, ft.Num);
         }
+        //TODO 如果包集中到达，解析会出现问题
         /// <summary>
         /// 解析数据包
         /// </summary>

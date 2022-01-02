@@ -88,5 +88,6 @@
         /// Non-confirmable包MessageId重用周期
         /// </summary>
         public int NON_LIFETIME = 145;
+
     }
 }

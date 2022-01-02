@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Mozi.IoT.Cache
@@ -19,11 +20,11 @@ namespace Mozi.IoT.Cache
         /// <summary>
         /// 请求包
         /// </summary>
-        public CoAPPackage[] Request { get; set; }
+        public List<CoAPPackage> Request { get; set; }
         /// <summary>
         /// 响应包
         /// </summary>
-        public CoAPPackage[] Response { get; set; }
+        public List<CoAPPackage> Response { get; set; }
         /// <summary>
         /// 重试次数
         /// </summary>
@@ -52,13 +53,30 @@ namespace Mozi.IoT.Cache
         /// 是否通讯已完成
         /// </summary>
         public bool Completed { get; set; }
+
+        public MessageCache()
+        {
+            Request = new List<CoAPPackage>();
+            Response = new List<CoAPPackage>();
+        }
     }
+
+    /// <summary>
+    /// 消息回调
+    /// </summary>
+    /// <param name="host"></param>
+    /// <param name="msgId"></param>
+    /// <param name="rp"></param>
+    public delegate void MessageResponseReceive(string host, ushort msgId, CoAPPackage rp);
+
     /// <summary>
     /// 信息缓存管理
     /// </summary>
     public class MessageCacheManager
     {
-        private List<MessageCache> _cache = new List<MessageCache>();
+        private const string _seads = "0123456789ABCDEF";
+
+        private List<MessageCache> _cm = new List<MessageCache>();
         
         private ushort _indStart = 0;
 
@@ -73,7 +91,77 @@ namespace Mozi.IoT.Cache
         /// <returns></returns>
         public ushort GenerateMessageId()
         {
-            return 12345;
+            Random random = new Random();
+            byte high=byte.Parse(new string(new char[] { _seads[random.Next(16)], _seads[random.Next(16)] }), System.Globalization.NumberStyles.HexNumber);
+            byte low=byte.Parse(new string(new char[] { _seads[random.Next(16)], _seads[random.Next(16)] }), System.Globalization.NumberStyles.HexNumber);
+            ushort msgId= BitConverter.ToUInt16(new byte[] { high, low }, 0);
+
+            if (_cm.Exists(x => x.Host == "" && x.MessageId == msgId))
+            {
+               
+            }
+            return msgId;
+
+        }
+
+        public ushort Request(string host,CoAPPackage req)
+        {
+            MessageCache cache = _cm.Find(x => x.Host.Equals(host) && x.MessageId == req.MesssageId);
+            if (cache == null)
+            {
+                cache = new MessageCache()
+                {
+                    Host = host,
+                    TransmitTime = DateTime.Now,
+                    MessageId = req.MesssageId,
+                };
+                cache.Request.Add(req);
+                lock((_cm as ICollection).SyncRoot)
+                {
+                    _cm.Add(cache);
+                }
+            }
+            else
+            {
+
+            }
+            cache.TransmitCount++;
+            
+            return req.MesssageId;
+        }
+
+        internal ushort Response(string host,CoAPPackage resp)
+        {
+            MessageCache cache = _cm.Find(x => x.Host.Equals(host) && x.MessageId == resp.MesssageId);
+            if (cache != null)
+            {
+                cache = new MessageCache()
+                {
+                    Host = host,
+                    TransmitTime = DateTime.Now,
+                    MessageId = resp.MesssageId,
+                };
+                cache.Response.Add(resp);
+                cache.ReceiveCount++;
+                cache.ReceiveTime = DateTime.Now;
+                cache.Answered = true;
+                //判断包是否已完成，完成则触发回调
+                return resp.MesssageId;
+            }
+            else
+            {
+                //如果消息缓存不存在，说明消息请求已过生命周期
+                return 0;
+            }
+        }
+
+        internal ushort Remove(string host,ushort msgId)
+        {
+            lock ((_cm as ICollection).SyncRoot)
+            {
+                _cm.RemoveAll(x => x.Host.Equals(host) && x.MessageId == msgId);
+            }
+            return msgId;
         }
     }
 }

@@ -17,6 +17,7 @@ namespace Mozi.IoT
         private CoAPTransmissionConfig _transConfig = new CoAPTransmissionConfig();
 
         private MessageCacheManager _cacheManager;
+        private ulong _packetReceived;
 
         //private ushort _remotePort = CoAPProtocol.Port;
         //private string _remotehost = "";
@@ -55,11 +56,12 @@ namespace Mozi.IoT
         protected override void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
             CoAPPackage pack2 = null;
-
+            _packetReceived++;
             //try
             //{
             CoAPPackage pack = CoAPPackage.Parse(args.Data, false);
 
+            Console.WriteLine($"Package answered{_packetReceived}");
             //pack2 = new CoAPPackage()
             //{
             //    Version = 1,
@@ -235,6 +237,10 @@ namespace Mozi.IoT
             return cp.MesssageId;
         }
 
+        public ushort Post(string url, CoAPMessageType msgType, ContentFormat contentType, string text)
+        {
+            return Post(url, msgType, contentType, StringEncoder.Encode(text));
+        }
         //TODO 是否会出现安全问题
         private void Put(string url)
         {

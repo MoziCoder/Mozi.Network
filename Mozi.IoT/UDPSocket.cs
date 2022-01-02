@@ -135,6 +135,7 @@ namespace Mozi.IoT
             {
                 //置空数据缓冲区
                 so.ResetBuffer(iByteRead);
+                //TODO UDP为数据单报文形式进行传输，故此处注释掉
                 //if (client.Available > 0)
                 //{
                 //    so.RemoteEndPoint = remote;
