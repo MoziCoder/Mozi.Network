@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace Mozi.IoT.Test
 {
@@ -7,15 +9,20 @@ namespace Mozi.IoT.Test
         static void Main(string[] args)
         {
             ////服务端
-            CoAPServer cs = new CoAPServer();
-            cs.Start();
-            Console.ReadLine();
+            //CoAPServer cs = new CoAPServer();
+            //cs.Start();
+            //Console.ReadLine();
 
             //客户端
-
-            //CoAPClient cc = new CoAPClient();
-            //cc.SetPort(12341);
-            //cc.Start();
+            //List<CoAPClient> ccs = new List<CoAPClient>();
+            //for(int i = 0; i < 32; i++)
+            //{
+            //    CoAPClient cc = new CoAPClient();
+            //    //本地端口
+            //    cc.SetPort(12340+i);
+            //    cc.Start();
+            //    ccs.Add(cc);
+            //}
             ////CoAPPackage cp = new CoAPPackage();
             ////cp.Code = CoAPRequestMethod.Get;
             ////cp.Token = new byte[] { 0x01, 0x02, 0x03, 0x04 };
@@ -23,9 +30,31 @@ namespace Mozi.IoT.Test
             ////cp.SetOption(CoAPOptionDefine.UriPath, "sensor");
             ////cp.SetOption(CoAPOptionDefine.UriPath, "summit");
             ////cp.SetContentType(ContentFormat.TextPlain);
-            ////cc.SendMessage("127.0.0.1", 5683, cp);
-            //cc.Get("coap://www.boshentech.com/sensor/test");
-            //Console.ReadLine();
+            ////cc.SendMessage("127.0.0.1", 5683, cp);                
+            //foreach(CoAPClient cc in ccs)
+            //{
+
+            //    var td=(new Thread(x => {
+            //        for (int i = 0; i < 1000000; i++)
+            //        {
+            //            //cc.Get("coap://100.100.0.105/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test");
+            //            cc.Post("coap://100.100.0.105/sensor/test/?imei=3205496", CoAPMessageType.Confirmable, ContentFormat.TextPlain, "Test message ") ;
+            //        }
+            //    }));
+            //    td.Priority = ThreadPriority.Normal;
+            //    td.Start();
+            //}
+            //
+
+
+            CoAPClient cc = new CoAPClient();
+            //本地端口
+            cc.SetPort(12340);
+            cc.Start();
+            cc.Post("coap://100.100.0.105/sensor/test/?imei=3205496", CoAPMessageType.Confirmable, ContentFormat.TextPlain, "Test message ");
+
+            Console.ReadLine();
+
         }
     }
 }

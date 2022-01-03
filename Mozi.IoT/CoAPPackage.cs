@@ -97,7 +97,7 @@ namespace Mozi.IoT
                 {
                     if (op.Option == CoAPOptionDefine.UriPath)
                     {
-                        path+="/"+(string)(op.Value.Value);
+                        path+="/"+(string)op.Value.Value;
                     }
                 }
                 return path;
@@ -184,7 +184,7 @@ namespace Mozi.IoT
                 Option = define,
                 Value = optionValue
             };
-            var optGreater = Options.FindIndex(x => x.DeltaValue > option.DeltaValue);
+            var optGreater = Options.FindIndex(x => x.Option.OptionNumber > define.OptionNumber);
             if (optGreater < 0)
             {
                 optGreater = Options.Count;

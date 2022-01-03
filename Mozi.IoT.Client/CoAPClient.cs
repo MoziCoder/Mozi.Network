@@ -133,6 +133,7 @@ namespace Mozi.IoT
             {
                 cp.SetOption(CoAPOptionDefine.UriPort, (uint)uri.Port);
             }
+
             //注入路径
             for (int i = 0; i < uri.Paths.Length; i++)
             {

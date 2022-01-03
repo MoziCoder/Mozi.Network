@@ -96,7 +96,17 @@ namespace Mozi.IoT
 
         public override object Value
         {
-            get => System.Text.Encoding.UTF8.GetString(_pack);
+            get
+            {
+                if (_pack != null)
+                {
+                    return System.Text.Encoding.UTF8.GetString(_pack);
+                }
+                else
+                {
+                    return "";
+                }
+            }
             set => _pack = System.Text.Encoding.UTF8.GetBytes((string)value);
         }
 
