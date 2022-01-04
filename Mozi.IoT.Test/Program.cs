@@ -9,9 +9,9 @@ namespace Mozi.IoT.Test
         static void Main(string[] args)
         {
             ////服务端
-            //CoAPServer cs = new CoAPServer();
-            //cs.Start();
-            //Console.ReadLine();
+            CoAPServer cs = new CoAPServer();
+            cs.Start();
+            Console.ReadLine();
 
             //客户端
             //List<CoAPClient> ccs = new List<CoAPClient>();
@@ -47,11 +47,11 @@ namespace Mozi.IoT.Test
             //
 
 
-            CoAPClient cc = new CoAPClient();
-            //本地端口
-            cc.SetPort(12340);
-            cc.Start();
-            cc.Post("coap://100.100.0.105/sensor/test/?imei=3205496", CoAPMessageType.Confirmable, ContentFormat.TextPlain, "Test message ");
+            //CoAPClient cc = new CoAPClient();
+            ////本地端口
+            //cc.SetPort(12340);
+            //cc.Start();
+            //cc.Get("coap://100.100.0.105/sensor/getinfo", CoAPMessageType.Confirmable);
 
             Console.ReadLine();
 

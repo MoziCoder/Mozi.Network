@@ -38,7 +38,7 @@ namespace Mozi.IoT
             //配置本地服务口地址
         }
         /// <summary>
-        /// 设置本地端口，默认为<see cref=" CoAPProtocol.Port"/>,如果不设置则使用随机端口
+        /// 设置本地端口，默认为<see cref=" CoAPProtocol.Port"/>
         /// </summary>
         /// <param name="port"></param>
         /// <returns></returns>
@@ -129,7 +129,7 @@ namespace Mozi.IoT
                 cp.SetOption(CoAPOptionDefine.UriHost, uri.Domain);
             }
             //注入端口号
-            if (uri.Port > 0 && (uri.Port != CoAPProtocol.Port || uri.Port != CoAPProtocol.SecurePort))
+            if (uri.Port > 0 && !(uri.Port == CoAPProtocol.Port || uri.Port == CoAPProtocol.SecurePort))
             {
                 cp.SetOption(CoAPOptionDefine.UriPort, (uint)uri.Port);
             }
@@ -200,7 +200,14 @@ namespace Mozi.IoT
         {
             return Get(url, CoAPMessageType.Confirmable);
         }
-
+        /// <summary>
+        /// Post方法
+        /// </summary>
+        /// <param name="url">地址格式参见<see cref="Get(string, CoAPMessageType)"/></param>
+        /// <param name="msgType"></param>
+        /// <param name="contentType"></param>
+        /// <param name="postBody"></param>
+        /// <returns></returns>
         public ushort Post(string url, CoAPMessageType msgType, ContentFormat contentType,byte[] postBody)
         {
             CoAPPackage cp = new CoAPPackage

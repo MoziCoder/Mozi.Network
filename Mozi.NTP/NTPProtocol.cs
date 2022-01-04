@@ -236,6 +236,7 @@ namespace Mozi.NTP
             np.VersionNumber = (byte)((byte)(head << 2) >> 5);
             np.Mode = (byte)((byte)(head << 5) >> 5);
             np.Stratum = data[1];
+
             //求幂
             np.Pool = data[2];
             np.Precision = data[3];

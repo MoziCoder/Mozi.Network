@@ -260,10 +260,9 @@ namespace Mozi.IoT
         {
             get
             {
-                byte head = (byte)((byte)(Delta << 4) | Length);
 
                 List<byte> data = new List<byte>();
-                data.Add(head);
+                data.Add(OptionHead);
                 //delta
                 if (Delta == 14)
                 {

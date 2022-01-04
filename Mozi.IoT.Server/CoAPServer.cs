@@ -78,10 +78,7 @@ namespace Mozi.IoT
                 //判断是否受支持的方法
                 if (IsSupportedRequest(pack))
                 {
-                    if (pack.MessageType==CoAPMessageType.Confirmable||pack.MessageType == CoAPMessageType.Acknowledgement)
-                    {
-                        pack2.Code = CoAPResponseCode.Content;
-                    }
+                    pack2.Code = CoAPResponseCode.Content;
                 }
                 else
                 {

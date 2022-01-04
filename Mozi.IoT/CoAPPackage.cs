@@ -200,12 +200,8 @@ namespace Mozi.IoT
         /// <returns></returns>
         public CoAPPackage SetOption(CoAPOptionDefine define, byte[] optionValue)
         {
-            CoAPOption option = new CoAPOption()
-            {
-                Option = define,
-                Value = new ArrayByteOptionValue() { Value = optionValue }
-            };
-            Options.Add(option);
+            var v = new ArrayByteOptionValue() { Value = optionValue };
+            SetOption(define, v);
             return this;
         }
         /// <summary>
@@ -297,7 +293,7 @@ namespace Mozi.IoT
             CoAPPackage pack = new CoAPPackage();
             byte head = data[0];
             pack.Version = (byte)(head >> 6);
-            pack.MessageType = AbsClassEnum.Get<CoAPMessageType>(((byte)(head << 2) >> 4).ToString());
+            pack.MessageType = AbsClassEnum.Get<CoAPMessageType>(((byte)(head << 2) >> 6).ToString());
             pack.TokenLength = (byte)((byte)(head << 4) >> 4);
 
             pack.Code = isRequest ? AbsClassEnum.Get<CoAPRequestMethod>(data[1].ToString()) : (CoAPCode)AbsClassEnum.Get<CoAPResponseCode>(data[1].ToString());
