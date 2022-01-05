@@ -121,6 +121,10 @@ namespace Mozi.IoT
                 return string.Join("&",query);
             }
         }
+        public CoAPPackageType PackageType
+        {
+            get;private set;
+        }
         /// <summary>
         /// 打包|转为字节流
         /// </summary>
@@ -297,7 +301,7 @@ namespace Mozi.IoT
             pack.TokenLength = (byte)((byte)(head << 4) >> 4);
 
             pack.Code = packType==CoAPPackageType.Request ? AbsClassEnum.Get<CoAPRequestMethod>(data[1].ToString()) : (CoAPCode)AbsClassEnum.Get<CoAPResponseCode>(data[1].ToString());
-
+            pack.PackageType = packType;
             byte[] arrMsgId = new byte[2], arrToken = new byte[pack.TokenLength];
             Array.Copy(data, 2, arrMsgId, 0, 2);
             Array.Copy(data, 2 + 2, arrToken, 0, arrToken.Length);
