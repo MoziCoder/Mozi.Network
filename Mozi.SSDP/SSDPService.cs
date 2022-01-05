@@ -43,8 +43,6 @@ namespace Mozi.SSDP
     /// </summary>
     public class SSDPService
     {
-        private const string QueryPath = "*";
-
         private bool _initialized = false;
 
         private UDPSocket _socket;
