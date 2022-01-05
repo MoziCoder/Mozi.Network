@@ -59,7 +59,7 @@ namespace Mozi.IoT
             _packetReceived++;
             //try
             //{
-            CoAPPackage pack = CoAPPackage.Parse(args.Data, false);
+            CoAPPackage pack = CoAPPackage.Parse(args.Data, CoAPPackageType.Request);
 
             Console.WriteLine($"Package answered{_packetReceived}");
             //pack2 = new CoAPPackage()
@@ -244,7 +244,12 @@ namespace Mozi.IoT
             }
             return cp.MesssageId;
         }
-
+        
+        //分块提交
+        internal ushort PostBlock(string url, CoAPMessageType msgType, ContentFormat contentType, byte[] postBody)
+        {
+            throw new NotImplementedException();
+        }
         public ushort Post(string url, CoAPMessageType msgType, ContentFormat contentType, string text)
         {
             return Post(url, msgType, contentType, StringEncoder.Encode(text));

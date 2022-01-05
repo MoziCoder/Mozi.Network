@@ -175,7 +175,13 @@ namespace Mozi.HttpEmbedded
             get { return _serverRoot; }
             private set { _serverRoot = value; }
         }
-
+        /// <summary>
+        /// 服务器运行状态
+        /// </summary>
+        public bool Running
+        {
+            get; set;
+        }
         internal MemoryCache Cache { get { return _cache; }  }
 
         public HttpServer()
@@ -690,6 +696,7 @@ namespace Mozi.HttpEmbedded
         {
             StartTime = DateTime.Now;
             _sc.StartServer(_port);
+            Running = true;
         }
         /// <summary>
         /// 是否启用访问控制 IP策略
@@ -747,6 +754,7 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         public void Shutdown()
         {
+            Running = false;
             _sc.StopServer();
         }
 

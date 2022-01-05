@@ -110,6 +110,13 @@ namespace Mozi.StateService
         /// </summary>
         public List<Subscriber> Subscribers = new List<Subscriber>();
         /// <summary>
+        /// 服务器运行状态
+        /// </summary>
+        public bool Running
+        {
+            get; set;
+        }
+        /// <summary>
         /// 是否开启统计
         /// </summary>
         public bool EnableCount { get; set; }
@@ -138,12 +145,14 @@ namespace Mozi.StateService
             _port = port;
             _socket.Start(_port);
             StartTime = DateTime.Now;
+            Running = true;
         }
         /// <summary>
         /// 网关下线
         /// </summary>
         public void Shutdown()
         {
+            Running = false;
             _socket.Shutdown();
             StartTime = DateTime.MinValue;
         }

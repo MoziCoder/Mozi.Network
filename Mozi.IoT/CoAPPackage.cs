@@ -286,9 +286,9 @@ namespace Mozi.IoT
         /// 解析数据包
         /// </summary>
         /// <param name="data"></param>
-        /// <param name="isRequest"></param>
+        /// <param name="packType"></param>
         /// <returns></returns>
-        public static CoAPPackage Parse(byte[] data, bool isRequest)
+        public static CoAPPackage Parse(byte[] data, CoAPPackageType packType)
         {
             CoAPPackage pack = new CoAPPackage();
             byte head = data[0];
@@ -296,7 +296,7 @@ namespace Mozi.IoT
             pack.MessageType = AbsClassEnum.Get<CoAPMessageType>(((byte)(head << 2) >> 6).ToString());
             pack.TokenLength = (byte)((byte)(head << 4) >> 4);
 
-            pack.Code = isRequest ? AbsClassEnum.Get<CoAPRequestMethod>(data[1].ToString()) : (CoAPCode)AbsClassEnum.Get<CoAPResponseCode>(data[1].ToString());
+            pack.Code = packType==CoAPPackageType.Request ? AbsClassEnum.Get<CoAPRequestMethod>(data[1].ToString()) : (CoAPCode)AbsClassEnum.Get<CoAPResponseCode>(data[1].ToString());
 
             byte[] arrMsgId = new byte[2], arrToken = new byte[pack.TokenLength];
             Array.Copy(data, 2, arrMsgId, 0, 2);
@@ -426,5 +426,13 @@ namespace Mozi.IoT
         {
             throw new NotImplementedException();
         }
+    }
+    /// <summary>
+    /// 数据包类型，是请求还是响应
+    /// </summary>
+    public enum CoAPPackageType
+    {
+        Request,
+        Response
     }
 }

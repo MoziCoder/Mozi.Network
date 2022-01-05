@@ -55,7 +55,13 @@ namespace Mozi.IoT
         /// 启动时间
         /// </summary>
         public DateTime StartTime { get; private set; }
-
+        /// <summary>
+        /// 服务器运行状态
+        /// </summary>
+        public bool Running
+        {
+            get;set;
+        }
         public CoAPPeer()
         {
             _socket = new UDPSocket();
@@ -77,6 +83,7 @@ namespace Mozi.IoT
             BindPort = port;
             _socket.Start(BindPort);
             StartTime = DateTime.Now;
+            Running = true;
         }
         /// <summary>
         /// 端口下线
@@ -85,6 +92,7 @@ namespace Mozi.IoT
         {
             _socket.Shutdown();
             StartTime = DateTime.MinValue;
+            Running = false;
         }
         /// <summary>
         /// 数据接收完成回调

@@ -184,6 +184,13 @@ namespace Mozi.Telnet
         /// </summary>
         public string Timezone { get; private set; }
         /// <summary>
+        /// 服务器运行状态
+        /// </summary>
+        public bool Running
+        {
+            get; set;
+        }
+        /// <summary>
         /// 选项协商事件
         /// </summary>
         public event NegotiateEvent OnNegotiate;
@@ -447,12 +454,14 @@ namespace Mozi.Telnet
         {
             StartTime = DateTime.Now;
             _sc.StartServer(_port);
+            Running = true;
         }
         /// <summary>
         /// 关闭服务器
         /// </summary>
         public void Shutdown()
         {
+            Running = false;
             _sc.StopServer();
         }
 

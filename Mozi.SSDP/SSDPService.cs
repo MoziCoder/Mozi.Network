@@ -191,6 +191,20 @@ namespace Mozi.SSDP
             
         };
         /// <summary>
+        /// 服务器运行状态
+        /// </summary>
+        public bool Running
+        {
+            get; set;
+        }
+        /// <summary>
+        /// 是否正在进行公告广播
+        /// </summary>
+        public bool OnAdvertise
+        {
+            get;set;
+        }
+        /// <summary>
         /// 搜索程序定义的默认类型
         /// urn:{domain}:device:1
         /// </summary>
@@ -379,6 +393,7 @@ namespace Mozi.SSDP
             _socket.BindingAddress = BindingAddress;
             _socket.StartServer(_multicastGroupAddress,_multicastGroupPort);
             _initialized = true;
+            Running = true;
             return this;
         }
         /// <summary>
@@ -387,6 +402,7 @@ namespace Mozi.SSDP
         /// <returns></returns>
         public SSDPService Inactivate()
         {
+            Running = false;
             _socket.StopServer();
             return this;
         }
@@ -398,6 +414,7 @@ namespace Mozi.SSDP
         {            
             //是否接受回环消息
             _timer.Change(0, NotificationPeriod);
+            OnAdvertise = true;
             return this;
         }
         /// <summary>
@@ -407,6 +424,7 @@ namespace Mozi.SSDP
         public SSDPService StopAdvertise()
         {
             _timer.Change(Timeout.Infinite, Timeout.Infinite);
+            OnAdvertise = false;
             return this;
         }
         //M-SEARCH * HTTP/1.1
