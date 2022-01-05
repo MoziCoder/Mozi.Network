@@ -73,7 +73,7 @@ Mozi.StateService是一个基于.Net开发的UDP心跳组件，基于UDP Socket�
 
             HeartBeatService stateHost =new HeartBeatService();
             stateHost.StateChangeNotifyImmediately = true;
-            stateHost.ApplyDevice("Mozi", "0000-0001", "1.3.4");
+            stateHost.ApplyDevice("Mozi", "0000-0001", "1.3.5");
             stateHost.RemoteHost = "{host}";
             stateHost.Port = 13453;
             stateHost.Activate();
