@@ -17,7 +17,7 @@ namespace Mozi.HttpEmbedded.Encode
             foreach (var match in matches)
             {
                 var matchstr = match.ToString().Replace("&#", "").Replace(";", "");
-                var result = Char.ConvertFromUtf32(int.Parse(matchstr));
+                var result = char.ConvertFromUtf32(int.Parse(matchstr));
                 data = data.Replace(match.ToString(), result);
             }
             return data;

@@ -79,6 +79,13 @@
         {
             get { return _name; }
         }
+        public string Description
+        {
+            get
+            {
+                return _description;
+            }
+        }
         /// <summary>
         /// 标识符
         /// </summary>
@@ -125,6 +132,10 @@
         {
 
         }
+        public override string ToString()
+        {
+            return Name;
+        }
     }
     /// <summary>
     /// 响应码
@@ -136,6 +147,9 @@
         public static CoAPResponseCode Deleted = new CoAPResponseCode("Deleted", "Deleted", 2, 2);
         public static CoAPResponseCode Valid = new CoAPResponseCode("Valid", "Valid", 2, 3);
         public static CoAPResponseCode Changed = new CoAPResponseCode("Changed", "Changed", 2, 4);
+        /// <summary>
+        /// 类似HTTP 200 
+        /// </summary>
         public static CoAPResponseCode Content = new CoAPResponseCode("Content", "Content", 2, 5);
 
         public static CoAPResponseCode Continue = new CoAPResponseCode("Content", "Content", 2, 31);
@@ -164,6 +178,9 @@
         {
 
         }
-
+        public override string ToString()
+        {
+            return Category+"."+Detail+" "+Description;
+        }
     }
 }

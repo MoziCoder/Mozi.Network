@@ -32,7 +32,13 @@ namespace Mozi.NTP
         public IClock Clock { get; set; }
 
         public event TimePackageReceive OnTimePackageReceived;
-
+        /// <summary>
+        /// 服务器运行状态
+        /// </summary>
+        public bool Running
+        {
+            get; set;
+        }
         public NTPServer()
         {
             _socket = new UDPSocket();
@@ -55,12 +61,14 @@ namespace Mozi.NTP
             _port = port;
             _socket.Start(_port);
             StartTime = DateTime.Now;
+            Running = true;
         }
         /// <summary>
         /// 网关下线
         /// </summary>
         public void Shutdown()
         {
+            Running = false;
             _socket.Shutdown();
             StartTime = DateTime.MinValue;
         }

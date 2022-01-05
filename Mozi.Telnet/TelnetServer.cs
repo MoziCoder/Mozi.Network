@@ -182,7 +182,14 @@ namespace Mozi.Telnet
         /// <summary>
         /// 时区
         /// </summary>
-        public String Timezone { get; private set; }
+        public string Timezone { get; private set; }
+        /// <summary>
+        /// 服务器运行状态
+        /// </summary>
+        public bool Running
+        {
+            get; set;
+        }
         /// <summary>
         /// 选项协商事件
         /// </summary>
@@ -203,9 +210,9 @@ namespace Mozi.Telnet
         public TelnetServer()
         {
             StartTime = DateTime.MinValue;
-            this.Timezone = String.Format("UTC{0:+00;-00;}:00", TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).Hours);
+            this.Timezone = string.Format("UTC{0:+00;-00;}:00", TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).Hours);
             //配置默认服务器名
-            _welcomeMessage = String.Format(_welcomeMessage, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
+            _welcomeMessage = string.Format(_welcomeMessage, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
             _sc.OnServerStart += _sc_OnServerStart;
             _sc.OnClientConnect += _sc_OnClientConnect;
             _sc.OnReceiveStart += _sc_OnReceiveStart;
@@ -260,7 +267,7 @@ namespace Mozi.Telnet
                         if (args.Data.Length >= 2 && args.Data[0] == 0x0D && args.Data[1] == 0x0A)
                         {
                             //用户名
-                            if (String.IsNullOrEmpty(session.User.UserName))
+                            if (string.IsNullOrEmpty(session.User.UserName))
                             {
                                 session.User.UserName = session.InputBuffer.Trim();
                                 session.ResetInput();
@@ -305,7 +312,7 @@ namespace Mozi.Telnet
                         }
                         else
                         {
-                            if (String.IsNullOrEmpty(session.User.UserName))
+                            if (string.IsNullOrEmpty(session.User.UserName))
                             {
                                 Echo(args.Socket, args.Data);
                             }
@@ -447,12 +454,14 @@ namespace Mozi.Telnet
         {
             StartTime = DateTime.Now;
             _sc.StartServer(_port);
+            Running = true;
         }
         /// <summary>
         /// 关闭服务器
         /// </summary>
         public void Shutdown()
         {
+            Running = false;
             _sc.StopServer();
         }
 

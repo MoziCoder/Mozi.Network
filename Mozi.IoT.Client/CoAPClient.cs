@@ -17,6 +17,7 @@ namespace Mozi.IoT
         private CoAPTransmissionConfig _transConfig = new CoAPTransmissionConfig();
 
         private MessageCacheManager _cacheManager;
+        private ulong _packetReceived;
 
         //private ushort _remotePort = CoAPProtocol.Port;
         //private string _remotehost = "";
@@ -37,11 +38,11 @@ namespace Mozi.IoT
             //配置本地服务口地址
         }
         /// <summary>
-        /// 设置本地端口，默认为<see cref=" CoAPProtocol.Port"/>,如果不设置则使用随机端口
+        /// 设置本地端口，默认为<see cref=" CoAPProtocol.Port"/>
         /// </summary>
         /// <param name="port"></param>
         /// <returns></returns>
-        public CoAPClient SetPort(ushort port)
+        public CoAPClient SetPort(int port)
         {
             BindPort = port;
             _randomPort = false;
@@ -55,11 +56,12 @@ namespace Mozi.IoT
         protected override void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
             CoAPPackage pack2 = null;
-
+            _packetReceived++;
             //try
             //{
-            CoAPPackage pack = CoAPPackage.Parse(args.Data, false);
+            CoAPPackage pack = CoAPPackage.Parse(args.Data, CoAPPackageType.Request);
 
+            Console.WriteLine($"Package answered{_packetReceived}");
             //pack2 = new CoAPPackage()
             //{
             //    Version = 1,
@@ -127,10 +129,11 @@ namespace Mozi.IoT
                 cp.SetOption(CoAPOptionDefine.UriHost, uri.Domain);
             }
             //注入端口号
-            if (uri.Port > 0 && (uri.Port != CoAPProtocol.Port || uri.Port != CoAPProtocol.SecurePort))
+            if (uri.Port > 0 && !(uri.Port == CoAPProtocol.Port || uri.Port == CoAPProtocol.SecurePort))
             {
                 cp.SetOption(CoAPOptionDefine.UriPort, (uint)uri.Port);
             }
+
             //注入路径
             for (int i = 0; i < uri.Paths.Length; i++)
             {
@@ -162,7 +165,7 @@ namespace Mozi.IoT
             CoAPPackage cp = new CoAPPackage
             {
                 Code = CoAPRequestMethod.Get,
-                Token = Cache.CacheControl.GenerateToken(8),
+                Token = CacheControl.GenerateToken(8),
                 MesssageId = _cacheManager.GenerateMessageId(),
                 MessageType = msgType ?? CoAPMessageType.Confirmable
             };
@@ -197,13 +200,20 @@ namespace Mozi.IoT
         {
             return Get(url, CoAPMessageType.Confirmable);
         }
-
+        /// <summary>
+        /// Post方法
+        /// </summary>
+        /// <param name="url">地址格式参见<see cref="Get(string, CoAPMessageType)"/></param>
+        /// <param name="msgType"></param>
+        /// <param name="contentType"></param>
+        /// <param name="postBody"></param>
+        /// <returns></returns>
         public ushort Post(string url, CoAPMessageType msgType, ContentFormat contentType,byte[] postBody)
         {
             CoAPPackage cp = new CoAPPackage
             {
                 Code = CoAPRequestMethod.Post,
-                Token = Cache.CacheControl.GenerateToken(8),
+                Token = CacheControl.GenerateToken(8),
                 MesssageId = _cacheManager.GenerateMessageId(),
                 MessageType = msgType ?? CoAPMessageType.Confirmable
             };
@@ -234,7 +244,16 @@ namespace Mozi.IoT
             }
             return cp.MesssageId;
         }
-
+        
+        //分块提交
+        internal ushort PostBlock(string url, CoAPMessageType msgType, ContentFormat contentType, byte[] postBody)
+        {
+            throw new NotImplementedException();
+        }
+        public ushort Post(string url, CoAPMessageType msgType, ContentFormat contentType, string text)
+        {
+            return Post(url, msgType, contentType, StringEncoder.Encode(text));
+        }
         //TODO 是否会出现安全问题
         private void Put(string url)
         {

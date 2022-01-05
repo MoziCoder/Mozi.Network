@@ -13,10 +13,13 @@ namespace Mozi.IoT
         /// 会话标识符
         /// </summary>
         public string Id { get; set; }   //连接标识符
+        
         public Socket WorkSocket = null;
 
         public const int BufferSize = 1024;
+        
         public List<byte> Data = new List<byte>();
+
         public byte[] Buffer = new byte[BufferSize * 4];
 
         public string IP { get; set; }

@@ -183,15 +183,15 @@ namespace Mozi.SSDP
             {
                 //置空数据缓冲区
                 so.ResetBuffer(iByteRead);
-                if (client.Available > 0)
-                {
-                    so.RemoteEndPoint = remote;
-                    client.BeginReceiveFrom(so.Buffer, 0, so.Buffer.Length, SocketFlags.None, ref so.RemoteEndPoint,new AsyncCallback(CallbackReceived), so);
-                }
-                else
-                {
+                //if (client.Available > 0)
+                //{
+                //    so.RemoteEndPoint = remote;
+                //    client.BeginReceiveFrom(so.Buffer, 0, so.Buffer.Length, SocketFlags.None, ref so.RemoteEndPoint,new AsyncCallback(CallbackReceived), so);
+                //}
+                //else
+                //{
                     InvokeAfterReceiveEnd(so, client, (IPEndPoint)remote);
-                }
+                //}
             }
             else
             {

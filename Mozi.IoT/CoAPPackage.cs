@@ -16,7 +16,7 @@ namespace Mozi.IoT
     {
         private byte _version = 1;
         /// <summary>
-        /// 版本 2bits 
+        /// 版本 2bits 目前版本为1
         /// </summary>
         public byte Version { get => _version; set => _version = value; }
         /// <summary>
@@ -67,14 +67,60 @@ namespace Mozi.IoT
         /// 包体
         /// </summary>
         public byte[] Payload { get; set; }
-        ///// <summary>
-        ///// 链接地址
-        ///// </summary>
-        //public string Url 
-        //{ 
-        //    get; 
-        //    set; 
-        //}
+        /// <summary>
+        /// 域名，该域名为包内域名，无法判定真实性，有被篡改的可能性
+        /// </summary>
+        public string Domain
+        {
+            get
+            {
+                string domain = "";
+                foreach (var op in Options)
+                {
+                    if (op.Option == CoAPOptionDefine.UriHost)
+                    {
+                        domain = (string)(op.Value.Value);
+                    }
+                }
+                return domain;
+            }
+        }
+        /// <summary>
+        /// 链接地址
+        /// </summary>
+        public string Path
+        {
+            get
+            {
+                string path = "";
+                foreach(var op in Options)
+                {
+                    if (op.Option == CoAPOptionDefine.UriPath)
+                    {
+                        path+="/"+(string)op.Value.Value;
+                    }
+                }
+                return path;
+            }
+        }
+        /// <summary>
+        /// 查询字符串
+        /// </summary>
+        public string Query
+        {
+            get
+            {
+                List<string> query = new List<string>();
+                foreach (var op in Options)
+                {
+                    if (op.Option == CoAPOptionDefine.UriQuery)
+                    {
+                        query.Add((string)(op.Value.Value));
+                    }
+                }
+                return string.Join("&",query);
+            }
+        }
         /// <summary>
         /// 打包|转为字节流
         /// </summary>
@@ -97,6 +143,7 @@ namespace Mozi.IoT
                 data.AddRange(op.Pack);
                 delta += op.DeltaValue;
             }
+            //如果没有Payload就不加截断标识
             if (Payload != null)
             {
                 data.Add(CoAPProtocol.HeaderEnd);
@@ -137,7 +184,7 @@ namespace Mozi.IoT
                 Option = define,
                 Value = optionValue
             };
-            var optGreater = Options.FindIndex(x => x.DeltaValue > option.DeltaValue);
+            var optGreater = Options.FindIndex(x => x.Option.OptionNumber > define.OptionNumber);
             if (optGreater < 0)
             {
                 optGreater = Options.Count;
@@ -153,12 +200,8 @@ namespace Mozi.IoT
         /// <returns></returns>
         public CoAPPackage SetOption(CoAPOptionDefine define, byte[] optionValue)
         {
-            CoAPOption option = new CoAPOption()
-            {
-                Option = define,
-                Value = new ArrayByteOptionValue() { Value = optionValue }
-            };
-            Options.Add(option);
+            var v = new ArrayByteOptionValue() { Value = optionValue };
+            SetOption(define, v);
             return this;
         }
         /// <summary>
@@ -238,21 +281,22 @@ namespace Mozi.IoT
         {
             return SetOption(CoAPOptionDefine.ContentFormat, ft.Num);
         }
+        //TODO 如果包集中到达，解析会出现问题
         /// <summary>
         /// 解析数据包
         /// </summary>
         /// <param name="data"></param>
-        /// <param name="isRequest"></param>
+        /// <param name="packType"></param>
         /// <returns></returns>
-        public static CoAPPackage Parse(byte[] data, bool isRequest)
+        public static CoAPPackage Parse(byte[] data, CoAPPackageType packType)
         {
             CoAPPackage pack = new CoAPPackage();
             byte head = data[0];
             pack.Version = (byte)(head >> 6);
-            pack.MessageType = AbsClassEnum.Get<CoAPMessageType>(((byte)(head << 2) >> 4).ToString());
+            pack.MessageType = AbsClassEnum.Get<CoAPMessageType>(((byte)(head << 2) >> 6).ToString());
             pack.TokenLength = (byte)((byte)(head << 4) >> 4);
 
-            pack.Code = isRequest ? AbsClassEnum.Get<CoAPRequestMethod>(data[1].ToString()) : (CoAPCode)AbsClassEnum.Get<CoAPResponseCode>(data[1].ToString());
+            pack.Code = packType==CoAPPackageType.Request ? AbsClassEnum.Get<CoAPRequestMethod>(data[1].ToString()) : (CoAPCode)AbsClassEnum.Get<CoAPResponseCode>(data[1].ToString());
 
             byte[] arrMsgId = new byte[2], arrToken = new byte[pack.TokenLength];
             Array.Copy(data, 2, arrMsgId, 0, 2);
@@ -289,7 +333,7 @@ namespace Mozi.IoT
                 }
                 //赋默认值
                 option.Option = AbsClassEnum.Get<CoAPOptionDefine>((option.DeltaValue + deltaSum).ToString());
-                if (object.ReferenceEquals(null, option.Option))
+                if (ReferenceEquals(null, option.Option))
                 {
                     option.Option = CoAPOptionDefine.Unknown;
                 }
@@ -382,5 +426,13 @@ namespace Mozi.IoT
         {
             throw new NotImplementedException();
         }
+    }
+    /// <summary>
+    /// 数据包类型，是请求还是响应
+    /// </summary>
+    public enum CoAPPackageType
+    {
+        Request,
+        Response
     }
 }

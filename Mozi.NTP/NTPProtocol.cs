@@ -236,6 +236,7 @@ namespace Mozi.NTP
             np.VersionNumber = (byte)((byte)(head << 2) >> 5);
             np.Mode = (byte)((byte)(head << 5) >> 5);
             np.Stratum = data[1];
+
             //求幂
             np.Pool = data[2];
             np.Precision = data[3];
@@ -540,7 +541,7 @@ namespace Mozi.NTP
             get
             {
                 byte[] data = new byte[4];
-                Array.Copy(System.Text.ASCIIEncoding.ASCII.GetBytes(Name), data, Name.Length > 4 ? 4 : Name.Length);
+                Array.Copy(System.Text.Encoding.ASCII.GetBytes(Name), data, Name.Length > 4 ? 4 : Name.Length);
                 return data;
             }
         }

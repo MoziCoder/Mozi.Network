@@ -77,7 +77,7 @@ namespace Mozi.HttpEmbedded
             {
                 _sc.Close();
             }
-            System.Net.IPEndPoint endpoint = new System.Net.IPEndPoint(System.Net.IPAddress.Any, _iport);
+            System.Net.IPEndPoint endpoint = new System.Net.IPEndPoint(IPAddress.Any, _iport);
             //允许端口复用
             _sc.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             _sc.Bind(endpoint);

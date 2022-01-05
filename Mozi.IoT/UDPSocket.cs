@@ -135,15 +135,16 @@ namespace Mozi.IoT
             {
                 //置空数据缓冲区
                 so.ResetBuffer(iByteRead);
-                if (client.Available > 0)
-                {
-                    so.RemoteEndPoint = remote;
-                    client.BeginReceiveFrom(so.Buffer, 0, so.Buffer.Length, SocketFlags.None, ref so.RemoteEndPoint, new AsyncCallback(CallbackReceived), so);
-                }
-                else
-                {
+                //TODO UDP为数据单报文形式进行传输，故此处注释掉
+                //if (client.Available > 0)
+                //{
+                //    so.RemoteEndPoint = remote;
+                //    client.BeginReceiveFrom(so.Buffer, 0, so.Buffer.Length, SocketFlags.None, ref so.RemoteEndPoint, new AsyncCallback(CallbackReceived), so);
+                //}
+                //else
+                //{
                     InvokeAfterReceiveEnd(so, client, (IPEndPoint)remote);
-                }
+                //}
             }
             else
             {

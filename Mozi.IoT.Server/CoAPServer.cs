@@ -1,4 +1,6 @@
-﻿namespace Mozi.IoT
+﻿using System;
+
+namespace Mozi.IoT
 {
     //TODO 即时响应ACK，延迟响应CON,消息可即时响应也可处理完成后响应，延迟消息需要后端缓存支撑
     //TODO 拥塞算法
@@ -33,6 +35,7 @@
     /// </summary>
     public class CoAPServer:CoAPPeer
     {
+        private ulong _packageReceived = 0, _totalFlowsize;
 
         public CoAPServer()
         {
@@ -55,49 +58,45 @@
         /// <param name="args"></param>
         protected override void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
-            CoAPPackage pack2=null;
+            CoAPPackage packResp = new CoAPPackage()
+            {
+                Version = 1,
+                MessageType = CoAPMessageType.Acknowledgement,
+            };
+            _packageReceived++;
+            _totalFlowsize += (uint)args.Data.Length;
+            Console.WriteLine($"Received package:{_packageReceived} pic,current:{args.Data.Length}bytes,total:{_totalFlowsize}bytes");
 
-            //try
-            //{
-                CoAPPackage pack = CoAPPackage.Parse(args.Data,true);
-
-                pack2 = new CoAPPackage()
-                {
-                    Version = 1,
-                    MessageType = CoAPMessageType.Acknowledgement,
-                    Token = pack.Token,
-                    MesssageId = pack.MesssageId,
-                };
+            try
+            {
+                CoAPPackage pack = CoAPPackage.Parse(args.Data, CoAPPackageType.Request);
+                packResp.Token = pack.Token;
+                packResp.MesssageId = pack.MesssageId;
 
                 //判断是否受支持的方法
                 if (IsSupportedRequest(pack))
                 {
-                    if (pack.MessageType==CoAPMessageType.Confirmable||pack.MessageType == CoAPMessageType.Acknowledgement)
-                    {
-                        pack2.Code = CoAPResponseCode.Content;
-                    }
+                    packResp.Code = CoAPResponseCode.Content;
                 }
                 else
                 {
-                    pack2.Code = CoAPResponseCode.MethodNotAllowed;
+                    packResp.Code = CoAPResponseCode.MethodNotAllowed;
+                    packResp.MessageType = CoAPMessageType.Reset;
                 }
-
                 //检查分块
 
                 //检查内容类型
 
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine(ex.Message);
-            //}
-            //finally
-            //{
-                if (pack2 != null)
-                {
-                     _socket.SendTo(pack2.Pack(), args.IP, args.Port);
-                }
-            //}
+                //接入后端方法
+
+            }catch(Exception ex){
+                packResp.Code = CoAPResponseCode.BadGateway;
+                packResp.MessageType = CoAPMessageType.Reset;
+            }
+            if (packResp != null)
+            {
+                _socket.SendTo(packResp.Pack(), args.IP, args.Port);
+            }
         }
     }
 }
