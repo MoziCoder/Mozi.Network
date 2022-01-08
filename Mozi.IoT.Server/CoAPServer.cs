@@ -37,9 +37,13 @@ namespace Mozi.IoT
     {
         private ulong _packageReceived = 0, _totalFlowsize;
 
+        private Cache.MessageCacheManager _cm ;
+
+        public  MessageReceive RequestReceived; 
+
         public CoAPServer()
         {
-            
+            _cm = new Cache.MessageCacheManager(this);
         }
 
         /// <summary>
@@ -58,30 +62,44 @@ namespace Mozi.IoT
         /// <param name="args"></param>
         protected override void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
-            CoAPPackage packResp = new CoAPPackage()
+            CoAPPackage req=null;
+
+            CoAPPackage resp = new CoAPPackage()
             {
                 Version = 1,
                 MessageType = CoAPMessageType.Acknowledgement,
             };
+
             _packageReceived++;
+
             _totalFlowsize += (uint)args.Data.Length;
-            Console.WriteLine($"Received package:{_packageReceived} pic,current:{args.Data.Length}bytes,total:{_totalFlowsize}bytes");
+            
+            Console.WriteLine($"Rev count:{_packageReceived},current:{args.Data.Length}bytes,total:{_totalFlowsize}bytes");
 
             try
             {
-                CoAPPackage pack = CoAPPackage.Parse(args.Data, CoAPPackageType.Request);
-                packResp.Token = pack.Token;
-                packResp.MesssageId = pack.MesssageId;
+               req = CoAPPackage.Parse(args.Data, CoAPPackageType.Request);
+                _cm.Request(args.IP, req);
+            }catch (Exception){
+
+            }
+            
+
+            try
+            {
+
+                resp.Token = req.Token;
+                resp.MesssageId = req.MesssageId;
 
                 //判断是否受支持的方法
-                if (IsSupportedRequest(pack))
+                if (IsSupportedRequest(req))
                 {
-                    packResp.Code = CoAPResponseCode.Content;
+                    resp.Code = CoAPResponseCode.Content;
                 }
                 else
                 {
-                    packResp.Code = CoAPResponseCode.MethodNotAllowed;
-                    packResp.MessageType = CoAPMessageType.Reset;
+                    resp.Code = CoAPResponseCode.MethodNotAllowed;
+                    resp.MessageType = CoAPMessageType.Reset;
                 }
                 //检查分块
 
@@ -89,14 +107,20 @@ namespace Mozi.IoT
 
                 //接入后端方法
 
-            }catch(Exception ex){
-                packResp.Code = CoAPResponseCode.BadGateway;
-                packResp.MessageType = CoAPMessageType.Reset;
+            }catch (Exception){
+                resp.Code = CoAPResponseCode.BadGateway;
+                resp.MessageType = CoAPMessageType.Reset;
             }
-            if (packResp != null)
+            if (resp != null)
             {
-                _socket.SendTo(packResp.Pack(), args.IP, args.Port);
+                _socket.SendTo(resp.Pack(), args.IP, args.Port);
             }
+        }
+
+        //响应Block信息
+        protected virtual void HandleBlock()
+        {
+
         }
     }
 }

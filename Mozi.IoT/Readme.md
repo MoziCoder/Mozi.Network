@@ -43,6 +43,9 @@ CoAP（Constrained Application Protocol）受限应用协议，是一种在物�
 	本项目采用MIT开源协议，引用请注明出处。欢迎复制，引用和修改。意见建议疑问请联系软件作者，或提交ISSUE。
 
 ## 用例说明
+    项目集成如果遇到困难可以联系软件作者
+
+### C#
 
 ~~~csharp
 
@@ -56,10 +59,12 @@ CoAP（Constrained Application Protocol）受限应用协议，是一种在物�
     cc.SetPort(12341);
     cc.Start();
     //调用Get方法，向服务器发起通讯
-    cc.Get("coap://127.0.0.1/id/1");
+    cc.Get("coap://127.0.0.1/sensor/getinfo");
     Console.ReadLine();
 
 ~~~
+
+### Java
 
 ~~~Java
 
@@ -77,7 +82,7 @@ public class Main{
         client.start(12345);
 
         try {
-            client.get("coap://100.100.0.105/sensor/getinfo");
+            client.get("coap://127.0.0.1/sensor/getinfo");
         }catch (Exception ex){
             System.out.println(ex.getMessage());
         }

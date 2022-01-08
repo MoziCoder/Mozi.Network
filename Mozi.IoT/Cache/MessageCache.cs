@@ -61,13 +61,7 @@ namespace Mozi.IoT.Cache
         }
     }
 
-    /// <summary>
-    /// 消息回调
-    /// </summary>
-    /// <param name="host"></param>
-    /// <param name="msgId"></param>
-    /// <param name="rp"></param>
-    public delegate void MessageResponseReceive(string host, ushort msgId, CoAPPackage rp);
+
 
     /// <summary>
     /// 信息缓存管理

@@ -22,6 +22,7 @@
     public class ContentFormat : AbsClassEnum
     {
         private ushort _num = 0;
+
         private string _contentType = "";
 
         public string ContentType

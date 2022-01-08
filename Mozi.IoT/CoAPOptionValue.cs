@@ -13,6 +13,7 @@ namespace Mozi.IoT
         public abstract byte[] Pack { get; set; }
         public abstract int Length { get; }
     }
+
     /// <summary>
     /// 空选项值
     /// </summary>
@@ -116,6 +117,11 @@ namespace Mozi.IoT
     }
     /// <summary>
     /// 分块选项 数据结构 适用Block1 Block2 长度为可变长度，可为8bits 16bits 24bits
+    /// Block1|Block2
+    /// 描述性用法：
+    ///     Block1 用于请求；Block2用于响应
+    /// 控制性用法：
+    /// 
     /// </summary>
     public class BlockOptionValue : OptionValue
     {
