@@ -1,5 +1,8 @@
 ﻿using System;
 
+// CoAP拥塞机制由请求方进行自主控制，故请求方需要实现拥塞控制算法。
+// 拥塞机制交由请求方控制往往会导致服务端遭受流量冲击，因此服务端需要实现一定的约束机制，保证服务正常。
+
 namespace Mozi.IoT
 {
     //TODO 即时响应ACK，延迟响应CON,消息可即时响应也可处理完成后响应，延迟消息需要后端缓存支撑
@@ -35,7 +38,7 @@ namespace Mozi.IoT
     /// </summary>
     public class CoAPServer:CoAPPeer
     {
-        private ulong _packageReceived = 0, _totalFlowsize;
+        private ulong _packageReceived = 0, _totalReceivedBytes;
 
         private Cache.MessageCacheManager _cm ;
 
@@ -72,9 +75,9 @@ namespace Mozi.IoT
 
             _packageReceived++;
 
-            _totalFlowsize += (uint)args.Data.Length;
+            _totalReceivedBytes += (uint)args.Data.Length;
             
-            Console.WriteLine($"Rev count:{_packageReceived},current:{args.Data.Length}bytes,total:{_totalFlowsize}bytes");
+            Console.WriteLine($"Rev count:{_packageReceived},current:{args.Data.Length}bytes,total:{_totalReceivedBytes}bytes");
 
             try
             {

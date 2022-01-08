@@ -2,11 +2,10 @@
 using Mozi.IoT.Cache;
 using Mozi.IoT.Encode;
 
+// CoAP拥塞机制由请求方进行自主控制，故请求方需要实现拥塞控制算法
+
 namespace Mozi.IoT
 {
-
-    //CoAP拥塞机制由请求方进行自主控制，故请求方需要实现拥塞控制算法
-
     /// <summary>
     /// CoAP客户端
     /// </summary>
