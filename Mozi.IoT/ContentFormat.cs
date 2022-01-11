@@ -4,6 +4,7 @@
     ///<summary>
     /// 内容格式
     ///</summary>
+    ///
     /// CoAP Content-Formats Registry
     /// 
     ///           0-255 | Expert Review                        
@@ -19,6 +20,7 @@
     ///     application/exi          | -        | 47 | [REC-exi-20140211]     |
     ///     application/json         | -        | 50 | [RFC7159]              |
     ///     applicaiton/cbor         | -        | 60 | [RFC7159]              |
+    ///     
     public class ContentFormat : AbsClassEnum
     {
         private ushort _num = 0;

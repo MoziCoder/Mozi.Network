@@ -46,6 +46,7 @@ namespace Mozi.HttpEmbedded.Page
             //载入内部接口API
             LoadInternalApi();
         }
+        //TODO 注册时将Method也一并缓存
         /// <summary>
         /// 从程序集载入接口
         /// </summary>
@@ -75,9 +76,12 @@ namespace Mozi.HttpEmbedded.Page
             string path = ctx.Request.Path;
             //确定路径映射关系
             AccessPoint ap = Match(path);
+
             //TODO 此处路由有问题，需要改进
             //TODO 此处考虑加入域控制，否则会出现api重复
             Type cls = _apis.Find(x => x.Name.Equals(ap.Controller, StringComparison.OrdinalIgnoreCase));
+
+            //TODO 将Method缓存
             MethodInfo method = cls.GetMethod(ap.Action, BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.Public);
 
             ParameterInfo[] pms = method.GetParameters();
@@ -127,6 +131,7 @@ namespace Mozi.HttpEmbedded.Page
             string path = ctx.Request.Path;
             //确定路径映射关系
             AccessPoint ap = Match(path);
+
             //TODO 此处路由有问题，需要改进
             //TODO 此处考虑加入域控制
             Type cls = _apis.Find(x => x.Name.Equals(ap.Controller, StringComparison.OrdinalIgnoreCase));
@@ -229,7 +234,7 @@ namespace Mozi.HttpEmbedded.Page
         /// <param name="ser"></param>
         public void SetDataSerializer(ISerializer ser)
         {
-            this._dataserializer = ser;
+            _dataserializer = ser;
         }
         /// <summary>
         /// 返回所有的API类

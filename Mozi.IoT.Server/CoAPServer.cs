@@ -12,27 +12,29 @@ namespace Mozi.IoT
     //TODO 分块传输 RFC 7959
     //TODO 对象安全
 
-    /// CoAP基于UDP,可工作的C/S模式，多播，单播，任播（IPV6）
-    /// 
-    /// C/S模式
-    /// URI格式:
-    /// coap://{host}:{port}/{path}[?{query}]
-    /// 默认端口号为5683
-    /// coaps://{host}:{port}/{path}[?{query}]
-    /// 默认端口号为5684
-    /// 
-    /// 多播模式:
-    /// IPV4:224.0.1.187
-    /// IPV6:FF0X::FD
-    /// 
-    /// 消息重传
-    /// When SendTimeOut between {ACK_TIMEOUT} and (ACK_TIMEOUT * ACK_RANDOM_FACTOR)  then 
-    ///     TryCount=0
-    /// When TryCount <{MAX_RETRANSMIT} then 
-    ///     TryCount++ 
-    ///     SendTime*=2
-    /// When TryCount >{MAX_RETRANSMIT} then 
-    ///     Send(Rest)
+    // CoAP基于UDP,可工作的C/S模式，多播，单播，任播（IPV6）
+    // 
+    // C/S模式
+    //      URI格式:
+    //      coap://{host}:{port}/{path}[?{query}]
+    // 默认端口号为5683
+    //      coaps://{host}:{port}/{path}[?{query}]
+    // 默认端口号为5684
+    // 
+    // 多播模式:
+    //      IPV4:224.0.1.187
+    //      IPV6:FF0X::FD
+    // 
+    // 消息重传
+    // When SendTimeOut between {ACK_TIMEOUT} and (ACK_TIMEOUT * ACK_RANDOM_FACTOR)  then 
+    //     TryCount=0
+    // When TryCount <{MAX_RETRANSMIT} then 
+    //     TryCount++ 
+    //     SendTime*=2
+    // When TryCount >{MAX_RETRANSMIT} then 
+    //     Send(Rest)
+    //     
+
     /// <summary>
     /// CoAP服务端
     /// </summary>

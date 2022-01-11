@@ -3,15 +3,18 @@ using System.Collections.Generic;
 
 namespace Mozi.IoT
 {
-    //Main Reference:RFC7252
-    //Patial Reference:
-    //RFC7959 分块传输
-    //RFC8613 对象安全
-    //RFC8974 扩展凭据和无状态客户端 
+    // Main Reference:RFC7252
+    // Patial Reference:
+    // RFC7959 分块传输
+    // RFC8613 对象安全
+    // RFC8974 扩展凭据和无状态客户端 
 
-    //内容采用UTF-8编码
-    //头部截断使用0xFF填充
+    // 内容采用UTF-8编码
+    // 头部截断使用0xFF填充
 
+    /// <summary>
+    /// CoAP协议包
+    /// </summary>
     public class CoAPPackage
     {
         private byte _version = 1;

@@ -306,6 +306,11 @@ namespace Mozi.HttpEmbedded.Page
         {
             throw new NotImplementedException();
         }
+        /// <summary>
+        /// 这个方法暂时不用，还有问题
+        /// </summary>
+        /// <param name="action"></param>
+        /// <returns></returns>
         public  string Soap(string action)
         {
             if (action == "example")

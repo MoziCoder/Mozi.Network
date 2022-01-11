@@ -115,13 +115,49 @@ namespace Mozi.IoT
 
         public override int Length => _pack != null ? _pack.Length : 0;
     }
+
     /// <summary>
-    /// 分块选项 数据结构 适用Block1 Block2 长度为可变长度，可为8bits 16bits 24bits
-    /// Block1|Block2
-    /// 描述性用法：
-    ///     Block1 用于请求；Block2用于响应
-    /// 控制性用法：
     /// 
+    /// 分块选项 数据结构 适用Block1 Block2 长度为可变长度，可为8bits 16bits 24bits
+    /// 
+    /// Block1|Block2
+    /// 
+    /// a.描述性用法
+    /// 描述性用法表示正在传输的数据的大小。
+    ///     NUM为块序号
+    ///     M为是否还有更多块
+    ///     SZX为当前Payload大小
+    ///     
+    /// 使用方法：
+    ///     1,Block1 用于请求；Block2用于响应
+    ///     2,Block1 出现在Request中
+    ///     3,Block2 出现在Response中
+    ///     
+    /// b.控制性用法
+    ///     1,Block2 出现在Request 
+    ///     
+    ///     表示期望服务器常用的传输规格，这是一种协商机制，网络受限情况下通讯包的承载能力受限比较严重
+    ///     
+    ///     Num为期望的块号，
+    ///     M无意义，
+    ///     SZX为期望采用的块大小，如果取值为0，就使用上一Response的块大小
+    ///     
+    ///     2,Block1 出现在Response 表示接收端正在确认的块信息
+    ///     
+    ///     NUM为正在确认的块序号
+    ///     M为最终响应信息，0表示这是服务端的最终响应，1表示这不是最终响应
+    ///     
+    ///     SZX表明服务端期望接收的块的大小
+    /// 
+    /// 
+    /// Size1|Size2
+    /// a.描述性用法
+    ///     Size1出现在Request中，用于向服务端指示当前传输的Body的大小
+    ///     Size2出现在Response中，用于指示当前正在响应的资源的大小
+    /// b.控制性用法
+    ///     Size1出现在Response中,用于表示服务端期望处理的Body大小
+    ///     Size2出现在Request中，用于客户端向服务器请求Body大小
+    ///     
     /// </summary>
     public class BlockOptionValue : OptionValue
     {
@@ -191,7 +227,9 @@ namespace Mozi.IoT
         {
             return Pack == null ? "null" : string.Format("{0},Num:{1},M:{2},SZX:{3}(bytes)", "Block", Num, MoreFlag ? 1 : 0, Size);
         }
+
     }
+
     //RFC8974
     ///// <summary>
     ///// Extended-Token-Length Option 长度0-3 bytes
@@ -216,4 +254,5 @@ namespace Mozi.IoT
     //        }
     //    }
     //}
+
 }
