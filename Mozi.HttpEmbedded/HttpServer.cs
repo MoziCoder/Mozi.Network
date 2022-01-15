@@ -695,7 +695,7 @@ namespace Mozi.HttpEmbedded
         public void Start()
         {
             StartTime = DateTime.Now;
-            _sc.StartServer(_port);
+            _sc.Start(_port);
             Running = true;
         }
         /// <summary>
@@ -755,7 +755,7 @@ namespace Mozi.HttpEmbedded
         public void Shutdown()
         {
             Running = false;
-            _sc.StopServer();
+            _sc.Shutdown();
         }
 
         //public void ForbideIPAccess()

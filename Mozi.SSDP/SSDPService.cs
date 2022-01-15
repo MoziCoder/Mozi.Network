@@ -210,28 +210,28 @@ namespace Mozi.SSDP
         /// <summary>
         /// 收到ssdp:alive时触发
         /// </summary>
-        public event NotifyAliveReceived OnNotifyAliveReceived;
+        public  NotifyAliveReceived OnNotifyAliveReceived;
         /// <summary>
         /// 收到ssdp:byebye时触发
         /// </summary>
-        public event NotifyByebyeReceived OnNotifyByebyeReceived;
+        public  NotifyByebyeReceived OnNotifyByebyeReceived;
         /// <summary>
         /// 收到m-search时触发
         /// </summary>
-        public event SearchReceived OnSearchReceived;
+        public  SearchReceived OnSearchReceived;
         /// <summary>
         /// 收到upnp:update时触发
         /// </summary>
-        public event NotifyUpdateReceived OnNotifyUpdateReceived;
+        public  NotifyUpdateReceived OnNotifyUpdateReceived;
         /// <summary>
         /// 收到HTTP/1.1 200 OK时触发
         /// </summary>
-        public event ResponseMessageReceived OnResponseMessageReceived;
+        public  ResponseMessageReceived OnResponseMessageReceived;
         /// <summary>
         /// 原始数据包解析
         /// <para>如果内置的解析结果不能满足应用需求，可以使用该事件进行数据解析</para>
         /// </summary>
-        public event MessageReceived OnMessageReceived;
+        public  MessageReceived OnMessageReceived;
         /// <summary>
         /// 构造函数
         /// <para>
@@ -389,7 +389,7 @@ namespace Mozi.SSDP
         {            
             _socket.AllowLoopbackMessage = AllowLoopbackMessage;
             _socket.BindingAddress = BindingAddress;
-            _socket.StartServer(_multicastGroupAddress,_multicastGroupPort);
+            _socket.Start(_multicastGroupAddress,_multicastGroupPort);
             _initialized = true;
             Running = true;
             return this;
@@ -401,7 +401,7 @@ namespace Mozi.SSDP
         public SSDPService Inactivate()
         {
             Running = false;
-            _socket.StopServer();
+            _socket.Shutdown();
             return this;
         }
         /// <summary>

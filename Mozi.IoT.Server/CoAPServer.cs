@@ -3,6 +3,8 @@
 // CoAP拥塞机制由请求方进行自主控制，故请求方需要实现拥塞控制算法。
 // 拥塞机制交由请求方控制往往会导致服务端遭受流量冲击，因此服务端需要实现一定的约束机制，保证服务正常。
 
+//TODO 服务端的性能需要进一步优化，每秒约能处理2000个数据包，还不具备超高并发能力
+
 namespace Mozi.IoT
 {
     //TODO 即时响应ACK，延迟响应CON,消息可即时响应也可处理完成后响应，延迟消息需要后端缓存支撑
@@ -83,9 +85,10 @@ namespace Mozi.IoT
 
             try
             {
-               req = CoAPPackage.Parse(args.Data, CoAPPackageType.Request);
-                _cm.Request(args.IP, req);
-            }catch (Exception){
+                req = CoAPPackage.Parse(args.Data, CoAPPackageType.Request);
+                //_cm.Request(args.IP, req);
+            }
+            catch (Exception){
 
             }
             
@@ -106,6 +109,7 @@ namespace Mozi.IoT
                     resp.Code = CoAPResponseCode.MethodNotAllowed;
                     resp.MessageType = CoAPMessageType.Reset;
                 }
+
                 //检查分块
 
                 //检查内容类型
@@ -113,13 +117,12 @@ namespace Mozi.IoT
                 //接入后端方法
 
             }catch (Exception){
+
                 resp.Code = CoAPResponseCode.BadGateway;
                 resp.MessageType = CoAPMessageType.Reset;
+
             }
-            if (resp != null)
-            {
-                _socket.SendTo(resp.Pack(), args.IP, args.Port);
-            }
+            SendMessage(args.IP, args.Port,  resp);
         }
 
         //响应Block信息

@@ -14,7 +14,17 @@ namespace Mozi.NTP
         protected Socket _sc;
 
         private EndPoint _endPoint;
-
+        private long _errorCount = 0;
+        /// <summary>
+        /// 接收错误计数
+        /// </summary>
+        public long ReceiveErrorCount
+        {
+            get
+            {
+                return _errorCount;
+            }
+        }
         public UDPSocket()
         {
 
@@ -22,19 +32,19 @@ namespace Mozi.NTP
         /// <summary>
         /// 服务器启动事件
         /// </summary>
-        public event ServerStart OnServerStart;
+        public  ServerStart OnServerStart;
         /// <summary>
         /// 数据接收开始事件
         /// </summary>
-        public event ReceiveStart OnReceiveStart;
+        public  ReceiveStart OnReceiveStart;
         /// <summary>
         /// 数据接收完成事件
         /// </summary>
-        public event ReceiveEnd AfterReceiveEnd;
+        public  ReceiveEnd AfterReceiveEnd;
         /// <summary>
         /// 服务器停用事件
         /// </summary>
-        public event AfterServerStop AfterServerStop;
+        public  AfterServerStop AfterServerStop;
 
         /// <summary>
         /// 端口
@@ -46,24 +56,6 @@ namespace Mozi.NTP
         public Socket SocketMain
         {
             get { return _sc; }
-        }
-        /// <summary>
-        /// 关闭服务器
-        /// </summary>
-        public void Shutdown()
-        {
-            try
-            {
-                _sc.Shutdown(SocketShutdown.Both);
-                if (AfterServerStop != null)
-                {
-                    AfterServerStop(_sc, null);
-                }
-            }
-            catch
-            {
-
-            }
         }
         /// <summary>
         /// 启动服务器
@@ -115,7 +107,26 @@ namespace Mozi.NTP
             }
             catch (Exception ex)
             {
-                var ex2 = ex;
+                _errorCount++;
+            }
+        }
+        /// <summary>
+        /// 关闭服务器
+        /// </summary>
+        public void Shutdown()
+        {
+            try
+            {
+                _sc.Shutdown(SocketShutdown.Both);
+                _sc.Close();
+                if (AfterServerStop != null)
+                {
+                    AfterServerStop(_sc, null);
+                }
+            }
+            catch
+            {
+
             }
         }
         /// <summary>

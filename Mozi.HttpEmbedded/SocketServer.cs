@@ -18,31 +18,41 @@ namespace Mozi.HttpEmbedded
         protected int _maxListenCount = 65535;
         protected readonly ConcurrentDictionary<string, Socket> _socketDocker;
         protected Socket _sc;
-
+        private long _errorCount = 0;
+        /// <summary>
+        /// 接收错误计数
+        /// </summary>
+        public long ReceiveErrorCount
+        {
+            get
+            {
+                return _errorCount;
+            }
+        }
         /// <summary>
         /// 服务器启动事件
         /// </summary>
-        public event ServerStart OnServerStart;
+        public  ServerStart OnServerStart;
         /// <summary>
         /// 客户端连接事件
         /// </summary>
-        public event ClientConnect OnClientConnect;
+        public  ClientConnect OnClientConnect;
         /// <summary>
         /// 客户端断开连接时间
         /// </summary>
-        public event ClientDisConnect AfterClientDisConnect;
+        public  ClientDisConnect AfterClientDisConnect;
         /// <summary>
         /// 数据接收开始事件
         /// </summary>
-        public event ReceiveStart OnReceiveStart;
+        public  ReceiveStart OnReceiveStart;
         /// <summary>
         /// 数据接收完成事件
         /// </summary>
-        public event ReceiveEnd AfterReceiveEnd;
+        public  ReceiveEnd AfterReceiveEnd;
         /// <summary>
         /// 服务器停用事件
         /// </summary>
-        public event AfterServerStop AfterServerStop;
+        public  AfterServerStop AfterServerStop;
 
         /// <summary>
         /// 端口
@@ -66,7 +76,7 @@ namespace Mozi.HttpEmbedded
         /// 启动服务器
         /// </summary>
         /// <param name="port"></param>
-        public void StartServer(int port)
+        public void Start(int port)
         {
             _iport = port;
             if (_sc == null)
@@ -92,12 +102,13 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 关闭服务器
         /// </summary>
-        public void StopServer()
+        public void Shutdown()
         {
             _socketDocker.Clear();
             try
             {
                 _sc.Shutdown(SocketShutdown.Both);
+                _sc.Close();
                 if (AfterServerStop != null)
                 {
                     AfterServerStop(_sc, null);
@@ -151,7 +162,7 @@ namespace Mozi.HttpEmbedded
             }
             catch (Exception ex)
             {
-                var ex2 = ex;
+                _errorCount++;
             }
         }
         /// <summary>

@@ -59,6 +59,7 @@
     <Compile Include="Others.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerEvent.cs" />
+    <Compile Include="UDPSocketIOCP.cs" />
     <Compile Include="StateObject.cs" />
     <Compile Include="UDPSocket.cs" />
     <Compile Include="UDPStateObject.cs" />

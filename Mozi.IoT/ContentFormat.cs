@@ -43,6 +43,7 @@
             }
         }
         public ushort Num { get { return _num; } }
+
         protected override string Tag => _num.ToString();
 
         public static ContentFormat TextPlain = new ContentFormat("text/plain", 0);

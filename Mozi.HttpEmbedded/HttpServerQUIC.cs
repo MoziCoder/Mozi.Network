@@ -1,6 +1,6 @@
 ﻿namespace Mozi.HttpEmbedded
 {
-    internal class HttpQUICServer:HttpServer
+    internal class HttpServerQUIC:HttpServer
     {
 
     }

@@ -68,7 +68,7 @@
     <Compile Include="Attributes\HttpMethodAttribute.cs" />
     <Compile Include="Attributes\ResponseContentTypeAttribute.cs" />
     <Compile Include="HttpClient.cs" />
-    <Compile Include="HttpQUICServer.cs" />
+    <Compile Include="HttpServerQUIC.cs" />
     <Compile Include="Memory\BufferPool.cs" />
     <Compile Include="Middleware\IMiddleware.cs" />
     <Compile Include="SocketServerIOCP.cs" />
@@ -121,7 +121,7 @@
     <Compile Include="HttpResponse.cs" />
     <Compile Include="Serialize\JSONSerializer.cs" />
     <Compile Include="Serialize\XMLSerializer.cs" />
-    <Compile Include="SocketServerUDP.cs" />
+    <Compile Include="UDPSocketServer.cs" />
     <Compile Include="SocketServer.cs" />
     <Compile Include="ServerEvent.cs" />
     <Compile Include="Source\Mime.cs" />

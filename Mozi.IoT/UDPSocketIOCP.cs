@@ -5,18 +5,12 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace Mozi.HttpEmbedded
+namespace Mozi.IoT
 {
 
     //TODO 还有很多问题没有解决，暂时不能使用这种模式
-    /// <summary>  
-    /// 客户端连接数量变化时触发  
-    /// </summary>  
-    /// <param name="num">当前增加客户的个数(用户退出时为负数,增加时为正数,一般为1)</param>  
-    /// <param name="token">增加用户的信息</param>  
-    public delegate void OnClientNumberChange(int num, StateObject token);
 
-    public class SocketServerIOCP
+    public class UDPSocketIOCP
     {
         private int _maxConnectionCount;    //最大连接数  
         private int _receiveBufferSize;    //最大接收字节数  
@@ -24,25 +18,15 @@ namespace Mozi.HttpEmbedded
         private const int opsToAlloc = 2;
         private Socket _sc;            //监听Socket  
         private SocketEventPool _socketArgsStack;
-        private int _clientCount =0;              //连接的客户端数量  
         private Semaphore _maxAcceptedClientsSignal;
 
         protected int _iport = 80;
-
-        private List<StateObject> _clients; //客户端列表  
 
         /// <summary>
         /// 服务器启动事件
         /// </summary>
         public  ServerStart OnServerStart;
-        /// <summary>
-        /// 客户端连接事件
-        /// </summary>
-        public  ClientConnect OnClientConnect;
-        /// <summary>
-        /// 客户端断开连接时间
-        /// </summary>
-        public  ClientDisConnect AfterClientDisConnect;
+
         /// <summary>
         /// 数据接收开始事件
         /// </summary>
@@ -55,11 +39,6 @@ namespace Mozi.HttpEmbedded
         /// 服务器停用事件
         /// </summary>
         public  AfterServerStop AfterServerStop;
-
-        /// <summary>  
-        /// 获取客户端列表  
-        /// </summary>  
-        public List<StateObject> ClientList { get { return _clients; } }
 
         /// <summary>
         /// 端口
@@ -78,20 +57,19 @@ namespace Mozi.HttpEmbedded
         /// </summary>  
         /// <param name="maxConnections">最大连接数</param>  
         /// <param name="receiveBufferSize">缓存区大小</param>  
-        public SocketServerIOCP(int maxConnections, int receiveBufferSize)
+        public UDPSocketIOCP(int maxConnections, int receiveBufferSize)
         {
-            _clientCount = 0;
             _maxConnectionCount = maxConnections;
-            _receiveBufferSize = receiveBufferSize; 
+            _receiveBufferSize = receiveBufferSize;
             _bufferManager = new BufferManager(receiveBufferSize * maxConnections * opsToAlloc, receiveBufferSize);
             _socketArgsStack = new SocketEventPool(maxConnections);
             _maxAcceptedClientsSignal = new Semaphore(maxConnections, maxConnections);
             Init();
         }
 
-        public SocketServerIOCP():this(65535,1024*4)
+        public UDPSocketIOCP() : this(1000, 1024 * 4)
         {
-            
+
         }
 
         /// <summary>  
@@ -102,7 +80,6 @@ namespace Mozi.HttpEmbedded
             // Allocates one large byte buffer which all I/O operations use a piece of.  This gaurds   
             // against memory fragmentation  
             _bufferManager.InitBuffer();
-            _clients = new List<StateObject>();
             // preallocate pool of SocketAsyncEventArgs objects  
             SocketAsyncEventArgs readWriteEventArg;
 
@@ -130,14 +107,13 @@ namespace Mozi.HttpEmbedded
             try
             {
 
-                _clients.Clear();
-                _sc = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                _sc = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                 IPEndPoint endpoint = new IPEndPoint(IPAddress.Any, _iport);
                 //允许端口复用
                 _sc.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                _sc.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.IpTimeToLive, 32);
                 _sc.Bind(endpoint);
-                _sc.Listen(_maxConnectionCount);
-                StartAccept(null);
+                StartReceive();
                 return true;
             }
             catch (Exception)
@@ -151,190 +127,71 @@ namespace Mozi.HttpEmbedded
         /// </summary>  
         public void Shutdown()
         {
-            foreach (StateObject token in _clients)
-            {
-                try
-                {
-                    token.WorkSocket.Shutdown(SocketShutdown.Both);
-                    token.WorkSocket.Close();
-                }
-                catch (Exception) { }
-            }
             try
             {
                 _sc.Shutdown(SocketShutdown.Both);
+                _sc.Close();
             }
-            catch (Exception) 
-            { 
+            catch (Exception)
+            {
 
             }
 
             _sc.Close();
-            int c_count = _clients.Count;
-            lock (_clients) 
-            {
-                _clients.Clear(); 
-            }
         }
 
-
-        public void CloseClient(StateObject token)
+        private void StartReceive()
         {
-            try
-            {
-                token.WorkSocket.Shutdown(SocketShutdown.Both);
-            }
-            catch (Exception) 
-            { 
-
-            }
+            SocketAsyncEventArgs receiveSocketArgs = _socketArgsStack.Pop();
+            StateObject so = new StateObject();
+            receiveSocketArgs.UserToken = so;
+            receiveSocketArgs.RemoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
+            receiveSocketArgs.SetBuffer(so.Buffer, 0, so.Buffer.Length);
+            _sc.ReceiveFromAsync(receiveSocketArgs);
         }
 
-        public void StartAccept(SocketAsyncEventArgs acceptEventArg)
-        {
-            if (acceptEventArg == null)
-            {
-                acceptEventArg = new SocketAsyncEventArgs();
-                acceptEventArg.Completed += new EventHandler<SocketAsyncEventArgs>(AcceptEventArg_Completed);
-            }
-            else
-            {
-                acceptEventArg.AcceptSocket = null;
-            }
-
-            _maxAcceptedClientsSignal.WaitOne();
-            if (!_sc.AcceptAsync(acceptEventArg))
-            {
-                ProcessAccept(acceptEventArg);
-            }
-        }
-
-        // This method is the callback method associated with Socket.AcceptAsync   
-        // operations and is invoked when an accept operation is complete  
-        //  
-        void AcceptEventArg_Completed(object sender, SocketAsyncEventArgs e)
-        {
-            ProcessAccept(e);
-        }
-
-        private void ProcessAccept(SocketAsyncEventArgs e)
-        {
-            try
-            {
-                Interlocked.Increment(ref _clientCount);
-                SocketAsyncEventArgs readEventArgs = _socketArgsStack.Pop();
-                StateObject userToken = (StateObject)readEventArgs.UserToken;
-                userToken.WorkSocket = e.AcceptSocket;
-                userToken.ConnectTime = DateTime.Now;
-                userToken.IP = ((IPEndPoint)(e.AcceptSocket.RemoteEndPoint)).Address.ToString();
-                userToken.RemotePort = ((IPEndPoint)(e.AcceptSocket.RemoteEndPoint)).Port;
-
-                lock (_clients) {
-                    _clients.Add(userToken); 
-                }
-                if (!e.AcceptSocket.ReceiveAsync(readEventArgs))
-                {
-                    ProcessReceive(readEventArgs);
-                }
-            }
-            catch (Exception ex)
-            {
-               
-            }
-
-            // Accept the next connection request  
-            if (e.SocketError == SocketError.OperationAborted) return;
-            StartAccept(e);
-        }
 
 
         private void IO_Completed(object sender, SocketAsyncEventArgs e)
         {
-          
+
             switch (e.LastOperation)
             {
                 case SocketAsyncOperation.Receive:
+                case SocketAsyncOperation.ReceiveFrom:
                     ProcessReceive(e);
-                    break;
-                case SocketAsyncOperation.Send:
-                    ProcessSend(e);
                     break;
                 default:
                     throw new ArgumentException("The last operation completed on the socket was not a receive or send");
             }
-
+            StartReceive();
         }
         public void ProcessReceive(SocketAsyncEventArgs e)
         {
             try
             {
-                // check if the remote host closed the connection  
-                StateObject token = (StateObject)e.UserToken;
-                if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
-                { 
+                    // check if the remote host closed the connection  
+                    StateObject token = (StateObject)e.UserToken;
+                    token.IP = ((IPEndPoint)e.RemoteEndPoint).Address.ToString();
+                    token.RemotePort = ((IPEndPoint)e.RemoteEndPoint).Port;
                     byte[] data = new byte[e.BytesTransferred];
                     Array.Copy(e.Buffer, e.Offset, data, 0, e.BytesTransferred);
                     lock (token.Buffer)
                     {
                         token.Data.AddRange(data);
                     }
-                    //do
-                    //{
-                    //    //判断包的长度  
-                    //    byte[] lenBytes = token.Buffer.GetRange(0, 4).ToArray();
-                    //    int packageLen = BitConverter.ToInt32(lenBytes, 0);
-                    //    if (packageLen > token.Buffer.Count - 4)
-                    //    {   //长度不够时,退出循环,让程序继续接收  
-                    //        break;
-                    //    }
 
-                    //    //包够长时,则提取出来,交给后面的程序去处理  
-                    //    byte[] rev = token.Buffer.GetRange(4, packageLen).ToArray();
-                    //    //从数据池中移除这组数据  
-                    //    lock (token.Buffer)
-                    //    {
-                    //        token.Buffer.RemoveRange(0, packageLen + 4);
-                    //    }
-                    //    //将数据包交给后台处理,这里你也可以新开个线程来处理.加快速度.  
-
-                    //    InvokeAfterReceiveEnd(token, token.WorkSocket);
-                    //    //这里API处理完后,并没有返回结果,当然结果是要返回的,却不是在这里, 这里的代码只管接收.  
-                    //    //若要返回结果,可在API处理中调用此类对象的SendMessage方法,统一打包发送.不要被微软的示例给迷惑了.  
-                    //} while (token.Buffer.Count > 4);
-                    e.SetBuffer(e.Offset, e.BytesTransferred);
+                    //e.SetBuffer(e.Offset, e.BytesTransferred);
                     //继续接收. 为什么要这么写,请看Socket.ReceiveAsync方法的说明  
 
                     InvokeAfterReceiveEnd(token, token.WorkSocket);
-                    if (!token.WorkSocket.ReceiveAsync(e))
-                    {
-                        this.ProcessReceive(e);
-                    }
-                }
-                else
-                {
-                    InvokeAfterReceiveEnd(token, token.WorkSocket);
-                    //CloseClientSocket(e);
-                }
+                //if (!token.WorkSocket.ReceiveAsync(e))
+                //{
+                //    ProcessReceive(e);
+                //}
+                CloseClientSocket(e);
             }
             catch (Exception xe)
-            {
-               
-            }
-        }
-        private void ProcessSend(SocketAsyncEventArgs e)
-        {
-            if (e.SocketError == SocketError.Success)
-            {
-                // done echoing data back to the client  
-                StateObject token = (StateObject)e.UserToken;
-                // read the next block of data send from the client  
-                bool willRaiseEvent = token.WorkSocket.ReceiveAsync(e);
-                if (!willRaiseEvent)
-                {
-                    ProcessReceive(e);
-                }
-            }
-            else
             {
                 CloseClientSocket(e);
             }
@@ -344,22 +201,6 @@ namespace Mozi.HttpEmbedded
         private void CloseClientSocket(SocketAsyncEventArgs e)
         {
             StateObject token = e.UserToken as StateObject;
-
-            lock (_clients) 
-            {
-                _clients.Remove(token); 
-            }
-            try
-            {
-                token.WorkSocket.Shutdown(SocketShutdown.Send);
-            }
-            catch (Exception) 
-            { 
-
-            }
-            token.WorkSocket.Close(); 
-            Interlocked.Decrement(ref _clientCount);
-            _maxAcceptedClientsSignal.Release();
             e.UserToken = new StateObject();
             _socketArgsStack.Push(e);
         }
@@ -374,10 +215,6 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>  
         public void SendMessage(StateObject token, byte[] message)
         {
-            if (token == null || token.WorkSocket == null || !token.WorkSocket.Connected)
-            {
-                return;
-            }
             try
             {
                 //发送消息  
@@ -388,7 +225,7 @@ namespace Mozi.HttpEmbedded
             }
             catch (Exception e)
             {
-               
+
             }
         }
 
@@ -418,6 +255,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="port"></param>
         public void SendTo(byte[] buffer, string host, int port)
         {
+            
             _sc.SendTo(buffer, new IPEndPoint(IPAddress.Parse(host), port));
         }
     }
@@ -432,7 +270,8 @@ namespace Mozi.HttpEmbedded
 
         public void Push(SocketAsyncEventArgs item)
         {
-            if (item == null) { 
+            if (item == null)
+            {
                 throw new ArgumentNullException("Items added to a SocketAsyncEventArgsPool cannot be null");
             }
             lock (_stack)
@@ -445,7 +284,7 @@ namespace Mozi.HttpEmbedded
             SocketAsyncEventArgs result;
             lock (_stack)
             {
-               _stack.TryPop(out result);
+                _stack.TryPop(out result);
             }
             return result;
         }
@@ -498,7 +337,7 @@ namespace Mozi.HttpEmbedded
             }
             else
             {
-                if ((m_numBytes - m_bufferSize) < m_currentIndex)
+                if (m_numBytes - m_bufferSize < m_currentIndex)
                 {
                     return false;
                 }

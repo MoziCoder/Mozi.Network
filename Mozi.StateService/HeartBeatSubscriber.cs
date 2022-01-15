@@ -10,13 +10,13 @@ namespace Mozi.StateService
         /// <summary>
         /// 终端消息接收事件
         /// </summary>
-        public new  event ClientMessageReceived OnClientMessageReceived;
+        public new  ClientMessageReceived OnClientMessageReceived;
         /// <summary>
         /// 数据接收完成回调
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        protected override void _socket_AfterReceiveEnd(object sender, DataTransferArgs args)
+        protected override void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
             try
             {

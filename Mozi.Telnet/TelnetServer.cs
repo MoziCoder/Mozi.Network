@@ -193,19 +193,19 @@ namespace Mozi.Telnet
         /// <summary>
         /// 选项协商事件
         /// </summary>
-        public event NegotiateEvent OnNegotiate;
+        public  NegotiateEvent OnNegotiate;
         /// <summary>
         /// 用户鉴权事件
         /// </summary>
-        public event AuthEvent OnAuth;
+        public  AuthEvent OnAuth;
         /// <summary>
         /// 用户认证成功后，发送指令事件
         /// </summary>
-        public event CommandReceived OnCommand;
+        public  CommandReceived OnCommand;
         /// <summary>
         /// 用户认证成功后触发
         /// </summary>
-        public event DataEvent OnData;
+        public  DataEvent OnData;
 
         public TelnetServer()
         {
@@ -453,7 +453,7 @@ namespace Mozi.Telnet
         public void Start()
         {
             StartTime = DateTime.Now;
-            _sc.StartServer(_port);
+            _sc.Start(_port);
             Running = true;
         }
         /// <summary>
@@ -462,7 +462,7 @@ namespace Mozi.Telnet
         public void Shutdown()
         {
             Running = false;
-            _sc.StopServer();
+            _sc.Shutdown();
         }
 
         private void Echo(Socket sc, byte[] data)

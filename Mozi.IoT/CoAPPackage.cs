@@ -142,7 +142,10 @@ namespace Mozi.IoT
             data.Add(head);
             data.Add((byte)(((byte)Code.Category << 5) | ((byte)(Code.Detail << 3) >> 3)));
             data.AddRange(BitConverter.GetBytes(MesssageId).Revert());
-            data.AddRange(Token);
+            if (TokenLength > 0)
+            {
+                data.AddRange(Token);
+            }
             uint delta = 0;
             foreach (var op in Options)
             {
@@ -320,11 +323,12 @@ namespace Mozi.IoT
                 option.OptionHead = data[bodySplitterPos];
                 //byte len=(byte)(option.OptionHead)
                 int lenDeltaExt = 0, lenLengthExt = 0;
-                if (option.Delta <= 12)
-                {
+                //if (option.Delta <= 12)
+                //{
 
-                }
-                else if (option.Delta == 13)
+                //}
+                //else 
+                if (option.Delta == 13)
                 {
                     lenDeltaExt = 1;
                 }
@@ -340,7 +344,7 @@ namespace Mozi.IoT
                 }
                 //赋默认值
                 option.Option = AbsClassEnum.Get<CoAPOptionDefine>((option.DeltaValue + deltaSum).ToString());
-                if (ReferenceEquals(null, option.Option))
+                if (option.Option is null)
                 {
                     option.Option = CoAPOptionDefine.Unknown;
                 }

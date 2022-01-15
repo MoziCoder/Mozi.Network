@@ -31,7 +31,7 @@ namespace Mozi.NTP
         /// </summary>
         public IClock Clock { get; set; }
 
-        public event TimePackageReceive OnTimePackageReceived;
+        public  TimePackageReceive OnTimePackageReceived;
         /// <summary>
         /// 服务器运行状态
         /// </summary>
