@@ -15,15 +15,15 @@ namespace Mozi.IoT.Test
 
             //客户端 多线程并发
             List<CoAPClient> ccs = new List<CoAPClient>();
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 32; i++)
             {
                 CoAPClient cc = new CoAPClient();
                 //本地端口
-                cc.SetPort(12340 + i);
+                cc.SetPort(10 + i);
                 cc.Start();
                 ccs.Add(cc);
             }
-
+            //电脑主机如果性能不行，不要尝试下面的方法
             foreach (CoAPClient cc in ccs)
             {
 
@@ -35,7 +35,7 @@ namespace Mozi.IoT.Test
                         cc.Get("coap://100.100.0.111/sensor", CoAPMessageType.Confirmable);
                     }
                 }));
-                td.Priority = ThreadPriority.Normal;
+                td.Priority = ThreadPriority.Highest;
                 td.Start();
             }
 
