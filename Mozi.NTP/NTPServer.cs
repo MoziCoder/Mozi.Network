@@ -42,7 +42,7 @@ namespace Mozi.NTP
         public NTPServer()
         {
             _socket = new UDPSocket();
-            _socket.AfterReceiveEnd += _socket_AfterReceiveEnd;
+            _socket.AfterReceiveEnd += Socket_AfterReceiveEnd;
             Clock = new SystemClock();
         }
         /// <summary>
@@ -77,7 +77,7 @@ namespace Mozi.NTP
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        protected virtual void _socket_AfterReceiveEnd(object sender, DataTransferArgs args)
+        protected virtual void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
             try
             {
@@ -142,7 +142,7 @@ namespace Mozi.NTP
 
                     npr.RootDispersion = new ShortTime() { Seconds = (double)(10+ npr.PrecisionSecond + (NTPProtocol.PHI * (npr.TransmitTime.UniversalTime - np.ReferenceTime.UniversalTime).TotalSeconds)) };
                     Array.Copy(ClockIdentifier.LOCL.Pack, npr.ReferenceIdentifier, npr.ReferenceIdentifier.Length);
-                    args.Socket.SendTo(npr.Pack(), new IPEndPoint(IPAddress.Parse(args.IP), args.Port));
+                    _socket.SendTo(npr.Pack(), args.IP, args.Port);
                 }
                 else
                 {

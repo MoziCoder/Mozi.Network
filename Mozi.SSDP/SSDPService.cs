@@ -241,7 +241,7 @@ namespace Mozi.SSDP
         public SSDPService()
         {
             _socket = new UDPSocket();
-            _socket.AfterReceiveEnd += _socket_AfterReceiveEnd;
+            _socket.AfterReceiveEnd += Socket_AfterReceiveEnd;
             _remoteEP = new IPEndPoint(IPAddress.Parse(SSDPProtocol.MulticastAddress), SSDPProtocol.ProtocolPort);
 
             _timer = new Timer(TimeoutCallback, null, Timeout.Infinite, Timeout.Infinite);
@@ -270,7 +270,7 @@ namespace Mozi.SSDP
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        private void _socket_AfterReceiveEnd(object sender, DataTransferArgs args)
+        protected virtual void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
             //TODO 如何进行多包分割？
 
@@ -448,7 +448,7 @@ namespace Mozi.SSDP
             request.SetPath("*").SetMethod(RequestMethodUPnP.MSEARCH);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
-            _socket.SocketMain.SendTo(data, _remoteEP);
+            SendTo(data);
         }
         /// <summary>
         /// 查找设备简化方法，参看<see cref="Search(SearchPackage)"/>
@@ -465,7 +465,7 @@ namespace Mozi.SSDP
             request.SetPath("*").SetMethod(RequestMethodUPnP.MSEARCH);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
-            _socket.SocketMain.SendTo(data, _remoteEP);
+            SendTo(data);
         }
         //NOTIFY * HTTP/1.1     
         //HOST: 239.255.255.250:1900    
@@ -498,7 +498,7 @@ namespace Mozi.SSDP
             request.SetPath("*").SetMethod(RequestMethodUPnP.NOTIFY);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
-            _socket.SocketMain.SendTo(data, _remoteEP);
+            SendTo(data);
         }
 
         //NOTIFY * HTTP/1.1     
@@ -522,7 +522,7 @@ namespace Mozi.SSDP
             request.SetPath("*").SetMethod(RequestMethodUPnP.NOTIFY);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
-            _socket.SocketMain.SendTo(data, _remoteEP);
+            SendTo(data);
         }
         /// <summary>
         /// update信息
@@ -534,7 +534,7 @@ namespace Mozi.SSDP
             request.SetPath("*").SetMethod(RequestMethodUPnP.NOTIFY);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
-            _socket.SocketMain.SendTo(data, _remoteEP);
+            SendTo(data);
         }
         //HTTP/1.1 200 OK
         //CACHE-CONTROL: max-age = seconds until advertisement expires
@@ -567,8 +567,7 @@ namespace Mozi.SSDP
             resp.SetHeaders(pk.GetHeaders());
             resp.SetStatus(StatusCode.Success);
             byte[] data = resp.GetBuffer(true);
-            _socket.SocketMain.SendTo(data, _remoteEP);
-
+            SendTo(data);
         }
         //POST path of control URL HTTP/1.1 
         //HOST: host of control URL:port of control URL
@@ -597,7 +596,7 @@ namespace Mozi.SSDP
             request.SetHeader("CONTENT-LENGTH", request.ContentLength);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
-            _socket.SocketMain.SendTo(data, _remoteEP);
+            SendTo(data);
         }
         //POST path of control URL HTTP/1.1 
         //HOST: host of control URL:port of control URL
@@ -655,7 +654,7 @@ namespace Mozi.SSDP
             request.SetPath(pk.Path).SetMethod(RequestMethodUPnP.SUBSCRIBE);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
-            _socket.SocketMain.SendTo(data, _remoteEP);
+            SendTo(data);
         }
 
         //UNSUBSCRIBE publisher path HTTP/1.1 
@@ -671,8 +670,14 @@ namespace Mozi.SSDP
             request.SetPath(pk.Path).SetMethod(RequestMethodUPnP.UNSUBSCRIBE);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
+            SendTo(data);
+        }
+
+        private void SendTo(byte[] data)
+        {
             _socket.SocketMain.SendTo(data, _remoteEP);
         }
+
         /// <summary>
         /// 设置描述文档地址
         /// </summary>

@@ -194,7 +194,7 @@ namespace Mozi.HttpEmbedded
             _sc.OnServerStart += _sc_OnServerStart;
             _sc.OnClientConnect += _sc_OnClientConnect;
             _sc.OnReceiveStart += _sc_OnReceiveStart;
-            _sc.AfterReceiveEnd += _sc_AfterReceiveEnd;
+            _sc.AfterReceiveEnd += Socket_AfterReceiveEnd;
             _sc.AfterServerStop += _sc_AfterServerStop;
         }
         /// <summary>
@@ -216,12 +216,15 @@ namespace Mozi.HttpEmbedded
 
         }
         //TODO 响应码处理有问题
+
+        //该方法为受保护类型，如果想实现更自由的实现，可以覆写该方法，但不建议这么做。此处处理比较复杂
+
         /// <summary>
-        /// 响应请求
+        /// 解析请求包，响应请求
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        void _sc_AfterReceiveEnd(object sender, DataTransferArgs args)
+        protected virtual void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
             HttpContext context = new HttpContext();
             context.Response = new HttpResponse();
@@ -699,6 +702,14 @@ namespace Mozi.HttpEmbedded
             Running = true;
         }
         /// <summary>
+        /// 关闭服务器
+        /// </summary>
+        public void Shutdown()
+        {
+            Running = false;
+            _sc.Shutdown();
+        }
+        /// <summary>
         /// 是否启用访问控制 IP策略
         /// </summary>
         /// <param name="enabled"></param>
@@ -748,14 +759,6 @@ namespace Mozi.HttpEmbedded
         public void SetIndexPage(string pattern)
         {
             _indexPages = pattern.Split(new char[] { ',' });
-        }
-        /// <summary>
-        /// 关闭服务器
-        /// </summary>
-        public void Shutdown()
-        {
-            Running = false;
-            _sc.Shutdown();
         }
 
         //public void ForbideIPAccess()

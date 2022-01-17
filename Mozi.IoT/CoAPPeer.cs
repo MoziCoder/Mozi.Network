@@ -43,7 +43,7 @@ namespace Mozi.IoT
     /// </summary>
     public class CoAPPeer
     {
-        protected readonly UDPSocketIOCP _socket;
+        protected  UDPSocketIOCP _socket;
 
         protected int BindPort = CoAPProtocol.Port;
 

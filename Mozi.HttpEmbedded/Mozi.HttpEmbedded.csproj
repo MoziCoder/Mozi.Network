@@ -193,6 +193,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Secure\" />
+    <Folder Include="WebSocket\" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">

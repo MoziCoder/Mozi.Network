@@ -15,6 +15,7 @@ namespace Mozi.IoT
 
         private EndPoint _endPoint;
         private long _errorCount = 0;
+
         /// <summary>
         /// 接收错误计数
         /// </summary>

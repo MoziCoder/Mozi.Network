@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 
 namespace Mozi.IoT
 {
@@ -12,21 +11,27 @@ namespace Mozi.IoT
 
     public class UDPSocketIOCP
     {
-        private int _maxConnectionCount;    //最大连接数  
-        private int _receiveBufferSize;    //最大接收字节数  
-        private BufferManager _bufferManager;
-        private const int opsToAlloc = 2;
+
         private Socket _sc;            //监听Socket  
-        private SocketEventPool _socketArgsStack;
-        private Semaphore _maxAcceptedClientsSignal;
+        private SocketAsyncEventArgs receiveSocketArgs;
 
         protected int _iport = 80;
+        private long _errorCount = 0;
 
+        /// <summary>
+        /// 接收错误计数
+        /// </summary>
+        public long ReceiveErrorCount
+        {
+            get
+            {
+                return _errorCount;
+            }
+        }
         /// <summary>
         /// 服务器启动事件
         /// </summary>
         public  ServerStart OnServerStart;
-
         /// <summary>
         /// 数据接收开始事件
         /// </summary>
@@ -55,19 +60,7 @@ namespace Mozi.IoT
         /// <summary>  
         /// 构造函数  
         /// </summary>  
-        /// <param name="maxConnections">最大连接数</param>  
-        /// <param name="receiveBufferSize">缓存区大小</param>  
-        public UDPSocketIOCP(int maxConnections, int receiveBufferSize)
-        {
-            _maxConnectionCount = maxConnections;
-            _receiveBufferSize = receiveBufferSize;
-            _bufferManager = new BufferManager(receiveBufferSize * maxConnections * opsToAlloc, receiveBufferSize);
-            _socketArgsStack = new SocketEventPool(maxConnections);
-            _maxAcceptedClientsSignal = new Semaphore(maxConnections, maxConnections);
-            Init();
-        }
-
-        public UDPSocketIOCP() : this(1000, 1024 * 4)
+        public UDPSocketIOCP()
         {
 
         }
@@ -77,23 +70,7 @@ namespace Mozi.IoT
         /// </summary>  
         public void Init()
         {
-            // Allocates one large byte buffer which all I/O operations use a piece of.  This gaurds   
-            // against memory fragmentation  
-            _bufferManager.InitBuffer();
-            // preallocate pool of SocketAsyncEventArgs objects  
-            SocketAsyncEventArgs readWriteEventArg;
 
-            for (int i = 0; i < _maxConnectionCount; i++)
-            {
-                readWriteEventArg = new SocketAsyncEventArgs();
-                readWriteEventArg.Completed += new EventHandler<SocketAsyncEventArgs>(IO_Completed);
-                readWriteEventArg.UserToken = new StateObject();
-
-                // assign a byte buffer from the buffer pool to the SocketAsyncEventArg object  
-                _bufferManager.SetBuffer(readWriteEventArg);
-                // add SocketAsyncEventArg to the pool  
-                _socketArgsStack.Push(readWriteEventArg);
-            }
         }
 
 
@@ -113,6 +90,15 @@ namespace Mozi.IoT
                 _sc.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                 _sc.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.IpTimeToLive, 32);
                 _sc.Bind(endpoint);
+
+                receiveSocketArgs = new SocketAsyncEventArgs();
+                receiveSocketArgs.Completed += IO_Completed;
+                StateObject so = new StateObject();
+                receiveSocketArgs.UserToken = so;
+                receiveSocketArgs.RemoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
+                receiveSocketArgs.SetBuffer(so.Buffer, 0, so.Buffer.Length);
+                
+
                 StartReceive();
                 return true;
             }
@@ -142,11 +128,6 @@ namespace Mozi.IoT
 
         private void StartReceive()
         {
-            SocketAsyncEventArgs receiveSocketArgs = _socketArgsStack.Pop();
-            StateObject so = new StateObject();
-            receiveSocketArgs.UserToken = so;
-            receiveSocketArgs.RemoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
-            receiveSocketArgs.SetBuffer(so.Buffer, 0, so.Buffer.Length);
             _sc.ReceiveFromAsync(receiveSocketArgs);
         }
 
@@ -170,29 +151,23 @@ namespace Mozi.IoT
         {
             try
             {
-                    // check if the remote host closed the connection  
-                    StateObject token = (StateObject)e.UserToken;
-                    token.IP = ((IPEndPoint)e.RemoteEndPoint).Address.ToString();
-                    token.RemotePort = ((IPEndPoint)e.RemoteEndPoint).Port;
-                    byte[] data = new byte[e.BytesTransferred];
-                    Array.Copy(e.Buffer, e.Offset, data, 0, e.BytesTransferred);
-                    lock (token.Buffer)
-                    {
-                        token.Data.AddRange(data);
-                    }
+                // check if the remote host closed the connection  
+                StateObject token = (StateObject)e.UserToken;
+                token.IP = ((IPEndPoint)e.RemoteEndPoint).Address.ToString();
+                token.RemotePort = ((IPEndPoint)e.RemoteEndPoint).Port;
+                byte[] data = new byte[e.BytesTransferred];
+                Array.Copy(e.Buffer, e.Offset, data, 0, e.BytesTransferred);
+                lock (token.Buffer)
+                {
+                    token.Data.AddRange(data);
+                }
 
-                    //e.SetBuffer(e.Offset, e.BytesTransferred);
-                    //继续接收. 为什么要这么写,请看Socket.ReceiveAsync方法的说明  
-
-                    InvokeAfterReceiveEnd(token, token.WorkSocket);
-                //if (!token.WorkSocket.ReceiveAsync(e))
-                //{
-                //    ProcessReceive(e);
-                //}
+                InvokeAfterReceiveEnd(token, token.WorkSocket);
                 CloseClientSocket(e);
             }
             catch (Exception xe)
             {
+                _errorCount++;
                 CloseClientSocket(e);
             }
         }
@@ -202,7 +177,6 @@ namespace Mozi.IoT
         {
             StateObject token = e.UserToken as StateObject;
             e.UserToken = new StateObject();
-            _socketArgsStack.Push(e);
         }
 
 

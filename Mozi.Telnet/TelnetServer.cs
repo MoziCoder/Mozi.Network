@@ -216,7 +216,7 @@ namespace Mozi.Telnet
             _sc.OnServerStart += _sc_OnServerStart;
             _sc.OnClientConnect += _sc_OnClientConnect;
             _sc.OnReceiveStart += _sc_OnReceiveStart;
-            _sc.AfterReceiveEnd += _sc_AfterReceiveEnd;
+            _sc.AfterReceiveEnd += Socket_AfterReceiveEnd;
             _sc.AfterServerStop += _sc_AfterServerStop;
             Help help = new Help(this);
             _commands.Add(help);
@@ -232,7 +232,7 @@ namespace Mozi.Telnet
         }
 
         //TODO 后续数据无法接收，查找原因
-        private void _sc_AfterReceiveEnd(object sender, DataTransferArgs args)
+        protected virtual void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
             if (args.Data.Length == 0)
             {

@@ -35,6 +35,8 @@ namespace Mozi.IoT
         public CoAPClient() 
         {
             _cacheManager = new MessageCacheManager(this);
+            _socket = new UDPSocketIOCP();
+            _socket.AfterReceiveEnd += Socket_AfterReceiveEnd;
             //配置本地服务口地址
         }
         /// <summary>
