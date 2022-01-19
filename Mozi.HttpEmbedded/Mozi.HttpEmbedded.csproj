@@ -178,7 +178,6 @@
     <None Include="Mozi.HttpEmbedded.svg" />
     <Content Include="RFC 3986 Uniform Resource Identifier %28URI%29 Generic Syntax.html" />
     <Content Include="Source\mime.data" />
-    <Content Include="WebDav\Icon.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -186,8 +185,6 @@
     <None Include="License.md" />
     <None Include="Mozi.HttpEmbedded.nuspec" />
     <None Include="Readme.md" />
-    <None Include="WebDav\ClassDiagram.cd" />
-    <None Include="WebDav\LICENSE" />
     <None Include="WebDav\packages.config" />
     <None Include="WebDav\README.md" />
   </ItemGroup>

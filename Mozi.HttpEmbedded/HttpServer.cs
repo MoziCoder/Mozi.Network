@@ -111,7 +111,7 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         public bool EnableAccessControl { get; private set; }
         /// <summary>
-        /// 是否开启压缩
+        /// 是否开启压缩 默认为GZip
         /// </summary>
         public bool EnableCompress { get; private set; }
         /// <summary>

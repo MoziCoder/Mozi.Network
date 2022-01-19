@@ -19,12 +19,14 @@ namespace Mozi.IoT
     /// </summary>
     public class EmptyOptionValue : OptionValue
     {
+        
         public override object Value { get { return null; } set { } }
         public override byte[] Pack
         {
             get => new byte[0];set { }
         }
         public override int Length => 0;
+
     }
     /// <summary>
     /// 字节数组选项值

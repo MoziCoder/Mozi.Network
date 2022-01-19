@@ -7,7 +7,7 @@ using Mozi.HttpEmbedded.Generic;
 
 namespace Mozi.HttpEmbedded
 {
-    //TODO 应将 GET/POST 查询字段进行区分 
+    //DONE 应将 GET/POST 查询字段进行区分 
 
     /// <summary>
     /// HTTP请求
@@ -15,7 +15,7 @@ namespace Mozi.HttpEmbedded
     public class HttpRequest
     {
         /// <summary>
-        /// 协议类型,参看<see cref="ProtocolType"/>值
+        /// 协议类型,参看<see cref="ProtocolType"/>所列出的值
         /// </summary>
         public ProtocolType Protocol { get; protected set; }
         /// <summary>
@@ -87,7 +87,7 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         public byte[] HeaderData { get; protected set; }
         /// <summary>
-        /// 请求数据体
+        /// 请求数据体，有效荷载数据
         /// </summary>
         public byte[] Body { get; protected set; }
         /// <summary>
@@ -153,6 +153,7 @@ namespace Mozi.HttpEmbedded
 
             int indLine = 0;
             int dataLength = data.Length;
+
             while ((posCR < dataLength) && Array.IndexOf(data, ASCIICode.CR, posCR + 1) > 0)
             {
                 posCR = Array.IndexOf(data, ASCIICode.CR, posCR + 1);
@@ -590,6 +591,7 @@ namespace Mozi.HttpEmbedded
             string sMethod = sFirst[0];
             string sUrl = sFirst[1];
             string sProtocol = sFirst[2];
+
             RequestMethod rm = AbsClassEnum.Get<RequestMethod>(sMethod);
             req.Method = rm;
 
@@ -608,8 +610,10 @@ namespace Mozi.HttpEmbedded
 
             string sProtoType = sProtocol.Substring(0, sProtocol.IndexOf((char)ASCIICode.DIVIDE));
             string sProtoVersion = sProtocol.Substring(sProtocol.IndexOf((char)ASCIICode.DIVIDE) + 1);
+
             req.Protocol = AbsClassEnum.Get<ProtocolType>(sProtoType);
             req.ProtocolVersion = AbsClassEnum.Get<HttpVersion>(sProtoVersion);
+
         }
         //TODO 此功能需要重试以进行验证
         /// <summary>

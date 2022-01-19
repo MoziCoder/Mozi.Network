@@ -2,6 +2,7 @@
 
 namespace Mozi.HttpEmbedded
 {
+    //HTTP通讯Request与Response是成对存在的，故需要构建上下文对象来联系请求与响应
     /// <summary>
     /// 请求上下文对象
     /// </summary>

@@ -26,7 +26,7 @@ namespace Mozi.HttpEmbedded.WebDav.Method
         ///  </param>
         /// <param name="store"><see cref="IWebDavStore" /> <see cref="DavServer" /></param>
         /// <exception cref="WebDavUnauthorizedException"></exception>
-        public StatusCode ProcessRequest(DavServer server, HttpContext context, IWebDavStore store)
+        public StatusCode HandleRequest(DavServer server, HttpContext context, IWebDavStore store)
         {
             bool isPropname = false;
             int depth = GetDepthHeader(context.Request);
@@ -79,7 +79,7 @@ namespace Mozi.HttpEmbedded.WebDav.Method
             }
             else
                 _reqProps = GetAllProperties();
-            XmlDocument responseDoc = ResponseDocument(context, isPropname, StatusCode.Success);
+            XmlDocument responseDoc = CreateResponseDocument(context, isPropname, StatusCode.Success);
 
 
             //转换成字节码
@@ -90,18 +90,6 @@ namespace Mozi.HttpEmbedded.WebDav.Method
             return StatusCode.MultiStatus;
         }
 
-        #region RetrieveInformation
-        /// <summary>
-        /// <see cref="IWebDavStoreItem" /> 
-        /// <see cref="List{T}" /> 
-        /// <see cref="IWebDavStoreItem" />
-        /// </summary>
-        /// <param name="iWebDavStoreItem"><see cref="IWebDavStoreItem" /> that needs to be converted</param>
-        /// <param name="depth">The "Depth" header</param>
-        /// <returns>
-        /// A <see cref="List{T}" /> of <see cref="IWebDavStoreItem" />
-        /// </returns>
-        /// <exception cref="WebDavConflictException"></exception>
         private static List<IWebDavStoreItem> GetWebDavStoreItems(IWebDavStoreItem iWebDavStoreItem, int depth)
         {
             List<IWebDavStoreItem> list = new List<IWebDavStoreItem>();
@@ -132,16 +120,6 @@ namespace Mozi.HttpEmbedded.WebDav.Method
             return list;
         }
 
-        /// <summary>
-        /// Reads the XML body of the 
-        /// <see cref="HttpRequest" />
-        /// and converts it to an 
-        /// <see cref="XmlDocument" />
-        /// </summary>
-        /// <param name="request"><see cref="HttpRequest" /></param>
-        /// <returns>
-        /// <see cref="XmlDocument" /> that contains the request body
-        /// </returns>
         private XmlDocument GetXmlDocument(HttpRequest request)
         {
             try
@@ -164,12 +142,6 @@ namespace Mozi.HttpEmbedded.WebDav.Method
             return new XmlDocument();
         }
 
-        /// <summary>
-        /// Adds the standard properties for an Propfind allprop request to a <see cref="List{T}" /> of <see cref="WebDavProperty" />
-        /// </summary>
-        /// <returns>
-        /// The list with all <see cref="WebDavProperty" />
-        /// </returns>
         private List<WebDavProperty> GetAllProperties()
         {
             List<WebDavProperty> list = new List<WebDavProperty>
@@ -189,19 +161,7 @@ namespace Mozi.HttpEmbedded.WebDav.Method
             return list;
         }
 
-        #endregion
-
-        #region BuildResponseBody
-
-        /// <summary>
-        /// Builds <see cref="XmlDocument" /> containing the response body
-        /// </summary>
-        /// <param name="context"><see cref="HttpContext" /></param>
-        /// <param name="propname">The boolean defining the Propfind propname request</param>
-        /// <returns>
-        /// <see cref="XmlDocument" /> containing the response body
-        /// </returns>
-        private XmlDocument ResponseDocument(HttpContext context, bool propname, StatusCode status)
+        private XmlDocument CreateResponseDocument(HttpContext context, bool propname, StatusCode status)
         {
             // 实例XML文档
             XmlDocument responseDoc = new XmlDocument();
@@ -294,14 +254,6 @@ namespace Mozi.HttpEmbedded.WebDav.Method
             return xmlElement;
         }
 
-        /// <summary>
-        /// Gets the correct value for a <see cref="WebDavProperty" />
-        /// </summary>
-        /// <param name="webDavStoreItem"><see cref="IWebDavStoreItem" /> defines the values</param>
-        /// <param name="davProperty"><see cref="WebDavProperty" /> that needs a value</param>
-        /// <returns>
-        /// A <see cref="string" /> containing the value
-        /// </returns>
         private string GetWebDavPropertyValue(IWebDavStoreItem webDavStoreItem, WebDavProperty davProperty)
         {
             switch (davProperty.Name)
@@ -333,7 +285,5 @@ namespace Mozi.HttpEmbedded.WebDav.Method
                     return string.Empty;
             }
         }
-
-        #endregion
     }
 }

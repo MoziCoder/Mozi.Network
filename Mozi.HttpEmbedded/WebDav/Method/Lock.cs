@@ -20,7 +20,7 @@ namespace Mozi.HttpEmbedded.WebDav.Method
         ///  </param>
         /// <param name="store"><see cref="IWebDavStore" /> <see cref="DavServer" /></param>
         /// <exception cref="WebDavPreconditionFailedException"></exception>
-        public StatusCode ProcessRequest(DavServer server, HttpContext context, IWebDavStore store)
+        public StatusCode HandleRequest(DavServer server, HttpContext context, IWebDavStore store)
         {
             //头部信息
             int depth = GetDepthHeader(context.Request);

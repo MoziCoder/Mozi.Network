@@ -229,7 +229,7 @@ namespace Mozi.HttpEmbedded.Page
             return null;
         }
         /// <summary>
-        /// 配置数据序列化组件
+        /// 配置数据序列化组件,宿主程序需要实现一个序列化/反序列化功能，然后调用本方法注册
         /// </summary>
         /// <param name="ser"></param>
         public void SetDataSerializer(ISerializer ser)

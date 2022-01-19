@@ -22,15 +22,14 @@ CoAP（Constrained Application Protocol）受限应用协议，是一种在物�
 ## CoAP协议实现完成度
 	实现了RFC7252中约定的大部分功能，目前可以应对基本的CoAP协议调试。
  
-
 ## 总体规划
 
 预期实现如下功能模块：
 
-1. IoT服务端/网关 
-2. .Net客户端调用类库
-3. .Java客户端调用包
-4. C/C++可移植客户端项目
+1. IoT服务端/网关          [已实现]
+2. .Net客户端调用类库      [已实现]
+3. .Java客户端调用包       [已实现]
+4. C/C++可移植客户端项目   [规划中]
 
 ## 待完成的功能
 - 拥塞算法
@@ -77,10 +76,17 @@ public class Main{
      * @param args
      */
     public static void main(String[] args){
-
+        
+        //实例化
         CoAPClient client=new CoAPClient();
         client.start(12345);
-
+        client.setResponseListener(new ResponseEvent() {
+            @Override
+            public void onResponse(String host,int port,CoAPPackage cp) {
+                //这里处理包的数据，加入业务逻辑
+            }
+        });
+        //调用GET方法
         try {
             client.get("coap://127.0.0.1/sensor/getinfo");
         }catch (Exception ex){

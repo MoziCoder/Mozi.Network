@@ -14,6 +14,7 @@ namespace Mozi.IoT
         protected Socket _sc;
 
         private EndPoint _endPoint;
+
         private long _errorCount = 0;
 
         /// <summary>

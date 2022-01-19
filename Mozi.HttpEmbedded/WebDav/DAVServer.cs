@@ -41,9 +41,9 @@ namespace Mozi.HttpEmbedded.WebDav
         /// <summary>
         /// 响应请求
         /// </summary>
-        /// <param name="state">The state.</param>
-        /// <exception cref="WebDavUnauthorizedException">If the user is unauthorized or has no access</exception>
-        /// <exception cref="WebDavNotFoundException">If the item was not found</exception>
+        /// <param name="context"></param>
+        /// <exception cref="WebDavUnauthorizedException"></exception>
+        /// <exception cref="WebDavNotFoundException"></exception>
         public StatusCode ProcessRequest(ref HttpContext context)
         {
             RequestMethod method = context.Request.Method;
@@ -54,7 +54,7 @@ namespace Mozi.HttpEmbedded.WebDav
             }
             context.Response.AddHeader("DAV", "1,2,1#extend");
 
-            return methodHandler.ProcessRequest(this, context, _store);
+            return methodHandler.HandleRequest(this, context, _store);
         }
     }
 }

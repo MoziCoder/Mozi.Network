@@ -17,7 +17,7 @@ namespace Mozi.HttpEmbedded.WebDav.Method
         ///     <see cref="HttpContext" /> 
         /// </param>
         /// <param name="store"><see cref="IWebDavStore" /> <see cref="DavServer" /></param>
-        public StatusCode ProcessRequest(DavServer server, HttpContext context, IWebDavStore store)
+        public StatusCode HandleRequest(DavServer server, HttpContext context, IWebDavStore store)
         {
             if (context.Request.Body.Length == 0)
             {

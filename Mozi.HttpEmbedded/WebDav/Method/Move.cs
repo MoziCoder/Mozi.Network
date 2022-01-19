@@ -17,7 +17,7 @@ namespace Mozi.HttpEmbedded.WebDav.Method
         ///     <see cref="HttpContext" /> 
         /// </param>
         /// <param name="store"><see cref="IWebDavStore" /> <see cref="DavServer" /></param>
-        public StatusCode ProcessRequest(DavServer server, HttpContext context, IWebDavStore store)
+        public StatusCode HandleRequest(DavServer server, HttpContext context, IWebDavStore store)
         {
             var source = WebDavExtensions.GetStoreItem(context.Request.Path, store);
 
@@ -44,7 +44,7 @@ namespace Mozi.HttpEmbedded.WebDav.Method
                 isNew = false;
             }
 
-            destParentCollection.MoveItemHere(source, destName);
+            destParentCollection.MoveItemTo(source, destName);
 
             return StatusCode.Success;
         }

@@ -15,6 +15,7 @@ namespace Mozi.HttpEmbedded
     public class HttpResponse
     {
         private byte[] _body = new byte[0];
+
         private string _contentType = "text/plain";
 
         private string _charset = "";
@@ -32,7 +33,7 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         public int ContentLength { get { return _body.Length; } }
         /// <summary>
-        /// Mime类型
+        /// Mime类型，默认为 text/plain
         /// </summary>
         public string ContentType { get { return _contentType; } private set { _contentType = value; } }
         /// <summary>
@@ -58,8 +59,8 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         public ResponseCookie Cookies { get; private set; }
         /// <summary>
-        /// 是否允许自动增加头部信息
-        /// 包含<see cref="HeaderProperty.Date"/>,<see cref="HeaderProperty.ContentType"/>,<see cref="HeaderProperty.ContentLength"/>
+        /// 是否自动增加头部信息
+        /// 自动追加的头属性为<see cref="HeaderProperty.Date"/>,<see cref="HeaderProperty.ContentType"/>,<see cref="HeaderProperty.ContentLength"/>
         /// </summary>
         public bool DontAddAutoHeader = false;
         ///// <summary>

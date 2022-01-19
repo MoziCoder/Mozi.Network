@@ -16,6 +16,7 @@ namespace Mozi.IoT
         private SocketAsyncEventArgs receiveSocketArgs;
 
         protected int _iport = 80;
+
         private long _errorCount = 0;
 
         /// <summary>
@@ -56,7 +57,6 @@ namespace Mozi.IoT
         {
             get { return _sc; }
         }
-
         /// <summary>  
         /// 构造函数  
         /// </summary>  
@@ -64,7 +64,6 @@ namespace Mozi.IoT
         {
 
         }
-
         /// <summary>  
         /// 初始化  
         /// </summary>  
@@ -72,8 +71,6 @@ namespace Mozi.IoT
         {
 
         }
-
-
         /// <summary>  
         /// 启动服务器 
         /// </summary>  
@@ -99,7 +96,7 @@ namespace Mozi.IoT
                 receiveSocketArgs.SetBuffer(so.Buffer, 0, so.Buffer.Length);
                 
 
-                StartReceive();
+                DoReceive();
                 return true;
             }
             catch (Exception)
@@ -107,7 +104,6 @@ namespace Mozi.IoT
                 return false;
             }
         }
-
         /// <summary>  
         /// 关闭服务器  
         /// </summary>  
@@ -125,17 +121,18 @@ namespace Mozi.IoT
 
             _sc.Close();
         }
-
-        private void StartReceive()
+        private void DoReceive()
         {
-            _sc.ReceiveFromAsync(receiveSocketArgs);
+            try
+            {
+                _sc.ReceiveFromAsync(receiveSocketArgs);
+            }catch(Exception ex)
+            {
+
+            }
         }
-
-
-
         private void IO_Completed(object sender, SocketAsyncEventArgs e)
         {
-
             switch (e.LastOperation)
             {
                 case SocketAsyncOperation.Receive:
@@ -145,13 +142,13 @@ namespace Mozi.IoT
                 default:
                     throw new ArgumentException("The last operation completed on the socket was not a receive or send");
             }
-            StartReceive();
+            DoReceive();
         }
+
         public void ProcessReceive(SocketAsyncEventArgs e)
         {
             try
             {
-                // check if the remote host closed the connection  
                 StateObject token = (StateObject)e.UserToken;
                 token.IP = ((IPEndPoint)e.RemoteEndPoint).Address.ToString();
                 token.RemotePort = ((IPEndPoint)e.RemoteEndPoint).Port;
@@ -168,18 +165,19 @@ namespace Mozi.IoT
             catch (Exception xe)
             {
                 _errorCount++;
-                CloseClientSocket(e);
+                //CloseClientSocket(e);
+            }
+            finally
+            {
+                //e.UserToken = null;
             }
         }
 
         //关闭客户端  
         private void CloseClientSocket(SocketAsyncEventArgs e)
         {
-            StateObject token = e.UserToken as StateObject;
             e.UserToken = new StateObject();
         }
-
-
 
         /// <summary>  
         /// 对数据进行打包,然后再发送  
