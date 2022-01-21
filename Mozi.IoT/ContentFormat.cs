@@ -1,6 +1,5 @@
 ﻿namespace Mozi.IoT
 {
-
     ///<summary>
     /// 内容格式
     ///</summary>

@@ -109,7 +109,7 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 客户机接受的语言选项
         /// </summary>
-        public LanguageOrder[] AcceptLanguage { get; private set; }
+        public LanguagePriority[] AcceptLanguage { get; private set; }
         /// <summary>
         /// 请求的来源地址
         /// </summary>
@@ -512,14 +512,14 @@ namespace Mozi.HttpEmbedded
             {
                 var language = req.Headers.GetValue(HeaderProperty.AcceptLanguage.PropertyName) ?? "";
                 var languages = language.Split(new char[] { (char)ASCIICode.COMMA }, StringSplitOptions.RemoveEmptyEntries);
-                req.AcceptLanguage = new LanguageOrder[languages.Length];
+                req.AcceptLanguage = new LanguagePriority[languages.Length];
                 try
                 {
                     for (int i = 0; i < languages.Length; i++)
                     {
                         var lan = languages[i];
                         var lans = lan.Split(new char[] { (char)ASCIICode.COMMA }, StringSplitOptions.RemoveEmptyEntries);
-                        req.AcceptLanguage[i] = new LanguageOrder()
+                        req.AcceptLanguage[i] = new LanguagePriority()
                         {
                             LanguageName = lans[0],
                             Weight = lans.Length > 1 ? int.Parse(lans[1]) : 1

@@ -1,6 +1,5 @@
 ﻿namespace Mozi.IoT
 {
-
     /// <summary>
     /// CoAP协议常量
     /// </summary>

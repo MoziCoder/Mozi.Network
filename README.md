@@ -11,7 +11,7 @@ Mozi.Network是基于.Net开发的网络应用组件套装。所有的模块在�
 	IoT物联网标准通讯套件 网关，客户端，调试工具
 
 ### [iot4j][iot4j]
-    iot4j是IoT(CoAP)的Java客户端实现
+    IoT(CoAP)的Java客户端实现
 
 ### [SSDP][ssdp] 　　
 	SSDP/UPNP实现
@@ -26,13 +26,13 @@ Mozi.Network是基于.Net开发的网络应用组件套装。所有的模块在�
 	NTP授时服务器，目前仅有SNTP功能
 
 ## [规划与展望][roadmap]
-	规划中的项目待总体设计完成后再进行开发，暂时不会冒进进行推进，项目规划详情请查阅[Roadmap.md]。
+	规划中的项目待总体设计完成后再进行开发，项目规划详情请查阅[Roadmap.md]。
 
 ## 项目地址
 
-- [Github][github]
-
 - [Gitee][gitee]
+
+- [Github][github]
 
 - [CSDN][codechina]
 

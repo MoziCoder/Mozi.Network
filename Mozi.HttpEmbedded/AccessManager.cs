@@ -24,7 +24,7 @@ namespace Mozi.HttpEmbedded
         /// 增加黑名单成员
         /// </summary>
         /// <param name="ipAddress"></param>
-        private void AddBlackList(string ipAddress)
+        private void AddMember(string ipAddress)
         {
             _blacklist.Add(ipAddress);
         }
@@ -32,7 +32,7 @@ namespace Mozi.HttpEmbedded
         /// 将成员从黑名单中移除
         /// </summary>
         /// <param name="ipAddress"></param>
-        private void RemoveBlackList(string ipAddress)
+        private void RemoveMember(string ipAddress)
         {
             _blacklist.Remove(ipAddress);
         }

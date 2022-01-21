@@ -2,5 +2,6 @@
 {
     class LwM2MServer
     {
+
     }
 }

@@ -28,7 +28,7 @@ namespace Mozi.HttpEmbedded.Auth
 
         protected override string Tag
         {
-            get { return Name; }
+            get { return _name; }
         }
 
         private AuthorizationType(string name)
