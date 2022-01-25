@@ -37,6 +37,7 @@ CoAP（Constrained Application Protocol）受限应用协议，是一种在物�
 - 消息缓存
 - 分块传输 RFC 7959
 - 对象安全
+- L2M2M服务端实现
 
 ## 版权说明
 	本项目采用MIT开源协议，引用请注明出处。欢迎复制，引用和修改。意见建议疑问请联系软件作者，或提交ISSUE。
@@ -58,6 +59,7 @@ CoAP（Constrained Application Protocol）受限应用协议，是一种在物�
     cc.SetPort(12341);
     cc.Start();
     //调用Get方法，向服务器发起通讯
+    //127.0.0.1为CoAP服务器地址，调试时请修改为对应的服务器地址
     cc.Get("coap://127.0.0.1/sensor/getinfo");
     Console.ReadLine();
 
