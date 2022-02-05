@@ -139,13 +139,16 @@ namespace Mozi.IoT
             head = (byte)(head | (Version << 6));
             head = (byte)(head | (MessageType.Value << 4));
             head = (byte)(head | TokenLength);
+
             data.Add(head);
             data.Add((byte)(((byte)Code.Category << 5) | ((byte)(Code.Detail << 3) >> 3)));
             data.AddRange(BitConverter.GetBytes(MesssageId).Revert());
+
             if (TokenLength > 0)
             {
                 data.AddRange(Token);
             }
+
             uint delta = 0;
             foreach (var op in Options)
             {
@@ -203,7 +206,7 @@ namespace Mozi.IoT
             return this;
         }
         /// <summary>
-        /// 设置字节流选项值
+        /// 设置选项值 字节流
         /// </summary>
         /// <param name="define"></param>
         /// <param name="optionValue"></param>
@@ -215,7 +218,7 @@ namespace Mozi.IoT
             return this;
         }
         /// <summary>
-        /// 设置uint(32)选项值
+        /// 设置选项值(uint(32))
         /// </summary>
         /// <param name="define"></param>
         /// <param name="optionValue"></param>

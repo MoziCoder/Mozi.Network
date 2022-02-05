@@ -9,14 +9,14 @@ namespace Mozi.HttpEmbedded
     /// </summary>
     public class HeaderProperty : AbsClassEnum
     {
-        public static HeaderProperty Accept = new HeaderProperty("Accept");                                             // 	用户代理期望的MIME 类型列表 	HTTP Content Negotiation 	HTTP/1.1
-        public static HeaderProperty AcceptCH = new HeaderProperty("Accept-CH");                                          // 
+        public static HeaderProperty Accept = new HeaderProperty("Accept");                                                       // 	用户代理期望的MIME 类型列表 	HTTP Content Negotiation 	HTTP/1.1
+        public static HeaderProperty AcceptCH = new HeaderProperty("Accept-CH");                                                  // 
 
         //    列出配置数据，服务器可据此来选择适当的响应。 	HTTP Client Hints 	
-        public static HeaderProperty AcceptCharset = new HeaderProperty("Accept-Charset");                                     // 	列出用户代理支持的字符集。 	HTTP Content Negotiation 	HTTP/1.1
-        public static HeaderProperty AcceptFeatures = new HeaderProperty("Accept-Features");                                    // 	HTTP Content Negotiation 	RFC 2295, §8.2
-        public static HeaderProperty AcceptEncoding = new HeaderProperty("Accept-Encoding");                                    // 	列出用户代理支持的压缩方法。 	HTTP Content Negotiation 	HTTP/1.1
-        public static HeaderProperty AcceptLanguage = new HeaderProperty("Accept-Language");                                    // 	列出用户代理期望的页面语言。 	HTTP Content Negotiation 	HTTP/1.1
+        public static HeaderProperty AcceptCharset = new HeaderProperty("Accept-Charset");                                        // 	列出用户代理支持的字符集。 	HTTP Content Negotiation 	HTTP/1.1
+        public static HeaderProperty AcceptFeatures = new HeaderProperty("Accept-Features");                                      // 	HTTP Content Negotiation 	RFC 2295, §8.2
+        public static HeaderProperty AcceptEncoding = new HeaderProperty("Accept-Encoding");                                      // 	列出用户代理支持的压缩方法。 	HTTP Content Negotiation 	HTTP/1.1
+        public static HeaderProperty AcceptLanguage = new HeaderProperty("Accept-Language");                                      // 	列出用户代理期望的页面语言。 	HTTP Content Negotiation 	HTTP/1.1
         //Accept-Ranges 			
         public static HeaderProperty AccessControlAllowCredentials = new HeaderProperty("Access-Control-Allow-Credentials");      // 	HTTP Access Control and Server Side Access Control 	W3C Cross-Origin Resource Sharing
         public static HeaderProperty AccessControlAllowOrigin = new HeaderProperty("Access-Control-Allow-Origin");                // 	HTTP Access Control and Server Side Access Control 	W3C Cross-Origin Resource Sharing
@@ -26,8 +26,8 @@ namespace Mozi.HttpEmbedded
         public static HeaderProperty AccessControlExposeHeaders = new HeaderProperty("Access-Control-Expose-Headers");            // 	HTTP Access Control and Server Side Access Control 	W3C Cross-Origin Resource Sharing
         public static HeaderProperty AccessControlRequestMethod = new HeaderProperty("Access-Control-Request-Method");            // 	HTTP Access Control and Server Side Access Control 	W3C Cross-Origin Resource Sharing
         public static HeaderProperty AccessControlRequestHeaders = new HeaderProperty("Access-Control-Request-Headers");          // 	HTTP Access Control and Server Side Access Control 	W3C Cross-Origin Resource Sharing
-        public static HeaderProperty Age = new HeaderProperty("Age");// 			                                                    
-        public static HeaderProperty Allow = new HeaderProperty("Allow");// 			                                                
+        public static HeaderProperty Age = new HeaderProperty("Age");                                                             // 			                                                    
+        public static HeaderProperty Allow = new HeaderProperty("Allow");                                                         // 			                                                
         public static HeaderProperty Alternates = new HeaderProperty("Alternates");                                               // 	HTTP Content Negotiation 	RFC 2295, §8.3
         public static HeaderProperty Authorization = new HeaderProperty("Authorization");                                         // 	包含用服务器验证用户代理的凭证 		
         public static HeaderProperty CacheControl = new HeaderProperty("Cache-Control");                                          //  HTTP Caching FAQ 	
@@ -93,22 +93,22 @@ namespace Mozi.HttpEmbedded
 
         //列出将在消息正文之后在尾部块中传输的头。这允许服务器计算一些值，如Content-MD5：在传输数据时。请注意，Trailer：标头不得列出Content-Length :, Trailer：或Transfer-Encoding：headers。
         //        RFC 2616, §14.40
-        public static HeaderProperty TransferEncoding = new HeaderProperty("Transfer-Encoding");// 			
-        public static HeaderProperty Upgrade = new HeaderProperty("Upgrade");// 			
-        public static HeaderProperty UserAgent = new HeaderProperty("User-Agent");// 		for Gecko's user agents see the User Agents Reference 	
-        public static HeaderProperty VariantVary = new HeaderProperty("Variant-Vary");// 		HTTP Content Negotiation 	RFC 2295, §8.6
+        public static HeaderProperty TransferEncoding = new HeaderProperty("Transfer-Encoding");                                  // 			
+        public static HeaderProperty Upgrade = new HeaderProperty("Upgrade");                                                     // 			
+        public static HeaderProperty UserAgent = new HeaderProperty("User-Agent");                                                // 		for Gecko's user agents see the User Agents Reference 	
+        public static HeaderProperty VariantVary = new HeaderProperty("Variant-Vary");                                            // 		HTTP Content Negotiation 	RFC 2295, §8.6
         public static HeaderProperty Vary = new HeaderProperty("Vary");// 	
 
         //列出了用作Web服务器选择特定内容的条件的标头。此服务器对于高效和正确缓存发送的资源很重要。
         //    HTTP Content Negotiation & HTTP Caching FAQ 	
         public static HeaderProperty Via = new HeaderProperty("Via");// 			
         public static HeaderProperty Warning = new HeaderProperty("Warning");// 			
-        public static HeaderProperty WWWAuthenticate = new HeaderProperty("WWW-Authenticate");// 			
-        public static HeaderProperty XContentDuration = new HeaderProperty("X-Content-Duration");// 		Configuring servers for Ogg media 	
-        public static HeaderProperty XContentSecurityPolicy = new HeaderProperty("X-Content-Security-Policy");// 		Using Content Security Policy 	
-        public static HeaderProperty XDNSPrefetchControl = new HeaderProperty("X-DNSPrefetch-Control");// 		Controlling DNS prefetching 	
-        public static HeaderProperty XFrameOptions = new HeaderProperty("X-Frame-Options");// 		The XFrame-Option Response Header 	
-        public static HeaderProperty XRequestedWith = new HeaderProperty("X-Requested-With");// 	
+        public static HeaderProperty WWWAuthenticate = new HeaderProperty("WWW-Authenticate");                                   // 			
+        public static HeaderProperty XContentDuration = new HeaderProperty("X-Content-Duration");                                // 		Configuring servers for Ogg media 	
+        public static HeaderProperty XContentSecurityPolicy = new HeaderProperty("X-Content-Security-Policy");                   // 		Using Content Security Policy 	
+        public static HeaderProperty XDNSPrefetchControl = new HeaderProperty("X-DNSPrefetch-Control");                          // 		Controlling DNS prefetching 	
+        public static HeaderProperty XFrameOptions = new HeaderProperty("X-Frame-Options");                                      // 		The XFrame-Option Response Header 	
+        public static HeaderProperty XRequestedWith = new HeaderProperty("X-Requested-With");                                    // 	
 
         //通常在值为“XMLHttpRequest”时使用
         //        Not standard
@@ -155,8 +155,7 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public static HeaderProperty Parse(byte[] data)
         {
-            int itag = -1;
-            itag = Array.IndexOf(data, ASCIICode.COLON);
+            int itag = Array.IndexOf(data, ASCIICode.COLON);
             byte[] btag = new byte[itag], bvalue = new byte[data.Length - itag - 2];
             Array.Copy(data, btag, btag.Length);
             Array.Copy(data, itag + 2, bvalue, 0, bvalue.Length);

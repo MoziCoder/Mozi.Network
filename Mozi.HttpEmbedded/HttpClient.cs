@@ -4,5 +4,30 @@
     class HttpClient
     {
 
+        private void Send(string url, RequestMethod method,string body)
+        {
+
+        }
+
+        private void Get(string url)
+        {
+
+        }
+
+        private void Post(string url)
+        {
+
+        }
+
+        private void Put(string url)
+        {
+
+        }
+
+    }
+
+    class HttpClientQUIC : HttpClient
+    {
+
     }
 }

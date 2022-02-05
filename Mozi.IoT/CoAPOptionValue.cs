@@ -87,7 +87,8 @@ namespace Mozi.IoT
        /// </summary>
        public override byte[] Pack { get => _pack; set => _pack = value; }
 
-        public override int Length => _pack != null ? _pack.Length : 0;
+       public override int Length => _pack != null ? _pack.Length : 0;
+
     }
     /// <summary>
     /// string选项值
