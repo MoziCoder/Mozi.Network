@@ -69,7 +69,7 @@ CoAP（Constrained Application Protocol）受限应用协议，是一种在物�
 
 ~~~Java
 
-import org.mozi.iot4j.CoAPClient;
+import com.mozicoder.iot4j.CoAPClient;
 
 public class Main{
 

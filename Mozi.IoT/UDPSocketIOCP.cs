@@ -226,7 +226,6 @@ namespace Mozi.IoT
         /// <param name="port"></param>
         public void SendTo(byte[] buffer, string host, int port)
         {
-            
             _sc.SendTo(buffer, new IPEndPoint(IPAddress.Parse(host), port));
         }
     }
