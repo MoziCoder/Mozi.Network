@@ -279,9 +279,9 @@ namespace Mozi.SSDP
             {
                 OnMessageReceived(this, args);
             }
-            //Console.WriteLine("==**************{0}*************==", args.IP);
-            //Console.WriteLine("{1}", args.IP,System.Text.Encoding.UTF8.GetString(args.Data));
-            //Console.WriteLine("==***************************************==");
+            Console.WriteLine("==**************{0}*************==", args.IP);
+            Console.WriteLine("{1}", args.IP, System.Text.Encoding.UTF8.GetString(args.Data));
+            Console.WriteLine("==***************************************==");
         }
         /// <summary>
         /// 包解析
@@ -636,13 +636,13 @@ namespace Mozi.SSDP
         //NT: upnp:event
         //NTS: upnp:propchange
         //SID: uuid:subscription-UUID
-        // SEQ: event key
+        //SEQ: event key
         //<?xml version="1.0"?>
         //<e:propertyset xmlns:e="urn:schemas-upnp-org:event-1-0"> 
         //<e:property> 
-        //<variableName>new value</variableName> 
+        //  <variableName>new value</variableName> 
         //</e:property> 
-        //Other variable names and values(if any) go here.
+        //  Other variable names and values(if any) go here.
         //</e:propertyset>
         /// <summary>
         /// 订阅
@@ -732,8 +732,7 @@ namespace Mozi.SSDP
                         HostPort = ushort.Parse(hostItmes[1]);
                     }
                     _host = value;
-                }catch(Exception ex)
-                {
+                }catch(Exception ex){
 
                 }
             } 
@@ -774,7 +773,7 @@ namespace Mozi.SSDP
         /// <summary>
         /// 事件组播地址
         /// </summary>
-        public const string EventMulticastAddress = " 239.255.255.246";
+        public const string EventMulticastAddress = "239.255.255.246";
         /// <summary>
         /// 事件组播端口
         /// </summary>

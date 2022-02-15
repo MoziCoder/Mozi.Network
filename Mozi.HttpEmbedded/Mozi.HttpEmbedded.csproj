@@ -66,11 +66,13 @@
     <Compile Include="ASCIICode.cs" />
     <Compile Include="Attributes\BasicApiAttribute.cs" />
     <Compile Include="Attributes\HttpMethodAttribute.cs" />
-    <Compile Include="Attributes\ResponseContentTypeAttribute.cs" />
+    <Compile Include="Attributes\ContentTypeAttribute.cs" />
+    <Compile Include="Common\DNSResolver.cs" />
     <Compile Include="HttpClient.cs" />
     <Compile Include="HttpServerQUIC.cs" />
     <Compile Include="Memory\BufferPool.cs" />
     <Compile Include="Middleware\IMiddleware.cs" />
+    <Compile Include="SocketClient.cs" />
     <Compile Include="SocketServerIOCP.cs" />
     <Compile Include="Template\Expression.cs" />
     <Compile Include="Template\Statement.cs" />

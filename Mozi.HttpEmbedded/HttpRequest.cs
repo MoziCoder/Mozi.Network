@@ -396,11 +396,13 @@ namespace Mozi.HttpEmbedded
 
                             if (isFile)
                             {
-                                File file = new File();
-                                file.FileName = HtmlEncoder.EntityCodeToString(fileName);
-                                file.FileData = postField;
-                                file.FileIndex = req.Files.Length;
-                                file.FieldName = fieldName;
+                                File file = new File
+                                {
+                                    FileName = HtmlEncoder.EntityCodeToString(fileName),
+                                    FileData = postField,
+                                    FileIndex = req.Files.Length,
+                                    FieldName = fieldName
+                                };
                                 //file.FileTempSavePath = AppDomain.CurrentDomain.BaseDirectory + @"Temp\" + file.FileName.ToString();
                                 req.Files.Append(file);
                                 ////写入临时目录
@@ -668,13 +670,16 @@ namespace Mozi.HttpEmbedded
             return this;
         }
         /// <summary>
-        /// 应用头信息集合
+        /// 应用头信息集合 覆盖所有头属性
         /// </summary>
         /// <param name="headers"></param>
         /// <returns></returns>
         public HttpRequest SetHeaders(TransformHeader headers)
         {
-            Headers = headers;
+            if (headers != null)
+            {
+                Headers = headers;
+            }
             return this;
         }
         /// <summary>
@@ -709,8 +714,11 @@ namespace Mozi.HttpEmbedded
         }
         public HttpRequest SetBody(byte[] data)
         {
-            Body = data;
-            ContentLength = Body.Length.ToString();
+            if (data != null)
+            {
+                Body = data;
+                ContentLength = Body.Length.ToString();
+            }
             return this;
         }
         /// <summary>

@@ -8,6 +8,7 @@ using System.Reflection;
 
 namespace Mozi.HttpEmbedded.Test
 {
+    
     public delegate void TaskExceptionThrowing(object sender, Exception ex);
 
     static class Program
@@ -71,6 +72,12 @@ namespace Mozi.HttpEmbedded.Test
             state.Init();
             state.Activate();
 
+            HttpClient hc = new HttpClient();
+ 
+            hc.Get("http://127.0.0.1/index.html", null, new RequestComplete((ctx) =>
+            {
+                Console.WriteLine(ctx.Response.Body.Length);
+            }));
             Console.ReadLine();
 
             //路径信息
@@ -94,6 +101,7 @@ namespace Mozi.HttpEmbedded.Test
 
             //内置API 请参看Runtime.cs文件
             
+
         }
 
         /// <summary>

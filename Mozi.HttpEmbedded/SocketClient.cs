@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 
@@ -9,18 +8,20 @@ namespace Mozi.HttpEmbedded
     //TODO 实现链接复用
     //TODO 解决接收文件内存占用过大，无法及时释放的问题
 
+    //TODO 实现对IPV6的支持
     /// <summary>
     /// 异步单线程
     /// </summary>
-    public class SocketServer
+    public class SocketClient
     {
-        protected int _iport = 80;
+        protected int _localPort,_iport = 80;
+        protected string _host = "";
 
-        protected int _maxListenCount = 65535;
-
-        protected readonly ConcurrentDictionary<string, Socket> _socketDocker;
         protected Socket _sc;
         private long _errorCount = 0;
+        private bool _connected = false;
+        private int _timeoutConnect = 45;
+
         /// <summary>
         /// 接收错误计数
         /// </summary>
@@ -31,10 +32,6 @@ namespace Mozi.HttpEmbedded
                 return _errorCount;
             }
         }
-        /// <summary>
-        /// 服务器启动事件
-        /// </summary>
-        public  ServerStart OnServerStart;
         /// <summary>
         /// 客户端连接事件
         /// </summary>
@@ -51,11 +48,23 @@ namespace Mozi.HttpEmbedded
         /// 数据接收完成事件
         /// </summary>
         public  ReceiveEnd AfterReceiveEnd;
+        public int LocalPort
+        {
+            get
+            {
+                return _localPort;
+            }
+        }
         /// <summary>
-        /// 服务器停用事件
+        /// 是否已连接
         /// </summary>
-        public  AfterServerStop AfterServerStop;
-
+        public bool Connected
+        {
+            get
+            {
+                return _connected;
+            }
+        }
         /// <summary>
         /// 端口
         /// </summary>
@@ -63,108 +72,102 @@ namespace Mozi.HttpEmbedded
         {
             get { return _iport; }
         }
+        /// <summary>
+        /// 远程主机地址
+        /// </summary>
+        public string Host
+        {
+            get { return _host; }
+        }
+
+        public int ConnectTimeout
+        {
+            get { return _timeoutConnect; }
+            set
+            {
+                _timeoutConnect = value;
+            }
+        }
+
         public Socket SocketMain
         {
             get { return _sc; }
         }
 
-        public SocketServer()
+        public SocketClient()
         {
-            _socketDocker = new ConcurrentDictionary<string, Socket>();
+            _sc = new Socket(AddressFamily.InterNetwork, SocketType.Stream, System.Net.Sockets.ProtocolType.Tcp);
+            _sc.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
         }
-
-        //TODO 测试此处是否有BUG
         /// <summary>
-        /// 启动服务器
+        /// 绑定本地端口
         /// </summary>
         /// <param name="port"></param>
-        public void Start(int port)
+        public void SetPort(int port)
         {
-            _iport = port;
-            if (_sc == null)
-            {
-                _sc = new Socket(AddressFamily.InterNetwork, SocketType.Stream, System.Net.Sockets.ProtocolType.Tcp);
-            }
-            else
-            {
-                _sc.Close();
-            }
-            IPEndPoint endpoint = new IPEndPoint(IPAddress.Any, _iport);
-            //允许端口复用
-            _sc.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            _localPort = port;
+            IPEndPoint endpoint = new IPEndPoint(IPAddress.Any, port);
             _sc.Bind(endpoint);
-            _sc.Listen(_maxListenCount);
-            //回调服务器启动事件
-            if (OnServerStart != null)
-            {
-                OnServerStart(this, new ServerArgs() { StartTime = DateTime.Now, StopTime = DateTime.MinValue });
-            }
-            _sc.BeginAccept(new AsyncCallback(CallbackAccept), _sc);
         }
+        ////TODO 测试此处是否有BUG
+        ///// <summary>
+        ///// 启动服务器
+        ///// </summary>
+        ///// <param name="port"></param>
+        //public void Start(int port)
+        //{
+        //    _iport = port;
+        //    if (_sc == null)
+        //    {
+        //        _sc = new Socket(AddressFamily.InterNetwork, SocketType.Stream, System.Net.Sockets.ProtocolType.Tcp);
+        //    }
+        //    else
+        //    {
+        //        _sc.Close();
+        //    }
+        //    IPEndPoint endpoint = new IPEndPoint(IPAddress.Any, _iport);
+        //    //允许端口复用
+        //    _sc.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+        //    //_sc.Bind(endpoint);
+        //    //_sc.Listen(_maxListenCount);
+        //    ////回调服务器启动事件
+        //    //_sc.BeginAccept(new AsyncCallback(CallbackAccept), _sc);
+        //}
         /// <summary>
-        /// 关闭服务器
+        /// 链接远程主机
+        /// </summary>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        public void Connect(string host,int port)
+        {
+            _host = host;
+            _iport = port;
+            IAsyncResult result = _sc.BeginConnect(host, port, null, null);
+            result.AsyncWaitHandle.WaitOne(_timeoutConnect, false);
+            _connected = _sc.Connected;
+            try
+            {
+                result.AsyncWaitHandle.Close();
+            }
+            finally
+            {
+
+            }
+        }
+
+        /// <summary>
+        /// 关闭
         /// </summary>
         public void Shutdown()
         {
-            _socketDocker.Clear();
             try
             {
                 _sc.Shutdown(SocketShutdown.Both);
                 _sc.Close();
-                if (AfterServerStop != null)
-                {
-                    AfterServerStop(_sc, null);
-                }
             }
             catch
             {
 
-            }
-        }
-        /// <summary>
-        /// 开始连接回调
-        /// </summary>
-        /// <param name="iar"></param>
-        protected void CallbackAccept(IAsyncResult iar)
-        {
-            Socket server = (Socket)iar.AsyncState; 
-            //接受新连接传入
-            server.BeginAccept(CallbackAccept, server);
-
-            Socket client = server.EndAccept(iar);
-
-            StateObject so = new StateObject()
-            {
-                WorkSocket = client,
-                Id = Guid.NewGuid().ToString(),
-                IP = ((IPEndPoint)client.RemoteEndPoint).Address.ToString(),
-                ConnectTime = DateTime.Now,
-                RemotePort = ((IPEndPoint)client.RemoteEndPoint).Port,
-            };
-            if (OnClientConnect != null)
-            {
-                //TODO .NetCore不再支持异步委托，需要重新实现
-                OnClientConnect(this, new ClientConnectArgs()
-                {
-                    Id = so.Id,
-                    IP = so.IP,
-                    ConnectTime = so.ConnectTime,
-                    RemotePort = so.RemotePort,
-                    Client = client
-                });
-            }
-            _socketDocker.TryAdd(so.Id, client);
-            try
-            {
-                client.BeginReceive(so.Buffer, 0, so.Buffer.Length, SocketFlags.None, CallbackReceived, so);
-                if (OnReceiveStart != null)
-                {
-                    OnReceiveStart.Invoke(this, new DataTransferArgs() { Id = so.Id, IP = so.IP, Socket = server, Port = so.RemotePort, Client = client, State = so });
-                }
-            }
-            catch (Exception ex)
-            {
-                _errorCount++;
             }
         }
         /// <summary>
@@ -216,7 +219,6 @@ namespace Mozi.HttpEmbedded
         {
             try
             {
-                RemoveClientSocket(so);
                 if (AfterReceiveEnd != null)
                 {
                     AfterReceiveEnd(this,
@@ -235,12 +237,6 @@ namespace Mozi.HttpEmbedded
 
             }
         }
-        //TODO 此处开启Socket状态监听，对断开的链接进行关闭销毁
-        private void RemoveClientSocket(StateObject so)
-        {
-            Socket client;
-            _socketDocker.TryRemove(so.Id, out client);
-        }
 
         /// <summary>
         /// 向指定地址发送数据
@@ -248,9 +244,40 @@ namespace Mozi.HttpEmbedded
         /// <param name="buffer"></param>
         /// <param name="host"></param>
         /// <param name="port"></param>
-        public void SendTo(byte[] buffer, string host, int port)
+        public void SendTo(byte[] buffer)
         {
-            _sc.SendTo(buffer, new IPEndPoint(IPAddress.Parse(host), port));
+            if (_sc.Poll(100, SelectMode.SelectRead)&&_sc.Available==0)
+            {
+                _connected = false;
+            }
+            if (_connected)
+            {
+                _sc.SendTo(buffer, new IPEndPoint(IPAddress.Parse(_host), _iport));
+                StateObject so = new StateObject()
+                {
+                    WorkSocket = _sc,
+                    Id = Guid.NewGuid().ToString(),
+                    IP = _host,
+                    ConnectTime = DateTime.Now,
+                    RemotePort = _iport,
+                };
+                try
+                {
+                    _sc.BeginReceive(so.Buffer, 0, so.Buffer.Length, SocketFlags.None, CallbackReceived, so);
+                    if (OnReceiveStart != null)
+                    {
+                        OnReceiveStart.Invoke(this, new DataTransferArgs() { Id = so.Id, IP = so.IP, Socket = _sc, Port = so.RemotePort, Client = _sc, State = so });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _errorCount++;
+                }
+            }
+            else
+            {
+                throw new Exception($"与服务的链接已断开：{_host}:{_iport}");
+            }
         }
     }
 }

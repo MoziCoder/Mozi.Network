@@ -26,8 +26,24 @@ namespace Mozi.HttpEmbedded.Attributes
     {
 
     }
+    /// <summary>
+    /// 允许访问的动作
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+    internal class HttpPutAttribute : Attribute
+    {
+
+    }
+    /// <summary>
+    /// 允许访问的动作
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+    internal class HttpDeleteAttribute : Attribute
+    {
+
+    }
     [AttributeUsage(AttributeTargets.Method)]
-    internal class UrlRewrite : Attribute
+    internal class UrlRewriteAttribute : Attribute
     {
 
     }

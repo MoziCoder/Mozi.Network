@@ -118,7 +118,11 @@ namespace Mozi.IoT.Encode
             Paths = new string[0];
             Queries = new string[0];
         }
-
+        /// <summary>
+        /// 分析请求链接，带DNS解析功能
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
         public static UriInfo Parse(string url)
         {
             UriInfo uri = new UriInfo();
@@ -176,10 +180,14 @@ namespace Mozi.IoT.Encode
                 {
                     uri.Port = 0;
                 }
+                else
+                {
+                    uri.Port = port;
+                }
 
                 if (isDomain)
                 {
-                    uri.Host = DNSClient.GetDomainAddress(uri.Host);
+                    uri.Host = DNSResolver.GetDomainAddress(uri.Host);
                 }
 
                 //分离路径地址
