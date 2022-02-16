@@ -14,6 +14,10 @@ namespace Mozi.HttpEmbedded
     /// </summary>
     public class HttpRequest
     {
+        private byte[] _body = new byte[] { };
+        private TransformHeader _headers;
+        private FileCollection _files;
+        private RequestCookie _cookies;
         /// <summary>
         /// 协议类型,参看<see cref="ProtocolType"/>所列出的值
         /// </summary>
@@ -69,7 +73,7 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 请求头
         /// </summary>
-        public TransformHeader Headers { get; protected set; }
+        public TransformHeader Headers { get { return _headers; } protected set { _headers = value; } }
         ///// <summary>
         ///// 二进制通讯数据
         ///// </summary>
@@ -89,15 +93,15 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 请求数据体，有效荷载数据
         /// </summary>
-        public byte[] Body { get; protected set; }
+        public byte[] Body { get { return _body; } protected set { _body = value; } }
         /// <summary>
         /// 文件
         /// </summary>
-        public FileCollection Files { get; protected set; }
+        public FileCollection Files { get { return _files; } protected set { _files = value; } }
         /// <summary>
         /// Cookie
         /// </summary>
-        public RequestCookie Cookies { get; protected set; }
+        public RequestCookie Cookies { get { return _cookies; } protected set { _cookies = value; } }
         /// <summary>
         /// 客户机IP地址
         /// </summary>
@@ -121,10 +125,10 @@ namespace Mozi.HttpEmbedded
         {
             //默认HTTP/1.1
             ProtocolVersion = HttpVersion.Version11;
-            Headers = new TransformHeader();
-            Files = new FileCollection();
-            Cookies = new RequestCookie();
-            Body = new byte[] { };
+            _headers = new TransformHeader();
+            _files = new FileCollection();
+            _cookies = new RequestCookie();
+            _body = new byte[] { };
         }
         /// <summary>
         /// 解析请求数据包
@@ -630,13 +634,13 @@ namespace Mozi.HttpEmbedded
             data.AddRange(GetRequestLine());
             data.AddRange(TransformHeader.Carriage);
             //注入默认头部
-            data.AddRange(Headers.GetBuffer(headerKeyNameUpperCase));
+            data.AddRange(_headers.GetBuffer(headerKeyNameUpperCase));
             //注入Cookie
-            data.AddRange(Cookies.GetBuffer());
+            data.AddRange(_cookies.GetBuffer());
             //注入分割符
             data.AddRange(TransformHeader.Carriage);
             //注入响应包体
-            data.AddRange(Body);
+            data.AddRange(_body);
             return data.ToArray();
         }
         /// <summary>
@@ -655,7 +659,7 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public HttpRequest SetHeader(string key,string value)
         {
-            Headers.Add(key, value);
+            _headers.Add(key, value);
             return this;
         }
         /// <summary>
@@ -666,7 +670,7 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public HttpRequest SetHeader(HeaderProperty key,string value)
         {
-            Headers.Add(key, value);
+            _headers.Add(key, value);
             return this;
         }
         /// <summary>
@@ -678,7 +682,7 @@ namespace Mozi.HttpEmbedded
         {
             if (headers != null)
             {
-                Headers = headers;
+                _headers = headers;
             }
             return this;
         }
@@ -716,8 +720,9 @@ namespace Mozi.HttpEmbedded
         {
             if (data != null)
             {
-                Body = data;
-                ContentLength = Body.Length.ToString();
+                _body = data;
+                ContentLength = _body.Length.ToString();
+                SetHeader(HeaderProperty.ContentLength, data.Length.ToString());
             }
             return this;
         }
@@ -733,10 +738,11 @@ namespace Mozi.HttpEmbedded
         {
             //PackData = null;
             RequestLineData = null;
-            Body = null;
-            Headers = null;
+            _body = null;
+            _headers = null;
+            _cookies = null;
             HeaderData = null;
-            Files = null;
+            _files = null;
             AcceptLanguage = null;
         }
     }

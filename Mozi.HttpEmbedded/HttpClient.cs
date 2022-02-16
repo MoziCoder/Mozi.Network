@@ -9,6 +9,9 @@ namespace Mozi.HttpEmbedded
     public delegate void RequestComplete(HttpContext context);
 
     //TODO http客户端，因http客户端实现比较多，暂时不实现，待后期规划
+    /// <summary>
+    /// Http客户端
+    /// </summary>
     public class HttpClient
     {
         private static string Charset = "UTF-8";
@@ -51,7 +54,6 @@ namespace Mozi.HttpEmbedded
                         req.SetHeader(h.Key, h.Value);
                     }
                 }
-
                 HttpContext hc = new HttpContext();
                 hc.Request = req;
 
@@ -84,7 +86,7 @@ namespace Mozi.HttpEmbedded
 
         }
         /// <summary>
-        /// Get
+        /// HttpGet方法
         /// </summary>
         /// <param name="url">http://{host|domain}[:{port}]/[{path}[?query]]</param>
         /// <param name="headers"></param>
@@ -94,7 +96,7 @@ namespace Mozi.HttpEmbedded
             Send(url, RequestMethod.GET, headers,null,callback);
         }
         /// <summary>
-        /// Post
+        /// HttpPost方法
         /// </summary>
         /// <param name="url"></param>
         /// <param name="headers"></param>
@@ -105,7 +107,7 @@ namespace Mozi.HttpEmbedded
             Send(url, RequestMethod.POST, headers, body, callback);
         }
         /// <summary>
-        /// Post
+        /// HttpPost方法
         /// </summary>
         /// <param name="url"></param>
         /// <param name="body"></param>
@@ -114,6 +116,7 @@ namespace Mozi.HttpEmbedded
         {
             Post(url, null, body, callback);
         }
+        //TODO 文件传输应加入进度
         /// <summary>
         /// 多文件提交 multipart/form-data;
         /// </summary>
@@ -122,7 +125,14 @@ namespace Mozi.HttpEmbedded
         /// <param name="files"></param>
         public void PostFile(string url, Dictionary<HeaderProperty, string> headers, List<FileInfo> files,RequestComplete callback)
         {
-            string boundary = "--abcdefghijk";
+            
+            byte[] byteNewLine = new byte[] { ASCIICode.CR, ASCIICode.LF };
+            string sNewLine=System.Text.Encoding.ASCII.GetString(byteNewLine);
+            string boundary = "--"+CacheControl.GenerateRandom(8);
+            if (headers == null)
+            {
+                headers = new Dictionary<HeaderProperty, string>();
+            }
             headers.Add(HeaderProperty.ContentType, $"multipart/form-data; boundary={boundary}");
             if (files.Count > 0)
             {
@@ -131,9 +141,9 @@ namespace Mozi.HttpEmbedded
                     foreach (var f in files)
                     {
                         FileStream fs = f.OpenRead();
-                        string header = $"--{boundary}" + ASCIICode.CR + ASCIICode.LF;
-                        header += HeaderProperty.ContentDisposition.PropertyName + $": form-data; name=\"fileToUpload\"; filename=\"{HtmlEncoder.StringToEntityCode(f.Name)}\"" + ASCIICode.CR + ASCIICode.LF;
-                        header += HeaderProperty.ContentType.PropertyName + ": application/octet-stream" + ASCIICode.CR + ASCIICode.LF + ASCIICode.CR + ASCIICode.LF;
+                        string header = $"--{boundary}" + sNewLine;
+                        header += HeaderProperty.ContentDisposition.PropertyName + $": form-data; name=\"fileToUpload\"; filename=\"{HtmlEncoder.StringToEntityCode(f.Name)}\"" + sNewLine;
+                        header += HeaderProperty.ContentType.PropertyName + ": application/octet-stream" + sNewLine + sNewLine;
                         byte[] headerdata = System.Text.Encoding.ASCII.GetBytes(header);
                         ms.Write(headerdata, 0, headerdata.Length);
                         byte[] buffer = new byte[1024];
@@ -142,10 +152,11 @@ namespace Mozi.HttpEmbedded
                         {
                             ms.Write(buffer, 0, readcount);
                         }
+                        ms.Write(byteNewLine ,0,2);
                         fs.Close();
                     }
                     
-                    string footer = ASCIICode.CR + ASCIICode.LF + $"--{boundary}--" + ASCIICode.CR + ASCIICode.LF;
+                    string footer =  $"--{boundary}--"+ sNewLine;
                     byte[] footerdata = System.Text.Encoding.ASCII.GetBytes(footer);
                     ms.Write(footerdata, 0, footerdata.Length);
                     ms.Flush();

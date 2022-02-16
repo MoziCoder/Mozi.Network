@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Mozi.HttpEmbedded.Common;
 using Mozi.StateService;
 using System.Reflection;
+using System.IO;
+using System.Collections.Generic;
 
 namespace Mozi.HttpEmbedded.Test
 {
@@ -74,8 +76,16 @@ namespace Mozi.HttpEmbedded.Test
 
             HttpClient hc = new HttpClient();
  
-            hc.Get("http://127.0.0.1/index.html", null, new RequestComplete((ctx) =>
-            {
+            //hc.Get("http://127.0.0.1/index.html", null, new RequestComplete((ctx) =>
+            //{
+            //    Console.WriteLine(ctx.Response.Body.Length);
+            //}));
+
+            List<FileInfo> files = new List<FileInfo>();
+            files.Add(new FileInfo(@"C:\Users\FDXXB\Desktop\《互联网药品信息服务资格证书》申报资料最全范本.pdf"));
+            //files.Add(new FileInfo(@"C:\Users\FDXXB\Desktop\湖北富迪实业股份有限公司-富迪MO软著申请表.pdf"));
+
+            hc.PostFile("http://127.0.0.1/Service/upload", files, new RequestComplete((ctx) => {
                 Console.WriteLine(ctx.Response.Body.Length);
             }));
             Console.ReadLine();

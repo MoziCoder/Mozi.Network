@@ -26,6 +26,8 @@ namespace Mozi.HttpEmbedded
 
     //TODO 2021/11/22 实现简易的API处理能力,OnRequest("{action}/{id}",Func<T,T>{});
 
+    //TODO 2022/02/16 尝试使用ArraySegement来处理数据
+
     //Transfer-Encoding: chunked 主要是为解决服务端无法预测Content-Length的问题
 
     /*断点续传*/

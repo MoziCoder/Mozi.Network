@@ -20,6 +20,8 @@ namespace Mozi.HttpEmbedded
 
         private string _charset = "";
 
+        private TransformHeader _headers;
+        private ResponseCookie _cookies;
         /// <summary>
         /// HTTP协议版本
         /// </summary>
@@ -27,7 +29,7 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 状态码
         /// </summary>
-        public StatusCode Status { get; private set; }
+        public StatusCode Status { get; protected set; }
         /// <summary>
         /// 内容长度
         /// </summary>
@@ -35,11 +37,11 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// Mime类型，默认为 text/plain
         /// </summary>
-        public string ContentType { get { return _contentType; } private set { _contentType = value; } }
+        public string ContentType { get { return _contentType; } protected set { _contentType = value; } }
         /// <summary>
         /// 请求头
         /// </summary>
-        public TransformHeader Headers { get; private set; }
+        public TransformHeader Headers { get { return _headers; } protected set { _headers = value; } }
         /// <summary>
         /// 压缩类型
         /// </summary>
@@ -49,15 +51,15 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 文档是否被压缩过
         /// </summary>
-        public bool ContentEncoded { get; private set; }
+        public bool ContentEncoded { get; protected set; }
         /// <summary>
-        /// 请求数据体
+        /// 响应数据体
         /// </summary>
-        public byte[] Body { get { return _body; } private set { _body = value; } }
+        public byte[] Body { get { return _body; } protected set { _body = value; } }
         /// <summary>
         /// Cookie
         /// </summary>
-        public ResponseCookie Cookies { get; private set; }
+        public ResponseCookie Cookies { get { return _cookies; } protected set { _cookies = value; } }
         /// <summary>
         /// 是否自动增加头部信息
         /// 自动追加的头属性为<see cref="HeaderProperty.Date"/>,<see cref="HeaderProperty.ContentType"/>,<see cref="HeaderProperty.ContentLength"/>
@@ -78,9 +80,9 @@ namespace Mozi.HttpEmbedded
 
         public HttpResponse()
         {
-            Headers = new TransformHeader();
+            _headers = new TransformHeader();
             ProtocolVersion = HttpVersion.Version11;
-            Cookies = new ResponseCookie();
+            _cookies = new ResponseCookie();
         }
         /// <summary>
         /// 设置协议版本
@@ -98,7 +100,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="value"></param>
         public void SetCookie(string name,string value)
         {
-            Cookies.Set(name, value);
+            _cookies.Set(name, value);
         }
         /// <summary>
         /// 设置Cookie
@@ -110,7 +112,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="value"></param>
         public void SetCookie(string name,string domain,string path,string value)
         {
-            Cookies.Set(name, domain, path, value);
+            _cookies.Set(name, domain, path, value);
         }
         /// <summary>
         /// 设置状态
@@ -136,7 +138,7 @@ namespace Mozi.HttpEmbedded
         }
         public HttpResponse SetHeaders(TransformHeader headers)
         {
-            Headers = headers;
+            _headers = headers;
             return this;
         }
         /// <summary>
@@ -146,7 +148,7 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public HttpResponse AddHeader(HeaderProperty head, string value)
         {
-            Headers.Add(head, value);
+            _headers.Add(head, value);
             return this;
         }
         /// <summary>
@@ -157,7 +159,7 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public HttpResponse AddHeader(string item, string value)
         {
-            Headers.Add(item, value);
+            _headers.Add(item, value);
             return this;
         }
         /// <summary>
@@ -250,9 +252,9 @@ namespace Mozi.HttpEmbedded
                 AddHeader(HeaderProperty.Date, DateTime.Now.ToUniversalTime().ToString("r"));
             }
             //注入头部
-            data.AddRange(Headers.GetBuffer(headerKeyUppercase));
+            data.AddRange(_headers.GetBuffer(headerKeyUppercase));
             //注入Cookie
-            data.AddRange(Cookies.GetBuffer());
+            data.AddRange(_cookies.GetBuffer());
             //注入分割符
             data.AddRange(TransformHeader.Carriage);
             //注入响应包体
@@ -282,7 +284,7 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public StatusCode Redirect(string path)
         {
-            Headers.Add(HeaderProperty.Location.PropertyName, path);
+            _headers.Add(HeaderProperty.Location.PropertyName, path);
             return StatusCode.Found;
         }
         /// <summary>

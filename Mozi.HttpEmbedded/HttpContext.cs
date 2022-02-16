@@ -8,7 +8,7 @@ namespace Mozi.HttpEmbedded
     /// </summary>
     public class HttpContext:IDisposable
     {
-        private bool disposedValue;
+        private bool _disposedValue;
 
         /// <summary>
         /// 请求对象
@@ -30,7 +30,7 @@ namespace Mozi.HttpEmbedded
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {           
@@ -38,7 +38,7 @@ namespace Mozi.HttpEmbedded
                 }
                 Request = null;
                 Response = null;
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
         public void Dispose()

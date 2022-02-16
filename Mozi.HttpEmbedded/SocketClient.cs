@@ -20,7 +20,7 @@ namespace Mozi.HttpEmbedded
         protected Socket _sc;
         private long _errorCount = 0;
         private bool _connected = false;
-        private int _timeoutConnect = 45;
+        private int _connectTimeout = 45;
 
         /// <summary>
         /// 接收错误计数
@@ -82,13 +82,23 @@ namespace Mozi.HttpEmbedded
 
         public int ConnectTimeout
         {
-            get { return _timeoutConnect; }
+            get { return _connectTimeout; }
             set
             {
-                _timeoutConnect = value;
+                _connectTimeout = value;
             }
         }
-
+        public int SendTimeout
+        {
+            get
+            {
+                return _sc.SendTimeout;
+            }
+            set
+            {
+                _sc.SendTimeout = value;
+            }
+        }
         public Socket SocketMain
         {
             get { return _sc; }
@@ -138,12 +148,12 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         /// <param name="host"></param>
         /// <param name="port"></param>
-        public void Connect(string host,int port)
+        public bool Connect(string host,int port)
         {
             _host = host;
             _iport = port;
             IAsyncResult result = _sc.BeginConnect(host, port, null, null);
-            result.AsyncWaitHandle.WaitOne(_timeoutConnect, false);
+            result.AsyncWaitHandle.WaitOne(_connectTimeout, false);
             _connected = _sc.Connected;
             try
             {
@@ -153,6 +163,7 @@ namespace Mozi.HttpEmbedded
             {
 
             }
+            return _connected;
         }
 
         /// <summary>
@@ -246,10 +257,10 @@ namespace Mozi.HttpEmbedded
         /// <param name="port"></param>
         public void SendTo(byte[] buffer)
         {
-            if (_sc.Poll(100, SelectMode.SelectRead)&&_sc.Available==0)
-            {
-                _connected = false;
-            }
+            //if (_sc.Poll(100, SelectMode.SelectRead)&&_sc.Available==0)
+            //{
+            //    _connected = false;
+            //}
             if (_connected)
             {
                 _sc.SendTo(buffer, new IPEndPoint(IPAddress.Parse(_host), _iport));
