@@ -123,7 +123,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="url"></param>
         /// <param name="headers"></param>
         /// <param name="files"></param>
-        public void PostFile(string url, Dictionary<HeaderProperty, string> headers, List<FileInfo> files,RequestComplete callback)
+        public void PostFile(string url, Dictionary<HeaderProperty, string> headers, FileCollection files,RequestComplete callback)
         {
             
             byte[] byteNewLine = new byte[] { ASCIICode.CR, ASCIICode.LF };
@@ -138,11 +138,12 @@ namespace Mozi.HttpEmbedded
             {
                 using (MemoryStream ms = new MemoryStream())
                 {
-                    foreach (var f in files)
+                    foreach (File f in files)
                     {
-                        FileStream fs = f.OpenRead();
+                        FileInfo fi = new FileInfo(f.FileTempSavePath);
+                        FileStream fs = fi.OpenRead();
                         string header = $"--{boundary}" + sNewLine;
-                        header += HeaderProperty.ContentDisposition.PropertyName + $": form-data; name=\"fileToUpload\"; filename=\"{HtmlEncoder.StringToEntityCode(f.Name)}\"" + sNewLine;
+                        header += HeaderProperty.ContentDisposition.PropertyName + $": form-data; name=\"{f.FieldName}\"; filename=\"{HtmlEncoder.StringToEntityCode(fs.Name)}\"" + sNewLine;
                         header += HeaderProperty.ContentType.PropertyName + ": application/octet-stream" + sNewLine + sNewLine;
                         byte[] headerdata = System.Text.Encoding.ASCII.GetBytes(header);
                         ms.Write(headerdata, 0, headerdata.Length);
@@ -152,7 +153,7 @@ namespace Mozi.HttpEmbedded
                         {
                             ms.Write(buffer, 0, readcount);
                         }
-                        ms.Write(byteNewLine ,0,2);
+                        ms.Write(byteNewLine ,0,byteNewLine.Length);
                         fs.Close();
                     }
                     
@@ -172,7 +173,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="url"></param>
         /// <param name="files"></param>
         /// <param name="callback"></param>
-        public void PostFile(string url,List<System.IO.FileInfo> files,RequestComplete callback)
+        public void PostFile(string url,FileCollection files,RequestComplete callback)
         {
             PostFile(url, null, files, callback);
         }

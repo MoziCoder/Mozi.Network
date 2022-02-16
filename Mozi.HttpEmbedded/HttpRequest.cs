@@ -404,11 +404,11 @@ namespace Mozi.HttpEmbedded
                                 {
                                     FileName = HtmlEncoder.EntityCodeToString(fileName),
                                     FileData = postField,
-                                    FileIndex = req.Files.Length,
+                                    FileIndex = req.Files.Count,
                                     FieldName = fieldName
                                 };
                                 //file.FileTempSavePath = AppDomain.CurrentDomain.BaseDirectory + @"Temp\" + file.FileName.ToString();
-                                req.Files.Append(file);
+                                req.Files.Add(file);
                                 ////Ð´ÈëÁÙÊ±Ä¿Â¼
                                 //FileStream fs = new FileStream(file.FileTempSavePath, FileMode.OpenOrCreate);
                                 //int length = fragbody.Length - (posCR + 4);
