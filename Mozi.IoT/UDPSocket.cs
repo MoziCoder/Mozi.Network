@@ -145,7 +145,7 @@ namespace Mozi.IoT
             EndPoint remote = (IPEndPoint)so.RemoteEndPoint;
 
             int iByteRead = client.EndReceiveFrom(iar, ref remote);
-
+             
             if (iByteRead > 0)
             {
                 //置空数据缓冲区
@@ -158,7 +158,15 @@ namespace Mozi.IoT
                 //}
                 //else
                 //{
-                    InvokeAfterReceiveEnd(so, client, (IPEndPoint)remote);
+                UDPStateObject stateobject = new UDPStateObject()
+                {
+                    WorkSocket = _sc,
+                    //Id = Guid.NewGuid().ToString(),
+                    //IP = ((IPEndPoint)remote).Address.ToString(),
+                    RemoteEndPoint = new IPEndPoint(IPAddress.Any, 0)
+                };
+                _sc.BeginReceiveFrom(stateobject.Buffer, 0, stateobject.Buffer.Length, SocketFlags.None, ref stateobject.RemoteEndPoint, new AsyncCallback(CallbackReceived), stateobject);
+                InvokeAfterReceiveEnd(so, client, (IPEndPoint)remote);
                 //}
             }
             else
@@ -168,14 +176,7 @@ namespace Mozi.IoT
         }
         private void InvokeAfterReceiveEnd(UDPStateObject so, Socket client, EndPoint remote)
         {
-            UDPStateObject stateobject = new UDPStateObject()
-            {
-                WorkSocket = _sc,
-                //Id = Guid.NewGuid().ToString(),
-                //IP = ((IPEndPoint)remote).Address.ToString(),
-                RemoteEndPoint = new IPEndPoint(IPAddress.Any, 0)
-            };
-            _sc.BeginReceiveFrom(stateobject.Buffer, 0, stateobject.Buffer.Length, SocketFlags.None, ref stateobject.RemoteEndPoint, new AsyncCallback(CallbackReceived), stateobject);
+
             if (AfterReceiveEnd != null)
             {
                 AfterReceiveEnd(this,

@@ -88,10 +88,11 @@ namespace Mozi.IoT
                 req = CoAPPackage.Parse(args.Data, CoAPPackageType.Request);
                 //_cm.Request(args.IP, req);
             }
-            catch (Exception){
+            catch (Exception)
+            {
 
             }
-            
+
 
             try
             {
@@ -116,13 +117,15 @@ namespace Mozi.IoT
 
                 //接入后端方法
 
-            }catch (Exception){
+            }
+            catch (Exception)
+            {
 
                 resp.Code = CoAPResponseCode.BadGateway;
                 resp.MessageType = CoAPMessageType.Reset;
 
             }
-            SendMessage(args.IP, args.Port,  resp);
+            SendMessage(args.IP, args.Port, resp);
         }
 
         //响应Block信息

@@ -60,9 +60,11 @@ namespace Mozi.IoT
             _packetReceived++;
             //try
             //{
+
             CoAPPackage pack = CoAPPackage.Parse(args.Data, CoAPPackageType.Response);
 
             Console.WriteLine($"Package answered{_packetReceived}");
+
             //pack2 = new CoAPPackage()
             //{
             //    Version = 1,

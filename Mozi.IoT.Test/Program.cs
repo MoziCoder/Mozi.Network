@@ -8,7 +8,7 @@ namespace Mozi.IoT.Test
     {
         static void Main(string[] args)
         {
-            //服务端
+            ////服务端
             //CoAPServer cs = new CoAPServer();
             //cs.Start();
             //Console.ReadLine();
@@ -32,7 +32,7 @@ namespace Mozi.IoT.Test
                     for (int i = 0; i < 1000000; i++)
                     {
                         //cc.Get("coap://100.100.0.105/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test");
-                        cc.Get("coap://100.100.0.111/sensor", CoAPMessageType.Confirmable);
+                        cc.Get("coap://127.0.0.1/sensor", CoAPMessageType.Confirmable);
                     }
                 }));
                 td.Priority = ThreadPriority.Highest;

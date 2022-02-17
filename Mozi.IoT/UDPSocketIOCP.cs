@@ -124,7 +124,11 @@ namespace Mozi.IoT
         {
             try
             {
-                _sc.ReceiveFromAsync(receiveSocketArgs);
+                if (!_sc.ReceiveFromAsync(receiveSocketArgs))
+                {
+                    CloseClientSocket(receiveSocketArgs);
+                    DoReceive();
+                }
             }catch(Exception ex)
             {
 
@@ -203,18 +207,25 @@ namespace Mozi.IoT
         private void InvokeAfterReceiveEnd(StateObject so, Socket client)
         {
             //RemoveClientSocket(so);
-            if (AfterReceiveEnd != null)
+            try
             {
-                AfterReceiveEnd(this,
-                    new DataTransferArgs()
-                    {
-                        Data = so.Data.ToArray(),
-                        IP = so.IP,
-                        Port = so.RemotePort,
-                        Socket = so.WorkSocket,
-                        Client = client,
-                        State = so
-                    });
+                if (AfterReceiveEnd != null)
+                {
+                    AfterReceiveEnd(this,
+                        new DataTransferArgs()
+                        {
+                            Data = so.Data.ToArray(),
+                            IP = so.IP,
+                            Port = so.RemotePort,
+                            Socket = so.WorkSocket,
+                            Client = client,
+                            State = so
+                        });
+                }
+            }
+            finally
+            {
+
             }
         }
 
@@ -226,7 +237,14 @@ namespace Mozi.IoT
         /// <param name="port"></param>
         public void SendTo(byte[] buffer, string host, int port)
         {
-            _sc.SendTo(buffer, new IPEndPoint(IPAddress.Parse(host), port));
+            try
+            {
+                _sc.SendTo(buffer, new IPEndPoint(IPAddress.Parse(host), port));
+            }
+            finally
+            {
+
+            }
         }
     }
     public class SocketEventPool
