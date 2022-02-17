@@ -24,19 +24,18 @@ namespace Mozi.SSDP
             byte[] octet4 = System.Text.Encoding.ASCII.GetBytes("id");
 
             byte[] octet5 = new byte[] { 0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD };
+
             var interfaces = NetworkInterface.GetAllNetworkInterfaces();
             List<NetworkInterfaceType> filterType = new List<NetworkInterfaceType>() { NetworkInterfaceType.Loopback, NetworkInterfaceType.Tunnel };
             foreach (var nt in interfaces)
             {
-                if (filterType.Contains(nt.NetworkInterfaceType))
+                if (!filterType.Contains(nt.NetworkInterfaceType))
                 {
-                    continue;
-                }
-
-                List<byte> listMacBit = nt.GetPhysicalAddress().GetAddressBytes().ToList();
-                for(int i = 0; i < octet5.Length; i++)
-                {
-                    octet5[i] =(byte)(( octet5[i] * listMacBit[i])>>8);
+                    List<byte> listMacBit = nt.GetPhysicalAddress().GetAddressBytes().ToList();
+                    for (int i = 0; i < octet5.Length; i++)
+                    {
+                        octet5[i] = (byte)((octet5[i] * listMacBit[i]) >> 8);
+                    }
                 }
 
             }

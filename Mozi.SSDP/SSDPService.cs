@@ -5,6 +5,12 @@ using Mozi.HttpEmbedded;
 
 namespace Mozi.SSDP
 {
+    //ST:Search Target
+    //NT:Notification Type
+    //NTS:Notification Sub Type
+    //USN:Unique Service Name
+    //MX: Maximum wait time in seconds. Should be between 1 and 120 inclusive
+
     public delegate void NotifyAliveReceived(object sender,AlivePackage pack,string host);
     public delegate void NotifyByebyeReceived(object sender, ByebyePackage pack, string host);
     public delegate void SearchReceived(object sender,SearchPackage pack,string host);
@@ -673,7 +679,7 @@ namespace Mozi.SSDP
             SendTo(data);
         }
 
-        private void SendTo(byte[] data)
+        protected void SendTo(byte[] data)
         {
             _socket.SocketMain.SendTo(data, _remoteEP);
         }

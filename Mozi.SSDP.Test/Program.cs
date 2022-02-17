@@ -10,6 +10,7 @@ namespace Mozi.SSDP.Test
         {
             //开启SSDP服务
             var interfaces = NetworkInterface.GetAllNetworkInterfaces();
+            char cd = (char)Mozi.HttpEmbedded.ASCIICode.DIVIDE;
             foreach (var r in interfaces)
             {
                 //遍历所有可用网卡，过滤临时地址
