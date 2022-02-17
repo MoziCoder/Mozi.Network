@@ -3,15 +3,18 @@ using System.Collections.Generic;
 
 namespace Mozi.IoT
 {
-    //Main Reference:RFC7252
-    //Patial Reference:
-    //RFC7959 分块传输
-    //RFC8613 对象安全
-    //RFC8974 扩展凭据和无状态客户端 
+    // Main Reference:RFC7252
+    // Patial Reference:
+    // RFC7959 分块传输
+    // RFC8613 对象安全
+    // RFC8974 扩展凭据和无状态客户端 
 
-    //内容采用UTF-8编码
-    //头部截断使用0xFF填充
+    // 内容采用UTF-8编码
+    // 头部截断使用0xFF填充
 
+    /// <summary>
+    /// CoAP协议包
+    /// </summary>
     public class CoAPPackage
     {
         private byte _version = 1;
@@ -121,6 +124,10 @@ namespace Mozi.IoT
                 return string.Join("&",query);
             }
         }
+        public CoAPPackageType PackageType
+        {
+            get;private set;
+        }
         /// <summary>
         /// 打包|转为字节流
         /// </summary>
@@ -132,10 +139,16 @@ namespace Mozi.IoT
             head = (byte)(head | (Version << 6));
             head = (byte)(head | (MessageType.Value << 4));
             head = (byte)(head | TokenLength);
+
             data.Add(head);
             data.Add((byte)(((byte)Code.Category << 5) | ((byte)(Code.Detail << 3) >> 3)));
             data.AddRange(BitConverter.GetBytes(MesssageId).Revert());
-            data.AddRange(Token);
+
+            if (TokenLength > 0)
+            {
+                data.AddRange(Token);
+            }
+
             uint delta = 0;
             foreach (var op in Options)
             {
@@ -193,7 +206,7 @@ namespace Mozi.IoT
             return this;
         }
         /// <summary>
-        /// 设置字节流选项值
+        /// 设置选项值 字节流
         /// </summary>
         /// <param name="define"></param>
         /// <param name="optionValue"></param>
@@ -205,7 +218,7 @@ namespace Mozi.IoT
             return this;
         }
         /// <summary>
-        /// 设置uint(32)选项值
+        /// 设置选项值(uint(32))
         /// </summary>
         /// <param name="define"></param>
         /// <param name="optionValue"></param>
@@ -297,7 +310,7 @@ namespace Mozi.IoT
             pack.TokenLength = (byte)((byte)(head << 4) >> 4);
 
             pack.Code = packType==CoAPPackageType.Request ? AbsClassEnum.Get<CoAPRequestMethod>(data[1].ToString()) : (CoAPCode)AbsClassEnum.Get<CoAPResponseCode>(data[1].ToString());
-
+            pack.PackageType = packType;
             byte[] arrMsgId = new byte[2], arrToken = new byte[pack.TokenLength];
             Array.Copy(data, 2, arrMsgId, 0, 2);
             Array.Copy(data, 2 + 2, arrToken, 0, arrToken.Length);
@@ -313,11 +326,12 @@ namespace Mozi.IoT
                 option.OptionHead = data[bodySplitterPos];
                 //byte len=(byte)(option.OptionHead)
                 int lenDeltaExt = 0, lenLengthExt = 0;
-                if (option.Delta <= 12)
-                {
+                //if (option.Delta <= 12)
+                //{
 
-                }
-                else if (option.Delta == 13)
+                //}
+                //else 
+                if (option.Delta == 13)
                 {
                     lenDeltaExt = 1;
                 }
@@ -333,7 +347,7 @@ namespace Mozi.IoT
                 }
                 //赋默认值
                 option.Option = AbsClassEnum.Get<CoAPOptionDefine>((option.DeltaValue + deltaSum).ToString());
-                if (ReferenceEquals(null, option.Option))
+                if (option.Option is null)
                 {
                     option.Option = CoAPOptionDefine.Unknown;
                 }

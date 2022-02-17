@@ -1,9 +1,9 @@
 ﻿namespace Mozi.IoT
 {
-
     ///<summary>
     /// 内容格式
     ///</summary>
+    ///
     /// CoAP Content-Formats Registry
     /// 
     ///           0-255 | Expert Review                        
@@ -19,9 +19,11 @@
     ///     application/exi          | -        | 47 | [REC-exi-20140211]     |
     ///     application/json         | -        | 50 | [RFC7159]              |
     ///     applicaiton/cbor         | -        | 60 | [RFC7159]              |
+    ///     
     public class ContentFormat : AbsClassEnum
     {
         private ushort _num = 0;
+
         private string _contentType = "";
 
         public string ContentType
@@ -40,6 +42,7 @@
             }
         }
         public ushort Num { get { return _num; } }
+
         protected override string Tag => _num.ToString();
 
         public static ContentFormat TextPlain = new ContentFormat("text/plain", 0);

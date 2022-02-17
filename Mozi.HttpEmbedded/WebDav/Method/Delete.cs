@@ -15,7 +15,7 @@ namespace Mozi.HttpEmbedded.WebDav.Method
         /// <see cref="HttpContext" /> 
         ///  </param>
         /// <param name="store"><see cref="IWebDavStore" /> <see cref="DavServer" /></param>
-        public StatusCode ProcessRequest(DavServer server, HttpContext context, IWebDavStore store)
+        public StatusCode HandleRequest(DavServer server, HttpContext context, IWebDavStore store)
         {
             //父目录资源清单
             IWebDavStoreCollection collection = GetParentCollection(store, context.Request.Path);

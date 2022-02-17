@@ -2,11 +2,10 @@
 using Mozi.IoT.Cache;
 using Mozi.IoT.Encode;
 
+// CoAP拥塞机制由请求方进行自主控制，故请求方需要实现拥塞控制算法
+
 namespace Mozi.IoT
 {
-
-    //CoAP拥塞机制由请求方进行自主控制，故请求方需要实现拥塞控制算法
-
     /// <summary>
     /// CoAP客户端
     /// </summary>
@@ -17,6 +16,7 @@ namespace Mozi.IoT
         private CoAPTransmissionConfig _transConfig = new CoAPTransmissionConfig();
 
         private MessageCacheManager _cacheManager;
+
         private ulong _packetReceived;
 
         //private ushort _remotePort = CoAPProtocol.Port;
@@ -35,6 +35,8 @@ namespace Mozi.IoT
         public CoAPClient() 
         {
             _cacheManager = new MessageCacheManager(this);
+            _socket = new UDPSocketIOCP();
+            _socket.AfterReceiveEnd += Socket_AfterReceiveEnd;
             //配置本地服务口地址
         }
         /// <summary>
@@ -55,13 +57,14 @@ namespace Mozi.IoT
         /// <param name="args"></param>
         protected override void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
-            CoAPPackage pack2 = null;
             _packetReceived++;
             //try
             //{
-            CoAPPackage pack = CoAPPackage.Parse(args.Data, CoAPPackageType.Request);
+
+            CoAPPackage pack = CoAPPackage.Parse(args.Data, CoAPPackageType.Response);
 
             Console.WriteLine($"Package answered{_packetReceived}");
+
             //pack2 = new CoAPPackage()
             //{
             //    Version = 1,
@@ -101,19 +104,21 @@ namespace Mozi.IoT
             ////}
         }
         /// <summary>
-        /// 发送请求消息,此方法为高级方法。如果对协议不够了解，请不要调用。
-        /// DOMAIN地址请先转换为IP地址，然后填充到Uri-Host选项中
+        /// 发送请求消息,此方法为高级方法。
+        /// 1,如果对协议不够了解，请不要调用。
+        /// 2,此方法不会调用DNS解析域名，DOMAIN地址请先转换为IP地址，然后填充到“Uri-Host”选项中
+        /// 3,MessageId由拥塞管理器生成
+        /// 参见<see cref="CoAPPeer.SendMessage(string, int, CoAPPackage)"/>
         /// </summary>
         /// <param name="pack"></param>
         /// <returns>MessageId</returns>
-        public virtual ushort SendMessage(string host,int port,CoAPPackage pack)
+        public override ushort SendMessage(string host,int port,CoAPPackage pack)
         {
             if (pack.MesssageId == 0)
             {
                 pack.MesssageId = _cacheManager.GenerateMessageId();
             }
-            _socket.SendTo(pack.Pack(), host, port);
-            return pack.MesssageId;
+            return base.SendMessage(host, port, pack);
         }
 
         /// <summary>
@@ -148,7 +153,7 @@ namespace Mozi.IoT
 
         ///<summary>
         /// Get提交 填入指定格式的URI，如果是域名，程序会调用DNS进行解析
-        /// </summary>
+        ///</summary>
         /// <param name="url">
         ///     <list type="table">
         ///         <listheader>URI格式:{host}-IPV4地址,IPV6地址,Domain域名;{path}-路径,请使用REST样式路径;{query}为查询参数字符串</listheader>

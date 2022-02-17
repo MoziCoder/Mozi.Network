@@ -8,6 +8,7 @@ using System.Reflection;
 
 namespace Mozi.HttpEmbedded.Test
 {
+    
     public delegate void TaskExceptionThrowing(object sender, Exception ex);
 
     static class Program
@@ -71,6 +72,20 @@ namespace Mozi.HttpEmbedded.Test
             state.Init();
             state.Activate();
 
+            HttpClient hc = new HttpClient();
+ 
+            //hc.Get("http://127.0.0.1/index.html", null, new RequestComplete((ctx) =>
+            //{
+            //    Console.WriteLine(ctx.Response.Body.Length);
+            //}));
+
+            FileCollection files = new FileCollection();
+            files.Add(new File() { FileTempSavePath = @"C:\Users\FDXXB\Desktop\《互联网药品信息服务资格证书》申报资料最全范本.pdf", FieldName = "fileToUpload" });
+            //files.Add(new FileInfo(@"C:\Users\FDXXB\Desktop\湖北富迪实业股份有限公司-富迪MO软著申请表.pdf"));
+
+            hc.PostFile("http://127.0.0.1/Service/upload", files, new RequestComplete((ctx) => {
+                Console.WriteLine(ctx.Response.Body.Length);
+            }));
             Console.ReadLine();
 
             //路径信息

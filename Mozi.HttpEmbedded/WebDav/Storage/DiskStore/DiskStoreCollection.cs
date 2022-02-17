@@ -1,7 +1,6 @@
 using Mozi.HttpEmbedded.WebDav.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
@@ -9,30 +8,16 @@ using System.Security.Principal;
 
 namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
 {
-    /// <summary>
-    /// This class implements a disk-based <see cref="IWebDavStore" /> that maps to a folder on disk.
-    /// </summary>
-    [DebuggerDisplay("Directory ({Name})")]
     public sealed class DiskStoreCollection : DiskStoreItem, IWebDavStoreCollection
     {
         private readonly Dictionary<string, WeakReference> _items = new Dictionary<string, WeakReference>();
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="DiskStoreCollection" /> class.
-        /// </summary>
-        /// <param name="parentCollection">The parent <see cref="DiskStoreCollection" /> that contains this <see cref="DiskStoreCollection" />.</param>
-        /// <param name="path">The path to the folder on this that this <see cref="DiskStoreCollection" /> maps to.</param>
+
         public DiskStoreCollection(DiskStoreCollection parentCollection, string path) : base(parentCollection, path)
         {
 
         }
 
-        #region IWebDAVStoreCollection Members
-
-        /// <summary>
-        /// Gets a collection of all the items in this <see cref="IWebDavStoreCollection" />.
-        /// </summary>
-        /// <exception cref="WebDavUnauthorizedException">If the user is unauthorized or doesn't have access</exception>
         public IEnumerable<IWebDavStoreItem> Items
         {
             get
@@ -122,11 +107,10 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
         }
 
         /// <summary>
-        /// Checks if the user has access to the path
+        /// 检查文件读权限
         /// </summary>
-        /// <param name="path">The path.</param>
+        /// <param name="path"></param>
         /// <returns>
-        /// True if access, false if not
         /// </returns>
         private bool CanRead(string path)
         {
@@ -136,15 +120,10 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
         }
 
         /// <summary>
-        /// Checks if access to the file is granted.
+        /// 检查文件读权限
         /// </summary>
-        /// <param name="path">The path to the file as a <see cref="string" /></param>
-        /// <returns>
-        /// <see cref="bool" /> true if the user has access, else false
-        /// </returns>
-        /// <remarks>
-        /// Source: <see href="http://stackoverflow.com/questions/17318585/check-if-file-can-be-read" />
-        /// </remarks>
+        /// <param name="path"></param>
+        /// <returns></returns>
         private static bool CanReadFile(string path)
         {
             try
@@ -159,15 +138,11 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
         }
 
         /// <summary>
-        /// Checks if access to the directory is granted.
+        /// 检查目录读权限
         /// </summary>
-        /// <param name="path">The path to the director as a <see cref="string" /></param>
+        /// <param name="path"></param>
         /// <returns>
-        /// <see cref="bool" /> true if the user has access, else false
         /// </returns>
-        /// <remarks>
-        /// Source: <see href="http://stackoverflow.com/questions/11709862/check-if-directory-is-accessible-in-c" />
-        /// </remarks>
         private static bool CanReadDirectory(string path)
         {
             bool readAllow = false;
@@ -193,16 +168,6 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
             return readAllow && !readDeny;
         }
 
-        /// <summary>
-        /// Retrieves a store item by its name.
-        /// </summary>
-        /// <param name="name">The name of the store item to retrieve.</param>
-        /// <returns>
-        /// The store item that has the specified 
-        /// <paramref name="name" />;
-        /// or 
-        /// if there is no store item with that name.
-        /// </returns>
         public IWebDavStoreItem GetItemByName(string name)
         {
             string path = Path.Combine(ItemPath, name);
@@ -218,14 +183,6 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
             return null;
         }
 
-        /// <summary>
-        /// Creates a new collection with the specified name.
-        /// </summary>
-        /// <param name="name">The name of the new collection.</param>
-        /// <returns>
-        /// The created <see cref="IWebDavStoreCollection" /> instance.
-        /// </returns>
-        /// <exception cref="WebDavUnauthorizedException">When the user is unauthorized or has no access</exception>
         public IWebDavStoreCollection CreateCollection(string name)
         {
             string path = Path.Combine(ItemPath, name);
@@ -244,12 +201,6 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
             return GetItemByName(name) as IWebDavStoreCollection;
         }
 
-        /// <summary>
-        /// Deletes a store item by its name.
-        /// </summary>
-        /// <param name="item">The name of the store item to delete.</param>
-        /// <exception cref="WebDavNotFoundException">If the item was not found.</exception>
-        /// <exception cref="WebDavUnauthorizedException">If the user is unauthorized or has no access.</exception>
         public void Delete(IWebDavStoreItem item)
         {
             DiskStoreItem diskItem = (DiskStoreItem)item;
@@ -289,14 +240,12 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
         }
 
         /// <summary>
-        /// Creates a new document with the specified name.
         /// </summary>
-        /// <param name="name">The name of the new document.</param>
+        /// <param name="name"></param>
         /// <returns>
-        /// The created <see cref="IWebDavStoreDocument" /> instance.
         /// </returns>
-        /// <exception cref="WebDavConflictException">If the item already exists</exception>
-        /// <exception cref="WebDavUnauthorizedException">If the user is unauthorized or has no access</exception>
+        /// <exception cref="WebDavConflictException">项目存在</exception>
+        /// <exception cref="WebDavUnauthorizedException">用户未认证或不可访问</exception>
         public IWebDavStoreDocument CreateDocument(string name)
         {
             string itemPath = Path.Combine(ItemPath, name);
@@ -322,16 +271,12 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
         }
 
         /// <summary>
-        /// Copies an existing store item into this collection, overwriting any existing items.
         /// </summary>
-        /// <param name="source">The store item to copy from.</param>
-        /// <param name="destName">The name of the copy to create of <paramref name="source" />.</param>
-        /// <param name="includeContent">The boolean for copying the containing files/folders or not.</param>
-        /// <returns>
-        /// The created <see cref="IWebDavStoreItem" /> instance.
-        /// </returns>
-        /// <exception cref="WebDavUnauthorizedException">If the user is unauthorized or has no access</exception>
-        public IWebDavStoreItem CopyItemHere(IWebDavStoreItem source, string destName, bool includeContent)
+        /// <param name="source"></param>
+        /// <param name="destName"> <paramref name="source" /></param>
+        /// <param name="includeContent"></param>
+        /// <exception cref="WebDavUnauthorizedException">用户未认证或不可访问</exception>
+        public IWebDavStoreItem CopyItemTo(IWebDavStoreItem source, string destName, bool includeContent)
         {
             string destItemItemPath = Path.Combine(ItemPath, destName);
 
@@ -372,13 +317,11 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
         }
 
         /// <summary>
-        /// Directories the copy.
         /// </summary>
-        /// <param name="sourceDirName">Name of the source dir.</param>
-        /// <param name="destDirName">Name of the dest dir.</param>
-        /// <param name="copySubDirs">if set to <c>true</c> [copy sub dirs].</param>
-        /// <exception cref="DirectoryNotFoundException">Source directory does not exist or could not be found: 
-        ///                     + sourceDirName</exception>
+        /// <param name="sourceDirName"></param>
+        /// <param name="destDirName"></param>
+        /// <param name="copySubDirs"></param>
+        /// <exception cref="DirectoryNotFoundException"></exception>
         private static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
         {
 
@@ -392,13 +335,12 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
                     + sourceDirName);
             }
 
-            // If the destItem directory doesn't exist, create it. 
+
             if (!Directory.Exists(destDirName))
             {
                 Directory.CreateDirectory(destDirName);
             }
 
-            // If copying subdirectories, copy them and their contents to new location. 
             if (!copySubDirs) return;
 
             FileInfo[] files = dir.GetFiles();
@@ -409,23 +351,8 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
                 DirectoryCopy(subdir.FullName, Path.Combine(destDirName, subdir.Name), copySubDirs);
         }
 
-        /// <summary>
-        /// Moves an existing store item into this collection, overwriting any existing items.
-        /// </summary>
-        /// <param name="source">The store item to move.</param>
-        /// <param name="destName">The
-        /// <see cref="IWebDavStoreItem" /> that refers to the item that was moved,
-        /// in its new location.</param>
-        /// <returns>
-        /// The moved <see cref="IWebDavStoreItem" /> instance.
-        /// </returns>
-        /// <exception cref="Exception">Path to the source item not defined.</exception>
-        /// <exception cref="WebDavUnauthorizedException">If the user is unauthorized or has no access</exception>
-        /// <remarks>
-        /// Note that the method should fail without creating or overwriting content in the
-        /// target collection if the move cannot go through.
-        /// </remarks>
-        public IWebDavStoreItem MoveItemHere(IWebDavStoreItem source, string destName)
+
+        public IWebDavStoreItem MoveItemTo(IWebDavStoreItem source, string destName)
         {
 
             string sourceItemPath = "";
@@ -480,6 +407,5 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
 
         }
 
-        #endregion
     }
 }

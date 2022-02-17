@@ -80,27 +80,27 @@ namespace Mozi.StateService
         /// <summary>
         /// 终端加入事件
         /// </summary>
-        public event ClientJoinQuit OnClientJoin;
+        public  ClientJoinQuit OnClientJoin;
         /// <summary>
         /// 终端通知状态变更
         /// </summary>
-        public event ClientLifeStateChange OnClientLifeStateChange;
+        public  ClientLifeStateChange OnClientLifeStateChange;
         /// <summary>
         /// 终端在线状态变更事件
         /// </summary>
-        public event ClientOnlineStateChange OnClientOnlineStateChange;
+        public  ClientOnlineStateChange OnClientOnlineStateChange;
         /// <summary>
         /// 终端在线用户变更
         /// </summary>
-        public event ClientUserChange OnClientUserChange;
+        public  ClientUserChange OnClientUserChange;
         /// <summary>
         /// 终端消息接收事件
         /// </summary>
-        public event ClientMessageReceived OnClientMessageReceived;
+        public  ClientMessageReceived OnClientMessageReceived;
         /// <summary>
         /// 终端版本变更事件
         /// </summary>
-        public event ClientVersionChange OnClientVersionChange;
+        public  ClientVersionChange OnClientVersionChange;
         /// <summary>
         /// 终端列表
         /// </summary>
@@ -127,7 +127,7 @@ namespace Mozi.StateService
         public HeartBeatGateway()
         {
             _socket = new UDPSocket();
-            _socket.AfterReceiveEnd += _socket_AfterReceiveEnd;
+            _socket.AfterReceiveEnd += Socket_AfterReceiveEnd;
         }
         /// <summary>
         /// 以默认端口启动<see cref="F:Port"/>
@@ -155,6 +155,9 @@ namespace Mozi.StateService
             Running = false;
             _socket.Shutdown();
             StartTime = DateTime.MinValue;
+        }
+        ~HeartBeatGateway(){
+            Shutdown();
         }
         /// <summary>
         /// 设置用户名
@@ -346,7 +349,7 @@ namespace Mozi.StateService
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        protected virtual void _socket_AfterReceiveEnd(object sender, DataTransferArgs args)
+        protected virtual void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
             try
             {

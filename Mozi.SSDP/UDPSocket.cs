@@ -12,6 +12,7 @@ namespace Mozi.SSDP
     /// </summary>
     public class UDPSocket
     {
+
         protected int _multicastGroupPort = SSDPProtocol.ProtocolPort;
         protected string _multicastGroupAddress  = SSDPProtocol.MulticastAddress;
 
@@ -20,6 +21,17 @@ namespace Mozi.SSDP
         //private EndPoint _remoteEndPoint=new IPEndPoint(IPAddress.Any, 0);
 
         private IPAddress _bindingAddress = IPAddress.Any;
+        private long _errorCount = 0;
+        /// <summary>
+        /// 接收错误计数
+        /// </summary>
+        public long ReceiveErrorCount
+        {
+            get
+            {
+                return _errorCount;
+            }
+        }
         /// <summary>
         /// 绑定的本地地址
         /// </summary>
@@ -35,19 +47,19 @@ namespace Mozi.SSDP
         /// <summary>
         /// 服务器启动事件
         /// </summary>
-        public event ServerStart OnServerStart;
+        public  ServerStart OnServerStart;
         /// <summary>
         /// 数据接收开始事件
         /// </summary>
-        public event ReceiveStart OnReceiveStart;
+        public  ReceiveStart OnReceiveStart;
         /// <summary>
         /// 数据接收完成事件
         /// </summary>
-        public event ReceiveEnd AfterReceiveEnd;
+        public  ReceiveEnd AfterReceiveEnd;
         /// <summary>
         /// 服务器停用事件
         /// </summary>
-        public event AfterServerStop AfterServerStop;
+        public  AfterServerStop AfterServerStop;
 
         /// <summary>
         /// 端口
@@ -77,11 +89,12 @@ namespace Mozi.SSDP
         /// <summary>
         /// 关闭服务器
         /// </summary>
-        public void StopServer()
+        public void Shutdown()
         {
             try
             {
                 _sc.Shutdown(SocketShutdown.Both);
+                _sc.Close();
                 if (AfterServerStop != null)
                 {
                     AfterServerStop(_sc, null);
@@ -118,7 +131,7 @@ namespace Mozi.SSDP
         /// 启动服务器
         /// </summary>
         /// <param name="multicastGroupPort"></param>
-        public void StartServer(string multicastGroupAddress,int multicastGroupPort)
+        public void Start(string multicastGroupAddress,int multicastGroupPort)
         {
             _multicastGroupPort = multicastGroupPort;
             if (_sc == null)
@@ -163,7 +176,7 @@ namespace Mozi.SSDP
             }
             catch (Exception ex)
             {
-                var ex2 = ex;
+                _errorCount++;
             }
         }
         /// <summary>

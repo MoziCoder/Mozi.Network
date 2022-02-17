@@ -7,15 +7,19 @@ using Mozi.HttpEmbedded.Generic;
 
 namespace Mozi.HttpEmbedded
 {
-    //TODO 应将 GET/POST 查询字段进行区分 
+    //DONE 应将 GET/POST 查询字段进行区分 
 
     /// <summary>
     /// HTTP请求
     /// </summary>
     public class HttpRequest
     {
+        private byte[] _body = new byte[] { };
+        private TransformHeader _headers;
+        private FileCollection _files;
+        private RequestCookie _cookies;
         /// <summary>
-        /// 协议类型,参看<see cref="ProtocolType"/>值
+        /// 协议类型,参看<see cref="ProtocolType"/>所列出的值
         /// </summary>
         public ProtocolType Protocol { get; protected set; }
         /// <summary>
@@ -69,7 +73,7 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 请求头
         /// </summary>
-        public TransformHeader Headers { get; protected set; }
+        public TransformHeader Headers { get { return _headers; } protected set { _headers = value; } }
         ///// <summary>
         ///// 二进制通讯数据
         ///// </summary>
@@ -87,17 +91,17 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         public byte[] HeaderData { get; protected set; }
         /// <summary>
-        /// 请求数据体
+        /// 请求数据体，有效荷载数据
         /// </summary>
-        public byte[] Body { get; protected set; }
+        public byte[] Body { get { return _body; } protected set { _body = value; } }
         /// <summary>
         /// 文件
         /// </summary>
-        public FileCollection Files { get; protected set; }
+        public FileCollection Files { get { return _files; } protected set { _files = value; } }
         /// <summary>
         /// Cookie
         /// </summary>
-        public RequestCookie Cookies { get; protected set; }
+        public RequestCookie Cookies { get { return _cookies; } protected set { _cookies = value; } }
         /// <summary>
         /// 客户机IP地址
         /// </summary>
@@ -109,7 +113,7 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 客户机接受的语言选项
         /// </summary>
-        public LanguageOrder[] AcceptLanguage { get; private set; }
+        public LanguagePriority[] AcceptLanguage { get; private set; }
         /// <summary>
         /// 请求的来源地址
         /// </summary>
@@ -121,10 +125,10 @@ namespace Mozi.HttpEmbedded
         {
             //默认HTTP/1.1
             ProtocolVersion = HttpVersion.Version11;
-            Headers = new TransformHeader();
-            Files = new FileCollection();
-            Cookies = new RequestCookie();
-            Body = new byte[] { };
+            _headers = new TransformHeader();
+            _files = new FileCollection();
+            _cookies = new RequestCookie();
+            _body = new byte[] { };
         }
         /// <summary>
         /// 解析请求数据包
@@ -153,6 +157,7 @@ namespace Mozi.HttpEmbedded
 
             int indLine = 0;
             int dataLength = data.Length;
+
             while ((posCR < dataLength) && Array.IndexOf(data, ASCIICode.CR, posCR + 1) > 0)
             {
                 posCR = Array.IndexOf(data, ASCIICode.CR, posCR + 1);
@@ -395,13 +400,15 @@ namespace Mozi.HttpEmbedded
 
                             if (isFile)
                             {
-                                File file = new File();
-                                file.FileName = HtmlEncoder.EntityCodeToString(fileName);
-                                file.FileData = postField;
-                                file.FileIndex = req.Files.Length;
-                                file.FieldName = fieldName;
+                                File file = new File
+                                {
+                                    FileName = HtmlEncoder.EntityCodeToString(fileName),
+                                    FileData = postField,
+                                    FileIndex = req.Files.Count,
+                                    FieldName = fieldName
+                                };
                                 //file.FileTempSavePath = AppDomain.CurrentDomain.BaseDirectory + @"Temp\" + file.FileName.ToString();
-                                req.Files.Append(file);
+                                req.Files.Add(file);
                                 ////写入临时目录
                                 //FileStream fs = new FileStream(file.FileTempSavePath, FileMode.OpenOrCreate);
                                 //int length = fragbody.Length - (posCR + 4);
@@ -511,14 +518,14 @@ namespace Mozi.HttpEmbedded
             {
                 var language = req.Headers.GetValue(HeaderProperty.AcceptLanguage.PropertyName) ?? "";
                 var languages = language.Split(new char[] { (char)ASCIICode.COMMA }, StringSplitOptions.RemoveEmptyEntries);
-                req.AcceptLanguage = new LanguageOrder[languages.Length];
+                req.AcceptLanguage = new LanguagePriority[languages.Length];
                 try
                 {
                     for (int i = 0; i < languages.Length; i++)
                     {
                         var lan = languages[i];
                         var lans = lan.Split(new char[] { (char)ASCIICode.COMMA }, StringSplitOptions.RemoveEmptyEntries);
-                        req.AcceptLanguage[i] = new LanguageOrder()
+                        req.AcceptLanguage[i] = new LanguagePriority()
                         {
                             LanguageName = lans[0],
                             Weight = lans.Length > 1 ? int.Parse(lans[1]) : 1
@@ -590,6 +597,7 @@ namespace Mozi.HttpEmbedded
             string sMethod = sFirst[0];
             string sUrl = sFirst[1];
             string sProtocol = sFirst[2];
+
             RequestMethod rm = AbsClassEnum.Get<RequestMethod>(sMethod);
             req.Method = rm;
 
@@ -608,8 +616,10 @@ namespace Mozi.HttpEmbedded
 
             string sProtoType = sProtocol.Substring(0, sProtocol.IndexOf((char)ASCIICode.DIVIDE));
             string sProtoVersion = sProtocol.Substring(sProtocol.IndexOf((char)ASCIICode.DIVIDE) + 1);
+
             req.Protocol = AbsClassEnum.Get<ProtocolType>(sProtoType);
             req.ProtocolVersion = AbsClassEnum.Get<HttpVersion>(sProtoVersion);
+
         }
         //TODO 此功能需要重试以进行验证
         /// <summary>
@@ -624,13 +634,13 @@ namespace Mozi.HttpEmbedded
             data.AddRange(GetRequestLine());
             data.AddRange(TransformHeader.Carriage);
             //注入默认头部
-            data.AddRange(Headers.GetBuffer(headerKeyNameUpperCase));
+            data.AddRange(_headers.GetBuffer(headerKeyNameUpperCase));
             //注入Cookie
-            data.AddRange(Cookies.GetBuffer());
+            data.AddRange(_cookies.GetBuffer());
             //注入分割符
             data.AddRange(TransformHeader.Carriage);
             //注入响应包体
-            data.AddRange(Body);
+            data.AddRange(_body);
             return data.ToArray();
         }
         /// <summary>
@@ -649,7 +659,7 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public HttpRequest SetHeader(string key,string value)
         {
-            Headers.Add(key, value);
+            _headers.Add(key, value);
             return this;
         }
         /// <summary>
@@ -660,17 +670,20 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public HttpRequest SetHeader(HeaderProperty key,string value)
         {
-            Headers.Add(key, value);
+            _headers.Add(key, value);
             return this;
         }
         /// <summary>
-        /// 应用头信息集合
+        /// 应用头信息集合 覆盖所有头属性
         /// </summary>
         /// <param name="headers"></param>
         /// <returns></returns>
         public HttpRequest SetHeaders(TransformHeader headers)
         {
-            Headers = headers;
+            if (headers != null)
+            {
+                _headers = headers;
+            }
             return this;
         }
         /// <summary>
@@ -705,8 +718,12 @@ namespace Mozi.HttpEmbedded
         }
         public HttpRequest SetBody(byte[] data)
         {
-            Body = data;
-            ContentLength = Body.Length.ToString();
+            if (data != null)
+            {
+                _body = data;
+                ContentLength = _body.Length.ToString();
+                SetHeader(HeaderProperty.ContentLength, data.Length.ToString());
+            }
             return this;
         }
         /// <summary>
@@ -721,10 +738,11 @@ namespace Mozi.HttpEmbedded
         {
             //PackData = null;
             RequestLineData = null;
-            Body = null;
-            Headers = null;
+            _body = null;
+            _headers = null;
+            _cookies = null;
             HeaderData = null;
-            Files = null;
+            _files = null;
             AcceptLanguage = null;
         }
     }

@@ -5,7 +5,7 @@
 
     }
 
-    public class LanguageOrder
+    public class LanguagePriority
     {
         public string LanguageName { get; set; }
         public int Weight { get; set; }

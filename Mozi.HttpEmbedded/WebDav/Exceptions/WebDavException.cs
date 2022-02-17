@@ -5,17 +5,17 @@ namespace Mozi.HttpEmbedded.WebDav.Exceptions
     /// <summary>
     /// </summary>
     [Serializable]
-    public class WebDavException : System.Exception
+    public class WebDavException : Exception
     {
         private StatusCode _status;
-        private string message;
+        private string _message;
 
-        public override string Message { get; }
+        public override string Message { get { return _message; } }
 
-        public WebDavException(StatusCode status, string message, System.Exception innerException)
+        public WebDavException(StatusCode status, string message, Exception innerException)
         {
             _status = status;
-            Message = message;
+            _message = message;
         }
         public StatusCode Status
         {

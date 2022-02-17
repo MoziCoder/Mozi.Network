@@ -2,6 +2,9 @@
 
 namespace Mozi.SSDP
 {
+    /// <summary>
+    /// SSDP请求方法
+    /// </summary>
     public class RequestMethodUPnP 
     {
         public static RequestMethod MSEARCH = new RequestMethod("M-SEARCH");

@@ -2,18 +2,18 @@
 <package >
   <metadata>
     <id>Mozi.IoT.Client</id>
-    <version>1.3.4</version>
+    <version>1.3.5</version>
     <title>Mozi.IoT.Client</title>
     <authors>Jason</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
     <projectUrl>https://gitee.com/myui_admin/mozi</projectUrl>
-    <description>IoT物联网客户端,CoAP通讯客户端</description>
+    <description>IoT物联网客户端,CoAP通讯客户端,client for CoAP,Java版请查看Git项目</description>
     <releaseNotes>IoT Client 物联网客户端</releaseNotes>
     <copyright>Copyright © Jason 2021-2022</copyright>
     <tags>IoT Client 物联网客户端</tags>
 	<dependencies>
-		<dependency id="Mozi.IoT" version="[1.3.4,]" />
+		<dependency id="Mozi.IoT" version="[1.3.5,]" />
 	</dependencies>
   </metadata>
 </package>

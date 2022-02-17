@@ -91,11 +91,11 @@ namespace Mozi.HttpEmbedded.Page
         {
             ResponseMessage rm = new ResponseMessage();
             bool success = false;
-            if (Context.Request.Files.Length > 0)
+            if (Context.Request.Files.Count > 0)
             {
                 try
                 {
-                    for (int i = 0; i < Context.Request.Files.Length; i++)
+                    for (int i = 0; i < Context.Request.Files.Count; i++)
                     {
                         File f = Context.Request.Files[i];
                         string filePath = AppDomain.CurrentDomain.BaseDirectory + f.FileName;
@@ -139,11 +139,11 @@ namespace Mozi.HttpEmbedded.Page
             {
                 Directory.CreateDirectory(dir);
             }
-            if (Context.Request.Files.Length > 0)
+            if (Context.Request.Files.Count > 0)
             {
                 try
                 {
-                    for (int i = 0; i < Context.Request.Files.Length; i++)
+                    for (int i = 0; i < Context.Request.Files.Count; i++)
                     {
                         File f = Context.Request.Files[i];
                         string filePath = dir + "/" + f.FileName;
@@ -306,6 +306,11 @@ namespace Mozi.HttpEmbedded.Page
         {
             throw new NotImplementedException();
         }
+        /// <summary>
+        /// 这个方法暂时不用，还有问题
+        /// </summary>
+        /// <param name="action"></param>
+        /// <returns></returns>
         public  string Soap(string action)
         {
             if (action == "example")

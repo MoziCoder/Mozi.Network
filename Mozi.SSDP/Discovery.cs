@@ -89,7 +89,6 @@ namespace Mozi.SSDP
             var sUSN = req.Headers.GetValue("USN");
             return pack;
         }
-
     }
 
     /// <summary>

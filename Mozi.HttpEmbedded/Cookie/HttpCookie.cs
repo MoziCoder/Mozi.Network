@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Mozi.HttpEmbedded.Encode;
 
 namespace Mozi.HttpEmbedded.Cookie

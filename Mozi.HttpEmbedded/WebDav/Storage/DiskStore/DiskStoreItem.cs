@@ -6,14 +6,7 @@ using Mozi.HttpEmbedded.WebDav.Storage.Base;
 
 namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
 {
-    /// <summary>
-    /// This class implements a disk-based 
-    /// <see cref="IWebDavStoreItem" /> which can be either
-    /// a folder on disk (
-    /// <see cref="DiskStoreCollection" />) or a file on disk
-    /// (
-    /// <see cref="DiskStoreDocument" />).
-    /// </summary>
+
     public class DiskStoreItem : WebDavStoreItemBase
     {
         /// <summary>
@@ -23,18 +16,6 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
         private readonly DiskStoreCollection _parentCollection;
         private readonly string _path;
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="DiskStoreItem" /> class.
-        /// </summary>
-        /// <param name="parentCollection">The parent 
-        /// <see cref="DiskStoreCollection" /> that contains this 
-        /// <see cref="DiskStoreItem" />;
-        /// or 
-        /// if this is the root 
-        /// <see cref="DiskStoreCollection" />.</param>
-        /// <param name="path">The path that this <see cref="DiskStoreItem" /> maps to.</param>
-        /// <exception cref="ArgumentNullException">path</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="path" /> is or empty.</exception>
         protected DiskStoreItem(DiskStoreCollection parentCollection, string path) : base(parentCollection, path)
         {
             if (string.IsNullOrWhiteSpace(path))
@@ -45,9 +26,6 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
             Identity = (WindowsIdentity)Thread.GetData(Thread.GetNamedDataSlot(DavServer.HttpUser));
         }
 
-        /// <summary>
-        /// Gets the path to this <see cref="DiskStoreItem" />.
-        /// </summary>
         public override string ItemPath
         {
             get
@@ -56,12 +34,6 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
             }
         }
 
-        #region IWebDAVStoreItem Members
-
-        /// <summary>
-        /// Gets or sets the name of this <see cref="IWebDavStoreItem" />.
-        /// </summary>
-        /// <exception cref="InvalidOperationException">Unable to rename item</exception>
         public new string Name
         {
             get
@@ -81,9 +53,6 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
                 return Path.GetExtension(_path);
             }
         }
-        /// <summary>
-        /// Gets if this <see cref="IWebDavStoreItem" /> is a collection.
-        /// </summary>
         public new bool IsCollection
         {
             get
@@ -96,9 +65,6 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
             }
         }
 
-        /// <summary>
-        /// Gets the creation date of this <see cref="IWebDavStoreItem" />.
-        /// </summary>
         public override DateTime CreationDate
         {
             get
@@ -108,9 +74,6 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
             }
         }
 
-        /// <summary>
-        /// Gets the modification date of this <see cref="IWebDavStoreItem" />.
-        /// </summary>
         public override DateTime ModificationDate
         {
             get
@@ -120,12 +83,6 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
             }
         }
 
-        /// <summary>
-        /// Gets the hidden state of this <see cref="IWebDavStoreItem" />.
-        /// </summary>
-        /// <remarks>
-        /// Source: <see href="http://stackoverflow.com/questions/3612035/c-sharp-check-if-a-directory-is-hidden" />
-        /// </remarks>
         public new int Hidden
         {
             get
@@ -134,7 +91,5 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
                 return (dir.Attributes & FileAttributes.Hidden) != 0 ? 1 : 0;
             }
         }
-
-        #endregion
     }
 }

@@ -26,6 +26,8 @@ namespace Mozi.HttpEmbedded
 
     //TODO 2021/11/22 实现简易的API处理能力,OnRequest("{action}/{id}",Func<T,T>{});
 
+    //TODO 2022/02/16 尝试使用ArraySegement来处理数据
+
     //Transfer-Encoding: chunked 主要是为解决服务端无法预测Content-Length的问题
 
     /*断点续传*/
@@ -111,7 +113,7 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         public bool EnableAccessControl { get; private set; }
         /// <summary>
-        /// 是否开启压缩
+        /// 是否开启压缩 默认为GZip
         /// </summary>
         public bool EnableCompress { get; private set; }
         /// <summary>
@@ -194,7 +196,7 @@ namespace Mozi.HttpEmbedded
             _sc.OnServerStart += _sc_OnServerStart;
             _sc.OnClientConnect += _sc_OnClientConnect;
             _sc.OnReceiveStart += _sc_OnReceiveStart;
-            _sc.AfterReceiveEnd += _sc_AfterReceiveEnd;
+            _sc.AfterReceiveEnd += Socket_AfterReceiveEnd;
             _sc.AfterServerStop += _sc_AfterServerStop;
         }
         /// <summary>
@@ -216,12 +218,15 @@ namespace Mozi.HttpEmbedded
 
         }
         //TODO 响应码处理有问题
+
+        //该方法为受保护类型，如果想实现更自由的实现，可以覆写该方法，但不建议这么做。此处处理比较复杂
+
         /// <summary>
-        /// 响应请求
+        /// 解析请求包，响应请求
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        void _sc_AfterReceiveEnd(object sender, DataTransferArgs args)
+        protected virtual void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
             HttpContext context = new HttpContext();
             context.Response = new HttpResponse();
@@ -695,8 +700,16 @@ namespace Mozi.HttpEmbedded
         public void Start()
         {
             StartTime = DateTime.Now;
-            _sc.StartServer(_port);
+            _sc.Start(_port);
             Running = true;
+        }
+        /// <summary>
+        /// 关闭服务器
+        /// </summary>
+        public void Shutdown()
+        {
+            Running = false;
+            _sc.Shutdown();
         }
         /// <summary>
         /// 是否启用访问控制 IP策略
@@ -748,14 +761,6 @@ namespace Mozi.HttpEmbedded
         public void SetIndexPage(string pattern)
         {
             _indexPages = pattern.Split(new char[] { ',' });
-        }
-        /// <summary>
-        /// 关闭服务器
-        /// </summary>
-        public void Shutdown()
-        {
-            Running = false;
-            _sc.StopServer();
         }
 
         //public void ForbideIPAccess()

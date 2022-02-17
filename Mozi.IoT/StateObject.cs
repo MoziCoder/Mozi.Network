@@ -20,7 +20,7 @@ namespace Mozi.IoT
         
         public List<byte> Data = new List<byte>();
 
-        public byte[] Buffer = new byte[BufferSize * 4];
+        public byte[] Buffer = new byte[BufferSize];
 
         public string IP { get; set; }
 

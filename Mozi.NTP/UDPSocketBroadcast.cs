@@ -34,19 +34,19 @@ namespace Mozi.NTP
         /// <summary>
         /// 服务器启动事件
         /// </summary>
-        public event ServerStart OnServerStart;
+        public  ServerStart OnServerStart;
         /// <summary>
         /// 数据接收开始事件
         /// </summary>
-        public event ReceiveStart OnReceiveStart;
+        public  ReceiveStart OnReceiveStart;
         /// <summary>
         /// 数据接收完成事件
         /// </summary>
-        public event ReceiveEnd AfterReceiveEnd;
+        public  ReceiveEnd AfterReceiveEnd;
         /// <summary>
         /// 服务器停用事件
         /// </summary>
-        public event AfterServerStop AfterServerStop;
+        public  AfterServerStop AfterServerStop;
         /// <summary>
         /// 端口
         /// </summary>

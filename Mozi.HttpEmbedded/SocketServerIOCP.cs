@@ -9,7 +9,6 @@ namespace Mozi.HttpEmbedded
 {
 
     //TODO 还有很多问题没有解决，暂时不能使用这种模式
-
     /// <summary>  
     /// 客户端连接数量变化时触发  
     /// </summary>  
@@ -35,27 +34,27 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 服务器启动事件
         /// </summary>
-        public event ServerStart OnServerStart;
+        public  ServerStart OnServerStart;
         /// <summary>
         /// 客户端连接事件
         /// </summary>
-        public event ClientConnect OnClientConnect;
+        public  ClientConnect OnClientConnect;
         /// <summary>
         /// 客户端断开连接时间
         /// </summary>
-        public event ClientDisConnect AfterClientDisConnect;
+        public  ClientDisConnect AfterClientDisConnect;
         /// <summary>
         /// 数据接收开始事件
         /// </summary>
-        public event ReceiveStart OnReceiveStart;
+        public  ReceiveStart OnReceiveStart;
         /// <summary>
         /// 数据接收完成事件
         /// </summary>
-        public event ReceiveEnd AfterReceiveEnd;
+        public  ReceiveEnd AfterReceiveEnd;
         /// <summary>
         /// 服务器停用事件
         /// </summary>
-        public event AfterServerStop AfterServerStop;
+        public  AfterServerStop AfterServerStop;
 
         /// <summary>  
         /// 获取客户端列表  
@@ -125,7 +124,7 @@ namespace Mozi.HttpEmbedded
         /// 启动服务器 
         /// </summary>  
         /// <param name="port"></param>  
-        public bool StartServer(int port)
+        public bool Start(int port)
         {
             _iport = port;
             try
@@ -150,13 +149,14 @@ namespace Mozi.HttpEmbedded
         /// <summary>  
         /// 关闭服务器  
         /// </summary>  
-        public void StopServer()
+        public void Shutdown()
         {
             foreach (StateObject token in _clients)
             {
                 try
                 {
                     token.WorkSocket.Shutdown(SocketShutdown.Both);
+                    token.WorkSocket.Close();
                 }
                 catch (Exception) { }
             }

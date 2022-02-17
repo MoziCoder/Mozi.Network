@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Mozi.HttpEmbedded
@@ -11,8 +12,7 @@ namespace Mozi.HttpEmbedded
         public string FieldName { get; set; }
         public int FileIndex { get; set; }
         public byte[] FileData { get; set; }
-        internal string FileTempSavePath { get; set; }
-
+        public string FileTempSavePath { get; set; }
         ~File()
         {
             FileData = null;
@@ -22,7 +22,7 @@ namespace Mozi.HttpEmbedded
     /// <summary>
     /// 文件集合
     /// </summary>
-    public class FileCollection
+    public class FileCollection:IEnumerable
     {
         private readonly List<File> _files = new List<File>();
 
@@ -34,16 +34,52 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         public List<File> Files { get { return _files; } }
 
-        public int Length { get { return _files.Count; } }
+        public int Count { get { return _files.Count; } }
+
+        public IEnumerator GetEnumerator()
+        {
+            return new FileCollectionEnumerator(_files);
+        }
 
         public File GetFile(string name)
         {
             return _files.Find(x => x.FileName.Equals(name));
         }
 
-        internal void Append(File f)
+        public void Add(File f)
         {
             _files.Add(f);
+        }
+    }
+
+    public class FileCollectionEnumerator : IEnumerator
+    {
+        private int _index;
+        private List<File> _collection;
+        private File value;
+        public FileCollectionEnumerator(List<File> colletion)
+        {
+            _collection = colletion;
+            _index = -1;
+        }
+        object IEnumerator.Current
+        {
+            get { return value; }
+        }
+
+        public bool MoveNext()
+        {
+            _index++;
+            if (_index >= _collection.Count) { 
+                return false;
+            }else { 
+                value = _collection[_index]; 
+            }
+            return true;
+        }
+        public void Reset()
+        {
+            _index = -1;
         }
     }
 }

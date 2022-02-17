@@ -2,7 +2,10 @@
 
 namespace Mozi.IoT
 {
-    public class DNSClient
+    /// <summary>
+    /// DNS客户端
+    /// </summary>
+    public class DNSResolver
     {
         /// <summary>
         /// DNS解析指定域名

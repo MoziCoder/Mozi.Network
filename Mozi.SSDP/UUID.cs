@@ -12,6 +12,10 @@ namespace Mozi.SSDP
     /// </summary>
     public class UUID
     {
+        /// <summary>
+        /// 生成设备唯一ID值
+        /// </summary>
+        /// <returns></returns>
         public static string Generate()
         {
             byte[] octet1 = System.Text.Encoding.ASCII.GetBytes("Mozi");

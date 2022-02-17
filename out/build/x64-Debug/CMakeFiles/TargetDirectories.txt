@@ -1,0 +1,5 @@
+D:/Users/FDXXB/Source/Repos/Mozi/out/build/x64-Debug/CMakeFiles/edit_cache.dir
+D:/Users/FDXXB/Source/Repos/Mozi/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
+D:/Users/FDXXB/Source/Repos/Mozi/out/build/x64-Debug/libiot4c/CMakeFiles/libiot4c.dir
+D:/Users/FDXXB/Source/Repos/Mozi/out/build/x64-Debug/libiot4c/CMakeFiles/edit_cache.dir
+D:/Users/FDXXB/Source/Repos/Mozi/out/build/x64-Debug/libiot4c/CMakeFiles/rebuild_cache.dir

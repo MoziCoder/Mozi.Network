@@ -9,7 +9,7 @@ namespace Mozi.HttpEmbedded
     /// <summary>
     /// 异步单线程
     /// </summary>
-    public class SocketServerUDP
+    public class UDPSocketServer
     {
         //private static SocketServer _mSocketServer;
 
@@ -18,31 +18,41 @@ namespace Mozi.HttpEmbedded
         protected int _maxListenCount = 100;
         protected readonly ConcurrentDictionary<string, Socket> _socketDocker;
         protected Socket _sc;
-
+        private long _errorCount = 0;
+        /// <summary>
+        /// 接收错误计数
+        /// </summary>
+        public long ReceiveErrorCount
+        {
+            get
+            {
+                return _errorCount;
+            }
+        }
         /// <summary>
         /// 服务器启动事件
         /// </summary>
-        public event ServerStart OnServerStart;
+        public  ServerStart OnServerStart;
         /// <summary>
         /// 客户端连接事件
         /// </summary>
-        public event ClientConnect OnClientConnect;
+        public  ClientConnect OnClientConnect;
         /// <summary>
         /// 客户端断开连接时间
         /// </summary>
-        public event ClientDisConnect AfterClientDisConnect;
+        public  ClientDisConnect AfterClientDisConnect;
         /// <summary>
         /// 数据接收开始事件
         /// </summary>
-        public event ReceiveStart OnReceiveStart;
+        public  ReceiveStart OnReceiveStart;
         /// <summary>
         /// 数据接收完成事件
         /// </summary>
-        public event ReceiveEnd AfterReceiveEnd;
+        public  ReceiveEnd AfterReceiveEnd;
         /// <summary>
         /// 服务器停用事件
         /// </summary>
-        public event AfterServerStop AfterServerStop;
+        public  AfterServerStop AfterServerStop;
 
         /// <summary>
         /// 端口
@@ -56,7 +66,7 @@ namespace Mozi.HttpEmbedded
             get { return _sc; }
         }
 
-        public SocketServerUDP()
+        public UDPSocketServer()
         {
             _socketDocker = new ConcurrentDictionary<string, Socket>();
         }
@@ -77,7 +87,7 @@ namespace Mozi.HttpEmbedded
             {
                 _sc.Close();
             }
-            System.Net.IPEndPoint endpoint = new System.Net.IPEndPoint(IPAddress.Any, _iport);
+            IPEndPoint endpoint = new IPEndPoint(IPAddress.Any, _iport);
             //允许端口复用
             _sc.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             _sc.Bind(endpoint);
@@ -98,6 +108,7 @@ namespace Mozi.HttpEmbedded
             try
             {
                 _sc.Shutdown(SocketShutdown.Both);
+                _sc.Close();
                 if (AfterServerStop != null)
                 {
                     AfterServerStop(_sc, null);
@@ -130,8 +141,8 @@ namespace Mozi.HttpEmbedded
             {
                 WorkSocket = client,
                 Id = Guid.NewGuid().ToString(),
-                IP = ((System.Net.IPEndPoint)client.RemoteEndPoint).Address.ToString(),
-                RemotePort = ((System.Net.IPEndPoint)client.RemoteEndPoint).Port,
+                IP = ((IPEndPoint)client.RemoteEndPoint).Address.ToString(),
+                RemotePort = ((IPEndPoint)client.RemoteEndPoint).Port,
             };
             _socketDocker.TryAdd(so.Id, client);
             try
@@ -144,7 +155,7 @@ namespace Mozi.HttpEmbedded
             }
             catch (Exception ex)
             {
-                var ex2 = ex;
+                _errorCount++;
             }
         }
         /// <summary>

@@ -41,6 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TFTPClient.cs" />
+    <Compile Include="TFTPServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mozi.TFTP.nuspec" />

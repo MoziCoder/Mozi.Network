@@ -23,7 +23,7 @@ namespace Mozi.HttpEmbedded.WebDav.Method
         /// <para>
         ///   <paramref name="context" /> </para></exception>
         /// <exception cref="WebDavConflictException"><paramref name="context" /> </exception>
-        public StatusCode ProcessRequest(DavServer server, HttpContext context, IWebDavStore store)
+        public StatusCode HandleRequest(DavServer server, HttpContext context, IWebDavStore store)
         {
             //父级目录资源清单
             IWebDavStoreCollection collection = GetParentCollection(store, context.Request.Path);

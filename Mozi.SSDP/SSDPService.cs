@@ -210,28 +210,28 @@ namespace Mozi.SSDP
         /// <summary>
         /// 收到ssdp:alive时触发
         /// </summary>
-        public event NotifyAliveReceived OnNotifyAliveReceived;
+        public  NotifyAliveReceived OnNotifyAliveReceived;
         /// <summary>
         /// 收到ssdp:byebye时触发
         /// </summary>
-        public event NotifyByebyeReceived OnNotifyByebyeReceived;
+        public  NotifyByebyeReceived OnNotifyByebyeReceived;
         /// <summary>
         /// 收到m-search时触发
         /// </summary>
-        public event SearchReceived OnSearchReceived;
+        public  SearchReceived OnSearchReceived;
         /// <summary>
         /// 收到upnp:update时触发
         /// </summary>
-        public event NotifyUpdateReceived OnNotifyUpdateReceived;
+        public  NotifyUpdateReceived OnNotifyUpdateReceived;
         /// <summary>
         /// 收到HTTP/1.1 200 OK时触发
         /// </summary>
-        public event ResponseMessageReceived OnResponseMessageReceived;
+        public  ResponseMessageReceived OnResponseMessageReceived;
         /// <summary>
         /// 原始数据包解析
         /// <para>如果内置的解析结果不能满足应用需求，可以使用该事件进行数据解析</para>
         /// </summary>
-        public event MessageReceived OnMessageReceived;
+        public  MessageReceived OnMessageReceived;
         /// <summary>
         /// 构造函数
         /// <para>
@@ -241,7 +241,7 @@ namespace Mozi.SSDP
         public SSDPService()
         {
             _socket = new UDPSocket();
-            _socket.AfterReceiveEnd += _socket_AfterReceiveEnd;
+            _socket.AfterReceiveEnd += Socket_AfterReceiveEnd;
             _remoteEP = new IPEndPoint(IPAddress.Parse(SSDPProtocol.MulticastAddress), SSDPProtocol.ProtocolPort);
 
             _timer = new Timer(TimeoutCallback, null, Timeout.Infinite, Timeout.Infinite);
@@ -270,7 +270,7 @@ namespace Mozi.SSDP
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        private void _socket_AfterReceiveEnd(object sender, DataTransferArgs args)
+        protected virtual void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
             //TODO 如何进行多包分割？
 
@@ -279,9 +279,9 @@ namespace Mozi.SSDP
             {
                 OnMessageReceived(this, args);
             }
-            //Console.WriteLine("==**************{0}*************==", args.IP);
-            //Console.WriteLine("{1}", args.IP,System.Text.Encoding.UTF8.GetString(args.Data));
-            //Console.WriteLine("==***************************************==");
+            Console.WriteLine("==**************{0}*************==", args.IP);
+            Console.WriteLine("{1}", args.IP, System.Text.Encoding.UTF8.GetString(args.Data));
+            Console.WriteLine("==***************************************==");
         }
         /// <summary>
         /// 包解析
@@ -389,7 +389,7 @@ namespace Mozi.SSDP
         {            
             _socket.AllowLoopbackMessage = AllowLoopbackMessage;
             _socket.BindingAddress = BindingAddress;
-            _socket.StartServer(_multicastGroupAddress,_multicastGroupPort);
+            _socket.Start(_multicastGroupAddress,_multicastGroupPort);
             _initialized = true;
             Running = true;
             return this;
@@ -401,7 +401,7 @@ namespace Mozi.SSDP
         public SSDPService Inactivate()
         {
             Running = false;
-            _socket.StopServer();
+            _socket.Shutdown();
             return this;
         }
         /// <summary>
@@ -448,7 +448,7 @@ namespace Mozi.SSDP
             request.SetPath("*").SetMethod(RequestMethodUPnP.MSEARCH);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
-            _socket.SocketMain.SendTo(data, _remoteEP);
+            SendTo(data);
         }
         /// <summary>
         /// 查找设备简化方法，参看<see cref="Search(SearchPackage)"/>
@@ -465,7 +465,7 @@ namespace Mozi.SSDP
             request.SetPath("*").SetMethod(RequestMethodUPnP.MSEARCH);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
-            _socket.SocketMain.SendTo(data, _remoteEP);
+            SendTo(data);
         }
         //NOTIFY * HTTP/1.1     
         //HOST: 239.255.255.250:1900    
@@ -498,7 +498,7 @@ namespace Mozi.SSDP
             request.SetPath("*").SetMethod(RequestMethodUPnP.NOTIFY);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
-            _socket.SocketMain.SendTo(data, _remoteEP);
+            SendTo(data);
         }
 
         //NOTIFY * HTTP/1.1     
@@ -522,7 +522,7 @@ namespace Mozi.SSDP
             request.SetPath("*").SetMethod(RequestMethodUPnP.NOTIFY);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
-            _socket.SocketMain.SendTo(data, _remoteEP);
+            SendTo(data);
         }
         /// <summary>
         /// update信息
@@ -534,7 +534,7 @@ namespace Mozi.SSDP
             request.SetPath("*").SetMethod(RequestMethodUPnP.NOTIFY);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
-            _socket.SocketMain.SendTo(data, _remoteEP);
+            SendTo(data);
         }
         //HTTP/1.1 200 OK
         //CACHE-CONTROL: max-age = seconds until advertisement expires
@@ -567,8 +567,7 @@ namespace Mozi.SSDP
             resp.SetHeaders(pk.GetHeaders());
             resp.SetStatus(StatusCode.Success);
             byte[] data = resp.GetBuffer(true);
-            _socket.SocketMain.SendTo(data, _remoteEP);
-
+            SendTo(data);
         }
         //POST path of control URL HTTP/1.1 
         //HOST: host of control URL:port of control URL
@@ -597,7 +596,7 @@ namespace Mozi.SSDP
             request.SetHeader("CONTENT-LENGTH", request.ContentLength);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
-            _socket.SocketMain.SendTo(data, _remoteEP);
+            SendTo(data);
         }
         //POST path of control URL HTTP/1.1 
         //HOST: host of control URL:port of control URL
@@ -637,13 +636,13 @@ namespace Mozi.SSDP
         //NT: upnp:event
         //NTS: upnp:propchange
         //SID: uuid:subscription-UUID
-        // SEQ: event key
+        //SEQ: event key
         //<?xml version="1.0"?>
         //<e:propertyset xmlns:e="urn:schemas-upnp-org:event-1-0"> 
         //<e:property> 
-        //<variableName>new value</variableName> 
+        //  <variableName>new value</variableName> 
         //</e:property> 
-        //Other variable names and values(if any) go here.
+        //  Other variable names and values(if any) go here.
         //</e:propertyset>
         /// <summary>
         /// 订阅
@@ -655,7 +654,7 @@ namespace Mozi.SSDP
             request.SetPath(pk.Path).SetMethod(RequestMethodUPnP.SUBSCRIBE);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
-            _socket.SocketMain.SendTo(data, _remoteEP);
+            SendTo(data);
         }
 
         //UNSUBSCRIBE publisher path HTTP/1.1 
@@ -671,8 +670,14 @@ namespace Mozi.SSDP
             request.SetPath(pk.Path).SetMethod(RequestMethodUPnP.UNSUBSCRIBE);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
+            SendTo(data);
+        }
+
+        private void SendTo(byte[] data)
+        {
             _socket.SocketMain.SendTo(data, _remoteEP);
         }
+
         /// <summary>
         /// 设置描述文档地址
         /// </summary>
@@ -727,8 +732,7 @@ namespace Mozi.SSDP
                         HostPort = ushort.Parse(hostItmes[1]);
                     }
                     _host = value;
-                }catch(Exception ex)
-                {
+                }catch(Exception ex){
 
                 }
             } 
@@ -769,7 +773,7 @@ namespace Mozi.SSDP
         /// <summary>
         /// 事件组播地址
         /// </summary>
-        public const string EventMulticastAddress = " 239.255.255.246";
+        public const string EventMulticastAddress = "239.255.255.246";
         /// <summary>
         /// 事件组播端口
         /// </summary>

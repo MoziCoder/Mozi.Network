@@ -66,11 +66,13 @@
     <Compile Include="ASCIICode.cs" />
     <Compile Include="Attributes\BasicApiAttribute.cs" />
     <Compile Include="Attributes\HttpMethodAttribute.cs" />
-    <Compile Include="Attributes\ResponseContentTypeAttribute.cs" />
+    <Compile Include="Attributes\ContentTypeAttribute.cs" />
+    <Compile Include="Common\DNSResolver.cs" />
     <Compile Include="HttpClient.cs" />
-    <Compile Include="HttpQUICServer.cs" />
+    <Compile Include="HttpServerQUIC.cs" />
     <Compile Include="Memory\BufferPool.cs" />
     <Compile Include="Middleware\IMiddleware.cs" />
+    <Compile Include="SocketClient.cs" />
     <Compile Include="SocketServerIOCP.cs" />
     <Compile Include="Template\Expression.cs" />
     <Compile Include="Template\Statement.cs" />
@@ -121,7 +123,7 @@
     <Compile Include="HttpResponse.cs" />
     <Compile Include="Serialize\JSONSerializer.cs" />
     <Compile Include="Serialize\XMLSerializer.cs" />
-    <Compile Include="SocketServerUDP.cs" />
+    <Compile Include="UDPSocketServer.cs" />
     <Compile Include="SocketServer.cs" />
     <Compile Include="ServerEvent.cs" />
     <Compile Include="Source\Mime.cs" />
@@ -178,7 +180,6 @@
     <None Include="Mozi.HttpEmbedded.svg" />
     <Content Include="RFC 3986 Uniform Resource Identifier %28URI%29 Generic Syntax.html" />
     <Content Include="Source\mime.data" />
-    <Content Include="WebDav\Icon.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -186,13 +187,12 @@
     <None Include="License.md" />
     <None Include="Mozi.HttpEmbedded.nuspec" />
     <None Include="Readme.md" />
-    <None Include="WebDav\ClassDiagram.cd" />
-    <None Include="WebDav\LICENSE" />
     <None Include="WebDav\packages.config" />
     <None Include="WebDav\README.md" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Secure\" />
+    <Folder Include="WebSocket\" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">

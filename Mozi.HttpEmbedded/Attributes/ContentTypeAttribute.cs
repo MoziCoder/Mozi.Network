@@ -6,16 +6,16 @@ namespace Mozi.HttpEmbedded.Attributes
     /// 响应内容 文档类型
     /// </summary>
     [AttributeUsage(AttributeTargets.ReturnValue)]
-    internal class ResponseContentTypeAttribute : Attribute
+    internal class ContentTypeAttribute : Attribute
     {
         public string ContentType { get; set; }
         public string Encoding { get; set; }
-        public ResponseContentTypeAttribute(string contentType,string encoding)
+        public ContentTypeAttribute(string contentType,string encoding)
         {
             ContentType = contentType;
             Encoding = encoding;
         }
-        public ResponseContentTypeAttribute(string contentType):this(contentType,"")
+        public ContentTypeAttribute(string contentType):this(contentType,"")
         {
             
         }
