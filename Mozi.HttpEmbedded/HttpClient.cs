@@ -15,7 +15,7 @@ namespace Mozi.HttpEmbedded
     public class HttpClient
     {
         private static string Charset = "UTF-8";
-        private static string UserAgent = "Mozilla/5.0 (Linux;Android 4.4.2;OEM Device) AppleWebKit/537.36 (KHTML,like Gecko) Chrom/39.0.2171.71 Mobile Crosswalk/10.3.235.16 Mobile Safri/537.36 Mozi/1.3.5";
+        private static string UserAgent = "Mozilla/5.0 (Linux;Android 4.4.2;OEM Device) AppleWebKit/537.36 (KHTML,like Gecko) Chrom/39.0.2171.71 Mobile Crosswalk/10.3.235.16 Mobile Safri/537.36 Mozi/1.3.6";
         private static string Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
         private static string AcceptEncoding = "gzip, deflate";
 

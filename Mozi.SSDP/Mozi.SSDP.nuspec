@@ -2,7 +2,7 @@
 <package >
   <metadata>
 	<id>Mozi.SSDP</id>
-	<version>1.3.5</version>
+	<version>1.3.6</version>
 	<title>Mozi.SSDP</title>
 	<authors>Jason</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
