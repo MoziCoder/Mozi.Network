@@ -16,10 +16,10 @@ namespace Mozi.HttpEmbedded
     /// </summary>
     public class HttpClient
     {
-        private static string Charset = "UTF-8";
-        private static string UserAgent = "Mozilla/5.0 (Linux;Android 4.4.2;OEM Device) AppleWebKit/537.36 (KHTML,like Gecko) Chrom/39.0.2171.71 Mobile Crosswalk/10.3.235.16 Mobile Safri/537.36 Mozi/1.3.6";
-        private static string Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
-        private static string AcceptEncoding = "gzip, deflate";
+        private const string Charset = "UTF-8";
+        private const string UserAgent = "Mozilla/5.0 (Linux;Android 4.4.2;OEM Device) AppleWebKit/537.36 (KHTML,like Gecko) Chrom/39.0.2171.71 Mobile Crosswalk/10.3.235.16 Mobile Safri/537.36 Mozi/1.3.6";
+        private const string Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
+        private const string AcceptEncoding = "gzip, deflate";
 
         /// <summary>
         /// 注入URL相关参数,domain,port,paths,queries
@@ -32,6 +32,7 @@ namespace Mozi.HttpEmbedded
             req.SetHeader(HeaderProperty.Host, string.IsNullOrEmpty(uri.Domain)?uri.Host:uri.Domain);
             req.SetHeader(HeaderProperty.Referer, uri.Url);
         }
+        //TODO 此处应考虑Gzip解码
         /// <summary>
         /// 发送HTTP请求
         /// </summary>
@@ -48,7 +49,6 @@ namespace Mozi.HttpEmbedded
         ///     <item><see cref="HeaderProperty.Referer"/></item>
         ///     <item><see cref="HeaderProperty.ContentLength"/></item>
         ///     </list>
-        /// 
         /// </param>
         /// <param name="body">请求包体</param>
         /// <param name="callback">回调方法</param>
@@ -123,7 +123,6 @@ namespace Mozi.HttpEmbedded
         ///     <item><see cref="HeaderProperty.Referer"/></item>
         ///     <item><see cref="HeaderProperty.ContentLength"/></item>
         ///     </list>
-        /// 
         /// </param>
         /// <param name="callback">回调方法</param>
         public void Get(string url, Dictionary<HeaderProperty, string> headers, RequestComplete callback)
@@ -191,7 +190,6 @@ namespace Mozi.HttpEmbedded
         /// <param name="callback">回调方法</param>
         public void PostFile(string url, Dictionary<HeaderProperty, string> headers, FileCollection files,RequestComplete callback)
         {
-            
             byte[] byteNewLine = new byte[] { ASCIICode.CR, ASCIICode.LF };
             string sNewLine=System.Text.Encoding.ASCII.GetString(byteNewLine);
             string boundary = "--"+CacheControl.GenerateRandom(8);
