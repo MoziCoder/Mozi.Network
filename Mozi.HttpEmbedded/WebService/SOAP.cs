@@ -183,10 +183,9 @@ namespace Mozi.HttpEmbedded.WebService
             doc.LoadXml(content);
             var body = doc.SelectSingleNode(string.Format("/{0}:Envelope/{0}:Body",version.Prefix),xm);
             var action = body.FirstChild;
-            XmlNode fault = null;
             if (action.LocalName == "Fault")
             {
-                fault = action;
+                XmlNode fault = action;
                 action = action.NextSibling;
             }
             envelope.Body.Method = action.LocalName;

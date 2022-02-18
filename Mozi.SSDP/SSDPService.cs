@@ -59,7 +59,7 @@ namespace Mozi.SSDP
         private int _multicastGroupPort = SSDPProtocol.ProtocolPort;
         private IPAddress _bindingAddress = IPAddress.Any;
 
-        private string _server = "Mozi/1.3.4 UPnP/2.0 Mozi.SSDP/1.3.4";
+        private string _server = "Mozi/1.3.6 UPnP/2.0 Mozi.SSDP/1.3.6";
 
         /// <summary>
         /// 设备描述文档地址
@@ -278,7 +278,7 @@ namespace Mozi.SSDP
         /// <param name="args"></param>
         protected virtual void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
-            //TODO 如何进行多包分割？
+            //DONE 如何进行多包分割？
 
             ParsePackage(args);
             if (OnMessageReceived != null)
@@ -288,6 +288,7 @@ namespace Mozi.SSDP
             Console.WriteLine("==**************{0}*************==", args.IP);
             Console.WriteLine("{1}", args.IP, System.Text.Encoding.UTF8.GetString(args.Data));
             Console.WriteLine("==***************************************==");
+
         }
         /// <summary>
         /// 包解析
@@ -411,7 +412,7 @@ namespace Mozi.SSDP
             return this;
         }
         /// <summary>
-        /// 广播ssdp:alive信息
+        /// 广播ssdp:alive信息 定时发送ssdp:alive广播
         /// </summary>
         /// <returns></returns>
         public SSDPService StartAdvertise()

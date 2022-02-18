@@ -6,6 +6,7 @@ using Mozi.HttpEmbedded.WebService.Attributes;
 
 namespace Mozi.HttpEmbedded.WebService
 {
+    //TODO WSDL还有问题，暂时不能正常使用
     /// <summary>
     /// WSDL描述文档
     /// </summary>

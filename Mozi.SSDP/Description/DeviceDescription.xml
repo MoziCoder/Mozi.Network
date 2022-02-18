@@ -25,7 +25,7 @@
 				<depth>color depth</depth>
 				<url>URL to icon</url>
 			</icon>
-			XML to declare other icons, if any, go here
+			<!--XML to declare other icons, if any, go here-->
 		</iconList>
 		<serviceList>
 			<service>
@@ -35,14 +35,18 @@
 				<controlURL>URL for control</controlURL>
 				<eventSubURL>URL for eventing</eventSubURL>
 			</service>
+			<!--
 			Declarations for other services defined by a UPnP Forum working committee (if any)
 			go here
 			Declarations for other services added by UPnP vendor (if any) go here
+			-->
 		</serviceList>
 		<deviceList>
+			<!--
 			Description of embedded devices defined by a UPnP Forum working committee (if any)
 			go here
 			Description of embedded devices added by UPnP vendor (if any) go here
+			-->
 		</deviceList>
 		<presentationURL>URL for presentation</presentationURL>
 	</device>
