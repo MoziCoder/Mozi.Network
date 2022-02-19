@@ -37,6 +37,9 @@ namespace Mozi.SSDP
         /// </summary>
         public IPAddress BindingAddress { get { return _bindingAddress; } set { _bindingAddress = value; } }
 
+        /// <summary>
+        /// 是否接收本程序发出的数据包
+        /// </summary>
         public bool AllowLoopbackMessage { get; set; }
 
 

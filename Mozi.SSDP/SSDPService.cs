@@ -64,7 +64,7 @@ namespace Mozi.SSDP
         /// <summary>
         /// 设备描述文档地址
         /// </summary>
-        private string _descriptionPath = "";
+        private string _deviceDescPath = "";
 
         #region
         /// <summary>
@@ -157,6 +157,9 @@ namespace Mozi.SSDP
                 ApplyMulticastAddressChange(MulticastAddress, MulticastPort);
             }
         }
+        /// <summary>
+        /// 绑定的本地IP地址
+        /// </summary>
         public IPAddress BindingAddress
         {
             get
@@ -689,9 +692,9 @@ namespace Mozi.SSDP
         /// 设置描述文档地址
         /// </summary>
         /// <param name="path"></param>
-        internal void SetDescriptionPath(string path)
+        internal void SetDeviceDescriptionPath(string path)
         {
-            _descriptionPath = path;
+            _deviceDescPath = path;
         }
         /// <summary>
         /// 定时器回调函数

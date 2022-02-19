@@ -125,6 +125,7 @@ namespace Mozi.SSDP
 
         private string _levelName = "";
         private string _domain = "";
+
         public override string ToString()
         {
             return _domain + ":/" + _levelName;

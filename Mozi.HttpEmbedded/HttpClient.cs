@@ -42,12 +42,12 @@ namespace Mozi.HttpEmbedded
         /// 附加的头信息，内部会封装一部分头信息，其它头信息请自行附加。
         /// <list type="table">
         ///     <listheader>内部封装的头信息：</listheader>
-        ///     <item><see cref="HeaderProperty.UserAgent"/></item>
-        ///     <item><see cref="HeaderProperty.AcceptEncoding"/></item>
-        ///     <item><see cref="HeaderProperty.Accept"/></item>
-        ///     <item><see cref="HeaderProperty.Host"/></item>
-        ///     <item><see cref="HeaderProperty.Referer"/></item>
-        ///     <item><see cref="HeaderProperty.ContentLength"/></item>
+        ///         <item><see cref="HeaderProperty.UserAgent"/></item>
+        ///         <item><see cref="HeaderProperty.AcceptEncoding"/></item>
+        ///         <item><see cref="HeaderProperty.Accept"/></item>
+        ///         <item><see cref="HeaderProperty.Host"/></item>
+        ///         <item><see cref="HeaderProperty.Referer"/></item>
+        ///         <item><see cref="HeaderProperty.ContentLength"/></item>
         ///     </list>
         /// </param>
         /// <param name="body">请求包体</param>
