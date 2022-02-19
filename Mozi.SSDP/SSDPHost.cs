@@ -47,11 +47,11 @@ namespace Mozi.SSDP
                             ssdp.MulticastAddress = "239.255.255.250";
                             ssdp.BindingAddress = ip.Address;
                             Console.WriteLine("binding start:{0},{1}", ip.Address, r.Name);
-                            ssdp.OnNotifyAliveReceived += Ssdp_OnNotifyAliveReceived;
-                            ssdp.OnSearchReceived += Ssdp_OnSearchReceived;
-                            ssdp.OnNotifyByebyeReceived += Ssdp_OnNotifyByebyeReceived;
-                            ssdp.OnNotifyUpdateReceived += Ssdp_OnNotifyUpdateReceived;
-                            ssdp.OnResponseMessageReceived += Ssdp_OnResponseMessageReceived;
+                            ssdp.OnNotifyAliveReceived += SSDP_OnNotifyAliveReceived;
+                            ssdp.OnSearchReceived += SSDP_OnSearchReceived;
+                            ssdp.OnNotifyByebyeReceived += SSDP_OnNotifyByebyeReceived;
+                            ssdp.OnNotifyUpdateReceived += SSDP_OnNotifyUpdateReceived;
+                            ssdp.OnResponseMessageReceived += SSDP_OnResponseMessageReceived;
                             ssdp.AllowLoopbackMessage = true;
                             //初始化并加入多播组
 
@@ -108,7 +108,7 @@ namespace Mozi.SSDP
         /// <param name="sender"></param>
         /// <param name="resp"></param>
         /// <param name="host"></param>
-        protected void Ssdp_OnResponseMessageReceived(object sender, HttpResponse resp, string host)
+        protected void SSDP_OnResponseMessageReceived(object sender, HttpResponse resp, string host)
         {
             Console.WriteLine("Response from {0}", host);
         }
@@ -118,7 +118,7 @@ namespace Mozi.SSDP
         /// <param name="sender"></param>
         /// <param name="pack"></param>
         /// <param name="host"></param>
-        protected void Ssdp_OnNotifyUpdateReceived(object sender, UpdatePackage pack, string host)
+        protected void SSDP_OnNotifyUpdateReceived(object sender, UpdatePackage pack, string host)
         {
             Console.WriteLine("Notify update from {0}", host);
         }
@@ -128,7 +128,7 @@ namespace Mozi.SSDP
         /// <param name="sender"></param>
         /// <param name="pack"></param>
         /// <param name="host"></param>
-        protected void Ssdp_OnNotifyByebyeReceived(object sender, ByebyePackage pack, string host)
+        protected void SSDP_OnNotifyByebyeReceived(object sender, ByebyePackage pack, string host)
         {
             Console.WriteLine("Notify byebye from {0}", host);
         }
@@ -138,7 +138,7 @@ namespace Mozi.SSDP
         /// <param name="sender"></param>
         /// <param name="pack"></param>
         /// <param name="host"></param>
-        protected void Ssdp_OnSearchReceived(object sender, SearchPackage pack, string host)
+        protected void SSDP_OnSearchReceived(object sender, SearchPackage pack, string host)
         {
             SearchResponsePackage search = new SearchResponsePackage();
             var service = (SSDPService)sender;
@@ -170,7 +170,7 @@ namespace Mozi.SSDP
         /// <param name="sender"></param>
         /// <param name="pack"></param>
         /// <param name="host"></param>
-        protected void Ssdp_OnNotifyAliveReceived(object sender, AlivePackage pack, string host)
+        protected void SSDP_OnNotifyAliveReceived(object sender, AlivePackage pack, string host)
         {
             Console.WriteLine("Notify alive from {0}", host);
         }

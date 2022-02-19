@@ -348,12 +348,20 @@ namespace Mozi.SSDP
                 //event SUBSCRIBE
                 else if(method==RequestMethodUPnP.SUBSCRIBE)
                 {
-
+                    //var pack = SubscribePackage.Parse(request);
+                    //if (pack != null && OnSubscribeReceived)
+                    //{
+                    //    OnSubscribeReceived(this, pack, args.IP);
+                    //}
                 }
                 //event UNSUBSCRIBE
                 else if(method==RequestMethodUPnP.UNSUBSCRIBE)
                 {
-
+                    //var pack = UnSubscribedPackage.Parse(request);
+                    //if (pack != null && OnUnSubscribedReceived)
+                    //{
+                    //    OnUnSubscribedReceived(this, pack, args.IP);
+                    //}
                 }
                 //Control
                 else if(method== RequestMethod.POST)

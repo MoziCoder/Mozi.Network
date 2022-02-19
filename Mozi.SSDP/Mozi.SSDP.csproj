@@ -52,6 +52,7 @@
     <Compile Include="UDPSocket.cs" />
     <Compile Include="UDPStateObject.cs" />
     <Compile Include="UUID.cs" />
+    <Compile Include="WSDiscoveryService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mozi.HttpEmbedded\Mozi.HttpEmbedded.csproj">
@@ -68,6 +69,7 @@
     <None Include="Readme.md" />
     <None Include="UPnP-arch-DeviceArchitecture-v1.0.pdf" />
     <None Include="UPnP-arch-DeviceArchitecture-v2.0-20200417.pdf" />
+    <None Include="wsdd-discovery-1.1-spec.pdf" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Description\DeviceDescription.xml" />

@@ -3,6 +3,9 @@ using Mozi.HttpEmbedded.Generic;
 
 namespace Mozi.SSDP
 {
+    /// <summary>
+    /// 订阅请求包
+    /// </summary>
     public class SubscribePackage : AbsAdvertisePackage
     {
         public TargetDesc NT { get; set; }
@@ -60,6 +63,9 @@ namespace Mozi.SSDP
     //    <e:property> <variableName>new value</variableName></e:property>
     //    <!-- Other variable names and values(if any) go here. -->
     //</e:propertyset>
+    /// <summary>
+    /// 事件请求包
+    /// </summary>
     public class EventPackage : AbsAdvertisePackage
     {
         public string ContentType { get; set; }
@@ -112,7 +118,9 @@ namespace Mozi.SSDP
         public string VariableName { get; set; }
         public string Value { get; set; }
     }
-
+    /// <summary>
+    /// 事件级别
+    /// </summary>
     public class EventLevel : AbsClassEnum
     {
 
