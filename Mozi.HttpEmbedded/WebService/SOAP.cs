@@ -203,6 +203,9 @@ namespace Mozi.HttpEmbedded.WebService
             return envelope;
         }
     }
+    /// <summary>
+    /// SOAP头节点信息
+    /// </summary>
     public class SoapHeader
     {
         public SoapHeaderChild[] Childs { get; set; }
@@ -214,6 +217,9 @@ namespace Mozi.HttpEmbedded.WebService
         public string mustUnderstand { get; set; }  //"0"|"1"
         public string encodingStyle { get; set; }
     }
+    /// <summary>
+    /// SOAP内容节点信息
+    /// </summary>
     public class SoapBody
     {
         public SoapFault Fault { get; set; }
@@ -221,7 +227,9 @@ namespace Mozi.HttpEmbedded.WebService
         public string Method = "";
         public Dictionary<string, string> Items = new Dictionary<string, string>();
     }
-
+    /// <summary>
+    /// SOAP错误信息
+    /// </summary>
     public class SoapFault
     {
         //VersionMismatch SOAP Envelope 元素的无效命名空间被发现
