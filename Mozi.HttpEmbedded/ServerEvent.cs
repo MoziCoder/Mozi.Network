@@ -17,7 +17,7 @@ namespace Mozi.HttpEmbedded
 
     public class ServerArgs : EventArgs
     {
-
+        public int BindPort { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime StopTime { get; set; }
     }

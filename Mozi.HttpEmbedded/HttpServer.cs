@@ -172,6 +172,9 @@ namespace Mozi.HttpEmbedded
             get { return _tempPath; }
             private set { _tempPath = value; }
         }
+        /// <summary>
+        /// 服务程序集运行根目录
+        /// </summary>
         public string ServerRoot
         {
             get { return _serverRoot; }
@@ -184,6 +187,7 @@ namespace Mozi.HttpEmbedded
         {
             get; set;
         }
+
         internal MemoryCache Cache { get { return _cache; }  }
 
         public HttpServer()
@@ -609,7 +613,7 @@ namespace Mozi.HttpEmbedded
             return this;
         }
         /// <summary>
-        /// 允许静态文件访问
+        /// 设置静态文件根目录
         /// <para>设置后静态文件目录会变为HTTP的根目录，可以直接访问其下的子路径</para>
         /// </summary>
         /// <param name="root">静态文件根目录</param>
@@ -688,7 +692,11 @@ namespace Mozi.HttpEmbedded
             return this;
         }
         //TODO HTTPS 功能尚未完全实现
-        public CertManager UseHttps()
+        /// <summary>
+        /// HTTPS功能未实现，请查看后期版本规划
+        /// </summary>
+        /// <returns></returns>
+        internal CertManager UseHttps()
         {
             _certMg = new CertManager();
             _httpsEnabled = true;
