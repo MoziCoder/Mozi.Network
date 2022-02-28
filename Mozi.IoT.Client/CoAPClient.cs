@@ -255,6 +255,7 @@ namespace Mozi.IoT
         {
             throw new NotImplementedException();
         }
+
         public ushort Post(string url, CoAPMessageType msgType, ContentFormat contentType, string text)
         {
             return Post(url, msgType, contentType, StringEncoder.Encode(text));
