@@ -1,0 +1,979 @@
+<!DOCTYPE html> 
+
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>
+  
+    RFC 8860 - Sending Multiple Types of Media in a Single RTP Session
+  
+</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+  @media only screen 
+    and (min-width: 992px)
+    and (max-width: 1199px) {
+      body { font-size: 14pt; }
+            div.content { width: 96ex; margin: 0 auto; }
+        }
+  @media only screen 
+    and (min-width: 768px)
+    and (max-width: 991px) {
+            body { font-size: 14pt; }
+            div.content { width: 96ex; margin: 0 auto; }
+        }
+  @media only screen 
+    and (min-width: 480px)
+    and (max-width: 767px) {
+            body { font-size: 11pt; }
+            div.content { width: 96ex; margin: 0 auto; }
+        }
+  @media only screen 
+    and (max-width: 479px) {
+            body { font-size: 8pt; }
+            div.content { width: 96ex; margin: 0 auto; }
+        }
+  @media only screen 
+    and (min-device-width : 375px) 
+    and (max-device-width : 667px) {
+            body { font-size: 9.5pt; }
+            div.content { width: 96ex; margin: 0; }
+        }
+  @media only screen 
+    and (min-device-width: 1200px) {
+            body { font-size: 10pt; margin: 0 4em; }
+            div.content { width: 96ex; margin: 0; }
+        }
+        h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+      font-weight: bold;
+            /* line-height: 0pt; */
+            display: inline;
+            white-space: pre;
+            font-family: monospace;
+            font-size: 1em;
+      font-weight: bold;
+        }
+        pre {
+            font-size: 1em;
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+  .pre {
+      white-space: pre;
+      font-family: monospace;
+  }
+  .header{
+      font-weight: bold;
+  }
+        .newpage {
+            page-break-before: always;
+        }
+        .invisible {
+            text-decoration: none;
+            color: white;
+        }
+        @media print {
+            body {
+                margin-top: 5em;
+                font-family: monospace;
+                font-size: 10.5pt;
+            }
+            h1, h2, h3, h4, h5, h6 {
+                font-size: 1em;
+            }
+        
+            a:link, a:visited {
+                color: inherit;
+                text-decoration: none;
+            }
+            .noprint {
+                display: none;
+            }
+        }
+  @media screen {
+      .grey, .grey a:link, .grey a:visited {
+    color: #777;
+      }
+            .meta-info {
+                background-color: #EEE;
+            }
+            .top {
+                border-top: 7px solid #EEE;
+            }
+            .pad {
+                padding-top: 7px;
+                line-height: 24px;
+                padding-bottom: 4px;
+            }
+            .bgwhite  { background-color: white; }
+            .bgred    { background-color: #F44; }
+            .bggrey   { background-color: #666; }
+            .bgbrown  { background-color: #840; }            
+            .bgorange { background-color: #FA0; }
+            .bgyellow { background-color: #EE0; }
+            .bgmagenta{ background-color: #F4F; }
+            .bgblue   { background-color: #66F; }
+            .bgcyan   { background-color: #4DD; }
+            .bggreen  { background-color: #4F4; }
+
+            .legend   { font-size: 90%; }
+            .cplate   { font-size: 70%; border: solid grey 1px; }
+  }
+    
+     
+
+.bgwhite  { background-color: white; }
+.bgred    { background-color: #F44; }
+.bggrey   { background-color: #666; }
+.bgbrown  { background-color: #840; }            
+.bgorange { background-color: #FA0; }
+.bgyellow { background-color: #EE0; }
+.bgmagenta{ background-color: #F4F; }
+.bgblue   { background-color: #66F; }
+.bgcyan   { background-color: #4DD; }
+.bggreen  { background-color: #4F4; }
+
+.draftcontent { margin-top:0px !important;}
+
+
+    </style>
+
+    
+  <link rel="alternate" type="application/atom+xml" title="Document changes" href="/feed/document-changes/draft-ietf-avtcore-multi-media-rtp-session/">
+  <meta name="description" content="Sending Multiple Types of Media in a Single RTP Session (RFC )">
+
+
+    
+    <link rel="shortcut icon" href="https://www.ietf.org/lib/dt/7.46.0/ietf/images/ietf-icon-blue3.png">
+    
+    <link rel="apple-touch-icon" href="https://www.ietf.org/lib/dt/7.46.0/ietf/images/apple-touch-icon.png">
+  </head>
+
+  <body style="padding-top: 0;">
+
+	  <div class="content" id="content">
+        
+  
+ 
+  <div class="rfcmarkup">
+    <div class="noprint" style="height: 6px;">
+      <div onmouseover="this.style.cursor='pointer';"
+         onclick="showLegend();"
+         onmouseout="hideLegend()"
+         style="height: 6px; min-height: 6px; width: 96ex; position: absolute; margin-top:0; "
+         class="meta-info bgblue"
+         title="Click for colour legend." >&nbsp;</div>
+      <div id="legend"
+           class="meta-info noprint pre legend"
+           style="position:absolute; top: 4px; left: 4ex; visibility:hidden; background-color: white; padding: 4px 9px 5px 7px; border: solid #345 1px; "
+           onmouseover="showLegend();"
+           onmouseout="hideLegend();">
+      </div>
+    </div>
+
+    
+      <div class="noprint">
+	 <pre class="pre meta-info">[<a href="https://datatracker.ietf.org" title="Document search and retrieval page">Search</a>] [<a href="https://www.rfc-editor.org/rfc/rfc8860.txt" title="Plaintext version of this document">txt</a>|<a href="https://www.rfc-editor.org/rfc/rfc8860.html" title="HTML version of this document, from XML2RFC">html</a>|<a href="https://www.rfc-editor.org/rfc/rfc8860.xml" title="XML source for this document">xml</a>|<a href="https://www.rfc-editor.org/rfc/rfc8860.pdf" title="PDF version of this document">pdf</a>|<a href="/doc/rfc8860/bibtex/" title="BibTex entry for this document">bibtex</a>] [<a href="/doc/rfc8860/" title="Datatracker information for this document">Tracker</a>] [<a href="/group/avtcore/" title="The working group handling this document">WG</a>] [<a href="mailto:draft-ietf-avtcore-multi-media-rtp-session@ietf.org?subject=draft-ietf-avtcore-multi-media-rtp-session" title="Send email to the document authors">Email</a>] [<a href="https://www.ietf.org/rfcdiff?difftype=--hwdiff&url2=draft-ietf-avtcore-multi-media-rtp-session-13.txt" title="Inline diff (wdiff)">Diff1</a>] [<a href="https://www.ietf.org/rfcdiff?url2=draft-ietf-avtcore-multi-media-rtp-session-13.txt" title="Side-by-side diff">Diff2</a>] [<a href="https://www.ietf.org/tools/idnits?url=https://www.ietf.org/archive/id/draft-ietf-avtcore-multi-media-rtp-session-13.txt" title="Run an idnits check of this document">Nits</a>]
+
+From: <a href="/doc/html/draft-ietf-avtcore-multi-media-rtp-session-13">draft-ietf-avtcore-multi-media-rtp-session-13</a>    Proposed Standard
+                                                        <a class="text-warning" href="/ipr/search/?submit=draft&amp;id=draft-ietf-avtcore-multi-media-rtp-session">IPR declarations</a></pre>
+      </div>
+    
+
+    <div class="draftcontent">
+    <pre>Internet Engineering Task Force (IETF)                     M. Westerlund
+Request for Comments: 8860                                      Ericsson
+Updates: <a href="/doc/html/rfc3550">3550</a>, <a href="/doc/html/rfc3551">3551</a>                                           C. Perkins
+Category: Standards Track                          University of Glasgow
+ISSN: 2070-1721                                                J. Lennox
+                                                             8x8 / Jitsi
+                                                            January 2021
+
+
+        <span class="h1">Sending Multiple Types of Media in a Single RTP Session</span>
+
+Abstract
+
+   This document specifies how an RTP session can contain RTP streams
+   with media from multiple media types such as audio, video, and text.
+   This has been restricted by the RTP specifications (RFCs 3550 and
+   3551), and thus this document updates RFCs 3550 and 3551 to enable
+   this behaviour for applications that satisfy the applicability for
+   using multiple media types in a single RTP session.
+
+Status of This Memo
+
+   This is an Internet Standards Track document.
+
+   This document is a product of the Internet Engineering Task Force
+   (IETF).  It represents the consensus of the IETF community.  It has
+   received public review and has been approved for publication by the
+   Internet Engineering Steering Group (IESG).  Further information on
+   Internet Standards is available in <a href="/doc/html/rfc7841#section-2">Section&nbsp;2 of RFC 7841</a>.
+
+   Information about the current status of this document, any errata,
+   and how to provide feedback on it may be obtained at
+   <a href="https://www.rfc-editor.org/info/rfc8860">https://www.rfc-editor.org/info/rfc8860</a>.
+
+Copyright Notice
+
+   Copyright (c) 2021 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to <a href="/doc/html/bcp78">BCP 78</a> and the IETF Trust&#x27;s Legal
+   Provisions Relating to IETF Documents
+   (<a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a>) in effect on the date of
+   publication of this document.  Please review these documents
+   carefully, as they describe your rights and restrictions with respect
+   to this document.  Code Components extracted from this document must
+   include Simplified BSD License text as described in Section 4.e of
+   the Trust Legal Provisions and are provided without warranty as
+   described in the Simplified BSD License.
+
+Table of Contents
+
+   1.  Introduction
+   2.  Terminology
+   3.  Background and Motivation
+   4.  Applicability
+   5.  Using Multiple Media Types in a Single RTP Session
+     5.1.  Allowing Multiple Media Types in an RTP Session
+     5.2.  Demultiplexing Media Types within an RTP Session
+     5.3.  Per-SSRC Media Type Restrictions
+     5.4.  RTCP Considerations
+   6.  Extension Considerations
+     6.1.  RTP Retransmission Payload Format
+     6.2.  RTP Payload Format for Generic FEC
+     6.3.  RTP Payload Format for Redundant Audio
+   7.  Signalling
+   8.  Security Considerations
+   9.  IANA Considerations
+   10. References
+     10.1.  Normative References
+     10.2.  Informative References
+   Acknowledgements
+   Authors&#x27; Addresses
+
+<span class="h2"><a class="selflink" id="section-1" href="#section-1">1</a>.  Introduction</span>
+
+   The Real-time Transport Protocol [<a href="/doc/html/rfc3550" title="&quot;RTP: A Transport Protocol for Real-Time Applications&quot;">RFC3550</a>] was designed to use
+   separate RTP sessions to transport different types of media.  This
+   implies that different transport-layer flows are used for different
+   RTP streams.  For example, a video conferencing application might
+   send audio and video traffic RTP flows on separate UDP ports.  With
+   increased use of network address/port translation, firewalls, and
+   other middleboxes, it is, however, becoming difficult to establish
+   multiple transport-layer flows between endpoints.  Hence, there is
+   pressure to reduce the number of concurrent transport flows used by
+   RTP applications.
+
+   This memo updates [<a href="/doc/html/rfc3550" title="&quot;RTP: A Transport Protocol for Real-Time Applications&quot;">RFC3550</a>] and [<a href="/doc/html/rfc3551" title="&quot;RTP Profile for Audio and Video Conferences with Minimal Control&quot;">RFC3551</a>] to allow multiple media
+   types to be sent in a single RTP session in certain cases, thereby
+   reducing the number of transport-layer flows that are needed.  It
+   makes no changes to RTP behaviour when using multiple RTP streams
+   containing media of the same type (e.g., multiple audio streams or
+   multiple video streams) in a single RTP session.  However, [<a href="/doc/html/rfc8108" title="&quot;Sending Multiple RTP Streams in a Single RTP Session&quot;">RFC8108</a>]
+   provides important clarifications to RTP behaviour in that case.
+
+   This memo is structured as follows.  <a href="#section-2">Section 2</a> defines terminology.
+   <a href="#section-3">Section 3</a> further describes the background to, and motivation for,
+   this memo; <a href="#section-4">Section 4</a> describes the scenarios where this memo is
+   applicable.  <a href="#section-5">Section 5</a> discusses issues arising from the base RTP and
+   RTP Control Protocol (RTCP) specifications [<a href="/doc/html/rfc3550" title="&quot;RTP: A Transport Protocol for Real-Time Applications&quot;">RFC3550</a>] [<a href="/doc/html/rfc3551" title="&quot;RTP Profile for Audio and Video Conferences with Minimal Control&quot;">RFC3551</a>] when
+   using multiple types of media in a single RTP session, while
+   <a href="#section-6">Section 6</a> considers the impact of RTP extensions.  We discuss
+   signalling in <a href="#section-7">Section 7</a>.  Finally, security considerations are
+   discussed in <a href="#section-8">Section 8</a>.
+
+<span class="h2"><a class="selflink" id="section-2" href="#section-2">2</a>.  Terminology</span>
+
+   The terms &quot;encoded stream&quot;, &quot;endpoint&quot;, &quot;media source&quot;, &quot;RTP
+   session&quot;, and &quot;RTP stream&quot; are used as defined in [<a href="/doc/html/rfc7656" title="&quot;A Taxonomy of Semantics and Mechanisms for Real-Time Transport Protocol (RTP) Sources&quot;">RFC7656</a>].  We also
+   define the following terms:
+
+   Media Type:  The general type of media data used by a real-time
+      application.  The media type corresponds to the value used in the
+      &lt;media&gt; field of a Session Description Protocol (SDP) &quot;m=&quot; line.
+      The media types defined at the time of this writing are &quot;audio&quot;,
+      &quot;video&quot;, &quot;text&quot;, &quot;image&quot;, &quot;application&quot;, and &quot;message&quot; [<a href="/doc/html/rfc4566" title="&quot;SDP: Session Description Protocol&quot;">RFC4566</a>]
+      [<a href="/doc/html/rfc6466" title="&quot;IANA Registration of the &#x27;image&#x27; Media Type for the Session Description Protocol (SDP)&quot;">RFC6466</a>].
+
+   Quality of Service (QoS):  Network mechanisms that are intended to
+      ensure that the packets within a flow or with a specific marking
+      are transported with certain properties.
+
+   The key words &quot;MUST&quot;, &quot;MUST NOT&quot;, &quot;REQUIRED&quot;, &quot;SHALL&quot;, &quot;SHALL NOT&quot;,
+   &quot;SHOULD&quot;, &quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;, &quot;NOT RECOMMENDED&quot;, &quot;MAY&quot;, and
+   &quot;OPTIONAL&quot; in this document are to be interpreted as described in <a href="/doc/html/bcp14">BCP</a>
+   <a href="/doc/html/bcp14">14</a> [<a href="/doc/html/rfc2119" title="&quot;Key words for use in RFCs to Indicate Requirement Levels&quot;">RFC2119</a>] [<a href="/doc/html/rfc8174" title="&quot;Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words&quot;">RFC8174</a>] when, and only when, they appear in all
+   capitals, as shown here.
+
+<span class="h2"><a class="selflink" id="section-3" href="#section-3">3</a>.  Background and Motivation</span>
+
+   RTP was designed to support multimedia sessions, containing multiple
+   types of media sent simultaneously, by using multiple transport-layer
+   flows.  The existence of network address translators, firewalls, and
+   other middleboxes complicates this, however, since a mechanism is
+   needed to ensure that all the transport-layer flows needed by the
+   application can be established.  This has three consequences:
+
+   1.  increased delay to establish a complete session, since each of
+       the transport-layer flows needs to be negotiated and established;
+
+   2.  increased state and resource consumption in the middleboxes that
+       can lead to unexpected behaviour when middlebox resource limits
+       are reached; and
+
+   3.  increased risk that a subset of the transport-layer flows will
+       fail to be established, thus preventing the application from
+       communicating.
+
+   Using fewer transport-layer flows can hence be seen to reduce the
+   risk of communication failure and can lead to improved reliability
+   and performance.
+
+   One of the benefits of using multiple transport-layer flows is that
+   it makes it easy to use network-layer QoS mechanisms to give
+   differentiated performance for different flows.  However, we note
+   that many applications that use RTP don&#x27;t use network QoS features
+   and don&#x27;t expect or desire any separation in network treatment of
+   their media packets, independent of whether they are audio, video, or
+   text.  When an application has no such desire, it doesn&#x27;t need to
+   provide a transport flow structure that simplifies flow-based QoS.
+
+   Given the above issues, it might seem appropriate for RTP-based
+   applications to send all their RTP streams bundled into one RTP
+   session, running over a single transport-layer flow.  However, this
+   is prohibited by the RTP specifications [<a href="/doc/html/rfc3550" title="&quot;RTP: A Transport Protocol for Real-Time Applications&quot;">RFC3550</a>] [<a href="/doc/html/rfc3551" title="&quot;RTP Profile for Audio and Video Conferences with Minimal Control&quot;">RFC3551</a>], because
+   the design of RTP makes certain assumptions that can be incompatible
+   with sending multiple media types in a single RTP session.
+   Specifically, the RTCP timing rules assume that all RTP media flows
+   in a single RTP session have broadly similar RTCP reporting and
+   feedback requirements, which can be problematic when different types
+   of media are multiplexed together.  Various RTP extensions also make
+   assumptions about Synchronisation Source (SSRC) use and RTCP
+   reporting that are incompatible with sending different media types in
+   a single RTP session.
+
+   This memo updates [<a href="/doc/html/rfc3550" title="&quot;RTP: A Transport Protocol for Real-Time Applications&quot;">RFC3550</a>] and [<a href="/doc/html/rfc3551" title="&quot;RTP Profile for Audio and Video Conferences with Minimal Control&quot;">RFC3551</a>] to allow RTP sessions to
+   contain more than one media type in certain circumstances and gives
+   guidance on when it is safe to send multiple media types in a single
+   RTP session.
+
+<span class="h2"><a class="selflink" id="section-4" href="#section-4">4</a>.  Applicability</span>
+
+   This specification has limited applicability, and anyone intending to
+   use it needs to ensure that their application and use case meet the
+   following criteria:
+
+   Equal treatment of media:  The use of a single RTP session normally
+      results in similar network treatment for all types of media used
+      within the session.  Applications that require significantly
+      different network QoS or RTCP configuration for different RTP
+      streams are better suited to sending those RTP streams in separate
+      RTP sessions, using separate transport-layer flows for each, since
+      that method provides greater flexibility.  Further guidance on how
+      to provide differential treatment for some media streams is given
+      in [<a href="/doc/html/rfc8872" title="&quot;Guidelines for Using the Multiplexing Features of RTP to Support Multiple Media Streams&quot;">RFC8872</a>] and [<a href="/doc/html/rfc7657" title="&quot;Differentiated Services (Diffserv) and Real-Time Communication&quot;">RFC7657</a>].
+
+   Compatible RTCP behaviour:  The RTCP timing rules enforce a single
+      RTCP reporting interval for all participants in an RTP session.
+      Flows with very different media sending rates or RTCP feedback
+      requirements cannot be multiplexed together, since this leads to
+      either excessive or insufficient RTCP for some flows, depending on
+      how the RTCP session bandwidth, and hence the reporting interval,
+      are configured.  For example, it is likely infeasible to find a
+      single RTCP configuration that simultaneously suits both a low-
+      rate audio flow with no feedback and a high-quality video flow
+      with sophisticated RTCP-based feedback.  Thus, combining these
+      into a single RTP session is difficult and/or inadvisable.
+
+   Signalled support:  The extensions defined in this memo are not
+      compatible with unmodified endpoints that are compatible with
+      [<a href="/doc/html/rfc3550" title="&quot;RTP: A Transport Protocol for Real-Time Applications&quot;">RFC3550</a>].  Their use requires signalling and mutual agreement by
+      all participants within an RTP session.  This requirement can be a
+      problem for signalling solutions that can&#x27;t negotiate with all
+      participants.  For declarative signalling solutions, mandating
+      that the session use multiple media types in one RTP session can
+      be a way of attempting to ensure that all participants in the RTP
+      session follow the requirement.  However, for signalling solutions
+      that lack methods for enforcing a requirement that a receiver
+      support a specific feature, this can still cause issues.
+
+   Consistent support for multiparty RTP sessions:  If it is desired to
+      send multiple types of media in a multiparty RTP session, then all
+      participants in that session need to support sending multiple
+      types of media in a single RTP session.  It is not possible, in
+      the general case, to implement a gateway that can interconnect an
+      endpoint that uses multiple types of media sent using separate RTP
+      sessions with one or more endpoints that send multiple types of
+      media in a single RTP session.
+
+      One reason for this is that the same SSRC value can safely be used
+      for different streams in multiple RTP sessions, but when collapsed
+      to a single RTP session there is an SSRC collision.  This would
+      not be an issue, since SSRC collision detection will resolve the
+      conflict, except that some RTP payload formats and extensions use
+      matching SSRCs to identify related flows and will break when a
+      single RTP session is used.
+
+      A middlebox that remaps SSRC values when combining multiple RTP
+      sessions into one also needs to be aware of all possible RTCP
+      packet types that might be used, so that it can remap the SSRC
+      values in those packets.  This is impossible to do without
+      restricting the set of RTCP packet types that can be used to those
+      that are known by the middlebox.  Such a middlebox might also have
+      difficulty due to differences in configured RTCP bandwidth and
+      other parameters between the RTP sessions.
+
+      Finally, the use of a middlebox that translates SSRC values can
+      negatively impact the possibility of loop detection, as SSRC/CSRC
+      (Contributing Source) can&#x27;t be used to detect the loops; instead,
+      some other RTP stream or media source identity namespace that is
+      common across all interconnected parts is needed.
+
+   Ability to operate with limited payload type space:  An RTP session
+      has only a single 7-bit payload type space for all its payload
+      type numbers.  Some applications might find this space to be
+      limiting (i.e., overly restrictive) when using different media
+      types and RTP payload formats within a single RTP session.
+
+   Avoidance of incompatible extensions:  Some RTP and RTCP extensions
+      rely on the existence of multiple RTP sessions and relate RTP
+      streams between sessions.  Others report on particular media types
+      and cannot be used with other media types.  Applications that send
+      multiple types of media into a single RTP session need to avoid
+      such extensions.
+
+<span class="h2"><a class="selflink" id="section-5" href="#section-5">5</a>.  Using Multiple Media Types in a Single RTP Session</span>
+
+   This section defines what needs to be done or avoided to make an RTP
+   session with multiple media types function without issues.
+
+<span class="h3"><a class="selflink" id="section-5.1" href="#section-5.1">5.1</a>.  Allowing Multiple Media Types in an RTP Session</span>
+
+   <a href="#section-5.2">Section 5.2</a> of &quot;RTP: A Transport Protocol for Real-Time Applications&quot;
+   [<a href="/doc/html/rfc3550" title="&quot;RTP: A Transport Protocol for Real-Time Applications&quot;">RFC3550</a>] states:
+
+   |  For example, in a teleconference composed of audio and video media
+   |  encoded separately, each medium SHOULD be carried in a separate
+   |  RTP session with its own destination transport address.
+   |
+   |  Separate audio and video streams SHOULD NOT be carried in a single
+   |  RTP session and demultiplexed based on the payload type or SSRC
+   |  fields.
+
+   This specification changes both of these sentences.  The first
+   sentence is changed to:
+
+   |  For example, in a teleconference composed of audio and video media
+   |  encoded separately, each medium SHOULD be carried in a separate
+   |  RTP session with its own destination transport address, unless the
+   |  guidelines specified in [<a href="/doc/html/rfc8860">RFC8860</a>] are followed and the application
+   |  meets the applicability constraints.
+
+   The second sentence is changed to:
+
+   |  Separate audio and video media sources SHOULD NOT be carried in a
+   |  single RTP session, unless the guidelines specified in [<a href="/doc/html/rfc8860">RFC8860</a>]
+   |  are followed.
+
+   The second paragraph of <a href="#section-6">Section 6</a> of &quot;RTP Profile for Audio and Video
+   Conferences with Minimal Control&quot; [<a href="/doc/html/rfc3551" title="&quot;RTP Profile for Audio and Video Conferences with Minimal Control&quot;">RFC3551</a>] says:
+
+   |  The payload types currently defined in this profile are assigned
+   |  to exactly one of three categories or media types: audio only,
+   |  video only and those combining audio and video.  The media types
+   |  are marked in Tables 4 and 5 as &quot;A&quot;, &quot;V&quot; and &quot;AV&quot;, respectively.
+   |  Payload types of different media types SHALL NOT be interleaved or
+   |  multiplexed within a single RTP session, but multiple RTP sessions
+   |  MAY be used in parallel to send multiple media types.  An RTP
+   |  source MAY change payload types within the same media type during
+   |  a session.  See the section &quot;Multiplexing RTP Sessions&quot; of RFC
+   |  3550 for additional explanation.
+
+   This specification&#x27;s purpose is to override the above-listed
+   &quot;SHALL NOT&quot; under certain conditions.  Thus, this sentence also has
+   to be changed to allow for multiple media types&#x27; payload types in the
+   same session.  The sentence containing &quot;SHALL NOT&quot; in the above
+   paragraph is changed to:
+
+   |  Payload types of different media types SHALL NOT be interleaved or
+   |  multiplexed within a single RTP session unless [<a href="/doc/html/rfc8860">RFC8860</a>] is used
+   |  and the application conforms to the applicability constraints.
+   |  Multiple RTP sessions MAY be used in parallel to send multiple
+   |  media types.
+
+<span class="h3"><a class="selflink" id="section-5.2" href="#section-5.2">5.2</a>.  Demultiplexing Media Types within an RTP Session</span>
+
+   When receiving packets from a transport-layer flow, an endpoint will
+   first separate the RTP and RTCP packets from the non-RTP packets and
+   pass them to the RTP/RTCP protocol handler.  The RTP and RTCP packets
+   are then demultiplexed into the different RTP streams based on their
+   SSRC.  For each RTP stream, incoming RTCP packets are processed, and
+   the RTP payload type is used to select the appropriate media decoder.
+   This process remains the same irrespective of whether multiple media
+   types are sent in a single RTP session or not.
+
+   As explained below, it is important to note that the RTP payload type
+   is never used to distinguish RTP streams.  The RTP packets are
+   demultiplexed into RTP streams based on their SSRC; the RTP payload
+   type is then used to select the correct media-decoding pathway for
+   each RTP stream.
+
+<span class="h3"><a class="selflink" id="section-5.3" href="#section-5.3">5.3</a>.  Per-SSRC Media Type Restrictions</span>
+
+   An SSRC in an RTP session can change between media formats of the
+   same type, subject to certain restrictions [<a href="/doc/html/rfc7160" title="&quot;Support for Multiple Clock Rates in an RTP Session&quot;">RFC7160</a>], but MUST NOT
+   change its media type during its lifetime.  For example, an SSRC can
+   change between different audio formats, but it cannot start sending
+   audio and then change to sending video.  The lifetime of an SSRC ends
+   when an RTCP BYE packet for that SSRC is sent or when it ceases
+   transmission for long enough that it times out for the other
+   participants in the session.
+
+   The main motivation is that a given SSRC has its own RTP timestamp
+   and sequence number spaces.  The same way that you can&#x27;t send two
+   encoded streams of audio with the same SSRC, you can&#x27;t send one
+   encoded audio and one encoded video stream with the same SSRC.  Each
+   encoded stream, when made into an RTP stream, needs to have sole
+   control over the sequence number and timestamp space.  If not, one
+   would not be able to detect packet loss for that particular encoded
+   stream, nor could one easily determine which clock rate a particular
+   SSRC&#x27;s timestamp will increase with.  For additional arguments
+   regarding why multiplexing of multiple media sources that is based on
+   RTP payload type doesn&#x27;t work, see [<a href="/doc/html/rfc8872" title="&quot;Guidelines for Using the Multiplexing Features of RTP to Support Multiple Media Streams&quot;">RFC8872</a>].
+
+   Within an RTP session where multiple media types have been configured
+   for use, an SSRC can only send one type of media during its lifetime
+   (i.e., it can switch between different audio codecs, since those are
+   both the same type of media, but it cannot switch between audio and
+   video).  Different SSRCs MUST be used for the different media
+   sources, the same way multiple media sources of the same media type
+   already have to do.  The payload type will inform a receiver which
+   media type the SSRC is being used for.  Thus, the payload type MUST
+   be unique across all of the payload configurations, independent of
+   the media type that is used in the RTP session.
+
+<span class="h3"><a class="selflink" id="section-5.4" href="#section-5.4">5.4</a>.  RTCP Considerations</span>
+
+   When sending multiple types of media that have different rates in a
+   single RTP session, endpoints MUST follow the guidelines for handling
+   RTCP as provided in <a href="/doc/html/rfc8108#section-7">Section&nbsp;7 of [RFC8108]</a>.
+
+<span class="h2"><a class="selflink" id="section-6" href="#section-6">6</a>.  Extension Considerations</span>
+
+   This section outlines known issues and incompatibilities with RTP and
+   RTCP extensions when multiple media types are used in a single RTP
+   session.  Future extensions to RTP and RTCP need to consider, and
+   document, any potential incompatibilities.
+
+<span class="h3"><a class="selflink" id="section-6.1" href="#section-6.1">6.1</a>.  RTP Retransmission Payload Format</span>
+
+   The RTP retransmission payload format [<a href="/doc/html/rfc4588" title="&quot;RTP Retransmission Payload Format&quot;">RFC4588</a>] can operate in either
+   SSRC-multiplexed mode or session-multiplexed mode.
+
+   In SSRC-multiplexed mode, retransmitted RTP packets are sent in the
+   same RTP session as the original packets but use a different SSRC
+   with the same RTCP Source Description (SDES) CNAME.  If each endpoint
+   sends only a single original RTP stream and a single retransmission
+   RTP stream in the session, this is sufficient.  If an endpoint sends
+   multiple original and retransmission RTP streams, as would occur when
+   sending multiple media types in a single RTP session, then each
+   original RTP stream and the retransmission RTP stream have to be
+   associated using heuristics.  By having retransmission requests
+   outstanding for only one SSRC not yet mapped, a receiver can
+   determine the binding between the original and retransmission RTP
+   streams.  Another alternative is the use of different RTP payload
+   types, allowing the signalled &quot;apt&quot; (associated payload type)
+   parameter [<a href="/doc/html/rfc4588" title="&quot;RTP Retransmission Payload Format&quot;">RFC4588</a>] of the RTP retransmission payload format to be
+   used to associate retransmitted and original packets.
+
+   Session-multiplexed mode sends the retransmission RTP stream in a
+   separate RTP session to the original RTP stream, but using the same
+   SSRC for each, with the association being done by matching SSRCs
+   between the two sessions.  This is unaffected by the use of multiple
+   media types in a single RTP session, since each media type will be
+   sent using a different SSRC in the original RTP session, and the same
+   SSRCs can be used in the retransmission session, allowing the streams
+   to be associated.  This can be signalled using SDP with the BUNDLE
+   grouping extension [<a href="/doc/html/rfc8843" title="&quot;Negotiating Media Multiplexing Using the Session Description Protocol (SDP)&quot;">RFC8843</a>] and the Flow Identification (FID)
+   grouping extension [<a href="/doc/html/rfc5888" title="&quot;The Session Description Protocol (SDP) Grouping Framework&quot;">RFC5888</a>].  These SDP extensions require each &quot;m=&quot;
+   line to only be included in a single FID group, but the RTP
+   retransmission payload format uses FID groups to indicate the &quot;m=&quot;
+   lines that form an original and retransmission pair.  Accordingly,
+   when using the BUNDLE extension to allow multiple media types to be
+   sent in a single RTP session, each original media source (&quot;m=&quot; line)
+   that is retransmitted needs a corresponding &quot;m=&quot; line in the
+   retransmission RTP session.  If there are multiple media lines for
+   retransmission, these media lines will form an independent BUNDLE
+   group from the BUNDLE group with the source streams.
+
+   An example SDP fragment showing the grouping structures is provided
+   in Figure 1.  This example is not legal SDP, and only the most
+   important attributes have been left in place.  Note that this SDP is
+   not an initial BUNDLE offer.  As can be seen in this example, there
+   are two bundle groups -- one for the source RTP session and one for
+   the retransmissions.  Then, each of the media sources is grouped with
+   its retransmission flow using FID, resulting in three more groupings.
+
+          a=group:BUNDLE foo bar fiz
+          a=group:BUNDLE zoo kelp glo
+          a=group:FID foo zoo
+          a=group:FID bar kelp
+          a=group:FID fiz glo
+          m=audio 10000 RTP/AVP 0
+          a=mid:foo
+          a=rtpmap:0 PCMU/8000
+          m=video 10000 RTP/AVP 31
+          a=mid:bar
+          a=rtpmap:31 H261/90000
+          m=video 10000 RTP/AVP 31
+          a=mid:fiz
+          a=rtpmap:31 H261/90000
+          m=audio 40000 RTP/AVPF 99
+          a=rtpmap:99 rtx/90000
+          a=fmtp:99 apt=0;rtx-time=3000
+          a=mid:zoo
+          m=video 40000 RTP/AVPF 100
+          a=rtpmap:100 rtx/90000
+          a=fmtp:199 apt=31;rtx-time=3000
+          a=mid:kelp
+          m=video 40000 RTP/AVPF 100
+          a=rtpmap:100 rtx/90000
+          a=fmtp:199 apt=31;rtx-time=3000
+          a=mid:glo
+
+      Figure 1: SDP Example of Session-Multiplexed RTP Retransmission
+
+<span class="h3"><a class="selflink" id="section-6.2" href="#section-6.2">6.2</a>.  RTP Payload Format for Generic FEC</span>
+
+   The RTP payload format for generic Forward Error Correction (FEC), as
+   defined in [<a href="/doc/html/rfc5109" title="&quot;RTP Payload Format for Generic Forward Error Correction&quot;">RFC5109</a>] (and its predecessor, [<a href="/doc/html/rfc2733" title="&quot;An RTP Payload Format for Generic Forward Error Correction&quot;">RFC2733</a>]), can either
+   send the FEC stream as a separate RTP stream or send the FEC combined
+   with the original RTP stream as a redundant encoding [<a href="/doc/html/rfc2198" title="&quot;RTP Payload for Redundant Audio Data&quot;">RFC2198</a>].
+
+   When sending FEC as a separate stream, the RTP payload format for
+   generic FEC requires that FEC stream to be sent in a separate RTP
+   session to the original stream, using the same SSRC, with the FEC
+   stream being associated by matching the SSRC between sessions.  The
+   RTP session used for the original streams can include multiple RTP
+   streams, and those RTP streams can use multiple media types.  The
+   repair session only needs one RTP payload type to indicate FEC data,
+   irrespective of the number of FEC streams sent, since the SSRC is
+   used to associate the FEC streams with the original streams.  Hence,
+   it is RECOMMENDED that the FEC stream use the &quot;application/ulpfec&quot;
+   media type in the case of support for [<a href="/doc/html/rfc5109" title="&quot;RTP Payload Format for Generic Forward Error Correction&quot;">RFC5109</a>] and the
+   &quot;application/parityfec&quot; media type in the case of support for
+   [<a href="/doc/html/rfc2733" title="&quot;An RTP Payload Format for Generic Forward Error Correction&quot;">RFC2733</a>].  It is legal, but NOT RECOMMENDED, to send FEC streams
+   using media-specific payload format names (e.g., using both the
+   &quot;audio/ulpfec&quot; and &quot;video/ulpfec&quot; payload formats for a single RTP
+   session containing both audio and video flows), since this
+   (1) unnecessarily uses up RTP payload type values and (2) adds no
+   value for demultiplexing because there might be multiple streams of
+   the same media type).
+
+   The combination of an original RTP session using multiple media types
+   with an associated generic FEC session can be signalled using SDP
+   with the BUNDLE extension [<a href="/doc/html/rfc8843" title="&quot;Negotiating Media Multiplexing Using the Session Description Protocol (SDP)&quot;">RFC8843</a>].  In this case, the RTP session
+   carrying the FEC streams will be its own BUNDLE group.  The &quot;m=&quot; line
+   for each original stream and the &quot;m=&quot; line for the corresponding FEC
+   stream are grouped using the SDP Grouping Framework, using either the
+   FEC-FR grouping [<a href="/doc/html/rfc5956" title="&quot;Forward Error Correction Grouping Semantics in the Session Description Protocol&quot;">RFC5956</a>] or, for backwards compatibility, the FEC
+   grouping [<a href="/doc/html/rfc4756" title="&quot;Forward Error Correction Grouping Semantics in Session Description Protocol&quot;">RFC4756</a>].  This is similar to the situation that arises for
+   RTP retransmission with session-based multiplexing as discussed in
+   <a href="#section-6.1">Section 6.1</a>.
+
+   The source-specific media attributes specification [<a href="/doc/html/rfc5576" title="&quot;Source-Specific Media Attributes in the Session Description Protocol (SDP)&quot;">RFC5576</a>] defines
+   an SDP extension (the &quot;FEC&quot; semantic of the &quot;ssrc-group&quot; attribute)
+   to signal FEC relationships between multiple RTP streams within a
+   single RTP session.  This cannot be used with generic FEC, since the
+   FEC repair packets need to have the same SSRC value as the source
+   packets being protected.  There existed a proposal (now abandoned)
+   for an Uneven Level Protection (ULP) extension to enable transmission
+   of the FEC RTP streams within the same RTP session as the source
+   stream [<a href="#ref-FEC-Src-Multiplexing">FEC-Src-Multiplexing</a>].
+
+   When the FEC is sent as a redundant encoding, the considerations in
+   <a href="#section-6.3">Section 6.3</a> apply.
+
+<span class="h3"><a class="selflink" id="section-6.3" href="#section-6.3">6.3</a>.  RTP Payload Format for Redundant Audio</span>
+
+   The RTP payload format for redundant audio [<a href="/doc/html/rfc2198" title="&quot;RTP Payload for Redundant Audio Data&quot;">RFC2198</a>] can be used to
+   protect audio streams.  It can also be used along with the generic
+   FEC payload format to send original and repair data in the same RTP
+   packets.  Both are compatible with RTP sessions containing multiple
+   media types.
+
+   This payload format requires each different redundant encoding to use
+   a different RTP payload type number.  When used with generic FEC in
+   sessions that contain multiple media types, this requires each media
+   type to use a different payload type for the FEC stream.  For
+   example, if audio and text are sent in a single RTP session with
+   generic ULP FEC sent as a redundant encoding for each, then payload
+   types need to be assigned for FEC using the audio/ulpfec and
+   text/ulpfec payload formats.  If multiple original payload types are
+   used in the session, different redundant payload types need to be
+   allocated for each one.  This has potential to rapidly exhaust the
+   available RTP payload type numbers.
+
+<span class="h2"><a class="selflink" id="section-7" href="#section-7">7</a>.  Signalling</span>
+
+   Establishing a single RTP session using multiple media types requires
+   signalling.  This signalling has to:
+
+   1.  ensure that any participant in the RTP session is aware that this
+       is an RTP session with multiple media types;
+
+   2.  ensure that the payload types in use in the RTP session are using
+       unique values, with no overlap between the media types;
+
+   3.  ensure that RTP session-level parameters -- for example, the RTCP
+       RR and RS bandwidth modifiers [<a href="/doc/html/rfc3556" title="&quot;Session Description Protocol (SDP) Bandwidth Modifiers for RTP Control Protocol (RTCP) Bandwidth&quot;">RFC3556</a>], the RTP/AVPF trr-int
+       parameter [<a href="/doc/html/rfc4585" title="&quot;Extended RTP Profile for Real-time Transport Control Protocol (RTCP)-Based Feedback (RTP/AVPF)&quot;">RFC4585</a>], transport protocol, RTCP extensions in use,
+       and any security parameters -- are consistent across the session;
+       and
+
+   4.  ensure that RTP and RTCP functions that can be bound to a
+       particular media type are reused where possible, rather than
+       configuring multiple code points for the same thing.
+
+   When using SDP signalling, the BUNDLE extension [<a href="/doc/html/rfc8843" title="&quot;Negotiating Media Multiplexing Using the Session Description Protocol (SDP)&quot;">RFC8843</a>] is used to
+   signal RTP sessions containing multiple media types.
+
+<span class="h2"><a class="selflink" id="section-8" href="#section-8">8</a>.  Security Considerations</span>
+
+   RTP provides a range of strong security mechanisms that can be used
+   to secure sessions [<a href="/doc/html/rfc7201" title="&quot;Options for Securing RTP Sessions&quot;">RFC7201</a>] [<a href="/doc/html/rfc7202" title="&quot;Securing the RTP Framework: Why RTP Does Not Mandate a Single Media Security Solution&quot;">RFC7202</a>].  The majority of these are
+   independent of the type of media sent in the RTP session; however, it
+   is important to check that the security mechanism chosen is
+   compatible with all types of media sent within the session.
+
+   Sending multiple media types in a single RTP session will generally
+   require that all use the same security mechanism, whereas media sent
+   using different RTP sessions can be secured in different ways.  When
+   different media types have different security requirements, it might
+   be necessary to send them using separate RTP sessions to meet those
+   different requirements.  This can have significant costs in terms of
+   resource usage, session setup time, etc.
+
+<span class="h2"><a class="selflink" id="section-9" href="#section-9">9</a>.  IANA Considerations</span>
+
+   This document has no IANA actions.
+
+<span class="h2"><a class="selflink" id="section-10" href="#section-10">10</a>.  References</span>
+
+<span class="h3"><a class="selflink" id="section-10.1" href="#section-10.1">10.1</a>.  Normative References</span>
+
+   [<a id="ref-RFC2119">RFC2119</a>]  Bradner, S., &quot;Key words for use in RFCs to Indicate
+              Requirement Levels&quot;, <a href="/doc/html/bcp14">BCP 14</a>, <a href="/doc/html/rfc2119">RFC 2119</a>,
+              DOI 10.17487/RFC2119, March 1997,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;.
+
+   [<a id="ref-RFC3550">RFC3550</a>]  Schulzrinne, H., Casner, S., Frederick, R., and V.
+              Jacobson, &quot;RTP: A Transport Protocol for Real-Time
+              Applications&quot;, STD 64, <a href="/doc/html/rfc3550">RFC 3550</a>, DOI 10.17487/RFC3550,
+              July 2003, &lt;<a href="https://www.rfc-editor.org/info/rfc3550">https://www.rfc-editor.org/info/rfc3550</a>&gt;.
+
+   [<a id="ref-RFC3551">RFC3551</a>]  Schulzrinne, H. and S. Casner, &quot;RTP Profile for Audio and
+              Video Conferences with Minimal Control&quot;, STD 65, <a href="/doc/html/rfc3551">RFC 3551</a>,
+              DOI 10.17487/RFC3551, July 2003,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc3551">https://www.rfc-editor.org/info/rfc3551</a>&gt;.
+
+   [<a id="ref-RFC8108">RFC8108</a>]  Lennox, J., Westerlund, M., Wu, Q., and C. Perkins,
+              &quot;Sending Multiple RTP Streams in a Single RTP Session&quot;,
+              <a href="/doc/html/rfc8108">RFC 8108</a>, DOI 10.17487/RFC8108, March 2017,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc8108">https://www.rfc-editor.org/info/rfc8108</a>&gt;.
+
+   [<a id="ref-RFC8174">RFC8174</a>]  Leiba, B., &quot;Ambiguity of Uppercase vs Lowercase in <a href="/doc/html/rfc2119">RFC</a>
+              <a href="/doc/html/rfc2119">2119</a> Key Words&quot;, <a href="/doc/html/bcp14">BCP 14</a>, <a href="/doc/html/rfc8174">RFC 8174</a>, DOI 10.17487/RFC8174,
+              May 2017, &lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;.
+
+   [<a id="ref-RFC8843">RFC8843</a>]  Holmberg, C., Alvestrand, H., and C. Jennings,
+              &quot;Negotiating Media Multiplexing Using the Session
+              Description Protocol (SDP)&quot;, <a href="/doc/html/rfc8843">RFC 8843</a>,
+              DOI 10.17487/RFC8843, January 2021,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc8843">https://www.rfc-editor.org/info/rfc8843</a>&gt;.
+
+<span class="h3"><a class="selflink" id="section-10.2" href="#section-10.2">10.2</a>.  Informative References</span>
+
+   [<a id="ref-FEC-Src-Multiplexing">FEC-Src-Multiplexing</a>]
+              Lennox, J., &quot;Supporting Source-Multiplexing of the Real-
+              Time Transport Protocol (RTP) Payload for Generic Forward
+              Error Correction&quot;, Work in Progress, Internet-Draft,
+              <a href="/doc/html/draft-lennox-payload-ulp-ssrc-mux-00">draft-lennox-payload-ulp-ssrc-mux-00</a>, 18 February 2013,
+              &lt;<a href="https://tools.ietf.org/html/draft-lennox-payload-ulp-ssrc-mux-00">https://tools.ietf.org/html/draft-lennox-payload-ulp-</a>
+              <a href="https://tools.ietf.org/html/draft-lennox-payload-ulp-ssrc-mux-00">ssrc-mux-00</a>&gt;.
+
+   [<a id="ref-RFC2198">RFC2198</a>]  Perkins, C., Kouvelas, I., Hodson, O., Hardman, V.,
+              Handley, M., Bolot, J.C., Vega-Garcia, A., and S. Fosse-
+              Parisis, &quot;RTP Payload for Redundant Audio Data&quot;, <a href="/doc/html/rfc2198">RFC 2198</a>,
+              DOI 10.17487/RFC2198, September 1997,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc2198">https://www.rfc-editor.org/info/rfc2198</a>&gt;.
+
+   [<a id="ref-RFC2733">RFC2733</a>]  Rosenberg, J. and H. Schulzrinne, &quot;An RTP Payload Format
+              for Generic Forward Error Correction&quot;, <a href="/doc/html/rfc2733">RFC 2733</a>,
+              DOI 10.17487/RFC2733, December 1999,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc2733">https://www.rfc-editor.org/info/rfc2733</a>&gt;.
+
+   [<a id="ref-RFC3556">RFC3556</a>]  Casner, S., &quot;Session Description Protocol (SDP) Bandwidth
+              Modifiers for RTP Control Protocol (RTCP) Bandwidth&quot;,
+              <a href="/doc/html/rfc3556">RFC 3556</a>, DOI 10.17487/RFC3556, July 2003,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc3556">https://www.rfc-editor.org/info/rfc3556</a>&gt;.
+
+   [<a id="ref-RFC4566">RFC4566</a>]  Handley, M., Jacobson, V., and C. Perkins, &quot;SDP: Session
+              Description Protocol&quot;, <a href="/doc/html/rfc4566">RFC 4566</a>, DOI 10.17487/RFC4566,
+              July 2006, &lt;<a href="https://www.rfc-editor.org/info/rfc4566">https://www.rfc-editor.org/info/rfc4566</a>&gt;.
+
+   [<a id="ref-RFC4585">RFC4585</a>]  Ott, J., Wenger, S., Sato, N., Burmeister, C., and J. Rey,
+              &quot;Extended RTP Profile for Real-time Transport Control
+              Protocol (RTCP)-Based Feedback (RTP/AVPF)&quot;, <a href="/doc/html/rfc4585">RFC 4585</a>,
+              DOI 10.17487/RFC4585, July 2006,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc4585">https://www.rfc-editor.org/info/rfc4585</a>&gt;.
+
+   [<a id="ref-RFC4588">RFC4588</a>]  Rey, J., Leon, D., Miyazaki, A., Varsa, V., and R.
+              Hakenberg, &quot;RTP Retransmission Payload Format&quot;, <a href="/doc/html/rfc4588">RFC 4588</a>,
+              DOI 10.17487/RFC4588, July 2006,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc4588">https://www.rfc-editor.org/info/rfc4588</a>&gt;.
+
+   [<a id="ref-RFC4756">RFC4756</a>]  Li, A., &quot;Forward Error Correction Grouping Semantics in
+              Session Description Protocol&quot;, <a href="/doc/html/rfc4756">RFC 4756</a>,
+              DOI 10.17487/RFC4756, November 2006,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc4756">https://www.rfc-editor.org/info/rfc4756</a>&gt;.
+
+   [<a id="ref-RFC5109">RFC5109</a>]  Li, A., Ed., &quot;RTP Payload Format for Generic Forward Error
+              Correction&quot;, <a href="/doc/html/rfc5109">RFC 5109</a>, DOI 10.17487/RFC5109, December
+              2007, &lt;<a href="https://www.rfc-editor.org/info/rfc5109">https://www.rfc-editor.org/info/rfc5109</a>&gt;.
+
+   [<a id="ref-RFC5576">RFC5576</a>]  Lennox, J., Ott, J., and T. Schierl, &quot;Source-Specific
+              Media Attributes in the Session Description Protocol
+              (SDP)&quot;, <a href="/doc/html/rfc5576">RFC 5576</a>, DOI 10.17487/RFC5576, June 2009,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc5576">https://www.rfc-editor.org/info/rfc5576</a>&gt;.
+
+   [<a id="ref-RFC5888">RFC5888</a>]  Camarillo, G. and H. Schulzrinne, &quot;The Session Description
+              Protocol (SDP) Grouping Framework&quot;, <a href="/doc/html/rfc5888">RFC 5888</a>,
+              DOI 10.17487/RFC5888, June 2010,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc5888">https://www.rfc-editor.org/info/rfc5888</a>&gt;.
+
+   [<a id="ref-RFC5956">RFC5956</a>]  Begen, A., &quot;Forward Error Correction Grouping Semantics in
+              the Session Description Protocol&quot;, <a href="/doc/html/rfc5956">RFC 5956</a>,
+              DOI 10.17487/RFC5956, September 2010,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc5956">https://www.rfc-editor.org/info/rfc5956</a>&gt;.
+
+   [<a id="ref-RFC6466">RFC6466</a>]  Salgueiro, G., &quot;IANA Registration of the &#x27;image&#x27; Media
+              Type for the Session Description Protocol (SDP)&quot;,
+              <a href="/doc/html/rfc6466">RFC 6466</a>, DOI 10.17487/RFC6466, December 2011,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc6466">https://www.rfc-editor.org/info/rfc6466</a>&gt;.
+
+   [<a id="ref-RFC7160">RFC7160</a>]  Petit-Huguenin, M. and G. Zorn, Ed., &quot;Support for Multiple
+              Clock Rates in an RTP Session&quot;, <a href="/doc/html/rfc7160">RFC 7160</a>,
+              DOI 10.17487/RFC7160, April 2014,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc7160">https://www.rfc-editor.org/info/rfc7160</a>&gt;.
+
+   [<a id="ref-RFC7201">RFC7201</a>]  Westerlund, M. and C. Perkins, &quot;Options for Securing RTP
+              Sessions&quot;, <a href="/doc/html/rfc7201">RFC 7201</a>, DOI 10.17487/RFC7201, April 2014,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc7201">https://www.rfc-editor.org/info/rfc7201</a>&gt;.
+
+   [<a id="ref-RFC7202">RFC7202</a>]  Perkins, C. and M. Westerlund, &quot;Securing the RTP
+              Framework: Why RTP Does Not Mandate a Single Media
+              Security Solution&quot;, <a href="/doc/html/rfc7202">RFC 7202</a>, DOI 10.17487/RFC7202, April
+              2014, &lt;<a href="https://www.rfc-editor.org/info/rfc7202">https://www.rfc-editor.org/info/rfc7202</a>&gt;.
+
+   [<a id="ref-RFC7656">RFC7656</a>]  Lennox, J., Gross, K., Nandakumar, S., Salgueiro, G., and
+              B. Burman, Ed., &quot;A Taxonomy of Semantics and Mechanisms
+              for Real-Time Transport Protocol (RTP) Sources&quot;, <a href="/doc/html/rfc7656">RFC 7656</a>,
+              DOI 10.17487/RFC7656, November 2015,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc7656">https://www.rfc-editor.org/info/rfc7656</a>&gt;.
+
+   [<a id="ref-RFC7657">RFC7657</a>]  Black, D., Ed. and P. Jones, &quot;Differentiated Services
+              (Diffserv) and Real-Time Communication&quot;, <a href="/doc/html/rfc7657">RFC 7657</a>,
+              DOI 10.17487/RFC7657, November 2015,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc7657">https://www.rfc-editor.org/info/rfc7657</a>&gt;.
+
+   [<a id="ref-RFC8872">RFC8872</a>]  Westerlund, M., Burman, B., Perkins, C., Alvestrand, H.,
+              and R. Even, &quot;Guidelines for Using the Multiplexing
+              Features of RTP to Support Multiple Media Streams&quot;,
+              <a href="/doc/html/rfc8872">RFC 8872</a>, DOI 10.17487/RFC8872, January 2021,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc8872">https://www.rfc-editor.org/info/rfc8872</a>&gt;.
+
+Acknowledgements
+
+   The authors would like to thank Christer Holmberg, Gunnar Hellström,
+   Charles Eckel, Tolga Asveren, Warren Kumari, and Meral Shirazipour
+   for their feedback on this document.
+
+Authors&#x27; Addresses
+
+   Magnus Westerlund
+   Ericsson
+   Torshamnsgatan 23
+   SE-164 80 Stockholm
+   Sweden
+
+   Email: magnus.westerlund@ericsson.com
+
+
+   Colin Perkins
+   University of Glasgow
+   School of Computing Science
+   Glasgow
+   G12 8QQ
+   United Kingdom
+
+   Email: csp@csperkins.org
+
+
+   Jonathan Lennox
+   8x8, Inc. / Jitsi
+   Jersey City, NJ 07302
+   United States of America
+
+   Email: jonathan.lennox@8x8.com
+</pre>
+    </div>
+
+  </div>
+
+
+        
+	  </div>
+
+	
+
+	
+
+    </div>
+
+      
+    <script type="text/javascript"><!--
+    var legend_html = "Colour legend:<br /> \
+     <table> \
+        <tr><td>Unknown:</td>                   <td><span class='cplate bgwhite'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr> \
+        <tr><td>Draft:</td>                     <td><span class='cplate bgred'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr> \
+        <tr><td>Informational:</td>             <td><span class='cplate bgorange'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr> \
+        <tr><td>Experimental:</td>              <td><span class='cplate bgyellow'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr> \
+        <tr><td>Best Common Practice:</td>      <td><span class='cplate bgmagenta'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr> \
+        <tr><td>Proposed Standard:</td>         <td><span class='cplate bgblue'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr> \
+        <tr><td>Draft Standard (old designation):</td> <td><span class='cplate bgcyan'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr> \
+        <tr><td>Internet Standard:</td>         <td><span class='cplate bggreen'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr> \
+        <tr><td>Historic:</td>                  <td><span class='cplate bggrey'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr> \
+        <tr><td>Obsolete:</td>                  <td><span class='cplate bgbrown'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr> \
+    </table>";
+    function showLegend() {
+        var elem = document.getElementById('legend');
+        elem.innerHTML = legend_html
+        elem.style.visibility='visible';
+    }
+    function hideLegend() {
+        var elem = document.getElementById('legend');
+        elem.style.visibility='hidden';
+        elem.innerHTML = "";
+    }
+    // -->
+    </script>
+
+  </body>
+</html>

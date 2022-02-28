@@ -1,11 +1,11 @@
 ﻿namespace Mozi.Live
 {
-    public class RTMPService
+    internal class RTMPService
     {
 
     }
 
-    public class RTMPProtocol
+    internal class RTMPProtocol
     {
         public const int Port = 1935;
     }
