@@ -141,7 +141,7 @@ namespace Mozi.IoT
     ///     
     ///     Num为期望的块号，
     ///     M无意义，
-    ///     SZX为期望采用的块大小，如果取值为0，就使用上一Response的块大小
+    ///     SZX为期望采用的块大小。取值0表示期望服务端回应该块的大小；取值为非0，就使用上一Response的块大小。
     ///     
     ///     2,Block1 出现在Response 表示接收端正在确认的块信息
     ///     
@@ -153,11 +153,11 @@ namespace Mozi.IoT
     /// 
     /// Size1|Size2
     /// a.描述性用法
-    ///     Size1出现在Request中，用于向服务端指示当前传输的Body的大小
-    ///     Size2出现在Response中，用于指示当前正在响应的资源的大小
+    ///     Size1出现在Block1 Request中，用于向服务端指示当前传输的Body的大小
+    ///     Size2出现在Block2 Response中，用于服务端向客户端指示当前正在响应的资源的大小
     /// b.控制性用法
-    ///     Size1出现在Response中,用于表示服务端期望处理的Body大小
-    ///     Size2出现在Request中，用于客户端向服务器请求Body大小
+    ///     Size1出现在Response中,用于表示服务端期望并能处理的Body大小
+    ///     Size2出现在Request中，用于客户端向服务器请求Body的大小
     ///     
     /// </summary>
     public class BlockOptionValue : OptionValue

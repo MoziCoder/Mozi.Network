@@ -8,16 +8,10 @@ namespace Mozi.HttpEmbedded.Attributes
     [AttributeUsage(AttributeTargets.ReturnValue)]
     internal class ContentTypeAttribute : Attribute
     {
-        public string ContentType { get; set; }
-        public string Encoding { get; set; }
-        public ContentTypeAttribute(string contentType,string encoding)
-        {
-            ContentType = contentType;
-            Encoding = encoding;
-        }
-        public ContentTypeAttribute(string contentType):this(contentType,"")
-        {
-            
-        }
+        private string contentType;
+        private string encoding;
+
+        public string ContentType { get => contentType; set => contentType = value; }
+        public string Encoding { get => encoding; set => encoding = value; }
     }
 }

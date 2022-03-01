@@ -63,7 +63,7 @@ namespace Mozi.IoT
 
             CoAPPackage pack = CoAPPackage.Parse(args.Data, CoAPPackageType.Response);
 
-            Console.WriteLine($"Package answered{_packetReceived}");
+            Console.WriteLine($"Request answered{_packetReceived}");
 
             //pack2 = new CoAPPackage()
             //{
@@ -122,7 +122,14 @@ namespace Mozi.IoT
         }
 
         /// <summary>
-        /// 注入URL相关参数,domain,port,paths,queries
+        /// 注入URL相关参数,domain,port,paths,queries到Options中
+        /// <list type="bullet">
+        ///     <listheader>自动注入的Option</listheader>
+        ///     <item><term><see cref="CoAPOptionDefine.UriHost"/></term>如果URL中的主机地址为域名，则注入此Option</item>
+        ///     <item><term><see cref="CoAPOptionDefine.UriPort"/></term></item>
+        ///     <item><term><see cref="CoAPOptionDefine.UriPath"/></term>以'/'分割Option</item>
+        ///     <item><term><see cref="CoAPOptionDefine.UriQuery"/></term>以'&'分割Option</item>
+        /// </list>
         /// </summary>
         /// <param name="uri"></param>
         /// <param name="cp"></param>
@@ -155,12 +162,14 @@ namespace Mozi.IoT
         /// Get提交 填入指定格式的URI，如果是域名，程序会调用DNS进行解析
         ///</summary>
         /// <param name="url">
+        ///     地址中的要素会被分解注入到Options中
         ///     <list type="table">
         ///         <listheader>URI格式:{host}-IPV4地址,IPV6地址,Domain域名;{path}-路径,请使用REST样式路径;{query}为查询参数字符串</listheader>
         ///         <item><term>格式1：</term>coap://{host}[:{port}]/{path}</item>
         ///         <item><term>格式2：</term>coap://{host}[:{port}]/{path}[?{query}]</item>
         ///         <item><term>格式3：</term>coap://{host}[:{port}]/{path1}[/{path2}]...[/{pathN}][?{query}]</item> 
-        /// </list>
+        ///     </list>
+        ///      
         /// </param>
         /// <param name="msgType">消息类型，默认为<see cref="CoAPMessageType.Confirmable"/></param>
         /// <returns>MessageId</returns>
@@ -170,7 +179,7 @@ namespace Mozi.IoT
             CoAPPackage cp = new CoAPPackage
             {
                 Code = CoAPRequestMethod.Get,
-                Token = CacheControl.GenerateToken(8),
+                Token = _cacheManager.GenerateToken(8),
                 MesssageId = _cacheManager.GenerateMessageId(),
                 MessageType = msgType ?? CoAPMessageType.Confirmable
             };
@@ -218,7 +227,7 @@ namespace Mozi.IoT
             CoAPPackage cp = new CoAPPackage
             {
                 Code = CoAPRequestMethod.Post,
-                Token = CacheControl.GenerateToken(8),
+                Token = _cacheManager.GenerateToken(8),
                 MesssageId = _cacheManager.GenerateMessageId(),
                 MessageType = msgType ?? CoAPMessageType.Confirmable
             };
@@ -255,20 +264,103 @@ namespace Mozi.IoT
         {
             throw new NotImplementedException();
         }
-
+        /// <summary>
+        /// Post方法
+        /// </summary>
+        /// <param name="url">地址格式参见<see cref="Get(string, CoAPMessageType)"/></param>
+        /// <param name="msgType"></param>
+        /// <param name="contentType"></param>
+        /// <param name="text"></param>
+        /// <returns></returns>
         public ushort Post(string url, CoAPMessageType msgType, ContentFormat contentType, string text)
         {
             return Post(url, msgType, contentType, StringEncoder.Encode(text));
         }
-        //TODO 是否会出现安全问题
-        private void Put(string url)
-        {
 
+        /// <summary>
+        /// PUT方法 目前不推荐使用 不安全
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="msgType"></param>
+        /// <param name="contentType"></param>
+        /// <param name="postBody"></param>
+        /// <returns></returns>
+        internal ushort Put(string url, CoAPMessageType msgType, ContentFormat contentType, byte[] postBody)
+        {
+            CoAPPackage cp = new CoAPPackage
+            {
+                Code = CoAPRequestMethod.Put,
+                Token = _cacheManager.GenerateToken(8),
+                MesssageId = _cacheManager.GenerateMessageId(),
+                MessageType = msgType ?? CoAPMessageType.Confirmable
+            };
+
+            UriInfo uri = UriInfo.Parse(url);
+
+            if (!string.IsNullOrEmpty(uri.Url))
+            {
+                PackUrl(ref uri, ref cp);
+
+                cp.SetContentType(contentType);
+
+                cp.Payload = postBody;
+
+                //发起通讯
+                if (!string.IsNullOrEmpty(uri.Host))
+                {
+                    SendMessage(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
+                }
+                else
+                {
+                    throw new Exception($"DNS无法解析指定的域名:{uri.Domain}");
+                }
+            }
+            else
+            {
+                throw new Exception($"本地无法解析指定的链接地址:{url}");
+            }
+            return cp.MesssageId;
         }
-        //TODO 是否会出现安全问题
-        private void Delete(string url)
+        /// <summary>
+        /// DELETE方法，不推荐使用 不安全
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="msgType"></param>
+        /// <param name="contentType"></param>
+        /// <returns></returns>
+        internal ushort Delete(string url, CoAPMessageType msgType, ContentFormat contentType)
         {
+            CoAPPackage cp = new CoAPPackage
+            {
+                Code = CoAPRequestMethod.Delete,
+                Token = _cacheManager.GenerateToken(8),
+                MesssageId = _cacheManager.GenerateMessageId(),
+                MessageType = msgType ?? CoAPMessageType.Confirmable
+            };
 
+            UriInfo uri = UriInfo.Parse(url);
+
+            if (!string.IsNullOrEmpty(uri.Url))
+            {
+                PackUrl(ref uri, ref cp);
+
+                cp.SetContentType(contentType);
+
+                //发起通讯
+                if (!string.IsNullOrEmpty(uri.Host))
+                {
+                    SendMessage(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
+                }
+                else
+                {
+                    throw new Exception($"DNS无法解析指定的域名:{uri.Domain}");
+                }
+            }
+            else
+            {
+                throw new Exception($"本地无法解析指定的链接地址:{url}");
+            }
+            return cp.MesssageId;
         }
     }
 }

@@ -14,6 +14,10 @@ namespace Mozi.IoT.Cache
         /// </summary>
         public ushort MessageId { get; set; }
         /// <summary>
+        /// 消息凭据
+        /// </summary>
+        public byte[] Token { get; set; }
+        /// <summary>
         /// 主机地址
         /// </summary>
         public string Host { get; set; }
@@ -78,7 +82,17 @@ namespace Mozi.IoT.Cache
         {
 
         }
-        
+        /// <summary>
+        /// 随机生成Token
+        /// </summary>
+        /// <returns></returns>
+        public  byte[] GenerateToken(int tokenLen)
+        {
+            byte[] data = new byte[tokenLen];
+            Random ran = new Random();
+            ran.NextBytes(data);
+            return data;
+        }
         /// <summary>
         /// 生成未使用的MessageId
         /// </summary>
@@ -97,7 +111,7 @@ namespace Mozi.IoT.Cache
             return msgId;
 
         }
-
+        //TODO 消息缓存的标识是MessageId?Token?
         public ushort Request(string host,CoAPPackage req)
         {
             MessageCache cache = _cm.Find(x => x.Host.Equals(host) && x.MessageId == req.MesssageId);
@@ -123,7 +137,7 @@ namespace Mozi.IoT.Cache
             
             return req.MesssageId;
         }
-
+        //TODO 消息缓存的标识是MessageId?Token?
         internal ushort Response(string host,CoAPPackage resp)
         {
             MessageCache cache = _cm.Find(x => x.Host.Equals(host) && x.MessageId == resp.MesssageId);
@@ -148,7 +162,7 @@ namespace Mozi.IoT.Cache
                 return 0;
             }
         }
-
+        //TODO 消息缓存的标识是MessageId?Token?
         internal ushort Remove(string host,ushort msgId)
         {
             lock ((_cm as ICollection).SyncRoot)

@@ -43,7 +43,12 @@ namespace Mozi.IoT
     /// </summary>
     public class CoAPPeer
     {
-        protected  UDPSocketIOCP _socket;
+        /// <summary>
+        /// 最大数据包尺寸 包含所有头信息和有效荷载
+        /// </summary>
+        private int _maxTransferPackSize=512;
+
+        protected UDPSocketIOCP _socket;
 
         protected int BindPort = CoAPProtocol.Port;
 
@@ -51,7 +56,7 @@ namespace Mozi.IoT
         /// 受支持的请求方法
         /// </summary>
         protected List<CoAPCode> SupportedRequest = new List<CoAPCode> { CoAPRequestMethod.Get, CoAPRequestMethod.Post, CoAPRequestMethod.Put, CoAPRequestMethod.Delete };
-
+        
         /// <summary>
         /// 服务端口
         /// </summary>
@@ -65,8 +70,13 @@ namespace Mozi.IoT
         /// </summary>
         public bool Running
         {
-            get;set;
+            get; set;
         }
+        /// <summary>
+        /// 最大数据包尺寸 包含所有头信息和有效荷载
+        /// </summary>
+        public int MaxTransferPackSize { get => _maxTransferPackSize; set => _maxTransferPackSize = value; }
+
         public CoAPPeer()
         {
             _socket = new UDPSocketIOCP();
@@ -107,9 +117,9 @@ namespace Mozi.IoT
         /// <param name="args"></param>
         protected virtual void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
-            
+
         }
-        
+
         /// <summary>
         /// 是否受支持的请求方法<see cref="CoAPRequestMethod"/>
         /// </summary>
@@ -128,11 +138,39 @@ namespace Mozi.IoT
         /// </summary>
         /// <param name="pack"></param>
         /// <returns>MessageId</returns>
-        public virtual ushort SendMessage(string host, int port,CoAPPackage pack)
+        public virtual ushort SendMessage(string host, int port, CoAPPackage pack)
         {
             _socket.SendTo(pack.Pack(), host, port);
             return pack.MesssageId;
         }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="host"></param>
+        ///// <param name="port"></param>
+        ///// <param name="pack"></param>
+        ///// <returns></returns>
+        //public ushort RequestBlock1(string host,int port,CoAPPackage pack)
+        //{
+
+        //}
+        //public ushort HandleRequestBlock1(string host, int port, CoAPPackage pack)
+        //{
+
+        //}
+
+        //public ushort RequestBlock2(string host,int port,CoAPPackage pack)
+        //{
+
+        //}
+
+
+
+        //public ushort HandleRequestBlock2(string host,int port,CoAPPackage pack)
+        //{
+
+        //}
+
     }
 
     /// <summary>
