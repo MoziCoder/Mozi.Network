@@ -286,7 +286,7 @@ namespace Mozi.HttpEmbedded
 
         protected override string Tag { get { return Code.ToString(); } }
 
-        private StatusCode(int code, string desc)
+        public StatusCode(int code, string desc)
         {
             _code = code;
             _text = desc;
