@@ -11,7 +11,9 @@ namespace Mozi.HttpEmbedded
         public static ProtocolType HTTPS = new ProtocolType("HTTPS");
 
         private string _protocol;
-
+        /// <summary>
+        /// 协议标识符号
+        /// </summary>
         public string Protocol
         {
             get { return _protocol; }

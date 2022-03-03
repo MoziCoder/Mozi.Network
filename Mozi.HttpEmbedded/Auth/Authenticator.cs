@@ -21,6 +21,7 @@ namespace Mozi.HttpEmbedded.Auth
         {
             string authHead = data.Substring(0, data.IndexOf((char)ASCIICode.SPACE));
             string authBody = data.Substring(data.IndexOf((char)ASCIICode.SPACE) + 1);
+
             AuthorizationType authType = AbsClassEnum.Get<AuthorizationType>(authHead);
 
             if (authType != null)
@@ -83,7 +84,7 @@ namespace Mozi.HttpEmbedded.Auth
     }
 
 
-    public abstract class AuthDatagraph
+    public abstract class AuthDatagram
     {
         /// <summary>
         /// 质询要素
@@ -98,14 +99,14 @@ namespace Mozi.HttpEmbedded.Auth
 
         public Dictionary<string, object> Response = new Dictionary<string, object>();
 
-        public abstract AuthDatagraph Parse(string data);
+        public abstract AuthDatagram Parse(string data);
         /// <summary>
         /// 设置质询要素
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public AuthDatagraph SetClgElement(string key, object value)
+        public AuthDatagram SetClgElement(string key, object value)
         {
             if (Challenge.ContainsKey(key))
             {
@@ -179,7 +180,7 @@ namespace Mozi.HttpEmbedded.Auth
     ///                       opaque="5ccc069c403ebaf9f0171e9517f40e41"　    //服务器端质询响应信息
     /// </code>
     /// </summary>
-    public class Digest : AuthDatagraph
+    public class Digest : AuthDatagram
     {
         /// <summary>
         /// 取得返回字符串
@@ -191,7 +192,7 @@ namespace Mozi.HttpEmbedded.Auth
             return sReturn;
         }
 
-        public override AuthDatagraph Parse(string data)
+        public override AuthDatagram Parse(string data)
         {
             throw new NotImplementedException();
         }
@@ -216,9 +217,9 @@ namespace Mozi.HttpEmbedded.Auth
     ///                    Created="2010-01-01T09:00:00Z"
     /// </code>
     /// </summary>
-    public class WSSE : AuthDatagraph
+    public class WSSE : AuthDatagram
     {
-        public override AuthDatagraph Parse(string data)
+        public override AuthDatagram Parse(string data)
         {
             throw new NotImplementedException();
         }

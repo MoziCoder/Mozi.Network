@@ -5,7 +5,10 @@ using System.IO;
 
 namespace Mozi.HttpEmbedded
 {
-
+    /// <summary>
+    /// 请求完成时回调
+    /// </summary>
+    /// <param name="context"></param>
     public delegate void RequestComplete(HttpContext context);
 
     //DONE http客户端，因http客户端实现比较多，暂时不实现，待后期规划

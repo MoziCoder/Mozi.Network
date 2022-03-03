@@ -22,6 +22,7 @@ namespace Mozi.HttpEmbedded
 
         private TransformHeader _headers;
         private ResponseCookie _cookies;
+
         /// <summary>
         /// HTTP–≠“È∞Ê±æ
         /// </summary>

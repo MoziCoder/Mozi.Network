@@ -18,6 +18,7 @@ namespace Mozi.HttpEmbedded
         private TransformHeader _headers;
         private FileCollection _files;
         private RequestCookie _cookies;
+
         /// <summary>
         /// 协议类型,参看<see cref="ProtocolType"/>所列出的值
         /// </summary>
@@ -716,6 +717,11 @@ namespace Mozi.HttpEmbedded
             ProtocolVersion = version;
             return this;
         }
+        /// <summary>
+        /// 设置Body数据
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public HttpRequest SetBody(byte[] data)
         {
             if (data != null)

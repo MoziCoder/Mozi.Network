@@ -13,7 +13,7 @@ namespace Mozi.HttpEmbedded.Attributes
     /// <summary>
     /// 允许访问的动作
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method,AllowMultiple =true)]
+    [AttributeUsage(AttributeTargets.Method,AllowMultiple =false)]
     internal class HttpGetAttribute : Attribute
     {
 
@@ -21,7 +21,7 @@ namespace Mozi.HttpEmbedded.Attributes
     /// <summary>
     /// 允许访问的动作
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     internal class HttpPostAttribute : Attribute
     {
 
@@ -29,7 +29,7 @@ namespace Mozi.HttpEmbedded.Attributes
     /// <summary>
     /// 允许访问的动作
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     internal class HttpPutAttribute : Attribute
     {
 
@@ -37,7 +37,7 @@ namespace Mozi.HttpEmbedded.Attributes
     /// <summary>
     /// 允许访问的动作
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     internal class HttpDeleteAttribute : Attribute
     {
 

@@ -79,11 +79,11 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 允许的方法
         /// </summary>
-        private RequestMethod[] MethodAllow = new RequestMethod[] { RequestMethod.OPTIONS, RequestMethod.TRACE, RequestMethod.GET, RequestMethod.HEAD, RequestMethod.POST, RequestMethod.COPY, RequestMethod.PROPFIND, RequestMethod.LOCK, RequestMethod.UNLOCK };
+        private readonly RequestMethod[] MethodAllow = new RequestMethod[] { RequestMethod.OPTIONS, RequestMethod.TRACE, RequestMethod.GET, RequestMethod.HEAD, RequestMethod.POST, RequestMethod.COPY, RequestMethod.PROPFIND, RequestMethod.LOCK, RequestMethod.UNLOCK };
         /// <summary>
         /// 公开的方法
         /// </summary>
-        private RequestMethod[] MethodPublic = new RequestMethod[] { RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.HEAD, RequestMethod.PROPFIND, RequestMethod.PROPPATCH, RequestMethod.MKCOL, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.COPY, RequestMethod.MOVE, RequestMethod.LOCK, RequestMethod.UNLOCK };
+        private readonly RequestMethod[] MethodPublic = new RequestMethod[] { RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.HEAD, RequestMethod.PROPFIND, RequestMethod.PROPPATCH, RequestMethod.MKCOL, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.COPY, RequestMethod.MOVE, RequestMethod.LOCK, RequestMethod.UNLOCK };
 
         //证书管理器
         private CertManager _certMg;
@@ -197,27 +197,36 @@ namespace Mozi.HttpEmbedded
             //配置默认服务器名
             _serverName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name + "/" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
             Auth = new Authenticator();
-            _sc.OnServerStart += _sc_OnServerStart;
-            _sc.OnClientConnect += _sc_OnClientConnect;
-            _sc.OnReceiveStart += _sc_OnReceiveStart;
+            _sc.OnServerStart += Socket_OnServerStart;
+            _sc.OnClientConnect += Socket_OnClientConnect;
+            _sc.OnReceiveStart += Socket_OnReceiveStart;
             _sc.AfterReceiveEnd += Socket_AfterReceiveEnd;
-            _sc.AfterServerStop += _sc_AfterServerStop;
+            _sc.AfterServerStop += Socket_AfterServerStop;
+        }
+
+        /// <summary>
+        /// 服务器关闭事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        protected virtual void Socket_AfterServerStop(object sender, ServerArgs args)
+        {
+
+        }
+        protected virtual void Socket_OnServerStart(object sender, ServerArgs args)
+        {
+            //throw new NotImplementedException();
+        }
+        protected virtual void Socket_OnClientConnect(object sender, ClientConnectArgs args)
+        {
+            //throw new NotImplementedException();
         }
         /// <summary>
         /// 服务器启动事件
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        void _sc_OnReceiveStart(object sender, DataTransferArgs args)
-        {
-
-        }
-        /// <summary>
-        /// 服务器关闭事件
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        void _sc_AfterServerStop(object sender, ServerArgs args)
+        protected virtual void Socket_OnReceiveStart(object sender, DataTransferArgs args)
         {
 
         }
@@ -237,7 +246,7 @@ namespace Mozi.HttpEmbedded
             context.Server = this;
             StatusCode sc = StatusCode.Success;
             //如果启用了访问IP黑名单控制
-            if (EnableAccessControl && CheckIfBlocked(args.IP))
+            if (EnableAccessControl && CheckIfAccessBlocked(args.IP))
             {
                 sc = StatusCode.Forbidden;
             }
@@ -554,14 +563,6 @@ namespace Mozi.HttpEmbedded
             }
             return ext;
         }
-        void _sc_OnServerStart(object sender, ServerArgs args)
-        {
-            //throw new NotImplementedException();
-        }
-        void _sc_OnClientConnect(object sender, ClientConnectArgs args)
-        {
-            //throw new NotImplementedException();
-        }
         /// <summary>
         /// 配置服务端口 
         /// <para>
@@ -723,7 +724,7 @@ namespace Mozi.HttpEmbedded
         /// 是否启用访问控制 IP策略
         /// </summary>
         /// <param name="enabled"></param>
-        public void UserAccessControl(bool enabled)
+        public void UseAccessControl(bool enabled)
         {
             EnableAccessControl = enabled;
         }
@@ -731,7 +732,7 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 检查访问黑名单
         /// </summary>
-        private bool CheckIfBlocked(string ipAddress)
+        private bool CheckIfAccessBlocked(string ipAddress)
         {
             return AccessManager.Instance.CheckBlackList(ipAddress);
         }
