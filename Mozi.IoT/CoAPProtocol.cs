@@ -21,7 +21,6 @@
         /// 头部和内容分割数据
         /// </summary>
         public const byte HeaderEnd = 0xFF;
-
     }
     /// <summary>
     /// CoAP传输时间参数

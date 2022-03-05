@@ -48,6 +48,7 @@
     <Compile Include="LwM2M\FirmwareUpdate.cs" />
     <Compile Include="LwM2M\LockWipe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResourceManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mozi.IoT\Mozi.IoT.csproj">

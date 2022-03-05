@@ -106,7 +106,7 @@ namespace Mozi.IoT
                 //判断是否受支持的方法
                 if (IsSupportedRequest(req))
                 {
-                    resp.Code = CoAPResponseCode.Content;
+                    resp = ResourceManager.Default.Invoke(req);
                 }
                 else
                 {

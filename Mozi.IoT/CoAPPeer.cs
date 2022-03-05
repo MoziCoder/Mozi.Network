@@ -44,19 +44,31 @@ namespace Mozi.IoT
     public class CoAPPeer
     {
         /// <summary>
-        /// 最大数据包尺寸 包含所有头信息和有效荷载
+        /// 最大数据包尺寸 包含所有头信息和有效荷载 Byte
         /// </summary>
         private int _maxTransferPackSize=512;
+        private int _blockSize = 128;
 
         protected UDPSocketIOCP _socket;
 
         protected int BindPort = CoAPProtocol.Port;
-
         /// <summary>
+        /// 最小分块大小,单位Byte
+        /// </summary>
+        public const int MinBlockSize = 16;
+        /// <summary>
+        /// 最大分块大小,单位Byte
+        /// </summary>
+        public const int MaxBlockSize = 2048;
+        /// <summary>
+        /// 当前端默认采用块大小,默认值为128bytes,单位Byte
+        /// </summary>
+        /// <remarks>在通讯两方没有进行协商的情况下，默认采用此值作为分块大小。取值区间为{<see cref="MinBlockSize"/>~<see cref="MaxBlockSize"/>}</remarks>
+        public int BlockSize { get { return _blockSize; } set { _blockSize = value; } }
+        /// <summary>s
         /// 受支持的请求方法
         /// </summary>
         protected List<CoAPCode> SupportedRequest = new List<CoAPCode> { CoAPRequestMethod.Get, CoAPRequestMethod.Post, CoAPRequestMethod.Put, CoAPRequestMethod.Delete };
-        
         /// <summary>
         /// 服务端口
         /// </summary>
@@ -75,7 +87,7 @@ namespace Mozi.IoT
         /// <summary>
         /// 最大数据包尺寸 包含所有头信息和有效荷载
         /// </summary>
-        public int MaxTransferPackSize { get => _maxTransferPackSize; set => _maxTransferPackSize = value; }
+        internal int MaxTransferPackSize { get => _maxTransferPackSize; set => _maxTransferPackSize = value; }
 
         public CoAPPeer()
         {
