@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Mozi.IoT.Cache;
 using Mozi.IoT.Encode;
 
@@ -159,7 +160,7 @@ namespace Mozi.IoT
         }
 
         ///<summary>
-        /// Get提交 填入指定格式的URI，如果是域名，程序会调用DNS进行解析
+        /// Get方法 填入指定格式的URI，如果是域名，程序会调用DNS进行解析
         ///</summary>
         /// <param name="url">
         ///     地址中的要素会被分解注入到Options中
@@ -172,8 +173,9 @@ namespace Mozi.IoT
         ///      
         /// </param>
         /// <param name="msgType">消息类型，默认为<see cref="CoAPMessageType.Confirmable"/></param>
+        /// <param name="options">选项值集合。可设置除<see cref="CoAPOptionDefine.UriHost"/>，<see cref="CoAPOptionDefine.UriPort"/>，<see cref="CoAPOptionDefine.UriPath"/>，<see cref="CoAPOptionDefine.UriQuery"/>之外的选项值</param>
         /// <returns>MessageId</returns>
-        public ushort Get(string url,CoAPMessageType msgType)
+        public ushort Get(string url,CoAPMessageType msgType,IList<CoAPOption> options)
         {
 
             CoAPPackage cp = new CoAPPackage
@@ -192,6 +194,13 @@ namespace Mozi.IoT
                 //发起通讯
                 if (!string.IsNullOrEmpty(uri.Host))
                 {
+                    if (options != null)
+                    {
+                        foreach (var opt in options)
+                        {
+                            cp.SetOption(opt.Option, opt.Value);
+                        }
+                    }
                     SendMessage(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
                 }
                 else
@@ -206,9 +215,19 @@ namespace Mozi.IoT
             return cp.MesssageId;
         }
         /// <summary>
+        /// Get方法<see cref="Get(string, CoAPMessageType, IList{CoAPOption})"/>
+        /// </summary>
+        /// <param name="url">地址格式参见<see cref="Get(string, CoAPMessageType, IList{CoAPOption})"/></param>
+        /// <param name="msgType">消息类型，默认为<see cref="CoAPMessageType.Confirmable"/></param>
+        /// <returns>MessageId</returns>
+        public ushort Get(string url, CoAPMessageType msgType)
+        {
+            return Get(url, msgType, null);
+        }
+        /// <summary>
         /// Get方法，默认消息类型为<see cref="CoAPMessageType.Confirmable"/>
         /// </summary>
-        /// <param name="url"></param>
+        /// <param name="url">地址格式参见<see cref="Get(string, CoAPMessageType, IList{CoAPOption})"/></param>
         /// <returns>MessageId</returns>
         public ushort Get(string url)
         {
@@ -217,12 +236,13 @@ namespace Mozi.IoT
         /// <summary>
         /// Post方法
         /// </summary>
-        /// <param name="url">地址格式参见<see cref="Get(string, CoAPMessageType)"/></param>
-        /// <param name="msgType"></param>
+        /// <param name="url">地址格式参见<see cref="Get(string, CoAPMessageType, IList{CoAPOption})"/></param>
+        /// <param name="msgType">消息类型，默认为<see cref="CoAPMessageType.Confirmable"/></param>
         /// <param name="contentType"></param>
+        /// <param name="options"></param>
         /// <param name="postBody"></param>
-        /// <returns></returns>
-        public ushort Post(string url, CoAPMessageType msgType, ContentFormat contentType,byte[] postBody)
+        /// <returns>MessageId</returns>
+        public ushort Post(string url, CoAPMessageType msgType, ContentFormat contentType, IList<CoAPOption> options, byte[] postBody)
         {
             CoAPPackage cp = new CoAPPackage
             {
@@ -245,6 +265,13 @@ namespace Mozi.IoT
                 //发起通讯
                 if (!string.IsNullOrEmpty(uri.Host))
                 {
+                    if (options != null)
+                    {
+                        foreach (var opt in options)
+                        {
+                            cp.SetOption(opt.Option, opt.Value);
+                        }
+                    }
                     SendMessage(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
                 }
                 else
@@ -258,34 +285,53 @@ namespace Mozi.IoT
             }
             return cp.MesssageId;
         }
-        
-        //分块提交
-        internal ushort PostBlock(string url, CoAPMessageType msgType, ContentFormat contentType, byte[] postBody)
-        {
-            throw new NotImplementedException();
-        }
         /// <summary>
-        /// Post方法
-        /// </summary>
-        /// <param name="url">地址格式参见<see cref="Get(string, CoAPMessageType)"/></param>
-        /// <param name="msgType"></param>
-        /// <param name="contentType"></param>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        public ushort Post(string url, CoAPMessageType msgType, ContentFormat contentType, string text)
-        {
-            return Post(url, msgType, contentType, StringEncoder.Encode(text));
-        }
-
-        /// <summary>
-        /// PUT方法 目前不推荐使用 不安全
+        /// Post方法,<see cref="Post(string, CoAPMessageType, ContentFormat, IList{CoAPOption}, byte[])"/>
         /// </summary>
         /// <param name="url"></param>
-        /// <param name="msgType"></param>
+        /// <param name="msgType">消息类型，默认为<see cref="CoAPMessageType.Confirmable"/></param>
         /// <param name="contentType"></param>
         /// <param name="postBody"></param>
-        /// <returns></returns>
-        internal ushort Put(string url, CoAPMessageType msgType, ContentFormat contentType, byte[] postBody)
+        /// <returns>MessageId</returns>
+        public ushort Post(string url, CoAPMessageType msgType, ContentFormat contentType,  byte[] postBody)
+        {
+            return Post(url, msgType, contentType, null, postBody);
+        }
+        /// <summary>
+        /// Post方法,<see cref="Post(string, CoAPMessageType, ContentFormat, IList{CoAPOption}, byte[])"/>
+        /// </summary>
+        /// <param name="url">地址格式参见<see cref="Get(string, CoAPMessageType, IList{CoAPOption})"/></param>
+        /// <param name="msgType">消息类型，默认为<see cref="CoAPMessageType.Confirmable"/></param>
+        /// <param name="contentType"></param>
+        /// <param name="options"></param>
+        /// <param name="text"></param>
+        /// <returns>MessageId</returns>
+        public ushort Post(string url, CoAPMessageType msgType, ContentFormat contentType, IList<CoAPOption> options, string text)
+        {
+            return Post(url, msgType, contentType, options, StringEncoder.Encode(text));
+        }
+        /// <summary>
+        /// Post方法,<see cref="Post(string, CoAPMessageType, ContentFormat, IList{CoAPOption}, string)"/>
+        /// </summary>
+        /// <param name="url">地址格式参见<see cref="Get(string, CoAPMessageType, IList{CoAPOption})"/></param>
+        /// <param name="msgType">消息类型，默认为<see cref="CoAPMessageType.Confirmable"/></param>
+        /// <param name="contentType"></param>
+        /// <param name="text"></param>
+        /// <returns>MessageId</returns>
+        public ushort Post(string url, CoAPMessageType msgType, ContentFormat contentType,string text)
+        {
+            return Post(url, msgType, contentType,null, text);
+        }
+        /// <summary>
+        /// PUT方法 不安全
+        /// </summary>
+        /// <param name="url">地址格式参见<see cref="Get(string, CoAPMessageType, IList{CoAPOption})"/></param>
+        /// <param name="msgType">消息类型，默认为<see cref="CoAPMessageType.Confirmable"/></param>
+        /// <param name="contentType"></param>
+        /// <param name="options"></param>
+        /// <param name="postBody"></param>
+        /// <returns>MessageId</returns>
+        public ushort Put(string url, CoAPMessageType msgType, ContentFormat contentType, IList<CoAPOption> options, byte[] postBody)
         {
             CoAPPackage cp = new CoAPPackage
             {
@@ -308,6 +354,13 @@ namespace Mozi.IoT
                 //发起通讯
                 if (!string.IsNullOrEmpty(uri.Host))
                 {
+                    if (options != null)
+                    {
+                        foreach (var opt in options)
+                        {
+                            cp.SetOption(opt.Option, opt.Value);
+                        }
+                    }
                     SendMessage(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
                 }
                 else
@@ -322,13 +375,26 @@ namespace Mozi.IoT
             return cp.MesssageId;
         }
         /// <summary>
+        /// PUT方法
+        /// </summary>
+        /// <param name="url">地址格式参见<see cref="Get(string, CoAPMessageType, IList{CoAPOption})"/></param>
+        /// <param name="msgType">消息类型，默认为<see cref="CoAPMessageType.Confirmable"/></param>
+        /// <param name="contentType"></param>
+        /// <param name="postBody"></param>
+        /// <returns>MessageId</returns>
+        public ushort Put(string url, CoAPMessageType msgType, ContentFormat contentType,  byte[] postBody)
+        {
+           return Put(url, msgType, contentType, null,postBody);
+        }
+        /// <summary>
         /// DELETE方法，不推荐使用 不安全
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="msgType"></param>
+        /// <param name="url">地址格式参见<see cref="Get(string, CoAPMessageType, IList{CoAPOption})"/></param>
+        /// <param name="msgType">消息类型，默认为<see cref="CoAPMessageType.Confirmable"/></param>
         /// <param name="contentType"></param>
-        /// <returns></returns>
-        internal ushort Delete(string url, CoAPMessageType msgType, ContentFormat contentType)
+        /// <param name="options"></param>
+        /// <returns>MessageId</returns>
+        public ushort Delete(string url, CoAPMessageType msgType, ContentFormat contentType, IList<CoAPOption> options)
         {
             CoAPPackage cp = new CoAPPackage
             {
@@ -349,6 +415,13 @@ namespace Mozi.IoT
                 //发起通讯
                 if (!string.IsNullOrEmpty(uri.Host))
                 {
+                    if (options != null)
+                    {
+                        foreach (var opt in options)
+                        {
+                            cp.SetOption(opt.Option, opt.Value);
+                        }
+                    }
                     SendMessage(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
                 }
                 else
@@ -361,6 +434,22 @@ namespace Mozi.IoT
                 throw new Exception($"本地无法解析指定的链接地址:{url}");
             }
             return cp.MesssageId;
+        }
+        /// <summary>
+        /// DELETE方法
+        /// </summary>
+        /// <param name="url">地址格式参见<see cref="Get(string, CoAPMessageType, IList{CoAPOption})"/></param>
+        /// <param name="msgType">消息类型，默认为<see cref="CoAPMessageType.Confirmable"/></param>
+        /// <param name="contentType"></param>
+        /// <returns>MessageId</returns>
+        public ushort Delete(string url, CoAPMessageType msgType, ContentFormat contentType)
+        {
+            return Delete(url, msgType, contentType, null);
+        }
+        //分块提交
+        internal ushort PostBlock(string url, CoAPMessageType msgType, ContentFormat contentType, byte[] postBody)
+        {
+            throw new NotImplementedException();
         }
     }
 }
