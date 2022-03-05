@@ -37,7 +37,9 @@ namespace Mozi.HttpEmbedded
         /// Http3.0在Http2.0的基础上使用QUIC控制协议，UDP协议
         /// </summary>
         public static readonly HttpVersion Version30 = new HttpVersion("3.0");
-
+        /// <summary>
+        /// 版本号
+        /// </summary>
         public string Version { get { return _vervalue; } }
 
         protected override string Tag { get { return _vervalue; } }

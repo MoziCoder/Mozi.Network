@@ -8,36 +8,36 @@ namespace Mozi.IoT.Test
     {
         static void Main(string[] args)
         {
-            ////服务端
-            //CoAPServer cs = new CoAPServer();
-            //cs.Start();
-            //Console.ReadLine();
+            //服务端
+            CoAPServer cs = new CoAPServer();
+            cs.Start();
+            Console.ReadLine();
 
-            //客户端 多线程并发
-            List<CoAPClient> ccs = new List<CoAPClient>();
-            for (int i = 0; i < 32; i++)
-            {
-                CoAPClient cc = new CoAPClient();
-                //本地端口
-                cc.SetPort(10 + i);
-                cc.Start();
-                ccs.Add(cc);
-            }
-            //电脑主机如果性能不行，不要尝试下面的方法
-            foreach (CoAPClient cc in ccs)
-            {
+            ////客户端 多线程并发
+            //List<CoAPClient> ccs = new List<CoAPClient>();
+            //for (int i = 0; i < 32; i++)
+            //{
+            //    CoAPClient cc = new CoAPClient();
+            //    //本地端口
+            //    cc.SetPort(10 + i);
+            //    cc.Start();
+            //    ccs.Add(cc);
+            //}
+            ////电脑主机如果性能不行，不要尝试下面的方法
+            //foreach (CoAPClient cc in ccs)
+            //{
 
-                var td = (new Thread(x =>
-                {
-                    for (int i = 0; i < 1000000; i++)
-                    {
-                        //cc.Get("coap://100.100.0.105/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test");
-                        cc.Get("coap://127.0.0.1/sensor", CoAPMessageType.Confirmable);
-                    }
-                }));
-                td.Priority = ThreadPriority.Highest;
-                td.Start();
-            }
+            //    var td = (new Thread(x =>
+            //    {
+            //        for (int i = 0; i < 1000000; i++)
+            //        {
+            //            //cc.Get("coap://100.100.0.105/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test");
+            //            cc.Get("coap://127.0.0.1/sensor", CoAPMessageType.Confirmable);
+            //        }
+            //    }));
+            //    td.Priority = ThreadPriority.Highest;
+            //    td.Start();
+            //}
 
             ////客户端调用 基本
             //CoAPClient cc = new CoAPClient();

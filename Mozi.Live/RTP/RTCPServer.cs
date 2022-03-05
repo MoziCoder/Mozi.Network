@@ -155,7 +155,7 @@ namespace Mozi.Live.RTP
         public static StatusCode Found                                     = new StatusCode( 302   ,"Found"); //all                      
         public static StatusCode SeeOther                                  = new StatusCode( 303   ,"See Other"); //n/a                      
         public static StatusCode NotModified                               = new StatusCode( 304   ,"Not Modified"); //all                      
-        public static StatusCode UseProxy                                  = new StatusCode( 305   ,"Use Proxy "\); //all                      
+        public static StatusCode UseProxy                                  = new StatusCode( 305   ,"Use Proxy"); //all                      
         public static StatusCode BadRequest                                = new StatusCode( 400   ,"Bad Request"); //all                      
         public static StatusCode Unauthorized                              = new StatusCode( 401   ,"Unauthorized"); //all                      
         public static StatusCode PaymentRequired                           = new StatusCode( 402   ,"Payment Required"); //all                      

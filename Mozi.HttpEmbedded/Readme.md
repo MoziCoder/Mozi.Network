@@ -84,6 +84,8 @@ Mozi.HttpEmbedded在Socket之上使用异步单线程模型，构建了一个HTT
 
 ## 用例说明
 
+### 服务器初始化用例
+
 ~~~csharp
 
     HttpServer hs = new HttpServer();
@@ -137,7 +139,30 @@ Mozi.HttpEmbedded在Socket之上使用异步单线程模型，构建了一个HTT
     //内置API 请参看Runtime.cs文件
 
 ~~~
+### API实现用例
 
+~~~csharp
+    
+    public class App:BaseApi
+    {
+        /// <summary>
+        /// 获取应用程序信息
+        /// </summary>
+        /// <returns></returns>
+        public AppInfo GetAppInfo()
+        {
+            var ass = Assembly.GetEntryAssembly();
+            var assName = ass.GetName();
+            return new AppInfo()
+            {
+                AppName = assName.Name,
+                Version = assName.Version.ToString(),
+                BinName = (new FileInfo((new Uri(ass.CodeBase)).LocalPath)).Name
+            };
+        }
+    }
+
+~~~
 ### By [Jason][1] on Feb. 5,2020
 
 [1]:mailto:brotherqian@163.com
