@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mozi.IoT.Encode;
+using System;
 using System.Collections.Generic;
 
 namespace Mozi.IoT
@@ -27,9 +28,16 @@ namespace Mozi.IoT
         /// </summary>
         public CoAPMessageType MessageType { get; set; }
         /// <summary>
+        /// RFC7252定义：
+        /// 
         /// Token长度 4bits
         /// 0-8bytes取值范围
-        /// 9-15为保留使用，收到此消息时直接消息报错
+        /// 9-15为保留使用 
+        /// 
+        /// RFC8974定义
+        /// 13-指示TokenLength>8  Token=4+8bits  TKL-Ext=Token.Lenght-13
+        /// 14-指示TokenLength>269 Token=4+16bits TKL-Ext=Token.Length-269
+        /// 15-报错 
         /// </summary>
         public byte TokenLength
         {
@@ -387,6 +395,63 @@ namespace Mozi.IoT
             }
             return pack;
 
+        }
+        /// <summary>
+        /// 带参数实例化，最小参数量实例化
+        /// </summary>
+        /// <param name="method"></param>
+        /// <param name="token"></param>
+        /// <param name="msgId"></param>
+        /// <param name="msgType"></param>
+        public CoAPPackage(CoAPRequestMethod method,byte[] token,ushort msgId,CoAPMessageType msgType)
+        {
+            Code = method;
+            Token = token;
+            MesssageId = msgId;
+            MessageType = msgType; 
+        }
+
+        public CoAPPackage()
+        {
+        }
+        /// <summary>
+
+        /// <summary>
+        /// 将URI信息配置到包中，即domain,port,paths,queries注入到"Options"中
+        /// <list type="bullet">
+        ///     <listheader>自动注入的Option</listheader>
+        ///     <item><term><see cref="CoAPOptionDefine.UriHost"/></term>如果URL中的主机地址为域名，则注入此Option</item>
+        ///     <item><term><see cref="CoAPOptionDefine.UriPort"/></term></item>
+        ///     <item><term><see cref="CoAPOptionDefine.UriPath"/></term>以'/'分割Option</item>
+        ///     <item><term><see cref="CoAPOptionDefine.UriQuery"/></term>以'&'分割Option</item>
+        /// </list>
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        public CoAPPackage SetUri(UriInfo uri)
+        {
+            //注入域名
+            if (!string.IsNullOrEmpty(uri.Domain))
+            {
+                SetOption(CoAPOptionDefine.UriHost, uri.Domain);
+            }
+            //注入端口号
+            if (uri.Port > 0 && !(uri.Port == CoAPProtocol.Port || uri.Port == CoAPProtocol.SecurePort))
+            {
+                SetOption(CoAPOptionDefine.UriPort, (uint)uri.Port);
+            }
+
+            //注入路径
+            for (int i = 0; i < uri.Paths.Length; i++)
+            {
+                SetOption(CoAPOptionDefine.UriPath, uri.Paths[i]);
+            }
+            //注入查询参数
+            for (int i = 0; i < uri.Queries.Length; i++)
+            {
+                SetOption(CoAPOptionDefine.UriQuery, uri.Queries[i]);
+            }
+            return this;
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mozi.IoT.Encode;
+using System;
 using System.Collections.Generic;
 
 namespace Mozi.IoT.CoAP
@@ -67,39 +68,288 @@ namespace Mozi.IoT.CoAP
             {
                 if (args.Count > 0)
                 {
+                    var arg0 = args[0];
+                    if (arg0 == "-h" || arg0 == "-help")
+                    {
+                        //TODO 打印帮助信息
+                    }
+                    else if (arg0.Length > 1)
+                    {
 
+                        CoAPPackage cp = new CoAPPackage();
+                        cp.MessageType = CoAPMessageType.Confirmable;
+                        if (arg0.Equals("get", StringComparison.OrdinalIgnoreCase))
+                        {
+                            cp.Code = CoAPRequestMethod.Get;
+                        }
+                        else if (arg0.Equals("post", StringComparison.OrdinalIgnoreCase))
+                        {
+                            cp.Code = CoAPRequestMethod.Post;
+                        }
+                        else if (arg0.Equals("put", StringComparison.OrdinalIgnoreCase))
+                        {
+                            cp.Code = CoAPRequestMethod.Put;
+                        }
+                        else if (arg0.Equals("delete", StringComparison.OrdinalIgnoreCase))
+                        {
+                            cp.Code = CoAPRequestMethod.Delete;
+                        }
+                        else
+                        {
+                            Console.WriteLine("命令参数不正确，请键入 -h或-help 参数打印帮助信息");
+                            return;
+                        }
+
+                        var url = args[1];
+
+                        UriInfo uri = UriInfo.Parse(url);
+                        cp.SetUri(uri);
+                        int i;
+                        string payload = "";
+                        if (args.Count >= 3)
+                        {
+                            for (i = 2; i < args.Count; i++)
+                            {
+                                var argName = args[i];
+                                var argValue = "";
+                                //参数
+                                if (argName.StartsWith("-"))
+                                {
+                                    argName = argName.Substring(1);
+                                    if (args.Count > i + 1)
+                                    {
+                                        argValue = args[i + 1];
+                                    }
+                                    if (argValue.StartsWith("-"))
+                                    {
+                                        argValue = "";
+                                    }
+                                    object argValueReal = null;
+                                    //空字符串
+                                    if (string.IsNullOrEmpty(argValue))
+                                    {
+
+                                    }
+                                    //字符串
+                                    else if (argValue.StartsWith("\""))
+                                    {
+                                        argValueReal = argValue.Trim(new char[] { '"' });
+                                    //Hex字符串
+                                    }else if (argValue.StartsWith("0x")){
+                                        argValueReal= Hex.From(argValue.Substring(2));
+                                    }
+                                    //整数
+                                    else
+                                    {
+                                        uint intValue;
+                                        if(uint.TryParse(argValue,out intValue))
+                                        {
+                                            argValueReal = intValue;
+                                        }
+                                        else
+                                        {
+                                            argValueReal = argValue;
+                                        }
+                                    }
+                                    dicArgs.Add(argName.ToLower(), argValueReal);
+                                }
+                                //包体
+                                else
+                                {
+                                    payload=argName;
+                                }
+                            }
+                            //参数映射
+                            foreach (var r in dicArgs)
+                            {
+                                CoAPOptionDefine optName = CoAPOptionDefine.Unknown;
+                                OptionValue optValue = null;
+                                if (r.Value == null)
+                                {
+                                    optValue =new  EmptyOptionValue();
+                                }
+                                else if(r.Value is string)
+                                {
+                                    optValue = new StringOptionValue() { Value = r.Value };
+                                }else if(r.Value is uint){
+                                    optValue = new UnsignedIntegerOptionValue() { Value = r.Value };
+                                }else if(r.Value is byte[]){
+                                    optValue = new ArrayByteOptionValue() { Value = r.Value };
+                                }
+                                switch (r.Key)
+                                {
+                                    case "ifmatch":
+                                        {
+                                            optName = CoAPOptionDefine.IfMatch;
+                                        }
+                                        break;
+                                    case  "etag":
+                                        {
+                                            optName = CoAPOptionDefine.ETag;
+                                        }
+                                        break;
+                                    case  "ifnonematch":
+                                        {
+                                            optName = CoAPOptionDefine.IfNoneMatch;
+                                        }
+                                        break;
+                                    case  "extendedtokenlength":
+                                        {
+                                            optName = CoAPOptionDefine.ExtendedTokenLength;
+                                        }
+                                        break;
+                                    case  "locationpath":
+                                        {
+                                            optName = CoAPOptionDefine.LocationQuery;
+                                        }
+                                        break;
+                                    case  "contentformat":
+                                        {
+                                            optName = CoAPOptionDefine.ContentFormat;
+                                        }
+                                        break;
+                                    case  "maxage":
+                                        {
+                                            optName = CoAPOptionDefine.MaxAge;
+                                        }
+                                        break;
+                                    case  "accept":
+                                        {
+                                            optName = CoAPOptionDefine.Accept;
+                                        }
+                                        break;
+                                    case  "locationquery":
+                                        {
+                                            optName = CoAPOptionDefine.LocationQuery;
+                                        }
+                                        break;
+                                    case  "block2":
+                                        {
+                                            optName = CoAPOptionDefine.Block2;
+                                            optValue = BlockOptionValue.Parse((string)r.Value);
+                                        }
+                                        break;
+                                    case  "block1":
+                                        {
+                                            optName = CoAPOptionDefine.Block1;
+                                            optValue = BlockOptionValue.Parse((string)r.Value);
+                                        }
+                                        break;
+                                    case  "size2":
+                                        {
+                                            optName = CoAPOptionDefine.Size2;
+                                        }
+                                        break;
+                                    case  "proxyuri":
+                                        {
+                                            optName = CoAPOptionDefine.ProxyUri;
+                                        }
+                                        break;
+                                    case  "proxyscheme":
+                                        {
+                                            optName = CoAPOptionDefine.ProxyScheme;
+                                        }
+                                        break;
+                                    case "size1":
+                                        {
+                                            optName = CoAPOptionDefine.Size1;
+                                        }
+                                        break;
+                                }
+  
+                                cp.SetOption(optName, optValue);
+
+                                // "If-Match"
+                                // "Uri-Host"
+                                // "ETag"
+                                // "If-None-Match"
+                                // "Extended-Token-Length"
+                                //"Uri-Port"
+                                // "Location-Path"
+                                // "Uri-Path"
+                                // "Content-Format"
+                                // "Max-Age"
+                                // "Uri-Query"
+                                // "Accept"
+                                // "Location-Query"
+                                // "Block2"
+                                // "Block1"
+                                // "Size2",
+                                // "Proxy-Uri"
+                                // "Proxy-Scheme"
+                                // "Size1"
+
+                                // "ifmatch"
+                                // "etag"
+                                // "ifnonematch"
+                                // "extendedtokenlength"
+                                // "locationpath"
+                                // "contentformat"
+                                // "maxage"
+                                // "accept"
+                                // "locationquery"
+                                // "block2"
+                                // "block1"
+                                // "size2",
+                                // "proxyuri"
+                                // "proxyscheme"
+                                // "size1"
+                            }
+
+
+                            if (!string.IsNullOrEmpty(payload)&& (cp.Code == CoAPRequestMethod.Post || cp.Code == CoAPRequestMethod.Put))
+                            {
+                                if (payload.StartsWith("\""))
+                                {
+                                    payload = payload.Trim(new char[] { '"' });
+                                    cp.Payload = StringEncoder.Encode(payload);
+                                }
+                                else if(payload.StartsWith("0x"))
+                                {
+                                    var pd = Hex.From(payload.Substring(2));
+                                    cp.Payload = pd;
+                                }
+                                else
+                                {
+                                    var pd = StringEncoder.Encode(payload);
+                                    cp.Payload = pd;
+                                }
+                            }
+                            Execute(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
+
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("命令参数不正确，请键入 -h或-help 参数打印帮助信息");
+                        return;
+                    }
                 }
                 else
                 {
-
-                }
-
-                for (var i = 0; i < args.Count; i++)
-                {
-                    var argName = args[i];
-                    var argValue = "";
-                    if (argName.StartsWith("-"))
-                    {
-                        if (args.Count > i + 1)
-                        {
-                            argValue = args[i + 1];
-                        }
-                        if (argValue.StartsWith("-"))
-                        {
-                            argValue = "";
-                        }
-                        dicArgs.Add(argName.ToUpper(), argValue);
-                    }
+                    Console.WriteLine("命令参数过少，请键入 -h或-help 参数打印帮助信息");
+                    return;
                 }
             }
         }
-        public void Execute()
+
+        public static void Execute(string host,int port,CoAPPackage cp)
         {
             CoAPClient cc = new CoAPClient();
             //本地端口
             cc.SetPort(12340);
             cc.Start();
-            cc.Get("coap://100.100.0.105/sensor/getinfo", CoAPMessageType.Confirmable);
+            Cache.MessageCacheManager mc = new Cache.MessageCacheManager(cc);
+            if (cp.MesssageId == 0)
+            {
+                cp.MesssageId = mc.GenerateMessageId();
+
+            }
+            //if (cp.Token == null)
+            //{
+            //    cp.Token = mc.GenerateToken(8);
+            //}
+            cc.SendMessage(host, port, cp);
         }
         /// <summary>
         /// 执行并阻塞一定的时间

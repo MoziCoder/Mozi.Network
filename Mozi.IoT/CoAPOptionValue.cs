@@ -18,7 +18,7 @@ namespace Mozi.IoT
     /// 空选项值
     /// </summary>
     public class EmptyOptionValue : OptionValue
-    {        
+    {
         public override object Value { get { return null; } set { } }
         public override byte[] Pack
         {
@@ -35,7 +35,7 @@ namespace Mozi.IoT
 
         public override byte[] Pack { get => _pack; set => _pack = value; }
 
-        public override int Length => _pack!=null?_pack.Length:0;
+        public override int Length => _pack != null ? _pack.Length : 0;
     }
     /// <summary>
     /// uint选项值，.Net的数值类型与网络包数据包排序不同，故字节数组会进行数组翻转
@@ -100,14 +100,7 @@ namespace Mozi.IoT
         {
             get
             {
-                if (_pack != null)
-                {
-                    return System.Text.Encoding.UTF8.GetString(_pack);
-                }
-                else
-                {
-                    return "";
-                }
+                return _pack != null ? System.Text.Encoding.UTF8.GetString(_pack) : "";
             }
             set => _pack = System.Text.Encoding.UTF8.GetBytes((string)value);
         }
@@ -163,7 +156,7 @@ namespace Mozi.IoT
     public class BlockOptionValue : OptionValue
     {
         /// <summary>
-        /// 块内位置 占位4-20bits 4 12 20
+        /// 块序号 占位4-20bits 长度可以4bits，12bits，20bits
         /// </summary>
         public uint Num { get; set; }
         /// <summary>
@@ -183,25 +176,28 @@ namespace Mozi.IoT
             {
 
                 byte[] data;
-                uint num = (Num << 4) | (byte)((byte)Math.Log(Size, 2) - 4);
+                uint code = (Num << 4) | (byte)((byte)Math.Log(Size, 2) - 4);
                 if (MoreFlag)
                 {
-                    num |= 8;
+                    code |= 8;
                 }
-
+                //pow(2,4)
                 if (Num < 16)
                 {
                     data = new byte[1];
-                    data[0] = (byte)Num;
+                    //2022/3/7 此处取值错误，现已修正
+                    data[0] = (byte)code;
                 }
+                //pow(2,12)
                 else if (Num < 4096)
                 {
-                    data = BitConverter.GetBytes((ushort)num).Revert();
+                    data = BitConverter.GetBytes((ushort)code).Revert();
                 }
+                //pow(2,20)
                 else
                 {
                     data = new byte[3];
-                    Array.Copy(BitConverter.GetBytes(num).Revert(), 1, data, 0, data.Length);
+                    Array.Copy(BitConverter.GetBytes(code).Revert(), 1, data, 0, data.Length);
                 }
                 return data;
 
@@ -209,12 +205,11 @@ namespace Mozi.IoT
             set
             {
 
-                Size = (ushort)Math.Pow(2, (((byte)(value[value.Length-1] << 5)) >> 5) + 4);
-                MoreFlag = (value[value.Length-1] & 8) == 8;
+                Size = (ushort)Math.Pow(2, (((byte)(value[value.Length - 1] << 5)) >> 5) + 4);
+                MoreFlag = (value[value.Length - 1] & 8) == 8;
                 byte[] data = new byte[4];
                 Array.Copy(value.Revert(), 0, data, data.Length - value.Length, value.Length);
                 Num = BitConverter.ToUInt32(data, 0);
-
             }
         }
         /// <summary>
@@ -226,9 +221,34 @@ namespace Mozi.IoT
 
         public override string ToString()
         {
-            return Pack == null ? "null" : string.Format("{0},Num:{1},M:{2},SZX:{3}(bytes)", "Block", Num, MoreFlag ? 1 : 0, Size);
+            return Pack == null ? "0/0/0" : string.Format("{0}/{1}/{2}", Num, MoreFlag ? 1 : 0, Size);
         }
-
+        /// <summary>
+        /// 解析BlockOptionValue值 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// <code>
+        /// 字符串格式为 0/0/0 Num/MoreFlag/Size。
+        /// 例如：
+        /// 包序号为1，无更多包，分包尺寸大小为128byte
+        ///     转为字符串： 1/0/128
+        /// </code>
+        /// </remarks>
+        public static BlockOptionValue Parse(string value)
+        {
+            BlockOptionValue bv = null;
+            string[] pms = value.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            if (pms.Length == 3)
+            {
+                bv = new BlockOptionValue();
+                bv.Num = uint.Parse(pms[0]);
+                bv.MoreFlag = pms[1] == "1";
+                bv.Size = ushort.Parse(pms[2]);
+            }
+            return bv;
+        }
     }
 
     //RFC8974
