@@ -86,11 +86,11 @@ namespace Mozi.IoT
             get
             {
                 string domain = "";
-                foreach (var op in Options)
+                foreach (CoAPOption op in Options)
                 {
                     if (op.Option == CoAPOptionDefine.UriHost)
                     {
-                        domain = (string)(op.Value.Value);
+                        domain = (string)new StringOptionValue() { Pack = op.Value.Pack }.Value;
                     }
                 }
                 return domain;
@@ -104,11 +104,11 @@ namespace Mozi.IoT
             get
             {
                 string path = "";
-                foreach(var op in Options)
+                foreach(CoAPOption op in Options)
                 {
                     if (op.Option == CoAPOptionDefine.UriPath)
                     {
-                        path+="/"+(string)op.Value.Value;
+                        path+="/"+ (string)new StringOptionValue() { Pack = op.Value.Pack }.Value;
                     }
                 }
                 return path;
@@ -122,11 +122,11 @@ namespace Mozi.IoT
             get
             {
                 List<string> query = new List<string>();
-                foreach (var op in Options)
+                foreach (CoAPOption op in Options)
                 {
                     if (op.Option == CoAPOptionDefine.UriQuery)
                     {
-                        query.Add((string)(op.Value.Value));
+                        query.Add((string)new StringOptionValue() { Pack = op.Value.Pack }.Value);
                     }
                 }
                 return string.Join("&",query);
@@ -158,7 +158,7 @@ namespace Mozi.IoT
             }
 
             uint delta = 0;
-            foreach (var op in Options)
+            foreach (CoAPOption op in Options)
             {
                 op.DeltaValue = op.Option.OptionNumber - delta;
                 data.AddRange(op.Pack);
@@ -192,6 +192,16 @@ namespace Mozi.IoT
         {
             return SetOption(define, new EmptyOptionValue());
         }
+        public CoAPPackage SetOption(CoAPOption opt)
+        {
+            int optGreater = Options.FindIndex(x => x.Option.OptionNumber > opt.Option.OptionNumber);
+            if (optGreater < 0)
+            {
+                optGreater = Options.Count;
+            }
+            Options.Insert(optGreater, opt);
+            return this;
+        }
         /// <summary>
         /// 设置选项值，此方法可以设置自定义的选项值类型
         /// </summary>
@@ -205,13 +215,7 @@ namespace Mozi.IoT
                 Option = define,
                 Value = optionValue
             };
-            var optGreater = Options.FindIndex(x => x.Option.OptionNumber > define.OptionNumber);
-            if (optGreater < 0)
-            {
-                optGreater = Options.Count;
-            }
-            Options.Insert(optGreater, option);
-            return this;
+            return SetOption(option);
         }
         /// <summary>
         /// 设置选项值 字节流
@@ -221,7 +225,7 @@ namespace Mozi.IoT
         /// <returns></returns>
         public CoAPPackage SetOption(CoAPOptionDefine define, byte[] optionValue)
         {
-            var v = new ArrayByteOptionValue() { Value = optionValue };
+            ArrayByteOptionValue v = new ArrayByteOptionValue() { Value = optionValue };
             SetOption(define, v);
             return this;
         }
@@ -257,7 +261,7 @@ namespace Mozi.IoT
         {
             if (define == CoAPOptionDefine.Block1 || define == CoAPOptionDefine.Block2)
             {
-                var opt = Options.Find(x => x.Option == define);
+                CoAPOption opt = Options.Find(x => x.Option == define);
                 StringOptionValue v = new StringOptionValue() { Value = optionValue };
                 if (opt == null)
                 {
@@ -380,7 +384,9 @@ namespace Mozi.IoT
 
                 option.Value.Pack = new byte[option.LengthValue];
                 Array.Copy(data, bodySplitterPos + 1 + lenDeltaExt + lenLengthExt, option.Value.Pack, 0, option.Value.Length);
-                pack.Options.Add(option);
+
+                pack.SetOption(option);
+
                 deltaSum += option.Delta;
                 //头长度+delta扩展长度+len
                 bodySplitterPos += 1 + lenDeltaExt + lenLengthExt + option.Value.Length;
@@ -413,6 +419,7 @@ namespace Mozi.IoT
 
         public CoAPPackage()
         {
+
         }
         /// <summary>
 
@@ -453,8 +460,17 @@ namespace Mozi.IoT
             }
             return this;
         }
-    }
 
+        //public string ToString(CoAPFormatType tp)
+        //{
+
+        //}
+    }
+    public enum CoAPFormatType
+    {
+        HttpStyle,
+        HttpMapping
+    }
     /// <summary>
     /// 消息类型
     /// <list type="table">

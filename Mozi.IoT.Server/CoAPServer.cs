@@ -121,7 +121,7 @@ namespace Mozi.IoT
                 //接入后端方法
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
                 resp.Code = CoAPResponseCode.BadGateway;

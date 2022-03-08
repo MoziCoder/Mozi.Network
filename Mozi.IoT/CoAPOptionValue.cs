@@ -6,12 +6,14 @@ namespace Mozi.IoT
     /// 选项值>=0 bytes
     /// 空 字节数组 数字 ASCII/UTF-8字符串
     /// </summary>
-    public abstract class OptionValue
+    public class OptionValue
     {
         protected byte[] _pack;
-        public abstract object Value { get; set; }
-        public abstract byte[] Pack { get; set; }
-        public abstract int Length { get; }
+        public virtual object Value { get => _pack; set => _pack = (byte[])value; }
+
+        public virtual byte[] Pack { get => _pack; set => _pack = value; }
+
+        public virtual int Length => _pack != null ? _pack.Length : 0;
     }
 
     /// <summary>
@@ -22,9 +24,14 @@ namespace Mozi.IoT
         public override object Value { get { return null; } set { } }
         public override byte[] Pack
         {
-            get => new byte[0];set { }
+            get => new byte[0];
+            set { }
         }
         public override int Length => 0;
+        public override string ToString()
+        {
+            return "";
+        }
     }
     /// <summary>
     /// 字节数组选项值
@@ -100,9 +107,9 @@ namespace Mozi.IoT
         {
             get
             {
-                return _pack != null ? System.Text.Encoding.UTF8.GetString(_pack) : "";
+                return _pack != null ? Encode.StringEncoder.Decode(_pack) : "";
             }
-            set => _pack = System.Text.Encoding.UTF8.GetBytes((string)value);
+            set => _pack = Encode.StringEncoder.Encode((string)value);
         }
 
         public override byte[] Pack { get => _pack; set => _pack = value; }
@@ -242,10 +249,12 @@ namespace Mozi.IoT
             string[] pms = value.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
             if (pms.Length == 3)
             {
-                bv = new BlockOptionValue();
-                bv.Num = uint.Parse(pms[0]);
-                bv.MoreFlag = pms[1] == "1";
-                bv.Size = ushort.Parse(pms[2]);
+                bv = new BlockOptionValue
+                {
+                    Num = uint.Parse(pms[0]),
+                    MoreFlag = pms[1] == "1",
+                    Size = ushort.Parse(pms[2])
+                };
             }
             return bv;
         }

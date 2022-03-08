@@ -210,7 +210,7 @@ namespace Mozi.IoT
             //RemoveClientSocket(so);
             try
             {
-                if (AfterReceiveEnd != null)
+                if (AfterReceiveEnd != null && so.Data.Count > 0)
                 {
                     AfterReceiveEnd(this,
                         new DataTransferArgs()

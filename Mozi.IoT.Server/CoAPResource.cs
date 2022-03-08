@@ -15,7 +15,7 @@ namespace Mozi.IoT
     /// 资源描述属性
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class ResourceDescriptionAttribute:Attribute
+    public class ResourceDescriptionAttribute : Attribute
     {
         public string Namespace { get; set; }
         public string Name { get; set; }
@@ -54,7 +54,7 @@ namespace Mozi.IoT
         /// <param name="request"></param>
         /// <returns></returns>
         public virtual CoAPPackage OnGet(CoAPPackage request)
-        {   
+        {
             return new CoAPPackage { MessageType = CoAPMessageType.Acknowledgement, MesssageId = request.MesssageId, Token = request.Token, Code = CoAPResponseCode.Forbidden };
         }
         /// <summary>
@@ -90,13 +90,13 @@ namespace Mozi.IoT
         /// <param name="indBlock"></param>
         /// <param name="blockSize"></param>
         /// <returns></returns>
-        protected virtual byte[] Seek(int indBlock,int blockSize)
+        protected virtual byte[] Seek(int indBlock, int blockSize)
         {
             return new byte[] { };
         }
     }
     /// <summary>
-    /// 时间服务
+    /// 时间服务 UTC时间
     /// </summary>
     /// <remarks>
     /// 用于客户机查询服务时间或客户机时间校准
@@ -108,22 +108,22 @@ namespace Mozi.IoT
 
         public override CoAPPackage OnGet(CoAPPackage request)
         {
-            CoAPPackage pack= base.OnGet(request);
-            DateTime dt = DateTime.UtcNow;
-            pack.Payload = StringEncoder.Encode(dt.ToString("r"));
+            CoAPPackage pack = base.OnGet(request);
+            DateTime dt = DateTime.Now;
+            pack.Payload = StringEncoder.Encode(dt.ToString("yyyy-MM-ddTHH:mm:sszzz"));
             pack.Code = CoAPResponseCode.Content;
             return pack;
         }
     }
 
-    [ResourceDescription(Namespace ="core",Name ="runtime")]
+    [ResourceDescription(Namespace = "core", Name = "runtime")]
     public class RuntimeResource : CoAPResource
     {
         public override long ResourceSize { get => 0; }
 
         public override CoAPPackage OnGet(CoAPPackage request)
         {
-           return base.OnGet(request);
+            return base.OnGet(request);
         }
     }
 }

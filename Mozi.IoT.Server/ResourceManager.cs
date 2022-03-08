@@ -48,6 +48,8 @@ namespace Mozi.IoT
             Assembly ass = Assembly.GetExecutingAssembly();
             LoadApiFromAssembly(ass);
         }
+        //TODO 是否需要注入Server对象
+
         /// <summary>
         /// 调起
         /// </summary>
@@ -57,12 +59,11 @@ namespace Mozi.IoT
             string path = ctx.Path;
             //确定路径映射关系
 
-
             string ns = "", name = "";
             var paths = path.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
             if (paths.Length > 0)
             {
-                name = paths[path.Length - 1];
+                name = paths[paths.Length - 1];
                 if (paths.Length > 1)
                 {
                     ns = string.Join("/", paths, 0, paths.Length - 1);
@@ -72,7 +73,7 @@ namespace Mozi.IoT
             Type cls = null;
             cls = ri.ResourceType;
             //TODO 将Method缓存
-            MethodInfo method = cls.GetMethod("On"+ctx.Code.Name,BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.Public);
+            MethodInfo method = cls.GetMethod("On" + ctx.Code.Name, BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.Public);
 
             ParameterInfo[] pms = method.GetParameters();
 

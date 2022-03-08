@@ -100,9 +100,9 @@ namespace Mozi.IoT.Cache
         public ushort GenerateMessageId()
         {
             Random random = new Random();
-            byte high=byte.Parse(new string(new char[] { _seads[random.Next(16)], _seads[random.Next(16)] }), System.Globalization.NumberStyles.HexNumber);
-            byte low=byte.Parse(new string(new char[] { _seads[random.Next(16)], _seads[random.Next(16)] }), System.Globalization.NumberStyles.HexNumber);
-            ushort msgId= BitConverter.ToUInt16(new byte[] { high, low }, 0);
+            byte high = byte.Parse(new string(new char[] { _seads[random.Next(16)], _seads[random.Next(16)] }), System.Globalization.NumberStyles.HexNumber);
+            byte low = byte.Parse(new string(new char[] { _seads[random.Next(16)], _seads[random.Next(16)] }), System.Globalization.NumberStyles.HexNumber);
+            ushort msgId = BitConverter.ToUInt16(new byte[] { high, low }, 0);
 
             if (_cm.Exists(x => x.Host == "" && x.MessageId == msgId))
             {

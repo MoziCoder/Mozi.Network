@@ -122,9 +122,12 @@ namespace Mozi.HttpEmbedded
         public bool MoveNext()
         {
             _index++;
-            if (_index >= _collection.Count) { 
+            if (_index >= _collection.Count)
+            {
                 return false;
-            }else { 
+            }
+            else
+            {
                 value = _collection[_index]; 
             }
             return true;
