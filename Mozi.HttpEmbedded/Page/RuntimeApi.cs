@@ -347,6 +347,7 @@ namespace Mozi.HttpEmbedded.Page
         {
             return string.Format("success:{0},code:{1},message:{2},data:{3}",success,code,message,data);
         }
+
     }
     /// <summary>
     /// API信息

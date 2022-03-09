@@ -4,6 +4,9 @@ using Mozi.HttpEmbedded.WebService;
 
 namespace Mozi.SSDP
 {
+    /// <summary>
+    /// 控制请求包
+    /// </summary>
     public class ControlActionPackage:AbsAdvertisePackage
     {
         public string ContentType { get; set; }
@@ -23,6 +26,9 @@ namespace Mozi.SSDP
             return headers;
         }
     }
+    /// <summary>
+    /// 控制响应包
+    /// </summary>
     public class ControlActionResponsePackage : AbsAdvertisePackage
     {
         public string TransferEncoding { get; set; }

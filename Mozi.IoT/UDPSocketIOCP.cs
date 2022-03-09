@@ -126,6 +126,7 @@ namespace Mozi.IoT
             {
                 if (!_sc.ReceiveFromAsync(receiveSocketArgs))
                 {
+                    //ReceiveFromAsync如果同步完成，则不会再接收任何数据，此处必须再次调起接收事件
                     CloseClientSocket(receiveSocketArgs);
                     DoReceive();
                 }
@@ -209,7 +210,7 @@ namespace Mozi.IoT
             //RemoveClientSocket(so);
             try
             {
-                if (AfterReceiveEnd != null)
+                if (AfterReceiveEnd != null && so.Data.Count > 0)
                 {
                     AfterReceiveEnd(this,
                         new DataTransferArgs()

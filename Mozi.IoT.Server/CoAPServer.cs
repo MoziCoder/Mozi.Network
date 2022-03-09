@@ -4,6 +4,7 @@
 // 拥塞机制交由请求方控制往往会导致服务端遭受流量冲击，因此服务端需要实现一定的约束机制，保证服务正常。
 
 //TODO 服务端的性能需要进一步优化，每秒约能处理2000个数据包，还不具备超高并发能力
+//TODO 分块包重组
 
 namespace Mozi.IoT
 {
@@ -46,7 +47,9 @@ namespace Mozi.IoT
 
         private Cache.MessageCacheManager _cm ;
 
-        public  MessageReceive RequestReceived; 
+        public  MessageReceive RequestReceived;
+
+        private bool _proxyPassed = false;
 
         public CoAPServer()
         {
@@ -60,7 +63,7 @@ namespace Mozi.IoT
         /// <param name="port"></param>
         internal void SetProxyPass(string ip,ushort port)
         {
-
+            _proxyPassed = true;
         }
         /// <summary>
         /// 数据接收完成回调
@@ -69,13 +72,7 @@ namespace Mozi.IoT
         /// <param name="args"></param>
         protected override void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
-            CoAPPackage req=null;
-
-            CoAPPackage resp = new CoAPPackage()
-            {
-                Version = 1,
-                MessageType = CoAPMessageType.Acknowledgement,
-            };
+            CoAPContext ctx = new CoAPContext();
 
             _packageReceived++;
 
@@ -85,7 +82,7 @@ namespace Mozi.IoT
 
             try
             {
-                req = CoAPPackage.Parse(args.Data, CoAPPackageType.Request);
+                ctx.Request = CoAPPackage.Parse(args.Data, CoAPPackageType.Request);
                 //_cm.Request(args.IP, req);
             }
             catch (Exception)
@@ -93,45 +90,46 @@ namespace Mozi.IoT
 
             }
 
-
             try
             {
-
-                resp.Token = req.Token;
-                resp.MesssageId = req.MesssageId;
-
                 //判断是否受支持的方法
-                if (IsSupportedRequest(req))
+                if (IsSupportedRequest(ctx.Request))
                 {
-                    resp.Code = CoAPResponseCode.Content;
+                    //接入后端方法
+                    ctx.Response = ResourceManager.Default.Invoke(ctx);
+                    ctx.Response.Token = ctx.Request.Token;
+                    ctx.Response.MesssageId = ctx.Request.MesssageId;
                 }
                 else
                 {
-                    resp.Code = CoAPResponseCode.MethodNotAllowed;
-                    resp.MessageType = CoAPMessageType.Reset;
+                    ctx.Response.Code = CoAPResponseCode.MethodNotAllowed;
+                    ctx.Response.MessageType = CoAPMessageType.Reset;
                 }
 
                 //检查分块
 
                 //检查内容类型
 
-                //接入后端方法
-
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                resp.Code = CoAPResponseCode.BadGateway;
-                resp.MessageType = CoAPMessageType.Reset;
-
+                if (ctx.Response != null)
+                {
+                    ctx.Response.Code = CoAPResponseCode.BadGateway;
+                    ctx.Response.MessageType = CoAPMessageType.Reset;
+                }
             }
-            SendMessage(args.IP, args.Port, resp);
-        }
 
-        //响应Block信息
-        protected virtual void HandleBlock()
-        {
-
+            if (ctx.Response == null)
+            {
+                ctx.Response = new CoAPPackage()
+                {
+                    Version = 1,
+                    MessageType = CoAPMessageType.Reset,
+                    Code = CoAPResponseCode.BadGateway,
+                };
+            }
+            SendMessage(args.IP, args.Port, ctx.Response);
         }
     }
 }

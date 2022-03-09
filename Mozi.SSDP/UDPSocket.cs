@@ -37,6 +37,9 @@ namespace Mozi.SSDP
         /// </summary>
         public IPAddress BindingAddress { get { return _bindingAddress; } set { _bindingAddress = value; } }
 
+        /// <summary>
+        /// 是否接收本程序发出的数据包
+        /// </summary>
         public bool AllowLoopbackMessage { get; set; }
 
 
@@ -164,7 +167,7 @@ namespace Mozi.SSDP
 
             if (OnServerStart != null)
             {
-                OnServerStart(this, new ServerArgs() { StartTime = DateTime.Now, StopTime = DateTime.MinValue });
+                OnServerStart(this, new ServerArgs() { BindPort=_multicastGroupPort,StartTime = DateTime.Now, StopTime = DateTime.MinValue });
             }
             try
             {

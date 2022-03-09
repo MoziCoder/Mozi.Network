@@ -63,7 +63,7 @@ namespace Mozi.StateService
         Lazy=4    
     }
     /// <summary>
-    /// 心跳网关服务器
+    /// 心跳网关服务器，心跳接收方
     /// </summary>
     public class HeartBeatGateway
     {

@@ -177,7 +177,9 @@
     <EmbeddedResource Include="Document\Home.html" />
     <EmbeddedResource Include="Document\Error.html" />
     <EmbeddedResource Include="Document\Example.html" />
+    <None Include="Howto.md" />
     <None Include="Mozi.HttpEmbedded.svg" />
+    <EmbeddedResource Include="Document\WebService.html" />
     <Content Include="RFC 3986 Uniform Resource Identifier %28URI%29 Generic Syntax.html" />
     <Content Include="Source\mime.data" />
   </ItemGroup>

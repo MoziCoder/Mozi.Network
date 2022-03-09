@@ -19,5 +19,10 @@ namespace Mozi.IoT.Encode
             }
             return returnBytes;
         }
+        public static string To(byte[] data)
+        {
+            string s = BitConverter.ToString(data, 0).Replace("-", string.Empty).ToLower();
+            return s;
+        }
     }
 }

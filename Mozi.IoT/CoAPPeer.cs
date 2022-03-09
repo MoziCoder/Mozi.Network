@@ -16,6 +16,7 @@ namespace Mozi.IoT
     //TODO 对象安全
     //TODO 映射CoAP到Http
     //TODO 观察者模式 观察者模式功能比较弱，是否考虑不实现？
+    //TODO Extend Token Length RFC8974
 
     /// CoAP基于UDP,可工作的C/S模式，多播，单播，任播（IPV6）
     /// 
@@ -43,15 +44,32 @@ namespace Mozi.IoT
     /// </summary>
     public class CoAPPeer
     {
-        protected  UDPSocketIOCP _socket;
+        /// <summary>
+        /// 最大数据包尺寸 包含所有头信息和有效荷载 Byte
+        /// </summary>
+        private int _maxTransferPackSize=512;
+        private int _blockSize = 128;
+
+        protected UDPSocketIOCP _socket;
 
         protected int BindPort = CoAPProtocol.Port;
-
         /// <summary>
+        /// 最小分块大小,单位Byte
+        /// </summary>
+        public const int MinBlockSize = 16;
+        /// <summary>
+        /// 最大分块大小,单位Byte
+        /// </summary>
+        public const int MaxBlockSize = 2048;
+        /// <summary>
+        /// 当前端默认采用块大小,默认值为128bytes,单位Byte
+        /// </summary>
+        /// <remarks>在通讯两方没有进行协商的情况下，默认采用此值作为分块大小。取值区间为{<see cref="MinBlockSize"/>~<see cref="MaxBlockSize"/>}</remarks>
+        public int BlockSize { get { return _blockSize; } set { _blockSize = value; } }
+        /// <summary>s
         /// 受支持的请求方法
         /// </summary>
         protected List<CoAPCode> SupportedRequest = new List<CoAPCode> { CoAPRequestMethod.Get, CoAPRequestMethod.Post, CoAPRequestMethod.Put, CoAPRequestMethod.Delete };
-
         /// <summary>
         /// 服务端口
         /// </summary>
@@ -65,8 +83,13 @@ namespace Mozi.IoT
         /// </summary>
         public bool Running
         {
-            get;set;
+            get; set;
         }
+        /// <summary>
+        /// 最大数据包尺寸 包含所有头信息和有效荷载
+        /// </summary>
+        internal int MaxTransferPackSize { get => _maxTransferPackSize; set => _maxTransferPackSize = value; }
+
         public CoAPPeer()
         {
             _socket = new UDPSocketIOCP();
@@ -107,9 +130,8 @@ namespace Mozi.IoT
         /// <param name="args"></param>
         protected virtual void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
-            
+
         }
-        
         /// <summary>
         /// 是否受支持的请求方法<see cref="CoAPRequestMethod"/>
         /// </summary>
@@ -119,7 +141,6 @@ namespace Mozi.IoT
         {
             return SupportedRequest.Contains(pack.Code);
         }
-
         /// <summary>
         /// 发送请求消息,此方法为高级方法。
         /// 1,如果对协议不够了解，请不要调用。
@@ -128,11 +149,34 @@ namespace Mozi.IoT
         /// </summary>
         /// <param name="pack"></param>
         /// <returns>MessageId</returns>
-        public virtual ushort SendMessage(string host, int port,CoAPPackage pack)
+        public virtual ushort SendMessage(string host, int port, CoAPPackage pack)
         {
             _socket.SendTo(pack.Pack(), host, port);
             return pack.MesssageId;
         }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="host"></param>
+        ///// <param name="port"></param>
+        ///// <param name="pack"></param>
+        ///// <returns></returns>
+        //public ushort RequestBlock1(string host,int port,CoAPPackage pack)
+        //{
+
+        //}
+        //public ushort HandleRequestBlock1(string host, int port, CoAPPackage pack)
+        //{
+
+        //}
+        //public ushort RequestBlock2(string host,int port,CoAPPackage pack)
+        //{
+
+        //}
+        //public ushort HandleRequestBlock2(string host,int port,CoAPPackage pack)
+        //{
+
+        //}
     }
 
     /// <summary>

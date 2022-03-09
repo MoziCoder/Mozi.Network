@@ -11,23 +11,34 @@
     ///     stateHost.Activate();
     /// </code>
     /// </summary>
+    /// <remarks>
+    ///  如果此封装不能满足应用需求，可自行封装
+    /// </remarks>
     public class StateServiceHost
     {
 
         private static StateServiceHost _host;
 
+        /// <summary>
+        /// 单实例
+        /// </summary>
         public static StateServiceHost Instance
         {
             get { return _host ?? (_host = new StateServiceHost()); }
         }
 
         private readonly HeartBeatService _service = new HeartBeatService();
-
+        /// <summary>
+        /// 切换状态是否立即发送状态信息
+        /// </summary>
         public bool StateChangeNotifyImmediately
         {
             get { return _service.StateChangeNotifyImmediately; }
             set { _service.StateChangeNotifyImmediately = value; }
         }
+        /// <summary>
+        /// 是否已初始化
+        /// </summary>
         public bool Initialized { get; set; }
 
         private StateServiceHost()

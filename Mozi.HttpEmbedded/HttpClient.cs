@@ -5,19 +5,24 @@ using System.IO;
 
 namespace Mozi.HttpEmbedded
 {
-
+    /// <summary>
+    /// 请求完成时回调
+    /// </summary>
+    /// <param name="context"></param>
     public delegate void RequestComplete(HttpContext context);
 
-    //TODO http客户端，因http客户端实现比较多，暂时不实现，待后期规划
+    //DONE http客户端，因http客户端实现比较多，暂时不实现，待后期规划
+    //TODO 应同步实现Https HttpQUIC(http3.0)
+
     /// <summary>
     /// Http客户端
     /// </summary>
     public class HttpClient
     {
-        private static string Charset = "UTF-8";
-        private static string UserAgent = "Mozilla/5.0 (Linux;Android 4.4.2;OEM Device) AppleWebKit/537.36 (KHTML,like Gecko) Chrom/39.0.2171.71 Mobile Crosswalk/10.3.235.16 Mobile Safri/537.36 Mozi/1.3.5";
-        private static string Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
-        private static string AcceptEncoding = "gzip, deflate";
+        private const string Charset = "UTF-8";
+        private const string UserAgent = "Mozilla/5.0 (Linux;Android 4.4.2;OEM Device) AppleWebKit/537.36 (KHTML,like Gecko) Chrom/39.0.2171.71 Mobile Crosswalk/10.3.235.16 Mobile Safri/537.36 Mozi/1.3.6";
+        private const string Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
+        private const string AcceptEncoding = "gzip, deflate";
 
         /// <summary>
         /// 注入URL相关参数,domain,port,paths,queries
@@ -30,7 +35,26 @@ namespace Mozi.HttpEmbedded
             req.SetHeader(HeaderProperty.Host, string.IsNullOrEmpty(uri.Domain)?uri.Host:uri.Domain);
             req.SetHeader(HeaderProperty.Referer, uri.Url);
         }
-
+        //TODO 此处应考虑Gzip解码
+        /// <summary>
+        /// 发送HTTP请求
+        /// </summary>
+        /// <param name="url">url地址，格式http://{host|domain}[:{port}]/[{path}[?query]]</param>
+        /// <param name="method">请求方法</param>
+        /// <param name="headers">
+        /// 附加的头信息，内部会封装一部分头信息，其它头信息请自行附加。
+        /// <list type="table">
+        ///     <listheader>内部封装的头信息：</listheader>
+        ///         <item><see cref="HeaderProperty.UserAgent"/></item>
+        ///         <item><see cref="HeaderProperty.AcceptEncoding"/></item>
+        ///         <item><see cref="HeaderProperty.Accept"/></item>
+        ///         <item><see cref="HeaderProperty.Host"/></item>
+        ///         <item><see cref="HeaderProperty.Referer"/></item>
+        ///         <item><see cref="HeaderProperty.ContentLength"/></item>
+        ///     </list>
+        /// </param>
+        /// <param name="body">请求包体</param>
+        /// <param name="callback">回调方法</param>
         private void Send(string url, RequestMethod method,Dictionary<HeaderProperty,string> headers,byte[] body,RequestComplete callback)
         {
             SocketClient sc = new SocketClient();
@@ -54,8 +78,10 @@ namespace Mozi.HttpEmbedded
                         req.SetHeader(h.Key, h.Value);
                     }
                 }
-                HttpContext hc = new HttpContext();
-                hc.Request = req;
+                HttpContext hc = new HttpContext
+                {
+                    Request = req
+                };
 
                 sc.AfterReceiveEnd = new ReceiveEnd((x, y) =>
                 {
@@ -88,9 +114,20 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// HttpGet方法
         /// </summary>
-        /// <param name="url">http://{host|domain}[:{port}]/[{path}[?query]]</param>
-        /// <param name="headers"></param>
-        /// <param name="callback"></param>
+        /// <param name="url">url地址，格式http://{host|domain}[:{port}]/[{path}[?query]]</param>
+        /// <param name="headers">
+        /// 附加的头信息，内部会封装一部分头信息，其它头信息请自行附加。
+        /// <list type="table">
+        ///     <listheader>内部封装的头信息：</listheader>
+        ///     <item><see cref="HeaderProperty.UserAgent"/></item>
+        ///     <item><see cref="HeaderProperty.AcceptEncoding"/></item>
+        ///     <item><see cref="HeaderProperty.Accept"/></item>
+        ///     <item><see cref="HeaderProperty.Host"/></item>
+        ///     <item><see cref="HeaderProperty.Referer"/></item>
+        ///     <item><see cref="HeaderProperty.ContentLength"/></item>
+        ///     </list>
+        /// </param>
+        /// <param name="callback">回调方法</param>
         public void Get(string url, Dictionary<HeaderProperty, string> headers, RequestComplete callback)
         {
             Send(url, RequestMethod.GET, headers,null,callback);
@@ -98,10 +135,10 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// HttpPost方法
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="headers"></param>
+        /// <param name="url">url地址，格式http://{host|domain}[:{port}]/[{path}[?query]]</param>
+        /// <param name="headers">附加的头信息,参见Get方法</param>
         /// <param name="body"></param>
-        /// <param name="callback"></param>
+        /// <param name="callback">回调方法</param>
         public void Post(string url, Dictionary<HeaderProperty, string> headers,byte[] body, RequestComplete callback)
         {
             Send(url, RequestMethod.POST, headers, body, callback);
@@ -109,23 +146,53 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// HttpPost方法
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="body"></param>
-        /// <param name="callback"></param>
+        /// <param name="url">url地址，格式http://{host|domain}[:{port}]/[{path}[?query]]</param>
+        /// <param name="body">请求包体</param>
+        /// <param name="callback">回调方法</param>
         public void Post(string url,byte[] body, RequestComplete callback)
         {
             Post(url, null, body, callback);
         }
-        //TODO 文件传输应加入进度
+        /// <summary>
+        /// HttpPost方法
+        /// </summary>
+        /// <param name="url">url地址，格式http://{host|domain}[:{port}]/[{path}[?query]]</param>
+        /// <param name="headers">附加的头信息,参见Get方法</param>
+        /// <param name="body">请求文本，文本会被编码成UTF-8格式。请求时会附加<see cref="HeaderProperty.ContentType"/>头属性</param>
+        /// <param name="callback">回调方法</param>
+        public void Post(string url, Dictionary<HeaderProperty, string> headers, string body,RequestComplete callback)
+        {
+            byte[] bytesBody = Encode.StringEncoder.Encode(body);
+            if (headers == null)
+            {
+                headers = new Dictionary<HeaderProperty, string>();
+            }
+            if (!headers.ContainsKey(HeaderProperty.ContentType))
+            {
+                headers.Add(HeaderProperty.ContentType, $"text/plain; charset={Charset}");
+            }
+            Post(url, headers, bytesBody, callback);
+        }
+        /// <summary>
+        /// HttpPost方法
+        /// </summary>
+        /// <param name="url">url地址，格式http://{host|domain}[:{port}]/[{path}[?query]]</param>
+        /// <param name="body">请求文本，文本会被编码成UTF-8格式。请求时会附加<see cref="HeaderProperty.ContentType"/>头属性</param>
+        /// <param name="callback">回调方法</param>
+        public void Post(string url,string body,RequestComplete callback)
+        {
+            Post(url, null, body, callback);
+        }
+        //TODO 文件传输应加入进度显示
         /// <summary>
         /// 多文件提交 multipart/form-data;
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="headers"></param>
-        /// <param name="files"></param>
+        /// <param name="url">url地址，格式http://{host|domain}[:{port}]/[{path}[?query]]</param>
+        /// <param name="headers">附加的头信息,参见Get方法</param>
+        /// <param name="files">文件集合</param>
+        /// <param name="callback">回调方法</param>
         public void PostFile(string url, Dictionary<HeaderProperty, string> headers, FileCollection files,RequestComplete callback)
         {
-            
             byte[] byteNewLine = new byte[] { ASCIICode.CR, ASCIICode.LF };
             string sNewLine=System.Text.Encoding.ASCII.GetString(byteNewLine);
             string boundary = "--"+CacheControl.GenerateRandom(8);
@@ -170,9 +237,9 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 多文件上传
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="files"></param>
-        /// <param name="callback"></param>
+        /// <param name="url">url地址，格式http://{host|domain}[:{port}]/[{path}[?query]]</param>
+        /// <param name="files">文件集合</param>
+        /// <param name="callback">回调方法</param>
         public void PostFile(string url,FileCollection files,RequestComplete callback)
         {
             PostFile(url, null, files, callback);

@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Mozi.IoT.Encode;
+using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Mozi.IoT
 {
@@ -27,9 +29,16 @@ namespace Mozi.IoT
         /// </summary>
         public CoAPMessageType MessageType { get; set; }
         /// <summary>
+        /// RFC7252定义：
+        /// 
         /// Token长度 4bits
         /// 0-8bytes取值范围
-        /// 9-15为保留使用，收到此消息时直接消息报错
+        /// 9-15为保留使用 
+        /// 
+        /// RFC8974定义
+        /// 13-指示TokenLength>8  Token=4+8bits  TKL-Ext=Token.Lenght-13
+        /// 14-指示TokenLength>269 Token=4+16bits TKL-Ext=Token.Length-269
+        /// 15-报错 
         /// </summary>
         public byte TokenLength
         {
@@ -78,11 +87,11 @@ namespace Mozi.IoT
             get
             {
                 string domain = "";
-                foreach (var op in Options)
+                foreach (CoAPOption op in Options)
                 {
                     if (op.Option == CoAPOptionDefine.UriHost)
                     {
-                        domain = (string)(op.Value.Value);
+                        domain = (string)new StringOptionValue() { Pack = op.Value.Pack }.Value;
                     }
                 }
                 return domain;
@@ -96,11 +105,11 @@ namespace Mozi.IoT
             get
             {
                 string path = "";
-                foreach(var op in Options)
+                foreach(CoAPOption op in Options)
                 {
                     if (op.Option == CoAPOptionDefine.UriPath)
                     {
-                        path+="/"+(string)op.Value.Value;
+                        path+="/"+ (string)new StringOptionValue() { Pack = op.Value.Pack }.Value;
                     }
                 }
                 return path;
@@ -114,11 +123,11 @@ namespace Mozi.IoT
             get
             {
                 List<string> query = new List<string>();
-                foreach (var op in Options)
+                foreach (CoAPOption op in Options)
                 {
                     if (op.Option == CoAPOptionDefine.UriQuery)
                     {
-                        query.Add((string)(op.Value.Value));
+                        query.Add((string)new StringOptionValue() { Pack = op.Value.Pack }.Value);
                     }
                 }
                 return string.Join("&",query);
@@ -150,7 +159,7 @@ namespace Mozi.IoT
             }
 
             uint delta = 0;
-            foreach (var op in Options)
+            foreach (CoAPOption op in Options)
             {
                 op.DeltaValue = op.Option.OptionNumber - delta;
                 data.AddRange(op.Pack);
@@ -184,6 +193,16 @@ namespace Mozi.IoT
         {
             return SetOption(define, new EmptyOptionValue());
         }
+        public CoAPPackage SetOption(CoAPOption opt)
+        {
+            int optGreater = Options.FindIndex(x => x.Option.OptionNumber > opt.Option.OptionNumber);
+            if (optGreater < 0)
+            {
+                optGreater = Options.Count;
+            }
+            Options.Insert(optGreater, opt);
+            return this;
+        }
         /// <summary>
         /// 设置选项值，此方法可以设置自定义的选项值类型
         /// </summary>
@@ -197,13 +216,7 @@ namespace Mozi.IoT
                 Option = define,
                 Value = optionValue
             };
-            var optGreater = Options.FindIndex(x => x.Option.OptionNumber > define.OptionNumber);
-            if (optGreater < 0)
-            {
-                optGreater = Options.Count;
-            }
-            Options.Insert(optGreater, option);
-            return this;
+            return SetOption(option);
         }
         /// <summary>
         /// 设置选项值 字节流
@@ -213,7 +226,7 @@ namespace Mozi.IoT
         /// <returns></returns>
         public CoAPPackage SetOption(CoAPOptionDefine define, byte[] optionValue)
         {
-            var v = new ArrayByteOptionValue() { Value = optionValue };
+            ArrayByteOptionValue v = new ArrayByteOptionValue() { Value = optionValue };
             SetOption(define, v);
             return this;
         }
@@ -249,7 +262,7 @@ namespace Mozi.IoT
         {
             if (define == CoAPOptionDefine.Block1 || define == CoAPOptionDefine.Block2)
             {
-                var opt = Options.Find(x => x.Option == define);
+                CoAPOption opt = Options.Find(x => x.Option == define);
                 StringOptionValue v = new StringOptionValue() { Value = optionValue };
                 if (opt == null)
                 {
@@ -372,7 +385,9 @@ namespace Mozi.IoT
 
                 option.Value.Pack = new byte[option.LengthValue];
                 Array.Copy(data, bodySplitterPos + 1 + lenDeltaExt + lenLengthExt, option.Value.Pack, 0, option.Value.Length);
-                pack.Options.Add(option);
+
+                pack.SetOption(option);
+
                 deltaSum += option.Delta;
                 //头长度+delta扩展长度+len
                 bodySplitterPos += 1 + lenDeltaExt + lenLengthExt + option.Value.Length;
@@ -388,8 +403,126 @@ namespace Mozi.IoT
             return pack;
 
         }
-    }
+        /// <summary>
+        /// 带参数实例化，最小参数量实例化
+        /// </summary>
+        /// <param name="method"></param>
+        /// <param name="token"></param>
+        /// <param name="msgId"></param>
+        /// <param name="msgType"></param>
+        public CoAPPackage(CoAPRequestMethod method,byte[] token,ushort msgId,CoAPMessageType msgType)
+        {
+            Code = method;
+            Token = token;
+            MesssageId = msgId;
+            MessageType = msgType;
+        }
 
+        public CoAPPackage()
+        {
+
+        }
+        /// <summary>
+
+        /// <summary>
+        /// 将URI信息配置到包中，即domain,port,paths,queries注入到"Options"中
+        /// <list type="bullet">
+        ///     <listheader>自动注入的Option</listheader>
+        ///     <item><term><see cref="CoAPOptionDefine.UriHost"/></term>如果URL中的主机地址为域名，则注入此Option</item>
+        ///     <item><term><see cref="CoAPOptionDefine.UriPort"/></term></item>
+        ///     <item><term><see cref="CoAPOptionDefine.UriPath"/></term>以'/'分割Option</item>
+        ///     <item><term><see cref="CoAPOptionDefine.UriQuery"/></term>以'&'分割Option</item>
+        /// </list>
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        public CoAPPackage SetUri(UriInfo uri)
+        {
+            //注入域名
+            if (!string.IsNullOrEmpty(uri.Domain))
+            {
+                SetOption(CoAPOptionDefine.UriHost, uri.Domain);
+            }
+            //注入端口号
+            if (uri.Port > 0 && !(uri.Port == CoAPProtocol.Port || uri.Port == CoAPProtocol.SecurePort))
+            {
+                SetOption(CoAPOptionDefine.UriPort, (uint)uri.Port);
+            }
+
+            //注入路径
+            for (int i = 0; i < uri.Paths.Length; i++)
+            {
+                SetOption(CoAPOptionDefine.UriPath, uri.Paths[i]);
+            }
+            //注入查询参数
+            for (int i = 0; i < uri.Queries.Length; i++)
+            {
+                SetOption(CoAPOptionDefine.UriQuery, uri.Queries[i]);
+            }
+            return this;
+        }
+        public override string ToString()
+        {
+            return ToString(CoAPFormatType.HttpStyle);
+        }
+        public string ToString(CoAPFormatType tp)
+        {
+            StringBuilder pack = new StringBuilder();
+            bool isReq = false;
+            List<KeyValuePair<string, string>> arrHeaders = new List<KeyValuePair<string, string>>();
+            if (Code == CoAPRequestMethod.Get || Code == CoAPRequestMethod.Post || Code == CoAPRequestMethod.Put || Code == CoAPRequestMethod.Delete)
+            {
+                isReq = true;
+            }
+            else
+            {
+
+            }
+            if (tp == CoAPFormatType.HttpStyle)
+            {
+                //REQUEST
+                if (isReq) {
+
+                    pack.AppendLine(string.Format("{0} {1} COAP/{2}", Code.Name,  (!string.IsNullOrEmpty(Domain) ?( "coap://" + Domain):"")+Path+"?"+Query, Version));
+                }
+                //RESPONSE
+                else
+                {
+                    pack.AppendLine(string.Format("COAP/{0} {1} {2}", Version, string.Format("{0}{1:00}", Code.Category, Code.Detail), Code.Description));
+                }
+                arrHeaders.Add(new KeyValuePair<string, string>("Message-Id", MesssageId.ToString()));
+                arrHeaders.Add(new KeyValuePair<string, string>("Message-Type", MessageType.Name));
+                if (Token!=null&&Token.Length > 0)
+                {
+                    arrHeaders.Add(new KeyValuePair<string, string>("Token", Hex.To(Token)));
+                }
+
+                foreach(var opt in Options)
+                {
+                    arrHeaders.Add(new KeyValuePair<string, string>(opt.Option.Name, opt.Value.ToString()));
+                }
+
+                foreach(var hd in arrHeaders)
+                {
+                    pack.AppendLine(string.Format("{0}: {1}", hd.Key, hd.Value));
+                }
+                pack.AppendLine();
+                if (Payload != null)
+                {
+                    pack.AppendLine(StringEncoder.Decode(Payload));
+                }
+            //HTTP mapping
+            }else{
+
+            }
+            return pack.ToString();
+        }
+    }
+    public enum CoAPFormatType
+    {
+        HttpStyle,
+        HttpMapping
+    }
     /// <summary>
     /// 消息类型
     /// <list type="table">

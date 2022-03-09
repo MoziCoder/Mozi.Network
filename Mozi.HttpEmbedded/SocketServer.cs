@@ -97,7 +97,7 @@ namespace Mozi.HttpEmbedded
             //回调服务器启动事件
             if (OnServerStart != null)
             {
-                OnServerStart(this, new ServerArgs() { StartTime = DateTime.Now, StopTime = DateTime.MinValue });
+                OnServerStart(this, new ServerArgs() { BindPort=_iport,StartTime = DateTime.Now, StopTime = DateTime.MinValue });
             }
             _sc.BeginAccept(new AsyncCallback(CallbackAccept), _sc);
         }

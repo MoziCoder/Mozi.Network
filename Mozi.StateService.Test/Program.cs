@@ -49,7 +49,7 @@ namespace Mozi.StateService.Test
 
             HeartBeatService stateHost =new HeartBeatService();
             stateHost.StateChangeNotifyImmediately = true;
-            stateHost.ApplyDevice("Mozi", "0000-0001", "1.3.5");
+            stateHost.ApplyDevice("Mozi", "0000-0001", "1.3.6");
             stateHost.RemoteHost = "100.100.0.111";
             stateHost.Port = 13453;
             stateHost.Activate();

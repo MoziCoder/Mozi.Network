@@ -31,16 +31,5 @@ namespace Mozi.IoT.Cache
             var time = BitConverter.ToString(BitConverter.GetBytes(lastModifyTime.ToUniversalTime().ToTimestamp())).Replace("-", "").ToLower();
             return string.Format("{0}:{1}", time, fileSize);
         }
-        /// <summary>
-        /// 随机生成Token
-        /// </summary>
-        /// <returns></returns>
-        public static byte[] GenerateToken(int tokenLen)
-        {
-            byte[] data = new byte[tokenLen];
-            Random ran = new Random();
-            ran.NextBytes(data);
-            return data;
-        }
     }
 }

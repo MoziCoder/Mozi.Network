@@ -14,13 +14,17 @@
 					<retval />
 					<relatedStateVariable>stateVariableName</relatedStateVariable>
 				</argument>
+				<!--
 				Declarations for other arguments defined by UPnP Forum working committee (if any)
 				go here
+				-->
 			</argumentList>
 		</action>
+		<!--
 		Declarations for other actions defined by UPnP Forum working committee (if any)
 		go here
 		Declarations for other actions added by UPnP vendor (if any) go here
+		-->
 	</actionList>
 	<serviceStateTable>
 		<stateVariable sendEvents="yes">
@@ -29,7 +33,7 @@
 			<defaultValue>default value</defaultValue>
 			<allowedValueList>
 				<allowedValue>enumerated value</allowedValue>
-				Other allowed values defined by UPnP Forum working committee (if any) go here
+				<!--Other allowed values defined by UPnP Forum working committee (if any) go here-->
 			</allowedValueList>
 		</stateVariable>
 		<stateVariable sendEvents="yes">
@@ -42,8 +46,10 @@
 				<step>increment value</step>
 			</allowedValueRange>
 		</stateVariable>
+		<!--
 		Declarations for other state variables defined by UPnP Forum working committee
 		(if any) go here
 		Declarations for other state variables added by UPnP vendor (if any) go here
+		-->
 	</serviceStateTable>
 </scpd>

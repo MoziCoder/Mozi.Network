@@ -5,6 +5,7 @@ namespace Mozi.StateService
     /// <summary>
     /// 心跳订阅者 订阅者为已知订阅者
     /// </summary>
+    /// <remarks>订阅者必须是网关已注册的主机，注册为网关自主注册，不能通过其它方式注册，注册方法<see cref="HeartBeatGateway.AddSubscriber(Subscriber)"/>。注册成功后网关会转发心跳包到订阅者。</remarks>
     public class HeartBeatSubscriber : HeartBeatGateway
     {
         /// <summary>

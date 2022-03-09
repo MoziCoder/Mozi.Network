@@ -1,5 +1,6 @@
 ﻿namespace Mozi.HttpEmbedded.Page
 {
+    //TODO PUT DELETE 方法不是很普及，故暂时不实现
     /// <summary>
     /// 页面抽象类
     /// </summary>

@@ -2,6 +2,9 @@
 
 namespace Mozi.SSDP
 {
+    /// <summary>
+    /// SSDP头信息
+    /// </summary>
     public class SSDPHeader
     {
         public static HeaderProperty St = new HeaderProperty("ST");

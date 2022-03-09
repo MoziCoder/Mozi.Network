@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A0AC4AED-0F9E-4BD9-AEA7-385F0BAC7056}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Mozi.Live</RootNamespace>
+    <AssemblyName>Mozi.Live</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="RTMPService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RTP\RTCPServer.cs" />
+    <Compile Include="RTP\RTPServer.cs" />
+    <Compile Include="RTSPServer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Mozi.HttpEmbedded\Mozi.HttpEmbedded.csproj">
+      <Project>{051c3f42-0a53-4a78-a961-28ffa8c17b46}</Project>
+      <Name>Mozi.HttpEmbedded</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="RFC 2326 - Real Time Streaming Protocol %28RTSP%29.htm" />
+    <Content Include="RFC 3550 - RTP A Transport Protocol for Real-Time Applications.htm" />
+    <Content Include="RFC 5506 - Support for Reduced-Size Real-Time Transport Control Protocol %28RTCP%29 Opportunities and Consequences.htm" />
+    <Content Include="RFC 5761 - Multiplexing RTP Data and Control Packets on a Single Port.htm" />
+    <Content Include="RFC 6051 - Rapid Synchronisation of RTP Flows.htm" />
+    <Content Include="RFC 6222 - Guidelines for Choosing RTP Control Protocol %28RTCP%29 Canonical Names %28CNAMEs%29.htm" />
+    <Content Include="RFC 7022 - Guidelines for Choosing RTP Control Protocol %28RTCP%29 Canonical Names %28CNAMEs%29.htm" />
+    <Content Include="RFC 7160 - Support for Multiple Clock Rates in an RTP Session.htm" />
+    <Content Include="RFC 7164 - RTP and Leap Seconds.htm" />
+    <Content Include="RFC 7826 - Real-Time Streaming Protocol Version 2.0.htm" />
+    <Content Include="RFC 8083 - Multimedia Congestion Control Circuit Breakers for Unicast RTP Sessions.htm" />
+    <Content Include="RFC 8108 - Sending Multiple RTP Streams in a Single RTP Session.htm" />
+    <Content Include="RFC 8860 - Sending Multiple Types of Media in a Single RTP Session.htm" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Readme.md" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

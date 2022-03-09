@@ -1,10 +1,10 @@
 ﻿# Mozi.HttpEmbedded 嵌入式Web服务器
 
-Mozi.HttpEmbedded是一个基于.Net构建的嵌入式HTTP服务器，为.Net应用提供HTTP服务功能。项目自行解析HTTP协议包，实现了HTTP/1.1的大部分规范，但并不会实现非常丰富的大型Web服务器功能。项目基于.Net Framework 4.0开发,也可转换为.Net Core/.Net Standard项目,亦可作为.Net5.0项目引用库。
+Mozi.HttpEmbedded是一个基于.Net构建的嵌入式HTTP服务器，为.Net应用提供HTTP服务功能。项目实现了HTTP/1.1的大部分规范，但并不会实现非常丰富的大型Web服务器功能。项目基于.Net Framework 4.0开发,也可转换为.Net Core/.Net Standard项目,亦可作为.Net5.0项目引用库。
 
 ## 特点
 
-Mozi.HttpEmbedded在Socket之上使用异步单线程模型，构建了一个HTTP服务器，HTTP协议和TCP通讯高度分离。该项目针对的是不能使用Kestrel/IIS的部署环境，比如中间件，服务程序等。
+Mozi.HttpEmbedded在Socket之上使用异步单线程模型，构建了一个HTTP服务器，项目自行开发了Http协议包解析器，使HTTP协议解析和TCP通讯高度分离。该项目针对的是不能使用Kestrel/IIS的部署环境，比如中间件，服务程序等。
 
 1. 嵌入式  
 	本项目可作为.Net应用的内嵌Web服务器，亦可作为单独Web服务器
@@ -70,6 +70,7 @@ Mozi.HttpEmbedded在Socket之上使用异步单线程模型，构建了一个HTT
 	dotnet add package Mozi.HttpEmbedded --version 1.2.5
 
 ~~~
+
 ## 项目依赖  
 
 无
@@ -79,9 +80,11 @@ Mozi.HttpEmbedded在Socket之上使用异步单线程模型，构建了一个HTT
 	不定期对Mozi.HttpEmbedded的功能进行完善,解决各种BUG。HTTP标准功能繁多，需要一步步实现。
 
 ## 版权说明
-	本项目采用MIT开源协议，引用请注明出处。欢迎复制，引用和修改。意见建议疑问请联系软件作者，或提交ISSUE。
+	本项目采用MIT开源协议，引用请注明出处。欢迎复制，引用和修改。复制请注明出处，引用请附带证书。意见建议疑问请联系软件作者，或提交ISSUE。
 
 ## 用例说明
+
+### 服务器初始化用例
 
 ~~~csharp
 
@@ -136,7 +139,30 @@ Mozi.HttpEmbedded在Socket之上使用异步单线程模型，构建了一个HTT
     //内置API 请参看Runtime.cs文件
 
 ~~~
+### API实现用例
 
+~~~csharp
+    
+    public class App:BaseApi
+    {
+        /// <summary>
+        /// 获取应用程序信息
+        /// </summary>
+        /// <returns></returns>
+        public AppInfo GetAppInfo()
+        {
+            var ass = Assembly.GetEntryAssembly();
+            var assName = ass.GetName();
+            return new AppInfo()
+            {
+                AppName = assName.Name,
+                Version = assName.Version.ToString(),
+                BinName = (new FileInfo((new Uri(ass.CodeBase)).LocalPath)).Name
+            };
+        }
+    }
+
+~~~
 ### By [Jason][1] on Feb. 5,2020
 
 [1]:mailto:brotherqian@163.com

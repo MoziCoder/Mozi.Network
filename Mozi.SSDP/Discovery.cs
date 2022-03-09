@@ -26,6 +26,7 @@ namespace Mozi.SSDP
             headers.Add("CACHE-CONTROL", $"max-age = {CacheTimeout}");
             return headers;
         }
+
         public new static AlivePackage Parse(HttpRequest req)
         {
             AlivePackage pack = new AlivePackage();
@@ -49,6 +50,7 @@ namespace Mozi.SSDP
             }
             return pack;
         }
+
     }
     /// <summary>
     /// 搜索数据包
@@ -76,6 +78,7 @@ namespace Mozi.SSDP
             headers.Add("USN", USN.ToString());
             return headers;
         }
+
         public new static SearchResponsePackage Parse(HttpRequest req)
         {
             SearchResponsePackage pack = new SearchResponsePackage();
@@ -89,6 +92,7 @@ namespace Mozi.SSDP
             var sUSN = req.Headers.GetValue("USN");
             return pack;
         }
+
     }
 
     /// <summary>
@@ -117,6 +121,7 @@ namespace Mozi.SSDP
         public int TcpPort { get; set; }
         public string CPFN { get; set; }
         public string CPUUID { get; set; }
+
         /// <summary>
         /// </summary>
         /// <returns></returns>
@@ -129,6 +134,7 @@ namespace Mozi.SSDP
             headers.Add("MX", $"{MX}");
             return headers;
         }
+
         public static SearchPackage Parse(HttpRequest req)
         {
             SearchPackage pack = new SearchPackage();
@@ -141,6 +147,7 @@ namespace Mozi.SSDP
             pack.ST = TargetDesc.Parse(st);
             return pack;
         }
+
     }
     /// <summary>
     /// 离线头信息

@@ -5,6 +5,12 @@ using Mozi.HttpEmbedded;
 
 namespace Mozi.SSDP
 {
+    //ST:Search Target
+    //NT:Notification Type
+    //NTS:Notification Sub Type
+    //USN:Unique Service Name
+    //MX: Maximum wait time in seconds. Should be between 1 and 120 inclusive
+
     public delegate void NotifyAliveReceived(object sender,AlivePackage pack,string host);
     public delegate void NotifyByebyeReceived(object sender, ByebyePackage pack, string host);
     public delegate void SearchReceived(object sender,SearchPackage pack,string host);
@@ -53,12 +59,12 @@ namespace Mozi.SSDP
         private int _multicastGroupPort = SSDPProtocol.ProtocolPort;
         private IPAddress _bindingAddress = IPAddress.Any;
 
-        private string _server = "Mozi/1.3.4 UPnP/2.0 Mozi.SSDP/1.3.4";
+        private string _server = "Mozi/1.3.6 UPnP/2.0 Mozi.SSDP/1.3.6";
 
         /// <summary>
         /// 设备描述文档地址
         /// </summary>
-        private string _descriptionPath = "";
+        private string _deviceDescPath = "";
 
         #region
         /// <summary>
@@ -151,6 +157,9 @@ namespace Mozi.SSDP
                 ApplyMulticastAddressChange(MulticastAddress, MulticastPort);
             }
         }
+        /// <summary>
+        /// 绑定的本地IP地址
+        /// </summary>
         public IPAddress BindingAddress
         {
             get
@@ -272,7 +281,7 @@ namespace Mozi.SSDP
         /// <param name="args"></param>
         protected virtual void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
-            //TODO 如何进行多包分割？
+            //DONE 如何进行多包分割？
 
             ParsePackage(args);
             if (OnMessageReceived != null)
@@ -282,6 +291,7 @@ namespace Mozi.SSDP
             Console.WriteLine("==**************{0}*************==", args.IP);
             Console.WriteLine("{1}", args.IP, System.Text.Encoding.UTF8.GetString(args.Data));
             Console.WriteLine("==***************************************==");
+
         }
         /// <summary>
         /// 包解析
@@ -338,12 +348,20 @@ namespace Mozi.SSDP
                 //event SUBSCRIBE
                 else if(method==RequestMethodUPnP.SUBSCRIBE)
                 {
-
+                    //var pack = SubscribePackage.Parse(request);
+                    //if (pack != null && OnSubscribeReceived)
+                    //{
+                    //    OnSubscribeReceived(this, pack, args.IP);
+                    //}
                 }
                 //event UNSUBSCRIBE
                 else if(method==RequestMethodUPnP.UNSUBSCRIBE)
                 {
-
+                    //var pack = UnSubscribedPackage.Parse(request);
+                    //if (pack != null && OnUnSubscribedReceived)
+                    //{
+                    //    OnUnSubscribedReceived(this, pack, args.IP);
+                    //}
                 }
                 //Control
                 else if(method== RequestMethod.POST)
@@ -405,7 +423,7 @@ namespace Mozi.SSDP
             return this;
         }
         /// <summary>
-        /// 广播ssdp:alive信息
+        /// 广播ssdp:alive信息 定时发送ssdp:alive广播
         /// </summary>
         /// <returns></returns>
         public SSDPService StartAdvertise()
@@ -673,7 +691,7 @@ namespace Mozi.SSDP
             SendTo(data);
         }
 
-        private void SendTo(byte[] data)
+        protected void SendTo(byte[] data)
         {
             _socket.SocketMain.SendTo(data, _remoteEP);
         }
@@ -682,9 +700,9 @@ namespace Mozi.SSDP
         /// 设置描述文档地址
         /// </summary>
         /// <param name="path"></param>
-        internal void SetDescriptionPath(string path)
+        internal void SetDeviceDescriptionPath(string path)
         {
-            _descriptionPath = path;
+            _deviceDescPath = path;
         }
         /// <summary>
         /// 定时器回调函数

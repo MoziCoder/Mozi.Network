@@ -58,7 +58,7 @@ namespace Mozi.IoT
         public static CoAPOptionDefine UriHost = new CoAPOptionDefine("Uri-Host", 3);
         public static CoAPOptionDefine ETag = new CoAPOptionDefine("ETag", 4);
         public static CoAPOptionDefine IfNoneMatch = new CoAPOptionDefine("If-None-Match", 5);
-        public static CoAPOptionDefine ExtendedTokenLength=new CoAPOptionDefine("Extended-Token-Length",6);
+        public static CoAPOptionDefine ExtendedTokenLength = new CoAPOptionDefine("Extended-Token-Length", 6); //RFC8974
 
         public static CoAPOptionDefine UriPort = new CoAPOptionDefine("Uri-Port", 7);
         public static CoAPOptionDefine LocationPath = new CoAPOptionDefine("Location-Path", 8);
@@ -260,6 +260,9 @@ namespace Mozi.IoT
                 LengthValue = value != null ? (uint)value.Length : 0;
             }
         }
+        /// <summary>
+        /// 选项数据包 定义头+数据值 { Delta,OptionsLength,DeltaExtend,LengthExtend,OptionValue} 字节数据值
+        /// </summary>
         public byte[] Pack
         {
             get
@@ -287,11 +290,12 @@ namespace Mozi.IoT
                 }
                 data.AddRange(Value.Pack);
                 return data.ToArray();
+
             }
         }
         public CoAPOption()
         {
-            Value = new ArrayByteOptionValue();
+            Value = new OptionValue();
         }
     }
 }

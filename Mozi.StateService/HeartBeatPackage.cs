@@ -22,7 +22,8 @@ namespace Mozi.StateService
     /// </summary>
     public enum HeartBeatProtocolVersion
     {
-        Version1 = 0x31
+        Version1 = 0x31,
+        Version2 = 0x32,
     }
     ///// <summary>
     ///// 包类型
@@ -131,6 +132,7 @@ namespace Mozi.StateService
             arr.Insert(0, Version);
             return arr.ToArray();
         }
+
         /// <summary>
         /// 协议包解析
         /// </summary>

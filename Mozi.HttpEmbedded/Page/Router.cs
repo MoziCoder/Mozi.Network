@@ -9,6 +9,7 @@ using Mozi.HttpEmbedded.Serialize;
 namespace Mozi.HttpEmbedded.Page
 {
     //TODO 增加API下载的功能，允许客户端提取所有API，同时加入鉴权机制
+
     /// <summary>
     /// 全局路由 单例模式
     /// </summary>
@@ -274,7 +275,10 @@ namespace Mozi.HttpEmbedded.Page
             {
 
             }
-
+            /// <summary>
+            /// 应用匹配字符串
+            /// </summary>
+            /// <param name="pattern"></param>
             private void ApplyPattern(string pattern)
             {
                 //修正

@@ -149,7 +149,7 @@ namespace Mozi.NTP
 
             if (OnServerStart != null)
             {
-                OnServerStart(this, new ServerArgs() { StartTime = DateTime.Now, StopTime = DateTime.MinValue });
+                OnServerStart(this, new ServerArgs() { BindPort=_multicastGroupPort,StartTime = DateTime.Now, StopTime = DateTime.MinValue });
             }
             try
             {

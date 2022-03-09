@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mozi.IoT.Encode;
+using System;
 
 namespace Mozi.IoT
 {
@@ -6,25 +7,32 @@ namespace Mozi.IoT
     /// 选项值>=0 bytes
     /// 空 字节数组 数字 ASCII/UTF-8字符串
     /// </summary>
-    public abstract class OptionValue
+    public class OptionValue
     {
         protected byte[] _pack;
-        public abstract object Value { get; set; }
-        public abstract byte[] Pack { get; set; }
-        public abstract int Length { get; }
+        public virtual object Value { get => _pack; set => _pack = (byte[])value; }
+
+        public virtual byte[] Pack { get => _pack; set => _pack = value; }
+
+        public virtual int Length => _pack != null ? _pack.Length : 0;
     }
 
     /// <summary>
     /// 空选项值
     /// </summary>
     public class EmptyOptionValue : OptionValue
-    {        
+    {
         public override object Value { get { return null; } set { } }
         public override byte[] Pack
         {
-            get => new byte[0];set { }
+            get => new byte[0];
+            set { }
         }
         public override int Length => 0;
+        public override string ToString()
+        {
+            return "";
+        }
     }
     /// <summary>
     /// 字节数组选项值
@@ -35,7 +43,7 @@ namespace Mozi.IoT
 
         public override byte[] Pack { get => _pack; set => _pack = value; }
 
-        public override int Length => _pack!=null?_pack.Length:0;
+        public override int Length => _pack != null ? _pack.Length : 0;
     }
     /// <summary>
     /// uint选项值，.Net的数值类型与网络包数据包排序不同，故字节数组会进行数组翻转
@@ -89,6 +97,17 @@ namespace Mozi.IoT
 
        public override int Length => _pack != null ? _pack.Length : 0;
 
+        public override string ToString()
+        {
+            if (_pack != null)
+            {
+                return Hex.To((byte[])Value);
+            }
+            else
+            {
+                return "";
+            }
+        }
     }
     /// <summary>
     /// string选项值
@@ -100,21 +119,19 @@ namespace Mozi.IoT
         {
             get
             {
-                if (_pack != null)
-                {
-                    return System.Text.Encoding.UTF8.GetString(_pack);
-                }
-                else
-                {
-                    return "";
-                }
+                return _pack != null ? Encode.StringEncoder.Decode(_pack) : "";
             }
-            set => _pack = System.Text.Encoding.UTF8.GetBytes((string)value);
+            set => _pack = Encode.StringEncoder.Encode((string)value);
         }
 
         public override byte[] Pack { get => _pack; set => _pack = value; }
 
         public override int Length => _pack != null ? _pack.Length : 0;
+
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
     }
 
     /// <summary>
@@ -141,7 +158,7 @@ namespace Mozi.IoT
     ///     
     ///     Num为期望的块号，
     ///     M无意义，
-    ///     SZX为期望采用的块大小，如果取值为0，就使用上一Response的块大小
+    ///     SZX为期望采用的块大小。取值0表示期望服务端回应该块的大小；取值为非0，就使用上一Response的块大小。
     ///     
     ///     2,Block1 出现在Response 表示接收端正在确认的块信息
     ///     
@@ -153,17 +170,17 @@ namespace Mozi.IoT
     /// 
     /// Size1|Size2
     /// a.描述性用法
-    ///     Size1出现在Request中，用于向服务端指示当前传输的Body的大小
-    ///     Size2出现在Response中，用于指示当前正在响应的资源的大小
+    ///     Size1出现在Block1 Request中，用于向服务端指示当前传输的Body的大小
+    ///     Size2出现在Block2 Response中，用于服务端向客户端指示当前正在响应的资源的大小
     /// b.控制性用法
-    ///     Size1出现在Response中,用于表示服务端期望处理的Body大小
-    ///     Size2出现在Request中，用于客户端向服务器请求Body大小
+    ///     Size1出现在Response中,用于表示服务端期望并能处理的Body大小
+    ///     Size2出现在Request中，用于客户端向服务器请求Body的大小
     ///     
     /// </summary>
     public class BlockOptionValue : OptionValue
     {
         /// <summary>
-        /// 块内位置 占位4-20bits 4 12 20
+        /// 块序号 占位4-20bits 长度可以4bits，12bits，20bits
         /// </summary>
         public uint Num { get; set; }
         /// <summary>
@@ -183,25 +200,28 @@ namespace Mozi.IoT
             {
 
                 byte[] data;
-                uint num = (Num << 4) | (byte)((byte)Math.Log(Size, 2) - 4);
+                uint code = (Num << 4) | (byte)((byte)Math.Log(Size, 2) - 4);
                 if (MoreFlag)
                 {
-                    num |= 8;
+                    code |= 8;
                 }
-
+                //pow(2,4)
                 if (Num < 16)
                 {
                     data = new byte[1];
-                    data[0] = (byte)Num;
+                    //2022/3/7 此处取值错误，现已修正
+                    data[0] = (byte)code;
                 }
+                //pow(2,12)
                 else if (Num < 4096)
                 {
-                    data = BitConverter.GetBytes((ushort)num).Revert();
+                    data = BitConverter.GetBytes((ushort)code).Revert();
                 }
+                //pow(2,20)
                 else
                 {
                     data = new byte[3];
-                    Array.Copy(BitConverter.GetBytes(num).Revert(), 1, data, 0, data.Length);
+                    Array.Copy(BitConverter.GetBytes(code).Revert(), 1, data, 0, data.Length);
                 }
                 return data;
 
@@ -209,12 +229,11 @@ namespace Mozi.IoT
             set
             {
 
-                Size = (ushort)Math.Pow(2, (((byte)(value[value.Length-1] << 5)) >> 5) + 4);
-                MoreFlag = (value[value.Length-1] & 8) == 8;
+                Size = (ushort)Math.Pow(2, (((byte)(value[value.Length - 1] << 5)) >> 5) + 4);
+                MoreFlag = (value[value.Length - 1] & 8) == 8;
                 byte[] data = new byte[4];
                 Array.Copy(value.Revert(), 0, data, data.Length - value.Length, value.Length);
                 Num = BitConverter.ToUInt32(data, 0);
-
             }
         }
         /// <summary>
@@ -226,9 +245,36 @@ namespace Mozi.IoT
 
         public override string ToString()
         {
-            return Pack == null ? "null" : string.Format("{0},Num:{1},M:{2},SZX:{3}(bytes)", "Block", Num, MoreFlag ? 1 : 0, Size);
+            return Pack == null ? "0/0/0" : string.Format("{0}/{1}/{2}", Num, MoreFlag ? 1 : 0, Size);
         }
-
+        /// <summary>
+        /// 解析BlockOptionValue值 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// <code>
+        /// 字符串格式为 0/0/0 Num/MoreFlag/Size。
+        /// 例如：
+        /// 包序号为1，无更多包，分包尺寸大小为128byte
+        ///     转为字符串： 1/0/128
+        /// </code>
+        /// </remarks>
+        public static BlockOptionValue Parse(string value)
+        {
+            BlockOptionValue bv = null;
+            string[] pms = value.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            if (pms.Length == 3)
+            {
+                bv = new BlockOptionValue
+                {
+                    Num = uint.Parse(pms[0]),
+                    MoreFlag = pms[1] == "1",
+                    Size = ushort.Parse(pms[2])
+                };
+            }
+            return bv;
+        }
     }
 
     //RFC8974

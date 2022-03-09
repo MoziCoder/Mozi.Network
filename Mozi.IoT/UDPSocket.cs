@@ -118,7 +118,7 @@ namespace Mozi.IoT
 
             if (OnServerStart != null)
             {
-                OnServerStart(this, new ServerArgs() { StartTime = DateTime.Now, StopTime = DateTime.MinValue });
+                OnServerStart(this, new ServerArgs() {BindPort = _iport, StartTime = DateTime.Now, StopTime = DateTime.MinValue });
             }
             try
             {
@@ -177,7 +177,7 @@ namespace Mozi.IoT
         private void InvokeAfterReceiveEnd(UDPStateObject so, Socket client, EndPoint remote)
         {
 
-            if (AfterReceiveEnd != null)
+            if (AfterReceiveEnd != null&&so.Data.Count>0)
             {
                 AfterReceiveEnd(this,
                     new DataTransferArgs()
