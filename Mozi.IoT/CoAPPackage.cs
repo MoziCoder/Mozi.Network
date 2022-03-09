@@ -1,6 +1,7 @@
 ﻿using Mozi.IoT.Encode;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Mozi.IoT
 {
@@ -460,11 +461,62 @@ namespace Mozi.IoT
             }
             return this;
         }
+        public override string ToString()
+        {
+            return ToString(CoAPFormatType.HttpStyle);
+        }
+        public string ToString(CoAPFormatType tp)
+        {
+            StringBuilder pack = new StringBuilder();
+            bool isReq = false;
+            List<KeyValuePair<string, string>> arrHeaders = new List<KeyValuePair<string, string>>();
+            if (Code == CoAPRequestMethod.Get || Code == CoAPRequestMethod.Post || Code == CoAPRequestMethod.Put || Code == CoAPRequestMethod.Delete)
+            {
+                isReq = true;
+            }
+            else
+            {
 
-        //public string ToString(CoAPFormatType tp)
-        //{
+            }
+            if (tp == CoAPFormatType.HttpStyle)
+            {
+                //REQUEST
+                if (isReq) {
 
-        //}
+                    pack.AppendLine(string.Format("{0} {1} COAP/{2}", Code.Name,  (!string.IsNullOrEmpty(Domain) ?( "coap://" + Domain):"")+Path+"?"+Query, Version));
+                }
+                //RESPONSE
+                else
+                {
+                    pack.AppendLine(string.Format("COAP/{0} {1} {2}", Version, string.Format("{0}{1:00}", Code.Category, Code.Detail), Code.Description));
+                }
+                arrHeaders.Add(new KeyValuePair<string, string>("Message-Id", MesssageId.ToString()));
+                arrHeaders.Add(new KeyValuePair<string, string>("Message-Type", MessageType.Name));
+                if (Token!=null&&Token.Length > 0)
+                {
+                    arrHeaders.Add(new KeyValuePair<string, string>("Token", Hex.To(Token)));
+                }
+
+                foreach(var opt in Options)
+                {
+                    arrHeaders.Add(new KeyValuePair<string, string>(opt.Option.Name, opt.Value.ToString()));
+                }
+
+                foreach(var hd in arrHeaders)
+                {
+                    pack.AppendLine(string.Format("{0}: {1}", hd.Key, hd.Value));
+                }
+                pack.AppendLine();
+                if (Payload != null)
+                {
+                    pack.AppendLine(StringEncoder.Decode(Payload));
+                }
+            //HTTP mapping
+            }else{
+
+            }
+            return pack.ToString();
+        }
     }
     public enum CoAPFormatType
     {

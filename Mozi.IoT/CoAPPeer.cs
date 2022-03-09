@@ -132,7 +132,6 @@ namespace Mozi.IoT
         {
 
         }
-
         /// <summary>
         /// 是否受支持的请求方法<see cref="CoAPRequestMethod"/>
         /// </summary>
@@ -142,7 +141,6 @@ namespace Mozi.IoT
         {
             return SupportedRequest.Contains(pack.Code);
         }
-
         /// <summary>
         /// 发送请求消息,此方法为高级方法。
         /// 1,如果对协议不够了解，请不要调用。
@@ -171,19 +169,14 @@ namespace Mozi.IoT
         //{
 
         //}
-
         //public ushort RequestBlock2(string host,int port,CoAPPackage pack)
         //{
 
         //}
-
-
-
         //public ushort HandleRequestBlock2(string host,int port,CoAPPackage pack)
         //{
 
         //}
-
     }
 
     /// <summary>
