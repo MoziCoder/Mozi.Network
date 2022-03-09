@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mozi.IoT.Encode;
+using System;
 
 namespace Mozi.IoT
 {
@@ -96,6 +97,17 @@ namespace Mozi.IoT
 
        public override int Length => _pack != null ? _pack.Length : 0;
 
+        public override string ToString()
+        {
+            if (_pack != null)
+            {
+                return Hex.To((byte[])Value);
+            }
+            else
+            {
+                return "";
+            }
+        }
     }
     /// <summary>
     /// string选项值
@@ -115,6 +127,11 @@ namespace Mozi.IoT
         public override byte[] Pack { get => _pack; set => _pack = value; }
 
         public override int Length => _pack != null ? _pack.Length : 0;
+
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
     }
 
     /// <summary>

@@ -7,6 +7,8 @@ using Mozi.IoT.Encode;
 
 namespace Mozi.IoT
 {
+    public delegate void ResponseReceived(string host, int port, CoAPPackage resp);
+
     /// <summary>
     /// CoAP客户端
     /// </summary>
@@ -32,6 +34,8 @@ namespace Mozi.IoT
         ///// 远端服务器端口
         ///// </summary>
         //public ushort RemotePort { get { return _remotePort; } protected set { _remotePort = value; } }
+
+        public ResponseReceived onResponse;
 
         public CoAPClient()
         {
@@ -66,6 +70,10 @@ namespace Mozi.IoT
 
             Console.WriteLine($"Request answered{_packetReceived}");
 
+            if (pack != null)
+            {
+                onResponse(args.IP, args.Port, pack);
+            }
             //pack2 = new CoAPPackage()
             //{
             //    Version = 1,

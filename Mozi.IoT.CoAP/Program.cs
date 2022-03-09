@@ -72,6 +72,7 @@ namespace Mozi.IoT.CoAP
                     if (arg0 == "-h" || arg0 == "-help")
                     {
                         //TODO 打印帮助信息
+                        PrintHelp();
                     }
                     else if (arg0.Length > 1)
                     {
@@ -166,7 +167,7 @@ namespace Mozi.IoT.CoAP
                                 OptionValue optValue = null;
                                 if (r.Value == null)
                                 {
-                                    optValue =new  EmptyOptionValue();
+                                    optValue =new EmptyOptionValue();
                                 }
                                 else if(r.Value is string)
                                 {
@@ -315,8 +316,20 @@ namespace Mozi.IoT.CoAP
                                     cp.Payload = pd;
                                 }
                             }
-                            Execute(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
-
+                            try
+                            {
+                                Console.WriteLine(cp.ToString(CoAPFormatType.HttpStyle));
+                                ExecuteAndWait(new Action(()=> {
+                                    Execute(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
+                                    Console.Read();
+                                }), 30 * 1000);
+                                
+                            }
+                            catch(Exception ex)
+                            {
+                                Console.WriteLine(ex.StackTrace);
+                            }
+                            
                         }
                     }
                     else
@@ -339,12 +352,17 @@ namespace Mozi.IoT.CoAP
             //本地端口
             cc.SetPort(12340);
             cc.Start();
+            cc.onResponse += new ResponseReceived((x, y,z) => {
+                Console.WriteLine(z.ToString(CoAPFormatType.HttpStyle));
+                Environment.Exit(0);
+            });
             Cache.MessageCacheManager mc = new Cache.MessageCacheManager(cc);
+
             if (cp.MesssageId == 0)
             {
                 cp.MesssageId = mc.GenerateMessageId();
-
             }
+
             //if (cp.Token == null)
             //{
             //    cp.Token = mc.GenerateToken(8);
@@ -367,7 +385,7 @@ namespace Mozi.IoT.CoAP
                 }
                 else
                 {
-                    throw new TimeoutException("超时时间已到，但没有获取到程序的执行结果");
+                    //throw new TimeoutException("超时时间已到，但没有获取到程序的执行结果");
                 }
             }
             catch (Exception ex)
@@ -378,6 +396,43 @@ namespace Mozi.IoT.CoAP
             {
                 result.AsyncWaitHandle.Close();
             }
+        }
+
+        public static void PrintHelp()
+        {
+            string helpText = "\r\n" +
+                            "用法：coap command url [options] [body]" +
+                            "\r\n   " +
+                            "\r\ncommand 可选值：" +
+                            "\r\n  get" +
+                            "\r\n  post" +
+                            "\r\n  put" +
+                            "\r\n  delete" +
+                            "\r\n\r\nurl 格式" +
+                            "\r\n  coap://{host}[:{port}]/{path}[?{query}]" +
+                            "\r\n\r\noptions 请求选项参数如下：" +
+                            "\r\n  -ifmatch " +
+                            "\r\n  -etag " +
+                            "\r\n  -ifnonematch " +
+                            "\r\n  -extendedtokenlength " +
+                            "\r\n  -locationpath " +
+                            "\r\n  -contentformat " +
+                            "\r\n  -maxage " +
+                            "\r\n  -accept " +
+                            "\r\n  -locationquery   " +
+                            "\r\n  -block2          " +
+                            "\r\n  -block1          " +
+                            "\r\n  -size2 " +
+                            "\r\n  -proxyuri " +
+                            "\r\n  -proxyscheme " +
+                            "\r\n  -size1 " +
+                            "\r\n\r\nbody 说明：" +
+                            "\r\n   1：0x开始的字符串被识别为HEX字符串并被转为字节流" +
+                            "\r\n   2：其它识别为普通字符串同时被编码成字节流，编码方式为UTF-8" +
+                            "\r\n示例：" +
+                            "\r\n   coap get coap://127.0.0.1:5683/core/time?type=1 -block1 0/0/128" +
+                            "\r\n";
+            Console.Write(helpText);
         }
     }
 }
