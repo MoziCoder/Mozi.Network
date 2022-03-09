@@ -54,9 +54,9 @@ namespace Mozi.IoT
         /// 调起
         /// </summary>
         /// <param name="ctx"></param>
-        internal CoAPPackage Invoke(CoAPPackage ctx)
+        internal CoAPPackage Invoke(CoAPContext ctx)
         {
-            string path = ctx.Path;
+            string path = ctx.Request.Path;
             //确定路径映射关系
 
             string ns = "", name = "";
@@ -73,7 +73,7 @@ namespace Mozi.IoT
             Type cls = null;
             cls = ri.ResourceType;
             //TODO 将Method缓存
-            MethodInfo method = cls.GetMethod("On" + ctx.Code.Name, BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.Public);
+            MethodInfo method = cls.GetMethod("On" + ctx.Request.Code.Name, BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.Public);
 
             ParameterInfo[] pms = method.GetParameters();
 

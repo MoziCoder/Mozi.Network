@@ -33,10 +33,6 @@ namespace Mozi.IoT
     public abstract class CoAPResource
     {
         /// <summary>
-        /// 服务端实例
-        /// </summary>
-        public CoAPServer Server { get; set; }
-        /// <summary>
         /// 资源大小
         /// </summary>
         public abstract long ResourceSize { get; }
@@ -53,36 +49,36 @@ namespace Mozi.IoT
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        public virtual CoAPPackage OnGet(CoAPPackage request)
+        public virtual CoAPPackage OnGet(CoAPContext ctx)
         {
-            return new CoAPPackage { MessageType = CoAPMessageType.Acknowledgement, MesssageId = request.MesssageId, Token = request.Token, Code = CoAPResponseCode.Forbidden };
+            return new CoAPPackage { MessageType = CoAPMessageType.Acknowledgement, MesssageId = ctx.Request.MesssageId, Token = ctx.Request.Token, Code = CoAPResponseCode.Forbidden };
         }
         /// <summary>
         /// Post方法
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        public virtual CoAPPackage OnPost(CoAPPackage request)
+        public virtual CoAPPackage OnPost(CoAPContext ctx)
         {
-            return new CoAPPackage { MessageType = CoAPMessageType.Acknowledgement, MesssageId = request.MesssageId, Token = request.Token, Code = CoAPResponseCode.Forbidden };
+            return new CoAPPackage { MessageType = CoAPMessageType.Acknowledgement, MesssageId = ctx.Request.MesssageId, Token = ctx.Request.Token, Code = CoAPResponseCode.Forbidden };
         }
         /// <summary>
         /// PUT方法
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        public virtual CoAPPackage OnPut(CoAPPackage request)
+        public virtual CoAPPackage OnPut(CoAPContext ctx)
         {
-            return new CoAPPackage { MessageType = CoAPMessageType.Acknowledgement, MesssageId = request.MesssageId, Token = request.Token, Code = CoAPResponseCode.Forbidden };
+            return new CoAPPackage { MessageType = CoAPMessageType.Acknowledgement, MesssageId = ctx.Request.MesssageId, Token = ctx.Request.Token, Code = CoAPResponseCode.Forbidden };
         }
         /// <summary>
         /// Delete方法
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        public virtual CoAPPackage OnDelete(CoAPPackage request)
+        public virtual CoAPPackage OnDelete(CoAPContext ctx)
         {
-            return new CoAPPackage { MessageType = CoAPMessageType.Acknowledgement, MesssageId = request.MesssageId, Token = request.Token, Code = CoAPResponseCode.Forbidden };
+            return new CoAPPackage { MessageType = CoAPMessageType.Acknowledgement, MesssageId = ctx.Request.MesssageId, Token = ctx.Request.Token, Code = CoAPResponseCode.Forbidden };
         }
         /// <summary>
         /// 分块查找
@@ -106,9 +102,9 @@ namespace Mozi.IoT
     {
         public override long ResourceSize { get => 0; }
 
-        public override CoAPPackage OnGet(CoAPPackage request)
+        public override CoAPPackage OnGet(CoAPContext ctx)
         {
-            CoAPPackage pack = base.OnGet(request);
+            CoAPPackage pack = base.OnGet(ctx);
             DateTime dt = DateTime.Now;
             pack.Payload = StringEncoder.Encode(dt.ToString("yyyy-MM-ddTHH:mm:sszzz"));
             pack.Code = CoAPResponseCode.Content;
@@ -121,9 +117,9 @@ namespace Mozi.IoT
     {
         public override long ResourceSize { get => 0; }
 
-        public override CoAPPackage OnGet(CoAPPackage request)
+        public override CoAPPackage OnGet(CoAPContext ctx)
         {
-            return base.OnGet(request);
+            return base.OnGet(ctx);
         }
     }
 }

@@ -43,6 +43,7 @@
     <Compile Include="Cache\Global.cs" />
     <Compile Include="Cache\MemoryCache.cs" />
     <Compile Include="Cache\MessageCache.cs" />
+    <Compile Include="CoAPContext.cs" />
     <Compile Include="CoAPMethod.cs" />
     <Compile Include="CoAPOption.cs" />
     <Compile Include="CoAPPackage.cs" />

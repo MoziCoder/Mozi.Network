@@ -72,13 +72,7 @@ namespace Mozi.IoT
         /// <param name="args"></param>
         protected override void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
-            CoAPPackage req=null;
-
-            CoAPPackage resp = new CoAPPackage()
-            {
-                Version = 1,
-                MessageType = CoAPMessageType.Acknowledgement,
-            };
+            CoAPContext ctx = new CoAPContext();
 
             _packageReceived++;
 
@@ -88,7 +82,7 @@ namespace Mozi.IoT
 
             try
             {
-                req = CoAPPackage.Parse(args.Data, CoAPPackageType.Request);
+                ctx.Request = CoAPPackage.Parse(args.Data, CoAPPackageType.Request);
                 //_cm.Request(args.IP, req);
             }
             catch (Exception)
@@ -96,39 +90,46 @@ namespace Mozi.IoT
 
             }
 
-
             try
             {
-
-                resp.Token = req.Token;
-                resp.MesssageId = req.MesssageId;
-
                 //判断是否受支持的方法
-                if (IsSupportedRequest(req))
+                if (IsSupportedRequest(ctx.Request))
                 {
-                    resp = ResourceManager.Default.Invoke(req);
+                    //接入后端方法
+                    ctx.Response = ResourceManager.Default.Invoke(ctx);
+                    ctx.Response.Token = ctx.Request.Token;
+                    ctx.Response.MesssageId = ctx.Request.MesssageId;
                 }
                 else
                 {
-                    resp.Code = CoAPResponseCode.MethodNotAllowed;
-                    resp.MessageType = CoAPMessageType.Reset;
+                    ctx.Response.Code = CoAPResponseCode.MethodNotAllowed;
+                    ctx.Response.MessageType = CoAPMessageType.Reset;
                 }
 
                 //检查分块
 
                 //检查内容类型
 
-                //接入后端方法
-
             }
             catch (Exception ex)
             {
-
-                resp.Code = CoAPResponseCode.BadGateway;
-                resp.MessageType = CoAPMessageType.Reset;
-
+                if (ctx.Response != null)
+                {
+                    ctx.Response.Code = CoAPResponseCode.BadGateway;
+                    ctx.Response.MessageType = CoAPMessageType.Reset;
+                }
             }
-            SendMessage(args.IP, args.Port, resp);
+
+            if (ctx.Response == null)
+            {
+                ctx.Response = new CoAPPackage()
+                {
+                    Version = 1,
+                    MessageType = CoAPMessageType.Reset,
+                    Code = CoAPResponseCode.BadGateway,
+                };
+            }
+            SendMessage(args.IP, args.Port, ctx.Response);
         }
     }
 }

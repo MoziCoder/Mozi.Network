@@ -415,7 +415,7 @@ namespace Mozi.IoT
             Code = method;
             Token = token;
             MesssageId = msgId;
-            MessageType = msgType; 
+            MessageType = msgType;
         }
 
         public CoAPPackage()

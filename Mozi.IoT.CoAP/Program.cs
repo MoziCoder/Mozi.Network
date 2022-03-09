@@ -51,9 +51,17 @@ namespace Mozi.IoT.CoAP
     /// </summary>
     class Program
     {
+        private static bool responsed = false;
+
         static void Main(string[] args)
         {
             ParseRequest(args);
+            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
+        }
+
+        private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        {
+            Close();
         }
 
         /// <summary>
@@ -167,7 +175,7 @@ namespace Mozi.IoT.CoAP
                                 OptionValue optValue = null;
                                 if (r.Value == null)
                                 {
-                                    optValue =new EmptyOptionValue();
+                                    optValue = new EmptyOptionValue();
                                 }
                                 else if(r.Value is string)
                                 {
@@ -227,13 +235,19 @@ namespace Mozi.IoT.CoAP
                                     case  "block2":
                                         {
                                             optName = CoAPOptionDefine.Block2;
-                                            optValue = BlockOptionValue.Parse((string)r.Value);
+                                            if (!string.IsNullOrEmpty((string)r.Value))
+                                            {
+                                                optValue = BlockOptionValue.Parse((string)r.Value);
+                                            }
                                         }
                                         break;
                                     case  "block1":
                                         {
                                             optName = CoAPOptionDefine.Block1;
-                                            optValue = BlockOptionValue.Parse((string)r.Value);
+                                            if (!string.IsNullOrEmpty((string)r.Value))
+                                            {
+                                                optValue = BlockOptionValue.Parse((string)r.Value);
+                                            }
                                         }
                                         break;
                                     case  "size2":
@@ -318,7 +332,6 @@ namespace Mozi.IoT.CoAP
                             }
                             try
                             {
-                                Console.WriteLine(cp.ToString(CoAPFormatType.HttpStyle));
                                 ExecuteAndWait(new Action(()=> {
                                     Execute(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
                                     Console.Read();
@@ -354,7 +367,8 @@ namespace Mozi.IoT.CoAP
             cc.Start();
             cc.onResponse += new ResponseReceived((x, y,z) => {
                 Console.WriteLine(z.ToString(CoAPFormatType.HttpStyle));
-                Environment.Exit(0);
+                responsed = true;
+                Close();
             });
             Cache.MessageCacheManager mc = new Cache.MessageCacheManager(cc);
 
@@ -362,12 +376,21 @@ namespace Mozi.IoT.CoAP
             {
                 cp.MesssageId = mc.GenerateMessageId();
             }
-
+            Console.WriteLine(cp.ToString(CoAPFormatType.HttpStyle));
             //if (cp.Token == null)
             //{
             //    cp.Token = mc.GenerateToken(8);
             //}
             cc.SendMessage(host, port, cp);
+        }
+
+        private static void Close()
+        {
+            if (!responsed)
+            {
+                Console.WriteLine("超时时间已到，尚未收到服务端响应\r\n");
+            }
+            Environment.Exit(0);
         }
         /// <summary>
         /// 执行并阻塞一定的时间
@@ -411,21 +434,21 @@ namespace Mozi.IoT.CoAP
                             "\r\n\r\nurl 格式" +
                             "\r\n  coap://{host}[:{port}]/{path}[?{query}]" +
                             "\r\n\r\noptions 请求选项参数如下：" +
-                            "\r\n  -ifmatch " +
-                            "\r\n  -etag " +
-                            "\r\n  -ifnonematch " +
-                            "\r\n  -extendedtokenlength " +
-                            "\r\n  -locationpath " +
-                            "\r\n  -contentformat " +
-                            "\r\n  -maxage " +
-                            "\r\n  -accept " +
-                            "\r\n  -locationquery   " +
-                            "\r\n  -block2          " +
-                            "\r\n  -block1          " +
-                            "\r\n  -size2 " +
-                            "\r\n  -proxyuri " +
-                            "\r\n  -proxyscheme " +
-                            "\r\n  -size1 " +
+                            "\r\n  -ifmatch                 " +
+                            "\r\n  -etag                    " +
+                            "\r\n  -ifnonematch             " +
+                            "\r\n  -extendedtokenlength     " +
+                            "\r\n  -locationpath            " +
+                            "\r\n  -contentformat           " +
+                            "\r\n  -maxage                  " +
+                            "\r\n  -accept                  " +
+                            "\r\n  -locationquery           " +
+                            "\r\n  -block2                  格式：Num/MoreFlag/Size" +
+                            "\r\n  -block1                  格式：Num/MoreFlag/Size" +
+                            "\r\n  -size2                   " +
+                            "\r\n  -proxyuri                " +
+                            "\r\n  -proxyscheme             " +
+                            "\r\n  -size1                   " +
                             "\r\n\r\nbody 说明：" +
                             "\r\n   1：0x开始的字符串被识别为HEX字符串并被转为字节流" +
                             "\r\n   2：其它识别为普通字符串同时被编码成字节流，编码方式为UTF-8" +

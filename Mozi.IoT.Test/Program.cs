@@ -31,7 +31,7 @@ namespace Mozi.IoT.Test
             //    {
             //        for (int i = 0; i < 1000000; i++)
             //        {
-            //            //cc.Get("coap://100.100.0.105/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test");
+            //            //cc.Get("coap://127.0.0.1/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test/sensor/test");
             //            cc.Get("coap://127.0.0.1/sensor", CoAPMessageType.Confirmable);
             //        }
             //    }));

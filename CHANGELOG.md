@@ -1,4 +1,13 @@
 # 更新历史
+[2022/03/09]
+[新增]
+IoT.Server中增加CoAPResource,ResourceManager用于管理后端资源API
+IoT.OptionValue增加ToString方法
+IoT.CoAPPackage增加转为HTTP样式字符串的功能
+IoT.CoAP CoapClient客户端调试工具
+[修正]
+CoAPPackage的Path,Query,Domain取值错误
+
 [2022/02/15]
 [新增]
 HttpEmbedded模块中增加HttpClient
