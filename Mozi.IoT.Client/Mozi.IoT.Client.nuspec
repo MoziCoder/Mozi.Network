@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Mozi.IoT.Client</id>
-    <version>1.3.6</version>
+    <version>1.3.7</version>
     <title>Mozi.IoT.Client</title>
     <authors>Jason</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
