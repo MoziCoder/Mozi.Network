@@ -73,7 +73,8 @@ namespace Mozi.IoT
         protected override void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
             CoAPContext ctx = new CoAPContext();
-
+            ctx.ClientAddress = args.IP;
+            ctx.ClientPort = args.Port;
             _packageReceived++;
 
             _totalReceivedBytes += (uint)args.Data.Length;

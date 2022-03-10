@@ -67,11 +67,7 @@ namespace Mozi.HttpEmbedded.WebDav.Method
                 int value;
                 if (int.TryParse(depth, out value))
                 {
-                    if (value == 0 || value == 1)
-                    {
-                        return value;
-                    }
-                    return DepthInfinity;
+                    return value == 0 || value == 1 ? value : DepthInfinity;
                 }
                 return DepthInfinity;
             }

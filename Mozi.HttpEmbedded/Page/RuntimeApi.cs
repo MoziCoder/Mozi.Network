@@ -32,7 +32,7 @@ namespace Mozi.HttpEmbedded.Page
         [Description("获取服务器时间 UTC")]
         public string GetTime()
         {
-            return DateTime.UtcNow.ToString("r");
+            return DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz");
         }
         [Description("获取运行环境")]
         public RuntimeInfo Info()
@@ -41,16 +41,16 @@ namespace Mozi.HttpEmbedded.Page
             var ass = Assembly.GetExecutingAssembly();
             info.Name = ass.GetName().Name;
             info.VersionName = ass.GetName().Version.ToString();
-            info.PlatformName =ass.ImageRuntimeVersion;
+            info.PlatformName = ass.ImageRuntimeVersion;
             info.StartupTime = Context.Server.StartTime.ToUniversalTime().ToString("r");
             info.StartupPath = ass.Location;
             Module[] modules = ass.GetLoadedModules();
-            foreach(var m in modules)
+            foreach (Module m in modules)
             {
                 info.LoadedModules.Add(new LoadedModuleInfo()
                 {
-                    Name=m.Name,
-                    VersionName=m.Assembly.GetName().Version.ToString()
+                    Name = m.Name,
+                    VersionName = m.Assembly.GetName().Version.ToString()
                 });
             }
             return info;
@@ -170,7 +170,7 @@ namespace Mozi.HttpEmbedded.Page
         {
             throw new NotImplementedException();
         }
-        private ResponseMessage DeleteFile(string dir,string fileName)
+        private ResponseMessage DeleteFile(string dir, string fileName)
         {
             throw new NotImplementedException();
         }
@@ -269,20 +269,20 @@ namespace Mozi.HttpEmbedded.Page
         /// <param name="param"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public ResponseMessage Cache(string action,string name,string param,string data)
+        public ResponseMessage Cache(string action, string name, string param, string data)
         {
             ResponseMessage rm = new ResponseMessage();
             if (action == "query")
             {
-                rm.data=Context.Server.Cache.Find(name, param);
+                rm.data = Context.Server.Cache.Find(name, param);
             }
             else if (action == "add")
             {
-                Context.Server.Cache.Add(name,param,data);
+                Context.Server.Cache.Add(name, param, data);
             }
             else if (action == "remove")
             {
-                Context.Server.Cache.Remove(name,param);
+                Context.Server.Cache.Remove(name, param);
             }
             else if (action == "clear")
             {
@@ -311,7 +311,7 @@ namespace Mozi.HttpEmbedded.Page
         /// </summary>
         /// <param name="action"></param>
         /// <returns></returns>
-        public  string Soap(string action)
+        public string Soap(string action)
         {
             if (action == "example")
             {
@@ -319,15 +319,15 @@ namespace Mozi.HttpEmbedded.Page
                 envelope.Body.Method = "GetGoodsPrice";
                 envelope.Body.Items.Add("GoodsCode", "123456789");
                 envelope.Body.Items.Add("Price", "1");
-                Context.Response.SetContentType(envelope.Version==WebService.SoapVersion.Ver11?"text/xml":"application/soap+xml");
+                Context.Response.SetContentType(envelope.Version == WebService.SoapVersion.Ver11 ? "text/xml" : "application/soap+xml");
                 return envelope.CreateDocument();
             }
-            else if(action=="wsdl")
+            else if (action == "wsdl")
             {
                 WebService.WSDL envelope = new WebService.WSDL();
-                envelope.ServiceName = this.GetType().Name;
+                envelope.ServiceName = GetType().Name;
                 envelope.ApiTypes.Methods.AddRange(this.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly));
-                Context.Response.SetContentType( "text/xml");
+                Context.Response.SetContentType("text/xml");
                 return envelope.CreateDocument();
             }
             return "";
@@ -345,7 +345,7 @@ namespace Mozi.HttpEmbedded.Page
         public object data { get; set; }
         public override string ToString()
         {
-            return string.Format("success:{0},code:{1},message:{2},data:{3}",success,code,message,data);
+            return string.Format("success:{0},code:{1},message:{2},data:{3}", success, code, message, data);
         }
 
     }
@@ -384,7 +384,7 @@ namespace Mozi.HttpEmbedded.Page
         public string PlatformName { get; set; }
         public string StartupTime { get; set; }
         public string StartupPath { get; set; }
-        public List<LoadedModuleInfo> LoadedModules {get;set;}
+        public List<LoadedModuleInfo> LoadedModules { get; set; }
         public RuntimeInfo()
         {
             LoadedModules = new List<LoadedModuleInfo>();

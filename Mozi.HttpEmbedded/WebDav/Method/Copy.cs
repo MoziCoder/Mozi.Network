@@ -34,11 +34,20 @@ namespace Mozi.HttpEmbedded.WebDav.Method
                 if (destItem != null)
                 {
                     if (source.ItemPath == destItem.ItemPath)
+                    {
                         return StatusCode.Forbidden;
+                    }
+
                     if (!GetOverwriteHeader(context.Request))
+                    {
                         return StatusCode.PreconditionFailed;
+                    }
+
                     if (destItem is IWebDavStoreCollection)
+                    {
                         destParentCollection.Delete(destItem);
+                    }
+
                     isNew = false;
                 }
 
@@ -46,7 +55,9 @@ namespace Mozi.HttpEmbedded.WebDav.Method
                 return isNew ? StatusCode.Created : StatusCode.NoContent;
             }
             else
+            {
                 return StatusCode.Forbidden;
+            }
         }
     }
 }

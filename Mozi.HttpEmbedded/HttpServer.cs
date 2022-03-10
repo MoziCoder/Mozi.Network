@@ -242,6 +242,8 @@ namespace Mozi.HttpEmbedded
         protected virtual void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
             HttpContext context = new HttpContext();
+            context.ClientAddress = args.IP;
+            context.ClientPort = args.Port;
             context.Response = new HttpResponse();
             context.Server = this;
             StatusCode sc = StatusCode.Success;

@@ -740,6 +740,18 @@ namespace Mozi.HttpEmbedded
         {
             return StringEncoder.Encode(string.Format("{0} {1} HTTP/{2}", Method.Name, Path, ProtocolVersion.Version));
         }
+        /// <summary>
+        /// 设置URI信息，分别注入到<see cref="HeaderProperty.Host"/>和<see cref="HeaderProperty.Referer"/>两个头属性中
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        public HttpRequest SetUri(UriInfo uri)
+        {
+            //注入Host
+            SetHeader(HeaderProperty.Host, string.IsNullOrEmpty(uri.Domain) ? uri.Host : uri.Domain);
+            SetHeader(HeaderProperty.Referer, uri.Url);
+            return this;
+        }
         ~HttpRequest()
         {
             //PackData = null;
