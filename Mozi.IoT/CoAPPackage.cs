@@ -387,7 +387,6 @@ namespace Mozi.IoT
                 Array.Copy(data, bodySplitterPos + 1 + lenDeltaExt + lenLengthExt, option.Value.Pack, 0, option.Value.Length);
 
                 pack.SetOption(option);
-
                 deltaSum += option.Delta;
                 //头长度+delta扩展长度+len
                 bodySplitterPos += 1 + lenDeltaExt + lenLengthExt + option.Value.Length;

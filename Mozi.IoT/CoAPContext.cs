@@ -21,7 +21,14 @@ namespace Mozi.IoT
         /// 服务器对象
         /// </summary>
         public CoAPPeer Server { get; set; }
-
+        /// <summary>
+        /// 客户端地址
+        /// </summary>
+        public string ClientAddress { get; set; }
+        /// <summary>
+        /// 客户端端口
+        /// </summary>
+        public int ClientPort { get; set; }
         ~CoAPContext()
         {
             Dispose(disposing: false);

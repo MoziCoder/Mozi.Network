@@ -83,7 +83,7 @@ namespace Mozi.IoT.CoAP
                         //TODO 打印帮助信息
                         PrintHelp();
                     }
-                    else if (arg0.Length > 1)
+                    else if (args.Count > 1)
                     {
 
                         CoAPPackage cp = new CoAPPackage();
@@ -139,11 +139,6 @@ namespace Mozi.IoT.CoAP
                                     if (string.IsNullOrEmpty(argValue))
                                     {
 
-                                    }
-                                    //字符串
-                                    else if (argValue.StartsWith("\""))
-                                    {
-                                        argValueReal = argValue.Trim(new char[] { '"' });
                                     //Hex字符串
                                     }else if (argValue.StartsWith("0x")){
                                         argValueReal= Hex.From(argValue.Substring(2));
@@ -156,6 +151,7 @@ namespace Mozi.IoT.CoAP
                                         {
                                             argValueReal = intValue;
                                         }
+                                        //字符串
                                         else
                                         {
                                             argValueReal = argValue;
@@ -315,12 +311,7 @@ namespace Mozi.IoT.CoAP
 
                             if (!string.IsNullOrEmpty(payload)&& (cp.Code == CoAPRequestMethod.Post || cp.Code == CoAPRequestMethod.Put))
                             {
-                                if (payload.StartsWith("\""))
-                                {
-                                    payload = payload.Trim(new char[] { '"' });
-                                    cp.Payload = StringEncoder.Encode(payload);
-                                }
-                                else if(payload.StartsWith("0x"))
+                                if(payload.StartsWith("0x"))
                                 {
                                     var pd = Hex.From(payload.Substring(2));
                                     cp.Payload = pd;
@@ -331,20 +322,19 @@ namespace Mozi.IoT.CoAP
                                     cp.Payload = pd;
                                 }
                             }
-                            try
-                            {
-                                ExecuteAndWait(new Action(()=> {
-                                    
-                                    Execute(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
-                                    Console.Read();
-                                }), 30 * 1000);
-                                
-                            }
-                            catch(Exception ex)
-                            {
-                                Console.WriteLine(ex.StackTrace);
-                            }
-                            
+                        }
+                        try
+                        {
+                            ExecuteAndWait(new Action(() => {
+
+                                Execute(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
+                                Console.Read();
+                            }), 30 * 1000);
+
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.StackTrace);
                         }
                     }
                     else
@@ -452,9 +442,13 @@ namespace Mozi.IoT.CoAP
                             "\r\n  -proxyuri                " +
                             "\r\n  -proxyscheme             " +
                             "\r\n  -size1                   " +
+                            "\r\n 注：" +
+                            "\r\n 1.字符串变量值用\"\"包裹" +
+                            "\r\n 2.整形变量值用，直接输入整数即可，如 -size 1024" +
                             "\r\n\r\nbody 说明：" +
-                            "\r\n   1：0x开始的字符串被识别为HEX字符串并被转为字节流" +
-                            "\r\n   2：其它识别为普通字符串同时被编码成字节流，编码方式为UTF-8" +
+                            "\r\n   1.0x开始的字符串被识别为HEX字符串并被转为字节流" +
+                            "\r\n   2.其它识别为普通字符串同时被编码成字节流，编码方式为UTF-8" +
+                            "\r\n   3.带空格的字符串请用\"\"进行包裹" +
                             "\r\n示例：" +
                             "\r\n   coap get coap://127.0.0.1:5683/core/time?type=1 -block1 0/0/128" +
                             "\r\n";

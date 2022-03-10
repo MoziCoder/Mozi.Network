@@ -15,6 +15,17 @@ namespace Mozi.IoT
         public virtual byte[] Pack { get => _pack; set => _pack = value; }
 
         public virtual int Length => _pack != null ? _pack.Length : 0;
+        public override string ToString()
+        {
+            if (_pack != null)
+            {
+                return Hex.To((byte[])Value);
+            }
+            else
+            {
+                return "";
+            }
+        }
     }
 
     /// <summary>
@@ -101,7 +112,7 @@ namespace Mozi.IoT
         {
             if (_pack != null)
             {
-                return Hex.To((byte[])Value);
+                return Value.ToString();
             }
             else
             {
