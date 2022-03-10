@@ -52,6 +52,7 @@ namespace Mozi.IoT.CoAP
     class Program
     {
         private static bool responsed = false;
+        private static bool sendrequest = false;
 
         static void Main(string[] args)
         {
@@ -333,6 +334,7 @@ namespace Mozi.IoT.CoAP
                             try
                             {
                                 ExecuteAndWait(new Action(()=> {
+                                    
                                     Execute(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
                                     Console.Read();
                                 }), 30 * 1000);
@@ -361,6 +363,7 @@ namespace Mozi.IoT.CoAP
 
         public static void Execute(string host,int port,CoAPPackage cp)
         {
+            sendrequest = true;
             CoAPClient cc = new CoAPClient();
             //本地端口
             cc.SetPort(12340);
@@ -386,7 +389,7 @@ namespace Mozi.IoT.CoAP
 
         private static void Close()
         {
-            if (!responsed)
+            if (sendrequest&&!responsed)
             {
                 Console.WriteLine("超时时间已到，尚未收到服务端响应\r\n");
             }
@@ -443,8 +446,8 @@ namespace Mozi.IoT.CoAP
                             "\r\n  -maxage                  " +
                             "\r\n  -accept                  " +
                             "\r\n  -locationquery           " +
-                            "\r\n  -block2                  格式：Num/MoreFlag/Size" +
-                            "\r\n  -block1                  格式：Num/MoreFlag/Size" +
+                            "\r\n  -block2                  Block2大小，格式：Num/MoreFlag/Size" +
+                            "\r\n  -block1                  Block1,格式：Num/MoreFlag/Size" +
                             "\r\n  -size2                   " +
                             "\r\n  -proxyuri                " +
                             "\r\n  -proxyscheme             " +
