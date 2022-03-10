@@ -9,7 +9,12 @@ Mozi.Network是基于.Net开发的网络应用组件套装。所有的模块在�
 
 ### [IoT][iot]　　
 	IoT物联网标准通讯套件 网关，客户端，调试工具
-
+#### [IoT.Server][iotserver]
+	IoT服务端
+#### [IoT.Client][iotclient]
+	IoT客户端
+#### [IoT.CoAP][iotcoap]
+	IoT命令行调试工具
 ### [iot4j][iot4j]
     IoT(CoAP)的Java客户端实现
 
@@ -58,4 +63,7 @@ Mozi.Network是基于.Net开发的网络应用组件套装。所有的模块在�
 [ntp]:./Mozi.NTP
 [iot]:./Mozi.IoT
 [iot4j]:https://gitee.com/myui/mozi.iot4j
+[iotserver]:./Mozi.IoT.Server
+[iotclient]:./Mozi.IoT.Client
+[iotcoap]:./Mozi.IoT.CoAP
 [roadmap]:./RoadMap.md

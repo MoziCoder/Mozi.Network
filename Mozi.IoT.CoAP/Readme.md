@@ -11,8 +11,10 @@ Mozi.IoT.CoAP为Iot.Client调试工具，使用命令行方式对CoAPClient进�
         post
         put
         delete
+
       url 格式
         coap://{host}[:{port}]/{path}[?{query}]
+
       options 请求选项参数如下：
         -ifmatch                 
         -etag                    
@@ -28,13 +30,16 @@ Mozi.IoT.CoAP为Iot.Client调试工具，使用命令行方式对CoAPClient进�
         -size2                   
         -proxyuri                
         -proxyscheme             
-        -size1                   
+        -size1  
+        
       body 说明：
          1：0x开始的字符串被识别为HEX字符串并被转为字节流
          2：其它识别为普通字符串同时被编码成字节流，编码方式为UTF-8
+
       示例：
          coap get coap://127.0.0.1:5683/core/time?type=1 -block1 0/0/128
-      ";
+
+
 ~~~
 
 ## 命令调用图示
