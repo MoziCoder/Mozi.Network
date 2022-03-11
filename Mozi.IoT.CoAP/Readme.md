@@ -16,6 +16,7 @@ Mozi.IoT.CoAP为Iot.Client调试工具，使用命令行方式对CoAPClient进�
         coap://{host}[:{port}]/{path}[?{query}]
 
       options 请求选项参数如下：
+        -token                   格式：0x0f0e
         -ifmatch                 
         -etag                    
         -ifnonematch             

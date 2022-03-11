@@ -52,6 +52,7 @@ namespace Mozi.IoT.CoAP
     class Program
     {
         private static bool responsed = false;
+
         private static bool sendrequest = false;
 
         static void Main(string[] args)
@@ -87,7 +88,9 @@ namespace Mozi.IoT.CoAP
                     {
 
                         CoAPPackage cp = new CoAPPackage();
+
                         cp.MessageType = CoAPMessageType.Confirmable;
+
                         if (arg0.Equals("get", StringComparison.OrdinalIgnoreCase))
                         {
                             cp.Code = CoAPRequestMethod.Get;
@@ -114,17 +117,22 @@ namespace Mozi.IoT.CoAP
 
                         UriInfo uri = UriInfo.Parse(url);
                         cp.SetUri(uri);
+
                         int i;
+
                         string payload = "";
+
                         if (args.Count >= 3)
                         {
                             for (i = 2; i < args.Count; i++)
                             {
                                 var argName = args[i];
                                 var argValue = "";
+
                                 //参数
                                 if (argName.StartsWith("-"))
                                 {
+                                    
                                     argName = argName.Substring(1);
                                     if (args.Count > i + 1)
                                     {
@@ -139,8 +147,10 @@ namespace Mozi.IoT.CoAP
                                     if (string.IsNullOrEmpty(argValue))
                                     {
 
-                                    //Hex字符串
-                                    }else if (argValue.StartsWith("0x")){
+                                        //Hex字符串
+                                    }
+                                    else if (argValue.StartsWith("0x"))
+                                    {
                                         argValueReal= Hex.From(argValue.Substring(2));
                                     }
                                     //整数
@@ -162,7 +172,7 @@ namespace Mozi.IoT.CoAP
                                 //包体
                                 else
                                 {
-                                    payload=argName;
+                                    payload = argName;
                                 }
                             }
                             //参数映射
@@ -170,6 +180,7 @@ namespace Mozi.IoT.CoAP
                             {
                                 CoAPOptionDefine optName = CoAPOptionDefine.Unknown;
                                 OptionValue optValue = null;
+                                bool isOption = true;
                                 if (r.Value == null)
                                 {
                                     optValue = new EmptyOptionValue();
@@ -177,13 +188,23 @@ namespace Mozi.IoT.CoAP
                                 else if(r.Value is string)
                                 {
                                     optValue = new StringOptionValue() { Value = r.Value };
-                                }else if(r.Value is uint){
+                                }
+                                else if (r.Value is uint)
+                                {
                                     optValue = new UnsignedIntegerOptionValue() { Value = r.Value };
-                                }else if(r.Value is byte[]){
+                                }
+                                else if (r.Value is byte[])
+                                {
                                     optValue = new ArrayByteOptionValue() { Value = r.Value };
                                 }
                                 switch (r.Key)
                                 {
+                                    case "token":
+                                        {
+                                            cp.Token = optValue.Pack;
+                                            isOption = false;
+                                        }
+                                        break;
                                     case "ifmatch":
                                         {
                                             optName = CoAPOptionDefine.IfMatch;
@@ -268,28 +289,10 @@ namespace Mozi.IoT.CoAP
                                         }
                                         break;
                                 }
-  
-                                cp.SetOption(optName, optValue);
-
-                                // "If-Match"
-                                // "Uri-Host"
-                                // "ETag"
-                                // "If-None-Match"
-                                // "Extended-Token-Length"
-                                //"Uri-Port"
-                                // "Location-Path"
-                                // "Uri-Path"
-                                // "Content-Format"
-                                // "Max-Age"
-                                // "Uri-Query"
-                                // "Accept"
-                                // "Location-Query"
-                                // "Block2"
-                                // "Block1"
-                                // "Size2",
-                                // "Proxy-Uri"
-                                // "Proxy-Scheme"
-                                // "Size1"
+                                if (isOption)
+                                {
+                                    cp.SetOption(optName, optValue);
+                                }
 
                                 // "ifmatch"
                                 // "etag"
@@ -307,7 +310,6 @@ namespace Mozi.IoT.CoAP
                                 // "proxyscheme"
                                 // "size1"
                             }
-
 
                             if (!string.IsNullOrEmpty(payload)&& (cp.Code == CoAPRequestMethod.Post || cp.Code == CoAPRequestMethod.Put))
                             {
@@ -359,7 +361,7 @@ namespace Mozi.IoT.CoAP
             cc.SetPort(12340);
             cc.Start();
             cc.onResponse += new ResponseReceived((x, y,z) => {
-                Console.WriteLine(z.ToString(CoAPFormatType.HttpStyle));
+                Console.WriteLine(z.ToString(CoAPPackageToStringType.HttpStyle));
                 responsed = true;
                 Close();
             });
@@ -369,7 +371,7 @@ namespace Mozi.IoT.CoAP
             {
                 cp.MesssageId = mc.GenerateMessageId();
             }
-            Console.WriteLine(cp.ToString(CoAPFormatType.HttpStyle));
+            Console.WriteLine(cp.ToString(CoAPPackageToStringType.HttpStyle));
             //if (cp.Token == null)
             //{
             //    cp.Token = mc.GenerateToken(8);
@@ -427,6 +429,7 @@ namespace Mozi.IoT.CoAP
                             "\r\n\r\nurl 格式" +
                             "\r\n  coap://{host}[:{port}]/{path}[?{query}]" +
                             "\r\n\r\noptions 请求选项参数如下：" +
+                            "\r\n  -token                   格式：0x0f0e" +
                             "\r\n  -ifmatch                 " +
                             "\r\n  -etag                    " +
                             "\r\n  -ifnonematch             " +
