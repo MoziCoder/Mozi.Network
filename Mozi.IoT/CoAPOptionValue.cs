@@ -239,12 +239,11 @@ namespace Mozi.IoT
             }
             set
             {
-
                 Size = (ushort)Math.Pow(2, (((byte)(value[value.Length - 1] << 5)) >> 5) + 4);
                 MoreFlag = (value[value.Length - 1] & 8) == 8;
                 byte[] data = new byte[4];
-                Array.Copy(value.Revert(), 0, data, data.Length - value.Length, value.Length);
-                Num = BitConverter.ToUInt32(data, 0);
+                Array.Copy(value, 0, data, data.Length - value.Length, value.Length);
+                Num = BitConverter.ToUInt32(data.Revert(), 0)>>4;
             }
         }
         /// <summary>
