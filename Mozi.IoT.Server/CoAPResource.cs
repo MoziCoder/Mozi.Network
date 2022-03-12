@@ -26,6 +26,11 @@ namespace Mozi.IoT
         public string Namespace { get; set; }
         public string Name { get; set; }
         public Type ResourceType { get; set; }
+
+        public override string ToString()
+        {
+            return (string.IsNullOrEmpty(Namespace) ? "" : ("/" + Namespace)) + "/" + Name;
+        }
     }
     /// <summary>
     /// CoAP资源
@@ -111,7 +116,11 @@ namespace Mozi.IoT
             return pack;
         }
     }
-
+    [ResourceDescription(Namespace = "", Name = "Discovery")]
+    internal class DiscoveryResource : CoAPResource
+    {
+        public override long ResourceSize => 0;
+    }
     [ResourceDescription(Namespace = "core", Name = "runtime")]
     public class RuntimeResource : CoAPResource
     {

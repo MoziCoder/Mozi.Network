@@ -55,6 +55,8 @@ namespace Mozi.IoT.CoAP
 
         private static bool sendrequest = false;
 
+        private static bool observeMode = false;
+
         static void Main(string[] args)
         {
             ParseRequest(args);
@@ -86,6 +88,8 @@ namespace Mozi.IoT.CoAP
                     }
                     else if (args.Count > 1)
                     {
+
+                        int observeSeconds = -1;
 
                         CoAPPackage cp = new CoAPPackage();
 
@@ -199,6 +203,52 @@ namespace Mozi.IoT.CoAP
                                 }
                                 switch (r.Key)
                                 {
+                                    case "observe":
+                                        {
+                                            isOption = false;
+                                            observeSeconds = int.Parse(r.Value.ToString());
+                                            if (observeSeconds > 0)
+                                            {
+                                                observeMode = true;
+                                            }
+                                        }
+                                        break;
+                                    case "type":
+                                        {
+                                            if (!string.IsNullOrEmpty((string)r.Value))
+                                            {
+                                                switch (r.Value)
+                                                {
+                                                    case "con":
+                                                    case "confirmable":
+                                                        {
+                                                            cp.MessageType = CoAPMessageType.Confirmable;
+                                                        }
+                                                        break;
+                                                    case "non":
+                                                    case "nonconfirmable":
+                                                        {
+                                                            cp.MessageType = CoAPMessageType.NonConfirmable;
+                                                        }
+                                                        break;
+                                                    case "ack":
+                                                    case "acknowledgement":
+                                                        {
+                                                            cp.MessageType = CoAPMessageType.Acknowledgement;
+                                                        }
+                                                        break;
+                                                    case "rst":
+                                                    case "reset":
+                                                        {
+                                                            cp.MessageType = CoAPMessageType.Reset;
+                                                        }
+                                                        break;
+                                                }
+                                            }
+                                            isOption = false;
+                                        }
+                                        break;
+                                    //包参数
                                     case "token":
                                         {
                                             cp.Token = optValue.Pack;
@@ -315,23 +365,27 @@ namespace Mozi.IoT.CoAP
                             {
                                 if(payload.StartsWith("0x"))
                                 {
-                                    var pd = Hex.From(payload.Substring(2));
-                                    cp.Payload = pd;
+                                    cp.Payload = Hex.From(payload.Substring(2));
                                 }
                                 else
                                 {
-                                    var pd = StringEncoder.Encode(payload);
-                                    cp.Payload = pd;
+                                    cp.Payload = StringEncoder.Encode(payload);
                                 }
                             }
                         }
                         try
                         {
+                            int waitSeconds = 30;
+                            if (observeSeconds > 0)
+                            {
+                                waitSeconds = observeSeconds;
+                            }
                             ExecuteAndWait(new Action(() => {
 
                                 Execute(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
                                 Console.Read();
-                            }), 30 * 1000);
+
+                            }), waitSeconds * 1000);
 
                         }
                         catch (Exception ex)
@@ -363,7 +417,10 @@ namespace Mozi.IoT.CoAP
             cc.onResponse += new ResponseReceived((x, y,z) => {
                 Console.WriteLine(z.ToString(CoAPPackageToStringType.HttpStyle));
                 responsed = true;
-                Close();
+                if (!observeMode)
+                {
+                    Close();
+                }
             });
             Cache.MessageCacheManager mc = new Cache.MessageCacheManager(cc);
 
@@ -381,7 +438,7 @@ namespace Mozi.IoT.CoAP
 
         private static void Close()
         {
-            if (sendrequest&&!responsed)
+            if (sendrequest&&!responsed&&!observeMode)
             {
                 Console.WriteLine("超时时间已到，尚未收到服务端响应\r\n");
             }
@@ -429,6 +486,13 @@ namespace Mozi.IoT.CoAP
                             "\r\n\r\nurl 格式" +
                             "\r\n  coap://{host}[:{port}]/{path}[?{query}]" +
                             "\r\n\r\noptions 请求选项参数如下：" +
+                            "\r\n"+
+                            "\r\n  -type                    消息类型,取值范围" +
+                            "\r\n                            con   --Confirmable" +
+                            "\r\n                            non   --NonConfirmable" +
+                            "\r\n                            ack   --Acknowledgement" +
+                            "\r\n                            rst   --Reset" +
+                            "\r\n  -observe                 监听若干秒，参数值为整数，单位为秒" +
                             "\r\n  -token                   格式：0x0f0e" +
                             "\r\n  -ifmatch                 " +
                             "\r\n  -etag                    " +
@@ -439,15 +503,15 @@ namespace Mozi.IoT.CoAP
                             "\r\n  -maxage                  " +
                             "\r\n  -accept                  " +
                             "\r\n  -locationquery           " +
-                            "\r\n  -block2                  Block2大小，格式：Num/MoreFlag/Size" +
-                            "\r\n  -block1                  Block1,格式：Num/MoreFlag/Size" +
+                            "\r\n  -block2                  Block2设置，格式：Num/MoreFlag/Size" +
+                            "\r\n  -block1                  Block1设置，格式：Num/MoreFlag/Size" +
                             "\r\n  -size2                   " +
                             "\r\n  -proxyuri                " +
                             "\r\n  -proxyscheme             " +
                             "\r\n  -size1                   " +
                             "\r\n 注：" +
                             "\r\n 1.字符串变量值用\"\"包裹" +
-                            "\r\n 2.整形变量值用，直接输入整数即可，如 -size 1024" +
+                            "\r\n 2.整型变量值用，直接输入整数即可，如 -size 1024" +
                             "\r\n\r\nbody 说明：" +
                             "\r\n   1.0x开始的字符串被识别为HEX字符串并被转为字节流" +
                             "\r\n   2.其它识别为普通字符串同时被编码成字节流，编码方式为UTF-8" +

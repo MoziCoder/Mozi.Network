@@ -313,6 +313,10 @@ namespace Mozi.IoT
             pack.TokenLength = (byte)((byte)(head << 4) >> 4);
 
             pack.Code = packType==CoAPPackageType.Request ? AbsClassEnum.Get<CoAPRequestMethod>(data[1].ToString()) : (CoAPCode)AbsClassEnum.Get<CoAPResponseCode>(data[1].ToString());
+            if (pack.Code is null)
+            {
+                pack.Code = CoAPCode.Empty;
+            }
             pack.PackageType = packType;
             byte[] arrMsgId = new byte[2], arrToken = new byte[pack.TokenLength];
             Array.Copy(data, 2, arrMsgId, 0, 2);
@@ -452,10 +456,29 @@ namespace Mozi.IoT
             }
             return this;
         }
+        /// <summary>
+        /// 设置荷载
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public CoAPPackage SetPayload(string text)
+        {
+            Payload = StringEncoder.Encode(text);
+            return this;
+        }
+        /// <summary>
+        /// 转为HTTP样式的字符串
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return ToString(CoAPPackageToStringType.HttpStyle);
         }
+        /// <summary>
+        /// 转为HTTP样式的字符串
+        /// </summary>
+        /// <param name="tp"></param>
+        /// <returns></returns>
         public string ToString(CoAPPackageToStringType tp)
         {
             StringBuilder pack = new StringBuilder();
@@ -522,7 +545,7 @@ namespace Mozi.IoT
                 {
                     pack.AppendLine(StringEncoder.Decode(Payload));
                 }
-            //HTTP mapping
+            //TODO HTTP mapping
             }else{
 
             }

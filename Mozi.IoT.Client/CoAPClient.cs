@@ -8,6 +8,7 @@ using Mozi.IoT.Encode;
 namespace Mozi.IoT
 {
     public delegate void ResponseReceived(string host, int port, CoAPPackage resp);
+    public delegate void PackageReceived(string host, int port, byte[] data);
 
     /// <summary>
     /// CoAP客户端
@@ -36,6 +37,7 @@ namespace Mozi.IoT
         //public ushort RemotePort { get { return _remotePort; } protected set { _remotePort = value; } }
 
         public ResponseReceived onResponse;
+        public PackageReceived onPackageReceived;
 
         public CoAPClient()
         {
@@ -63,54 +65,21 @@ namespace Mozi.IoT
         protected override void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
             _packetReceived++;
-            //try
-            //{
+
+            if (onPackageReceived != null)
+            {
+                onPackageReceived(args.IP, args.Port, args.Data);
+            }
 
             CoAPPackage pack = CoAPPackage.Parse(args.Data, CoAPPackageType.Response);
 
-            Console.WriteLine($"Request answered{_packetReceived}");
-
             if (pack != null)
             {
-                onResponse(args.IP, args.Port, pack);
+                if (onResponse != null)
+                {
+                    onResponse(args.IP, args.Port, pack);
+                }
             }
-            //pack2 = new CoAPPackage()
-            //{
-            //    Version = 1,
-            //    MessageType = CoAPMessageType.Acknowledgement,
-            //    Token = pack.Token,
-            //    MesssageId = pack.MesssageId,
-            //};
-
-            ////判断是否受支持的方法
-            //if (IsSupportedRequest(pack))
-            //{
-            //    if (pack.MessageType == CoAPMessageType.Confirmable || pack.MessageType == CoAPMessageType.Acknowledgement)
-            //    {
-            //        pack2.Code = CoAPResponseCode.Content;
-            //    }
-            //}
-            //else
-            //{
-            //    pack2.Code = CoAPResponseCode.MethodNotAllowed;
-            //}
-
-            ////检查分块
-
-            ////检查内容类型
-
-            ////}
-            ////catch (Exception ex)
-            ////{
-            ////    Console.WriteLine(ex.Message);
-            ////}
-            ////finally
-            ////{
-            //if (pack2 != null)
-            //{
-            //    _socket.SendTo(pack2.Pack(), args.IP, args.Port);
-            //}
-            ////}
         }
         /// <summary>
         /// 发送请求消息,此方法为高级方法。

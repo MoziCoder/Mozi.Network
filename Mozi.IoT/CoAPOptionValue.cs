@@ -130,9 +130,9 @@ namespace Mozi.IoT
         {
             get
             {
-                return _pack != null ? Encode.StringEncoder.Decode(_pack) : "";
+                return _pack != null ? StringEncoder.Decode(_pack) : "";
             }
-            set => _pack = Encode.StringEncoder.Encode((string)value);
+            set => _pack = StringEncoder.Encode((string)value);
         }
 
         public override byte[] Pack { get => _pack; set => _pack = value; }

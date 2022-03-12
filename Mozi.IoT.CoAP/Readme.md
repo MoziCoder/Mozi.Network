@@ -16,6 +16,14 @@ Mozi.IoT.CoAP为Iot.Client调试工具，使用命令行方式对CoAPClient进�
         coap://{host}[:{port}]/{path}[?{query}]
 
       options 请求选项参数如下：
+
+        -type                    消息类型,取值
+                                 con   --Confirmable
+                                 non   --NonConfirmable
+                                 ack   --Acknowledgement
+                                 rst   --Reset
+        -observe                 监听若干秒，参数值为整数，单位为秒
+
         -token                   格式：0x0f0e
         -ifmatch                 
         -etag                    
@@ -26,8 +34,8 @@ Mozi.IoT.CoAP为Iot.Client调试工具，使用命令行方式对CoAPClient进�
         -maxage                  
         -accept                  
         -locationquery           
-        -block2                  Block2大小，格式：Num/MoreFlag/Size
-        -block1                  Block1,格式：Num/MoreFlag/Size
+        -block2                  Block2设置，格式：Num/MoreFlag/Size
+        -block1                  Block1设置，格式：Num/MoreFlag/Size
         -size2                   
         -proxyuri                
         -proxyscheme             
@@ -35,7 +43,7 @@ Mozi.IoT.CoAP为Iot.Client调试工具，使用命令行方式对CoAPClient进�
         
         注：
             1.字符串变量值用""包裹
-            2.整形变量值用，直接输入整数即可，如 -size 1024
+            2.整型变量值用，直接输入整数即可，如 -size 1024
         body 说明：
             1.0x开始的字符串被识别为HEX字符串并被转为字节流
             2.其它识别为普通字符串同时被编码成字节流，编码方式为UTF-8

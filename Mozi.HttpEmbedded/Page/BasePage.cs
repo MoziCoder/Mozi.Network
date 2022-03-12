@@ -9,7 +9,8 @@
         /// <summary>
         /// 上下文对象
         /// </summary>
-        protected HttpContext Context { get; set; }
+        public HttpContext Context { get; set; }
+
         /// <summary>
         /// 重定向
         /// </summary>

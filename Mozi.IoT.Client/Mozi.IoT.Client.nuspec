@@ -8,7 +8,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
     <projectUrl>https://gitee.com/myui_admin/mozi</projectUrl>
-    <description>IoT物联网客户端,CoAP通讯客户端,client for CoAP,Java版请查看Git项目</description>
+    <description>IoT物联网客户端,CoAP通讯客户端,client for CoAP,Java版请访问Git项目</description>
     <releaseNotes>IoT Client 物联网客户端</releaseNotes>
     <copyright>Copyright © Jason 2021-2022</copyright>
     <tags>IoT Client 物联网客户端</tags>
