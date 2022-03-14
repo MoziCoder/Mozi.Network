@@ -210,11 +210,7 @@ namespace Mozi.IoT
             {
 
                 byte[] data;
-                uint code = (Num << 4) | (byte)((byte)Math.Log(Size, 2) - 4);
-                if (MoreFlag)
-                {
-                    code |= 8;
-                }
+                uint code = Num << 4;
                 //pow(2,4)
                 if (Num < 16)
                 {
@@ -233,8 +229,21 @@ namespace Mozi.IoT
                     data = new byte[3];
                     Array.Copy(BitConverter.GetBytes(code).Revert(), 1, data, 0, data.Length);
                 }
-                return data;
 
+                byte blockLog = (byte)Math.Log(Size, 2);
+
+                if (blockLog >= (7 + 4))
+                {
+                    blockLog = 11;
+                }
+                //Size
+                data[data.Length - 1] = (byte)(data[data.Length - 1] | (blockLog >= 4 ? (blockLog - 4) : 0));
+                //More 
+                if (MoreFlag)
+                {
+                    data[data.Length - 1] =(byte)(data[data.Length - 1] | 0b00001000);
+                }
+                return data;
             }
             set
             {
