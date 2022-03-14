@@ -81,22 +81,21 @@ namespace Mozi.IoT
             {
                 uint num = (uint)value;
                 byte[] data = BitConverter.GetBytes(num);
-
                 if (num < 256) //2~8
                 {
-                    _pack = new byte[1] { data[3] };
+                    _pack = new byte[1] { data[0] };
                 }
                 else if (num < 65536) //2~16
                 {
-                    _pack = new byte[2] { data[2], data[3] }.Revert();
+                    _pack = new byte[2] { data[2], data[1] };
                 }
                 else if (num < 16777216) //2~24
                 {
-                    _pack = new byte[3] { data[1], data[2], data[3] }.Revert();
+                    _pack = new byte[3] { data[3], data[2], data[1] };
                 }
                 else
                 {
-                    _pack = data;
+                    _pack = new byte[4] { data[4], data[3], data[2], data[1] };
                 }
             }
         }
