@@ -34,7 +34,9 @@ namespace Mozi.IoT
         ///// </summary>
         //public ushort RemotePort { get { return _remotePort; } protected set { _remotePort = value; } }
 
-        public MessageReceive Response;
+        public MessageTransmit Response;
+
+        public MessageTransmit Request;
 
         private byte[] _token;
 
@@ -101,7 +103,12 @@ namespace Mozi.IoT
             {
                 pack.MesssageId = _cacheManager.GenerateMessageId();
             }
-            return base.SendMessage(host, port, pack);
+            ushort mgId = base.SendMessage(host, port, pack);
+            if (Request != null)
+            {
+                Request(host, port, pack);
+            }
+            return mgId;
         }
 
         /// <summary>

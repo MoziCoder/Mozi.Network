@@ -47,7 +47,8 @@ namespace Mozi.IoT
 
         private Cache.MessageCacheManager _cm;
 
-        public MessageReceive RequestReceived;
+        public MessageTransmit RequestReceived;
+        public MessageTransmit Responsed;
 
         private bool _proxyPassed = false;
 
@@ -145,7 +146,13 @@ namespace Mozi.IoT
                     Code = CoAPResponseCode.BadGateway,
                 };
             }
+
             SendMessage(args.IP, args.Port, ctx.Response);
+
+            if (Responsed != null)
+            {
+                Responsed(args.IP, args.Port, ctx.Response);
+            }
         }
     }
 }

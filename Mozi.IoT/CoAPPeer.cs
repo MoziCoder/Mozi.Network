@@ -72,7 +72,8 @@ namespace Mozi.IoT
         /// </summary>
         protected List<CoAPCode> SupportedRequest = new List<CoAPCode> { CoAPRequestMethod.Get, CoAPRequestMethod.Post, CoAPRequestMethod.Put, CoAPRequestMethod.Delete };
 
-        public PackageReceived PackageReceived;
+        public PackageReceive PackageReceived;
+
         /// <summary>
         /// 服务端口
         /// </summary>
@@ -182,7 +183,7 @@ namespace Mozi.IoT
         //}
     }
 
-    public delegate void PackageReceived(string host, int port, byte[] data);
+    public delegate void PackageReceive(string host, int port, byte[] data);
 
     /// <summary>
     /// 消息回调
@@ -190,5 +191,5 @@ namespace Mozi.IoT
     /// <param name="host"></param>
     /// <param name="msgId"></param>
     /// <param name="rp"></param>
-    public delegate void MessageReceive(string host, int port, CoAPPackage rp);
+    public delegate void MessageTransmit(string host, int port, CoAPPackage rp);
 }

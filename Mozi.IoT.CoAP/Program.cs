@@ -286,7 +286,7 @@ namespace Mozi.IoT.CoAP
                                         break;
                                     case  "locationpath":
                                         {
-                                            optName = CoAPOptionDefine.LocationQuery;
+                                            optName = CoAPOptionDefine.LocationPath;
                                         }
                                         break;
                                     case  "contentformat":
@@ -423,7 +423,7 @@ namespace Mozi.IoT.CoAP
             //本地端口
             cc.SetPort(12340);
             cc.Start();
-            cc.Response += new MessageReceive((x, y,z) => {
+            cc.Response += new MessageTransmit((x, y,z) => {
                 Console.WriteLine(z.ToString(CoAPPackageToStringType.HttpStyle));
                 responsed = true;
                 if (!observeMode)
@@ -431,13 +431,12 @@ namespace Mozi.IoT.CoAP
                     Close();
                 }
             });
+            cc.Request += new MessageTransmit((x, y, z) =>
+            {
+                Console.WriteLine(z.ToString(CoAPPackageToStringType.HttpStyle));
+            });
             Cache.MessageCacheManager mc = new Cache.MessageCacheManager(cc);
 
-            if (cp.MesssageId == 0)
-            {
-                cp.MesssageId = mc.GenerateMessageId();
-            }
-            Console.WriteLine(cp.ToString(CoAPPackageToStringType.HttpStyle));
 
             //if (cp.Token == null)
             //{
@@ -445,7 +444,13 @@ namespace Mozi.IoT.CoAP
             //}
             if (_filePath != "")
             {
-                cc.PostFile(_url, CoAPMessageType.Confirmable, ContentFormat.Stream, _filePath);
+                if(cp.Code == CoAPRequestMethod.Put || cp.Code == CoAPRequestMethod.Post){
+                    cc.PostFile(_url, CoAPMessageType.Confirmable, ContentFormat.Stream, _filePath);
+                }
+                else
+                {
+
+                }
             }
             else
             {
@@ -455,7 +460,7 @@ namespace Mozi.IoT.CoAP
 
         private static void Close()
         {
-            if (sendrequest&&!responsed&&!observeMode)
+            if (sendrequest && !responsed && !observeMode)
             {
                 Console.WriteLine("超时时间已到，尚未收到服务端响应\r\n");
             }
