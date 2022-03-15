@@ -182,14 +182,19 @@ namespace Mozi.IoT
 
         //}
     }
-
+    /// <summary>
+    /// 包传递回调
+    /// </summary>
+    /// <param name="host">主机地址</param>
+    /// <param name="port">主机端口</param>
+    /// <param name="data">字节流</param>
     public delegate void PackageReceive(string host, int port, byte[] data);
 
     /// <summary>
     /// 消息回调
     /// </summary>
-    /// <param name="host"></param>
-    /// <param name="msgId"></param>
-    /// <param name="rp"></param>
+    /// <param name="host">主机地址</param>
+    /// <param name="port">主机端口</param>
+    /// <param name="rp">协议包</param>
     public delegate void MessageTransmit(string host, int port, CoAPPackage rp);
 }

@@ -17,13 +17,27 @@ namespace Mozi.IoT
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class ResourceDescriptionAttribute : Attribute
     {
+        /// <summary>
+        /// 命名空间
+        /// </summary>
         public string Namespace { get; set; }
+        /// <summary>
+        /// 资源名称
+        /// </summary>
         public string Name { get; set; }
     }
-
+    /// <summary>
+    /// 资源信息
+    /// </summary>
     public class ResourceInfo
     {
+        /// <summary>
+        /// 命名空间
+        /// </summary>
         public string Namespace { get; set; }
+        /// <summary>
+        /// 资源名称
+        /// </summary>
         public string Name { get; set; }
         public Type ResourceType { get; set; }
 

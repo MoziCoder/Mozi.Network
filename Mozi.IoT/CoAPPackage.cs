@@ -133,6 +133,29 @@ namespace Mozi.IoT
                 return string.Join("&",query);
             }
         }
+        /// <summary>
+        /// 查询参数集合
+        /// </summary>
+        public Dictionary<string,string> QueryCollection 
+        { 
+            get 
+            {
+                Dictionary<string, string> queries = new Dictionary<string, string>();
+                foreach (CoAPOption op in Options)
+                {
+                    if (op.Option == CoAPOptionDefine.UriQuery)
+                    {
+                        string kp=(string)new StringOptionValue() { Pack = op.Value.Pack }.Value;
+                        string[] kps = kp.Split(new char[] { '=' });
+                        if (kps.Length == 2 && !queries.ContainsKey(kps[0]))
+                        {
+                            queries.Add(kps[0], kps[1]);
+                        }
+                    }
+                }
+                return queries;
+            }
+        }
 
         public CoAPPackageType PackageType
         {
