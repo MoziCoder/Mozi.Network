@@ -6,11 +6,20 @@ namespace Mozi.HttpEmbedded.Encode
     /// </summary>
     public static class StringEncoder
     {
+        /// <summary>
+        /// ±àÂë
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static byte[] Encode(string data)
         {
             return System.Text.Encoding.UTF8.GetBytes(data);
         }
-
+        /// <summary>
+        /// ½âÂë
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static string Decode(byte[] data)
         {
             return System.Text.Encoding.UTF8.GetString(data);

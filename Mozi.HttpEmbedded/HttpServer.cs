@@ -242,6 +242,8 @@ namespace Mozi.HttpEmbedded
         protected virtual void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
             HttpContext context = new HttpContext();
+            context.ClientAddress = args.IP;
+            context.ClientPort = args.Port;
             context.Response = new HttpResponse();
             context.Server = this;
             StatusCode sc = StatusCode.Success;
@@ -436,7 +438,7 @@ namespace Mozi.HttpEmbedded
                         var doc = DocLoader.Load("Home.html");
                         TemplateEngine pc = new TemplateEngine();
                         pc.LoadFromText(doc);
-                        pc.Set("Info", new{ VersionName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()});
+                        pc.Set("Info", new{ VersionName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(),Copyright="&copy;2020-2022"});
                         pc.Prepare();
 
                         context.Response.Write(pc.GetBuffer());
@@ -505,7 +507,7 @@ namespace Mozi.HttpEmbedded
                 result = router.Invoke(context);
                 if (result != null)
                 {
-                    context.Response.Write(result.ToString());  
+                    context.Response.Write(result.ToString());
                 }
                 return StatusCode.Success;
             }

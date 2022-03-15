@@ -53,6 +53,9 @@
         private string _name = "", _description;
 
         private byte _category = 0, _detail = 0;
+
+        public static CoAPCode Empty = new CoAPCode("Empty", "Empty Message", 0, 0);
+
         /// <summary>
         /// 分类
         /// </summary>
@@ -181,7 +184,7 @@
         }
         public override string ToString()
         {
-            return Category+"."+Detail+" "+Description;
+            return Category + "." + Detail + " " + Description;
         }
     }
 }

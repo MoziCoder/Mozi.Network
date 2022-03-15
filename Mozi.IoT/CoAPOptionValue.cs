@@ -15,6 +15,17 @@ namespace Mozi.IoT
         public virtual byte[] Pack { get => _pack; set => _pack = value; }
 
         public virtual int Length => _pack != null ? _pack.Length : 0;
+        public override string ToString()
+        {
+            if (_pack != null)
+            {
+                return Hex.To((byte[])Value);
+            }
+            else
+            {
+                return "";
+            }
+        }
     }
 
     /// <summary>
@@ -68,24 +79,23 @@ namespace Mozi.IoT
             }
             set
             {
-                uint num = (uint)value;
+                uint num = Convert.ToUInt32(value);
                 byte[] data = BitConverter.GetBytes(num);
-
                 if (num < 256) //2~8
                 {
-                    _pack = new byte[1] { data[3] };
+                    _pack = new byte[1] { data[0] };
                 }
                 else if (num < 65536) //2~16
                 {
-                    _pack = new byte[2] { data[2], data[3] }.Revert();
+                    _pack = new byte[2] { data[1], data[0] };
                 }
                 else if (num < 16777216) //2~24
                 {
-                    _pack = new byte[3] { data[1], data[2], data[3] }.Revert();
+                    _pack = new byte[3] { data[2], data[1], data[0] };
                 }
                 else
                 {
-                    _pack = data;
+                    _pack = new byte[4] { data[3], data[2], data[1], data[0] };
                 }
             }
         }
@@ -101,7 +111,7 @@ namespace Mozi.IoT
         {
             if (_pack != null)
             {
-                return Hex.To((byte[])Value);
+                return Value.ToString();
             }
             else
             {
@@ -119,9 +129,9 @@ namespace Mozi.IoT
         {
             get
             {
-                return _pack != null ? Encode.StringEncoder.Decode(_pack) : "";
+                return _pack != null ? StringEncoder.Decode(_pack) : "";
             }
-            set => _pack = Encode.StringEncoder.Encode((string)value);
+            set => _pack = StringEncoder.Encode((string)value);
         }
 
         public override byte[] Pack { get => _pack; set => _pack = value; }
@@ -188,7 +198,7 @@ namespace Mozi.IoT
         /// </summary>
         public bool MoreFlag { get; set; }
         /// <summary>
-        /// 数据包总大小 占位3bits 低3位为其储存区间 值大小为1-6，表值范围16bytes-1024bytes 
+        /// 数据包总大小 占位3bits 低3位为其储存区间 表值大小为1-6，表值范围16bytes-1024bytes 
         /// </summary>
         public ushort Size { get; set; }
         /// <summary>
@@ -200,40 +210,55 @@ namespace Mozi.IoT
             {
 
                 byte[] data;
-                uint code = (Num << 4) | (byte)((byte)Math.Log(Size, 2) - 4);
-                if (MoreFlag)
-                {
-                    code |= 8;
-                }
+                uint code = Num << 4;
+                data = BitConverter.GetBytes(code);
+                
                 //pow(2,4)
                 if (Num < 16)
                 {
-                    data = new byte[1];
+                    data = new byte[1] { data[0] };
                     //2022/3/7 此处取值错误，现已修正
-                    data[0] = (byte)code;
                 }
                 //pow(2,12)
                 else if (Num < 4096)
                 {
-                    data = BitConverter.GetBytes((ushort)code).Revert();
+                    data = new byte[] { data[1], data[0] };
                 }
                 //pow(2,20)
+                else if(Num<1048576)
+                {
+                    data = new byte[3] { data[2], data[1], data[0] };
+                }
                 else
                 {
-                    data = new byte[3];
-                    Array.Copy(BitConverter.GetBytes(code).Revert(), 1, data, 0, data.Length);
+                    data = new byte[] { 0xFF, 0xFF, 0xF0 };
+                }
+
+                byte blockLog = (byte)Math.Log(Size, 2);
+
+                if (blockLog >= (7 + 4))
+                {
+                    blockLog = 11;
+                }
+
+                //Size
+                data[data.Length - 1] = (byte)(data[data.Length - 1] | (blockLog >= 4 ? (blockLog - 4) : 0));
+                //More 
+                if (MoreFlag)
+                {
+                    data[data.Length - 1] =(byte)(data[data.Length - 1] | 0b00001000);
                 }
                 return data;
-
             }
             set
             {
-
-                Size = (ushort)Math.Pow(2, (((byte)(value[value.Length - 1] << 5)) >> 5) + 4);
+                Size = (ushort)Math.Pow(2, (value[value.Length - 1] & 0b00000111) + 4);
                 MoreFlag = (value[value.Length - 1] & 8) == 8;
                 byte[] data = new byte[4];
-                Array.Copy(value.Revert(), 0, data, data.Length - value.Length, value.Length);
-                Num = BitConverter.ToUInt32(data, 0);
+                Array.Copy(value, 0, data, data.Length - value.Length, value.Length);
+                Num = BitConverter.ToUInt32(data.Revert(), 0) >> 4;
+
+                _pack = value;
             }
         }
         /// <summary>

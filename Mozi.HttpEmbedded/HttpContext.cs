@@ -7,7 +7,7 @@ namespace Mozi.HttpEmbedded
     /// <summary>
     /// 请求上下文对象
     /// </summary>
-    public class HttpContext:IDisposable
+    public class HttpContext : IDisposable
     {
         private bool _disposedValue;
 
@@ -23,6 +23,14 @@ namespace Mozi.HttpEmbedded
         /// 服务器对象
         /// </summary>
         public HttpServer Server { get; set; }
+        /// <summary>
+        /// 客户端地址
+        /// </summary>
+        public string ClientAddress { get; set; }
+        /// <summary>
+        /// 客户端端口
+        /// </summary>
+        public int ClientPort { get; set; }
 
         ~HttpContext()
         {
@@ -34,7 +42,7 @@ namespace Mozi.HttpEmbedded
             if (!_disposedValue)
             {
                 if (disposing)
-                {           
+                {
 
                 }
                 Request = null;

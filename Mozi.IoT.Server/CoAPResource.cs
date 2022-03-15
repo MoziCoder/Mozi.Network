@@ -26,6 +26,11 @@ namespace Mozi.IoT
         public string Namespace { get; set; }
         public string Name { get; set; }
         public Type ResourceType { get; set; }
+
+        public override string ToString()
+        {
+            return (string.IsNullOrEmpty(Namespace) ? "" : ("/" + Namespace)) + "/" + Name;
+        }
     }
     /// <summary>
     /// CoAP资源
@@ -33,17 +38,17 @@ namespace Mozi.IoT
     public abstract class CoAPResource
     {
         /// <summary>
-        /// 资源大小
+        /// 资源总大小
         /// </summary>
-        public abstract long ResourceSize { get; }
+        public abstract uint ResourceSize { get; }
         /// <summary>
-        /// 默认分块大小，单位Bytes 
+        /// 默认分块大小128，单位Bytes 
         /// </summary>
         /// <remarks>
         /// 如果资源尺寸过大，则必须合理配置此大小。
         /// 取值范围为16-2048Bytes BlockOptionValue中Size的数据容量。参考<see cref="BlockOptionValue"/>
         /// </remarks>
-        public virtual long BlockSize { get { return 128; } }
+        public virtual uint BlockSize { get { return 128; } }
         /// <summary>
         /// GET方法
         /// </summary>
@@ -51,7 +56,8 @@ namespace Mozi.IoT
         /// <returns></returns>
         public virtual CoAPPackage OnGet(CoAPContext ctx)
         {
-            return new CoAPPackage { MessageType = CoAPMessageType.Acknowledgement, MesssageId = ctx.Request.MesssageId, Token = ctx.Request.Token, Code = CoAPResponseCode.Forbidden };
+            ctx.Response = new CoAPPackage { MessageType = CoAPMessageType.Acknowledgement, MesssageId = ctx.Request.MesssageId, Token = ctx.Request.Token, Code = CoAPResponseCode.Forbidden };
+            return ctx.Response;
         }
         /// <summary>
         /// Post方法
@@ -60,7 +66,8 @@ namespace Mozi.IoT
         /// <returns></returns>
         public virtual CoAPPackage OnPost(CoAPContext ctx)
         {
-            return new CoAPPackage { MessageType = CoAPMessageType.Acknowledgement, MesssageId = ctx.Request.MesssageId, Token = ctx.Request.Token, Code = CoAPResponseCode.Forbidden };
+            ctx.Response = new CoAPPackage { MessageType = CoAPMessageType.Acknowledgement, MesssageId = ctx.Request.MesssageId, Token = ctx.Request.Token, Code = CoAPResponseCode.Forbidden };
+            return ctx.Response;
         }
         /// <summary>
         /// PUT方法
@@ -69,7 +76,8 @@ namespace Mozi.IoT
         /// <returns></returns>
         public virtual CoAPPackage OnPut(CoAPContext ctx)
         {
-            return new CoAPPackage { MessageType = CoAPMessageType.Acknowledgement, MesssageId = ctx.Request.MesssageId, Token = ctx.Request.Token, Code = CoAPResponseCode.Forbidden };
+            ctx.Response = new CoAPPackage { MessageType = CoAPMessageType.Acknowledgement, MesssageId = ctx.Request.MesssageId, Token = ctx.Request.Token, Code = CoAPResponseCode.Forbidden };
+            return ctx.Response;
         }
         /// <summary>
         /// Delete方法
@@ -78,7 +86,8 @@ namespace Mozi.IoT
         /// <returns></returns>
         public virtual CoAPPackage OnDelete(CoAPContext ctx)
         {
-            return new CoAPPackage { MessageType = CoAPMessageType.Acknowledgement, MesssageId = ctx.Request.MesssageId, Token = ctx.Request.Token, Code = CoAPResponseCode.Forbidden };
+            ctx.Response = new CoAPPackage { MessageType = CoAPMessageType.Acknowledgement, MesssageId = ctx.Request.MesssageId, Token = ctx.Request.Token, Code = CoAPResponseCode.Forbidden };
+            return ctx.Response;
         }
         /// <summary>
         /// 分块查找
@@ -90,6 +99,41 @@ namespace Mozi.IoT
         {
             return new byte[] { };
         }
+        /// <summary>
+        /// Block2分块协商
+        /// </summary>
+        /// <param name="ctx"></param>
+        protected virtual void HandleBlock2Query(CoAPContext ctx)
+        {
+            CoAPOption opt = ctx.Request.Options.Find(x => x.Option == CoAPOptionDefine.Block2);
+            if (opt != null)
+            {
+                OptionValue opt2 = new BlockOptionValue() { Pack = opt.Value.Pack };
+                //if(opt2)
+            }
+        }
+        /// <summary>
+        /// 请求服务端资源大小，响应条件为 Get Size2=0
+        /// </summary>
+        /// <param name="ctx">响应上下文对象</param>
+        internal virtual bool HandleSize2Query(CoAPContext ctx)
+        {
+            CoAPOption opt = ctx.Request.Options.Find(x => x.Option == CoAPOptionDefine.Size2);
+            if (opt != null && int.Parse(opt.Value.ToString()) ==0 && ctx.Request.Code == CoAPRequestMethod.Get)
+            {
+
+                ctx.Response = new CoAPPackage { MessageType = CoAPMessageType.Acknowledgement, MesssageId = ctx.Request.MesssageId, Token = ctx.Request.Token, Code = CoAPResponseCode.Content };
+
+                CoAPOption optResp = new CoAPOption() { Option = CoAPOptionDefine.Size2, Value = new UnsignedIntegerOptionValue() { Value = ResourceSize } };
+                
+                ctx.Response.SetOption(optResp);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
     /// <summary>
     /// 时间服务 UTC时间
@@ -100,7 +144,7 @@ namespace Mozi.IoT
     [ResourceDescription(Namespace = "core", Name = "time")]
     public class TimeResource : CoAPResource
     {
-        public override long ResourceSize { get => 0; }
+        public override uint ResourceSize { get => 1024; }
 
         public override CoAPPackage OnGet(CoAPContext ctx)
         {
@@ -112,10 +156,15 @@ namespace Mozi.IoT
         }
     }
 
+    [ResourceDescription(Namespace = "", Name = "Discovery")]
+    internal class DiscoveryResource : CoAPResource
+    {
+        public override uint ResourceSize => 0;
+    }
     [ResourceDescription(Namespace = "core", Name = "runtime")]
     public class RuntimeResource : CoAPResource
     {
-        public override long ResourceSize { get => 0; }
+        public override uint ResourceSize { get => 0; }
 
         public override CoAPPackage OnGet(CoAPContext ctx)
         {

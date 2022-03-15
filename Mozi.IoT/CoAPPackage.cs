@@ -133,6 +133,7 @@ namespace Mozi.IoT
                 return string.Join("&",query);
             }
         }
+
         public CoAPPackageType PackageType
         {
             get;private set;
@@ -173,17 +174,6 @@ namespace Mozi.IoT
             }
             return data.ToArray();
         }
-
-        /// <summary>
-        /// 转为HTTP包,ASCII字符串数据包
-        /// </summary>
-        /// <returns></returns>
-        //public byte[] ToHttp()
-        //{
-        //List<string> data = new List<string>();
-        //string head = string.Format("{0} ");
-        //}
-
         /// <summary>
         /// 设置空选项值
         /// </summary>
@@ -323,6 +313,10 @@ namespace Mozi.IoT
             pack.TokenLength = (byte)((byte)(head << 4) >> 4);
 
             pack.Code = packType==CoAPPackageType.Request ? AbsClassEnum.Get<CoAPRequestMethod>(data[1].ToString()) : (CoAPCode)AbsClassEnum.Get<CoAPResponseCode>(data[1].ToString());
+            if (pack.Code is null)
+            {
+                pack.Code = CoAPCode.Empty;
+            }
             pack.PackageType = packType;
             byte[] arrMsgId = new byte[2], arrToken = new byte[pack.TokenLength];
             Array.Copy(data, 2, arrMsgId, 0, 2);
@@ -332,6 +326,7 @@ namespace Mozi.IoT
             //3+2+arrToken.Length+1开始是Option部分
             int bodySplitterPos = 2 + 2 + arrToken.Length;
             uint deltaSum = 0;
+
             while (bodySplitterPos < data.Length && data[bodySplitterPos] != CoAPProtocol.HeaderEnd)
             {
 
@@ -364,6 +359,7 @@ namespace Mozi.IoT
                 {
                     option.Option = CoAPOptionDefine.Unknown;
                 }
+
                 if (option.Length <= 12)
                 {
 
@@ -387,7 +383,6 @@ namespace Mozi.IoT
                 Array.Copy(data, bodySplitterPos + 1 + lenDeltaExt + lenLengthExt, option.Value.Pack, 0, option.Value.Length);
 
                 pack.SetOption(option);
-
                 deltaSum += option.Delta;
                 //头长度+delta扩展长度+len
                 bodySplitterPos += 1 + lenDeltaExt + lenLengthExt + option.Value.Length;
@@ -410,7 +405,7 @@ namespace Mozi.IoT
         /// <param name="token"></param>
         /// <param name="msgId"></param>
         /// <param name="msgType"></param>
-        public CoAPPackage(CoAPRequestMethod method,byte[] token,ushort msgId,CoAPMessageType msgType)
+        public CoAPPackage(CoAPRequestMethod method, byte[] token, ushort msgId, CoAPMessageType msgType)
         {
             Code = method;
             Token = token;
@@ -461,15 +456,36 @@ namespace Mozi.IoT
             }
             return this;
         }
+        /// <summary>
+        /// 设置荷载
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public CoAPPackage SetPayload(string text)
+        {
+            Payload = StringEncoder.Encode(text);
+            return this;
+        }
+        /// <summary>
+        /// 转为HTTP样式的字符串
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
-            return ToString(CoAPFormatType.HttpStyle);
+            return ToString(CoAPPackageToStringType.HttpStyle);
         }
-        public string ToString(CoAPFormatType tp)
+        /// <summary>
+        /// 转为HTTP样式的字符串
+        /// </summary>
+        /// <param name="tp"></param>
+        /// <returns></returns>
+        public string ToString(CoAPPackageToStringType tp)
         {
             StringBuilder pack = new StringBuilder();
             bool isReq = false;
+            
             List<KeyValuePair<string, string>> arrHeaders = new List<KeyValuePair<string, string>>();
+
             if (Code == CoAPRequestMethod.Get || Code == CoAPRequestMethod.Post || Code == CoAPRequestMethod.Put || Code == CoAPRequestMethod.Delete)
             {
                 isReq = true;
@@ -478,28 +494,49 @@ namespace Mozi.IoT
             {
 
             }
-            if (tp == CoAPFormatType.HttpStyle)
+            if (tp == CoAPPackageToStringType.HttpStyle)
             {
                 //REQUEST
                 if (isReq) {
-
-                    pack.AppendLine(string.Format("{0} {1} COAP/{2}", Code.Name,  (!string.IsNullOrEmpty(Domain) ?( "coap://" + Domain):"")+Path+"?"+Query, Version));
+                    pack.AppendLine(string.Format("{0} {1} COAP/{2}", Code.Name,  (!string.IsNullOrEmpty(Domain) ?( "coap://" + Domain):"")+Path+(!String.IsNullOrEmpty(Query)?("?"+Query):""), Version));
                 }
                 //RESPONSE
                 else
                 {
                     pack.AppendLine(string.Format("COAP/{0} {1} {2}", Version, string.Format("{0}{1:00}", Code.Category, Code.Detail), Code.Description));
                 }
+
                 arrHeaders.Add(new KeyValuePair<string, string>("Message-Id", MesssageId.ToString()));
                 arrHeaders.Add(new KeyValuePair<string, string>("Message-Type", MessageType.Name));
-                if (Token!=null&&Token.Length > 0)
+
+                if (Token != null && Token.Length > 0)
                 {
                     arrHeaders.Add(new KeyValuePair<string, string>("Token", Hex.To(Token)));
                 }
 
                 foreach(var opt in Options)
                 {
-                    arrHeaders.Add(new KeyValuePair<string, string>(opt.Option.Name, opt.Value.ToString()));
+                    var sOptValue = "";
+                    if (opt.Option == CoAPOptionDefine.Block1 || opt.Option == CoAPOptionDefine.Block2)
+                    {
+                        sOptValue = new BlockOptionValue() { Pack = opt.Value.Pack }.ToString();
+                    }
+                    else if (opt.Option == CoAPOptionDefine.ContentFormat)
+                    {
+                        var optValue = new UnsignedIntegerOptionValue() { Pack = opt.Value.Pack };
+                        uint contentType = (uint)optValue.Value;
+                        //int contentType = BitConvert.ToUint32(opt.Value.Pack);
+                        ContentFormat ct =AbsClassEnum.Get<ContentFormat>(contentType.ToString());
+                        sOptValue = ct.ContentType;
+                    }else if (opt.Option == CoAPOptionDefine.Size1 || opt.Option == CoAPOptionDefine.Size2){
+                        var optValue = new UnsignedIntegerOptionValue() { Pack = opt.Value.Pack };
+                        sOptValue = optValue.ToString();
+                    }
+                    else
+                    {
+                        sOptValue = opt.Value.ToString();
+                    }
+                    arrHeaders.Add(new KeyValuePair<string, string>(opt.Option.Name, sOptValue));
                 }
 
                 foreach(var hd in arrHeaders)
@@ -511,14 +548,14 @@ namespace Mozi.IoT
                 {
                     pack.AppendLine(StringEncoder.Decode(Payload));
                 }
-            //HTTP mapping
+            //TODO HTTP mapping
             }else{
 
             }
             return pack.ToString();
         }
     }
-    public enum CoAPFormatType
+    public enum CoAPPackageToStringType
     {
         HttpStyle,
         HttpMapping

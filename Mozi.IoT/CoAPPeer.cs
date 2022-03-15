@@ -48,6 +48,7 @@ namespace Mozi.IoT
         /// 最大数据包尺寸 包含所有头信息和有效荷载 Byte
         /// </summary>
         private int _maxTransferPackSize=512;
+
         private int _blockSize = 128;
 
         protected UDPSocketIOCP _socket;
@@ -70,6 +71,9 @@ namespace Mozi.IoT
         /// 受支持的请求方法
         /// </summary>
         protected List<CoAPCode> SupportedRequest = new List<CoAPCode> { CoAPRequestMethod.Get, CoAPRequestMethod.Post, CoAPRequestMethod.Put, CoAPRequestMethod.Delete };
+
+        public PackageReceive PackageReceived;
+
         /// <summary>
         /// 服务端口
         /// </summary>
@@ -179,12 +183,13 @@ namespace Mozi.IoT
         //}
     }
 
+    public delegate void PackageReceive(string host, int port, byte[] data);
+
     /// <summary>
     /// 消息回调
     /// </summary>
     /// <param name="host"></param>
     /// <param name="msgId"></param>
     /// <param name="rp"></param>
-    public delegate void MessageReceive(string host, int port, ushort msgId, CoAPPackage rp);
-
+    public delegate void MessageTransmit(string host, int port, CoAPPackage rp);
 }

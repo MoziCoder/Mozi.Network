@@ -47,6 +47,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Mozi.IoT, Version=1.3.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mozi.IoT.1.3.5\lib\net40\Mozi.IoT.dll</HintPath>
+    </Reference>
+    <Reference Include="Mozi.IoT.Client, Version=1.3.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mozi.IoT.Client.1.3.6\lib\net40\Mozi.IoT.Client.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -5589,6 +5595,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\example.txt" />
+    <Content Include="RFC 7252 The Constrained Application Protocol %28CoAP%29.html" />
+    <Content Include="RFC 7959 Block-Wise Transfers in the Constrained Application Protocol %28CoAP%29.htm" />
+    <Content Include="RFC 8613 Object Security for Constrained RESTful Environments %28OSCORE%29.htm" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="admin\assets\fonts\fontawesome-webfont.eot">

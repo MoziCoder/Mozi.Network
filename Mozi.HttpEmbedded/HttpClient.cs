@@ -13,6 +13,7 @@ namespace Mozi.HttpEmbedded
 
     //DONE http客户端，因http客户端实现比较多，暂时不实现，待后期规划
     //TODO 应同步实现Https HttpQUIC(http3.0)
+    //TODO 应加入TLS安全传输
 
     /// <summary>
     /// Http客户端
@@ -20,21 +21,10 @@ namespace Mozi.HttpEmbedded
     public class HttpClient
     {
         private const string Charset = "UTF-8";
-        private const string UserAgent = "Mozilla/5.0 (Linux;Android 4.4.2;OEM Device) AppleWebKit/537.36 (KHTML,like Gecko) Chrom/39.0.2171.71 Mobile Crosswalk/10.3.235.16 Mobile Safri/537.36 Mozi/1.3.6";
+        private const string UserAgent = "Mozilla/5.0 (Linux;Android 4.4.2;OEM Device) AppleWebKit/537.36 (KHTML,like Gecko) Chrom/39.0.2171.71 Mobile Crosswalk/10.3.235.16 Mobile Safri/537.36 Mozi/1.3.7";
         private const string Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
         private const string AcceptEncoding = "gzip, deflate";
 
-        /// <summary>
-        /// 注入URL相关参数,domain,port,paths,queries
-        /// </summary>
-        /// <param name="uri"></param>
-        /// <param name="cp"></param>
-        private void PackUrl(ref UriInfo uri, ref HttpRequest req)
-        {
-            //注入Host
-            req.SetHeader(HeaderProperty.Host, string.IsNullOrEmpty(uri.Domain)?uri.Host:uri.Domain);
-            req.SetHeader(HeaderProperty.Referer, uri.Url);
-        }
         //TODO 此处应考虑Gzip解码
         /// <summary>
         /// 发送HTTP请求
@@ -64,7 +54,7 @@ namespace Mozi.HttpEmbedded
 
             if (!string.IsNullOrEmpty(uri.Url))
             {
-                PackUrl(ref uri, ref req);
+                req.SetUri(uri);
                 req.SetMethod(method);
                 req.SetPath(uri.Path + (String.IsNullOrEmpty(uri.Query) ? "" : "&" + uri.Query));
                 req.SetHeader(HeaderProperty.UserAgent, UserAgent);
@@ -73,7 +63,7 @@ namespace Mozi.HttpEmbedded
                 req.SetBody(body);
                 if (headers != null)
                 {
-                    foreach (var h in headers)
+                    foreach (KeyValuePair<HeaderProperty, string> h in headers)
                     {
                         req.SetHeader(h.Key, h.Value);
                     }

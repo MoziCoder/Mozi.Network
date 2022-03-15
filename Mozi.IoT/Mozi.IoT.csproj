@@ -54,6 +54,7 @@
     <Compile Include="Encode\Base64.cs" />
     <Compile Include="Encode\Hex.cs" />
     <Compile Include="Encode\HtmlEncoder.cs" />
+    <Compile Include="Encode\LinkFormator.cs" />
     <Compile Include="Encode\StringEncoder.cs" />
     <Compile Include="Encode\UrlEncoder.cs" />
     <Compile Include="CoAPOptionValue.cs" />
