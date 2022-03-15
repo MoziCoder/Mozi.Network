@@ -18,11 +18,11 @@ Mozi.IoT.CoAP为Iot.Client调试工具，使用命令行方式对CoAPClient进�
       options 请求选项参数如下：
 
         -type                    消息类型,取值
-                                 con   --Confirmable
-                                 non   --NonConfirmable
-                                 ack   --Acknowledgement
-                                 rst   --Reset
-        -observe                 监听若干秒，参数值为整数，单位为秒
+                                    con   --Confirmable
+                                    non   --NonConfirmable
+                                    ack   --Acknowledgement
+                                    rst   --Reset
+        -time                    监听若干秒，参数值为整数，单位为秒
 
         -token                   格式：0x0f0e
         -ifmatch                 
@@ -36,6 +36,7 @@ Mozi.IoT.CoAP为Iot.Client调试工具，使用命令行方式对CoAPClient进�
         -locationquery           
         -block2                  Block2设置，格式：Num/MoreFlag/Size
         -block1                  Block1设置，格式：Num/MoreFlag/Size
+                                 Num:0~1045785,MoreFlag:[0|1],Size:0~1024
         -size2                   
         -proxyuri                
         -proxyscheme             

@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Mozi.IoT.Cache;
 using Mozi.IoT.Encode;
 
 // CoAP拥塞机制由请求方进行自主控制，故请求方需要实现拥塞控制算法
-
 namespace Mozi.IoT
 {
-    public delegate void ResponseReceived(string host, int port, CoAPPackage resp);
-    public delegate void PackageReceived(string host, int port, byte[] data);
 
     /// <summary>
     /// CoAP客户端
@@ -36,14 +34,21 @@ namespace Mozi.IoT
         ///// </summary>
         //public ushort RemotePort { get { return _remotePort; } protected set { _remotePort = value; } }
 
-        public ResponseReceived onResponse;
-        public PackageReceived onPackageReceived;
+        public MessageReceive Response;
+
+        private byte[] _token;
+
+        /// <summary>
+        /// 统一通信Token
+        /// </summary>
+        public byte[] Token { get => _token; set => _token = value; }
 
         public CoAPClient()
         {
             _cacheManager = new MessageCacheManager(this);
             _socket = new UDPSocketIOCP();
             _socket.AfterReceiveEnd += Socket_AfterReceiveEnd;
+            _token = _cacheManager.GenerateToken(8);
             //配置本地服务口地址
         }
         /// <summary>
@@ -66,18 +71,18 @@ namespace Mozi.IoT
         {
             _packetReceived++;
 
-            if (onPackageReceived != null)
+            if (PackageReceived != null)
             {
-                onPackageReceived(args.IP, args.Port, args.Data);
+                PackageReceived(args.IP, args.Port, args.Data);
             }
 
             CoAPPackage pack = CoAPPackage.Parse(args.Data, CoAPPackageType.Response);
 
             if (pack != null)
             {
-                if (onResponse != null)
+                if (Response != null)
                 {
-                    onResponse(args.IP, args.Port, pack);
+                    Response(args.IP, args.Port, pack);
                 }
             }
         }
@@ -165,7 +170,7 @@ namespace Mozi.IoT
         /// <returns></returns>
         public ushort SendMessage(string url, CoAPMessageType msgType, CoAPRequestMethod method, IList<CoAPOption> options, byte[] payload)
         {
-            return SendMessage(url, msgType, _cacheManager.GenerateMessageId(), _cacheManager.GenerateToken(8),method, options, payload);
+            return SendMessage(url, msgType, _cacheManager.GenerateMessageId(), _token, method, options, payload);
         }
         ///<summary>
         /// Get方法 填入指定格式的URI，如果是域名，程序会调用DNS进行解析
@@ -183,9 +188,9 @@ namespace Mozi.IoT
         /// <param name="msgType">消息类型，默认为<see cref="CoAPMessageType.Confirmable"/></param>
         /// <param name="options">选项值集合。可设置除<see cref="CoAPOptionDefine.UriHost"/>，<see cref="CoAPOptionDefine.UriPort"/>，<see cref="CoAPOptionDefine.UriPath"/>，<see cref="CoAPOptionDefine.UriQuery"/>之外的选项值</param>
         /// <returns>MessageId</returns>
-        public ushort Get(string url,CoAPMessageType msgType,IList<CoAPOption> options)
+        public ushort Get(string url, CoAPMessageType msgType, IList<CoAPOption> options)
         {
-            return SendMessage(url, msgType ?? CoAPMessageType.Confirmable, _cacheManager.GenerateMessageId(), _cacheManager.GenerateToken(8), CoAPRequestMethod.Get, options, null);
+            return SendMessage(url, msgType ?? CoAPMessageType.Confirmable, _cacheManager.GenerateMessageId(), _token, CoAPRequestMethod.Get, options, null);
         }
         /// <summary>
         /// Get方法<see cref="Get(string, CoAPMessageType, IList{CoAPOption})"/>
@@ -221,9 +226,8 @@ namespace Mozi.IoT
             {
                 options = new List<CoAPOption>();
             }
-
             options.Add(new CoAPOption() { Option = CoAPOptionDefine.ContentFormat, Value = new UnsignedIntegerOptionValue() { Value = contentType.Num } });
-            return SendMessage(url, msgType ?? CoAPMessageType.Confirmable, _cacheManager.GenerateMessageId(), _cacheManager.GenerateToken(8), CoAPRequestMethod.Delete, options, payload);
+            return SendMessage(url, msgType ?? CoAPMessageType.Confirmable, _cacheManager.GenerateMessageId(), _token, CoAPRequestMethod.Post, options, payload);
 
         }
         /// <summary>
@@ -234,7 +238,7 @@ namespace Mozi.IoT
         /// <param name="contentType"></param>
         /// <param name="payload"></param>
         /// <returns>MessageId</returns>
-        public ushort Post(string url, CoAPMessageType msgType, ContentFormat contentType,  byte[] payload)
+        public ushort Post(string url, CoAPMessageType msgType, ContentFormat contentType, byte[] payload)
         {
             return Post(url, msgType, contentType, null, payload);
         }
@@ -259,9 +263,9 @@ namespace Mozi.IoT
         /// <param name="contentType"></param>
         /// <param name="text"></param>
         /// <returns>MessageId</returns>
-        public ushort Post(string url, CoAPMessageType msgType, ContentFormat contentType,string text)
+        public ushort Post(string url, CoAPMessageType msgType, ContentFormat contentType, string text)
         {
-            return Post(url, msgType, contentType,null, text);
+            return Post(url, msgType, contentType, null, text);
         }
         /// <summary>
         /// PUT方法 不安全
@@ -278,9 +282,8 @@ namespace Mozi.IoT
             {
                 options = new List<CoAPOption>();
             }
-
             options.Add(new CoAPOption() { Option = CoAPOptionDefine.ContentFormat, Value = new UnsignedIntegerOptionValue() { Value = contentType.Num } });
-            return SendMessage(url, msgType ?? CoAPMessageType.Confirmable, _cacheManager.GenerateMessageId(), _cacheManager.GenerateToken(8), CoAPRequestMethod.Delete, options, payload);
+            return SendMessage(url, msgType ?? CoAPMessageType.Confirmable, _cacheManager.GenerateMessageId(), _token, CoAPRequestMethod.Put, options, payload);
         }
         /// <summary>
         /// PUT方法
@@ -290,9 +293,9 @@ namespace Mozi.IoT
         /// <param name="contentType"></param>
         /// <param name="payload"></param>
         /// <returns>MessageId</returns>
-        public ushort Put(string url, CoAPMessageType msgType, ContentFormat contentType,  byte[] payload)
+        public ushort Put(string url, CoAPMessageType msgType, ContentFormat contentType, byte[] payload)
         {
-           return Put(url, msgType, contentType, null,payload);
+            return Put(url, msgType, contentType, null, payload);
         }
         /// <summary>
         /// DELETE方法，不推荐使用 不安全
@@ -301,9 +304,9 @@ namespace Mozi.IoT
         /// <param name="msgType">消息类型，默认为<see cref="CoAPMessageType.Confirmable"/></param>
         /// <param name="options"></param>
         /// <returns>MessageId</returns>
-        public ushort Delete(string url, CoAPMessageType msgType,  IList<CoAPOption> options)
+        public ushort Delete(string url, CoAPMessageType msgType, IList<CoAPOption> options)
         {
-            return SendMessage(url, msgType ?? CoAPMessageType.Confirmable, _cacheManager.GenerateMessageId(), _cacheManager.GenerateToken(8), CoAPRequestMethod.Delete,options, null);
+            return SendMessage(url, msgType ?? CoAPMessageType.Confirmable, _cacheManager.GenerateMessageId(), _token, CoAPRequestMethod.Delete, options, null);
         }
         /// <summary>
         /// DELETE方法
@@ -316,9 +319,64 @@ namespace Mozi.IoT
             return Delete(url, msgType, null);
         }
         //分块提交
-        internal ushort PostBlock(string url, CoAPMessageType msgType, ContentFormat contentType, byte[] payload)
+        internal ushort PostBlock(string url, CoAPMessageType msgType, ContentFormat contentType, int blockSize, byte[] body)
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 文件上传，功能还在调试，暂时不用
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="msgType"></param>
+        /// <param name="contentType"></param>
+        /// <param name="path"></param>
+        public void PostFile(string url, CoAPMessageType msgType, ContentFormat contentType, string path)
+        {
+            FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read);
+            uint blockSize = (uint)BlockSize;
+            //分片
+            int blockCount = (int)Math.Ceiling((double)fs.Length / blockSize);
+
+            CoAPOption cp = new CoAPOption() { Option = CoAPOptionDefine.Size1, Value = new UnsignedIntegerOptionValue { Value = fs.Length } };
+            for (int i = 0; i < blockCount - 1; i++)
+            {
+                byte[] payload = new byte[blockSize];
+                fs.Read(payload, 0, payload.Length);
+                List<CoAPOption> opts = new List<CoAPOption>();
+                CoAPOption opt = new CoAPOption()
+                {
+                    Option = CoAPOptionDefine.Block1,
+                    Value = new BlockOptionValue
+                    {
+                        Size = (ushort)blockSize,
+                        MoreFlag = true,
+                        Num = (uint)i,
+                    }
+                };
+                opts.Add(opt);
+                opts.Add(cp);
+                Post(url, CoAPMessageType.Confirmable, ContentFormat.Stream, opts, payload);
+            }
+            byte[] last = new byte[blockSize];
+            int iReadCount = fs.Read(last, 0, last.Length);
+            List<CoAPOption> opts2 = new List<CoAPOption>();
+            CoAPOption opt2 = new CoAPOption()
+            {
+                Option = CoAPOptionDefine.Block1,
+                Value = new BlockOptionValue
+                {
+                    Size = (ushort)blockSize,
+                    MoreFlag = false,
+                    Num = (uint)(blockCount - 1),
+                }
+            };
+            byte[] lastPayload = new byte[iReadCount];
+            Array.Copy(last, lastPayload, lastPayload.Length);
+            opts2.Add(opt2);
+            opts2.Add(cp);
+            Post(url, CoAPMessageType.Confirmable, ContentFormat.Stream, opts2, lastPayload);
+            fs.Close();
         }
     }
 }

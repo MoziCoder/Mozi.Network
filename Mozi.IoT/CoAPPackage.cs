@@ -528,6 +528,9 @@ namespace Mozi.IoT
                         //int contentType = BitConvert.ToUint32(opt.Value.Pack);
                         ContentFormat ct =AbsClassEnum.Get<ContentFormat>(contentType.ToString());
                         sOptValue = ct.ContentType;
+                    }else if (opt.Option == CoAPOptionDefine.Size1 || opt.Option == CoAPOptionDefine.Size2){
+                        var optValue = new UnsignedIntegerOptionValue() { Pack = opt.Value.Pack };
+                        sOptValue = optValue.ToString();
                     }
                     else
                     {

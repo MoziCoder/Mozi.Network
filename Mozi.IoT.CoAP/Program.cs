@@ -57,6 +57,9 @@ namespace Mozi.IoT.CoAP
 
         private static bool observeMode = false;
 
+        private static String _filePath = "";
+        private static string _url = "";
+
         static void Main(string[] args)
         {
             ParseRequest(args);
@@ -117,9 +120,9 @@ namespace Mozi.IoT.CoAP
                             return;
                         }
 
-                        var url = args[1];
+                        _url = args[1];
 
-                        UriInfo uri = UriInfo.Parse(url);
+                        UriInfo uri = UriInfo.Parse(_url);
                         cp.SetUri(uri);
 
                         int i;
@@ -203,7 +206,7 @@ namespace Mozi.IoT.CoAP
                                 }
                                 switch (r.Key)
                                 {
-                                    case "observe":
+                                    case "time":
                                         {
                                             isOption = false;
                                             observeSeconds = int.Parse(r.Value.ToString());
@@ -211,6 +214,12 @@ namespace Mozi.IoT.CoAP
                                             {
                                                 observeMode = true;
                                             }
+                                        }
+                                        break;
+                                    case "file":
+                                        {
+                                            isOption = false;
+                                            _filePath = r.Value.ToString();
                                         }
                                         break;
                                     case "type":
@@ -414,7 +423,7 @@ namespace Mozi.IoT.CoAP
             //本地端口
             cc.SetPort(12340);
             cc.Start();
-            cc.onResponse += new ResponseReceived((x, y,z) => {
+            cc.Response += new MessageReceive((x, y,z) => {
                 Console.WriteLine(z.ToString(CoAPPackageToStringType.HttpStyle));
                 responsed = true;
                 if (!observeMode)
@@ -429,11 +438,19 @@ namespace Mozi.IoT.CoAP
                 cp.MesssageId = mc.GenerateMessageId();
             }
             Console.WriteLine(cp.ToString(CoAPPackageToStringType.HttpStyle));
+
             //if (cp.Token == null)
             //{
             //    cp.Token = mc.GenerateToken(8);
             //}
-            cc.SendMessage(host, port, cp);
+            if (_filePath != "")
+            {
+                cc.PostFile(_url, CoAPMessageType.Confirmable, ContentFormat.Stream, _filePath);
+            }
+            else
+            {
+                cc.SendMessage(host, port, cp);
+            }
         }
 
         private static void Close()
@@ -486,13 +503,14 @@ namespace Mozi.IoT.CoAP
                             "\r\n\r\nurl 格式" +
                             "\r\n  coap://{host}[:{port}]/{path}[?{query}]" +
                             "\r\n\r\noptions 请求选项参数如下：" +
-                            "\r\n"+
+                            "\r\n" +
                             "\r\n  -type                    消息类型,取值范围" +
                             "\r\n                            con   --Confirmable" +
                             "\r\n                            non   --NonConfirmable" +
                             "\r\n                            ack   --Acknowledgement" +
                             "\r\n                            rst   --Reset" +
-                            "\r\n  -observe                 监听若干秒，参数值为整数，单位为秒" +
+                            "\r\n  -time                    监听若干秒，参数值为整数，单位为秒。" +
+                            "\r\n" +
                             "\r\n  -token                   格式：0x0f0e" +
                             "\r\n  -ifmatch                 " +
                             "\r\n  -etag                    " +
@@ -505,6 +523,7 @@ namespace Mozi.IoT.CoAP
                             "\r\n  -locationquery           " +
                             "\r\n  -block2                  Block2设置，格式：Num/MoreFlag/Size" +
                             "\r\n  -block1                  Block1设置，格式：Num/MoreFlag/Size" +
+                            "\r\n                           Num:0~1045785,MoreFlag:[0|1],Size:0~1024" +
                             "\r\n  -size2                   " +
                             "\r\n  -proxyuri                " +
                             "\r\n  -proxyscheme             " +

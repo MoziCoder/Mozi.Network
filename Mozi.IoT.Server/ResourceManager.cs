@@ -57,8 +57,8 @@ namespace Mozi.IoT
         internal CoAPPackage Invoke(CoAPContext ctx)
         {
             string path = ctx.Request.Path;
-            //确定路径映射关系
 
+            //确定路径映射关系
             string ns = "", name = "";
             var paths = path.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
             if (paths.Length > 0)
@@ -72,24 +72,41 @@ namespace Mozi.IoT
             var ri = _apis.Find(x => x.Namespace.Equals(ns, StringComparison.OrdinalIgnoreCase) && x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
             Type cls = null;
             cls = ri.ResourceType;
+
             //TODO 将Method缓存
-            MethodInfo method = cls.GetMethod("On" + ctx.Request.Code.Name, BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.Public);
+            //TODO 介入Size2查询
+            //TODO 介入Block2查询
+            //TODO 介入分块传输
+            //TODO 介入查询协商
 
-            ParameterInfo[] pms = method.GetParameters();
-
-            //开始装配参数
-            object[] args = new object[] { ctx };
 
             //实例化对象
-            object instance = Activator.CreateInstance(cls);
-            
-            ////TODO 注入上下文变量
-            //((CoAPResource)instance).Server = ctx;
+            CoAPResource instance = (CoAPResource)Activator.CreateInstance(cls);
+            CoAPPackage result = null;
 
-            //调用方法
-            CoAPPackage result = (CoAPPackage)method.Invoke(instance, BindingFlags.IgnoreCase, null, args, CultureInfo.CurrentCulture);
+            if (!instance.HandleSize2Query(ctx))
+            {
+
+                MethodInfo method = cls.GetMethod("On" + ctx.Request.Code.Name, BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.Public);
+
+                ParameterInfo[] pms = method.GetParameters();
+
+                //开始装配参数
+                object[] args = new object[] { ctx };
+
+                ////TODO 注入上下文变量
+                //((CoAPResource)instance).Server = ctx;
+
+                //调用方法
+                result = (CoAPPackage)method.Invoke(instance, BindingFlags.IgnoreCase, null, args, CultureInfo.CurrentCulture);
+            }
+            else
+            {
+                result=ctx.Response;
+            }
             //对象置空
             instance = null;
+
             return result;
         }
 

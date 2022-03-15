@@ -9,14 +9,21 @@ namespace Mozi.IoT.Encode
 
         }
 
-        public static void ToString(List<LinkText> links)
+        public static void ToString(List<LinkInfo> links)
         {
             
         }
     }
 
-    public class LinkText
+    public class LinkInfo
     {
+        public string Path { get; set; }
+        public List<LinkAttribute> Attributes = new List<LinkAttribute>();
+    }
 
+    public class LinkAttribute
+    {
+        public string AttributeName { get;set; }
+        public object AttributeValue { get; set; }
     }
 }

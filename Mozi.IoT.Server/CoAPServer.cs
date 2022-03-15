@@ -41,27 +41,37 @@ namespace Mozi.IoT
     /// <summary>
     /// CoAP服务端
     /// </summary>
-    public class CoAPServer:CoAPPeer
+    public class CoAPServer : CoAPPeer
     {
         private ulong _packageReceived = 0, _totalReceivedBytes;
 
-        private Cache.MessageCacheManager _cm ;
+        private Cache.MessageCacheManager _cm;
 
-        public  MessageReceive RequestReceived;
+        public MessageReceive RequestReceived;
 
         private bool _proxyPassed = false;
+
+        private uint maxBodySize=20*1024*1024;
+
+        /// <summary>
+        /// 服务端能处理的最大POST资源大小 单位byte
+        /// </summary>
+        public uint MaxBodySize { get => maxBodySize; set => maxBodySize = value; }
+        /// <summary>
+        /// 服务器根目录
+        /// </summary>
+        public string Root = AppDomain.CurrentDomain.BaseDirectory;
 
         public CoAPServer()
         {
             _cm = new Cache.MessageCacheManager(this);
         }
-
         /// <summary>
         /// 设置此方法后，所有请求将转至后端HTTP服务器
         /// </summary>
         /// <param name="ip"></param>
         /// <param name="port"></param>
-        internal void SetProxyPass(string ip,ushort port)
+        internal void SetProxyPass(string ip, ushort port)
         {
             _proxyPassed = true;
         }
@@ -72,13 +82,18 @@ namespace Mozi.IoT
         /// <param name="args"></param>
         protected override void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
+            if (PackageReceived != null)
+            {
+                PackageReceived(args.IP, args.Port, args.Data);
+            }
+
             CoAPContext ctx = new CoAPContext();
             ctx.ClientAddress = args.IP;
             ctx.ClientPort = args.Port;
             _packageReceived++;
 
             _totalReceivedBytes += (uint)args.Data.Length;
-            
+
             Console.WriteLine($"Rev count:{_packageReceived},current:{args.Data.Length}bytes,total:{_totalReceivedBytes}bytes");
 
             try

@@ -87,15 +87,15 @@ namespace Mozi.IoT
                 }
                 else if (num < 65536) //2~16
                 {
-                    _pack = new byte[2] { data[2], data[1] };
+                    _pack = new byte[2] { data[1], data[0] };
                 }
                 else if (num < 16777216) //2~24
                 {
-                    _pack = new byte[3] { data[3], data[2], data[1] };
+                    _pack = new byte[3] { data[2], data[1], data[0] };
                 }
                 else
                 {
-                    _pack = new byte[4] { data[4], data[3], data[2], data[1] };
+                    _pack = new byte[4] { data[3], data[2], data[1], data[0] };
                 }
             }
         }
