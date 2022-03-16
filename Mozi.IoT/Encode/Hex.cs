@@ -21,7 +21,12 @@ namespace Mozi.IoT.Encode
         }
         public static string To(byte[] data)
         {
-            string s = BitConverter.ToString(data, 0).Replace("-", string.Empty).ToLower();
+            return To(data,0,data.Length);
+        }
+
+        public static string To(byte[] data,int indStart,int length)
+        {
+            string s = BitConverter.ToString(data, indStart,length).Replace("-", string.Empty).ToLower();
             return s;
         }
     }

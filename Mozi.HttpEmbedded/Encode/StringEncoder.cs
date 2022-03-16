@@ -22,7 +22,17 @@ namespace Mozi.HttpEmbedded.Encode
         /// <returns></returns>
         public static string Decode(byte[] data)
         {
-            return System.Text.Encoding.UTF8.GetString(data);
+            return Decode(data, 0, data.Length);
+        }
+
+        /// <summary>
+        /// ½âÂë
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static string Decode(byte[] data, int index, int count)
+        {
+            return System.Text.Encoding.UTF8.GetString(data, index, count);
         }
     }
 }

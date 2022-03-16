@@ -52,6 +52,7 @@
     <Compile Include="ContentFormat.cs" />
     <Compile Include="DNSResolver.cs" />
     <Compile Include="Encode\Base64.cs" />
+    <Compile Include="Encode\CBOREncoder.cs" />
     <Compile Include="Encode\Hex.cs" />
     <Compile Include="Encode\HtmlEncoder.cs" />
     <Compile Include="Encode\LinkFormator.cs" />
@@ -84,9 +85,14 @@
     <None Include="rfc8974.pdf" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="RFC 6690 Constrained RESTful Environments %28CoRE%29 Link Format.html" />
+    <Content Include="RFC 7049 Concise Binary Object Representation %28CBOR%29.html" />
+    <Content Include="RFC 7228 Terminology for Constrained-Node Networks.html" />
     <Content Include="RFC 7252 The Constrained Application Protocol %28CoAP%29.html" />
     <Content Include="RFC 7959 Block-Wise Transfers in the Constrained Application Protocol %28CoAP%29.htm" />
+    <Content Include="RFC 8323 CoAP %28Constrained Application Protocol%29 over TCP, TLS, and WebSockets.htm" />
     <Content Include="RFC 8613 Object Security for Constrained RESTful Environments %28OSCORE%29.htm" />
+    <Content Include="RFC 8949 Concise Binary Object Representation %28CBOR%29.htm" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
