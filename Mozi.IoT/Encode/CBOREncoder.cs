@@ -3,32 +3,39 @@ using System.Collections.Generic;
 
 namespace Mozi.IoT.Encode
 {
-    class CBOREncoder
+    //TODO 进一步实现CBOR编码解码
+    internal delegate CBORDataInfo CBORDataParser(byte[] data);
+
+    internal delegate byte[] CBORDataPacker(CBORDataInfo data);
+
+    internal class CBOREncoder
     {
-        public static List<CBORDataInfo> Decode(byte[] data)
+        /// <summary>
+        /// 解析数据
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static CBORDataInfo Decode(byte[] data)
         {
-            List<CBORDataInfo> infos = new List<CBORDataInfo>();
-            int ind = -1;
-            while (ind < data.Length)
-            {
-                ind++;
-
-            }
+            CBORDataType cb = CBORDataType.Parse(data[0]);
+            CBORDataInfo di = cb.Parser(data);
+            return di;
         }
-
-        public static byte[] Encode(List<CBORDataInfo> data)
+        /// <summary>
+        /// 编码数据
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static byte[] Encode(CBORDataInfo data)
         {
-
+            return data.DataType.Packer(data);
         }
     }
-    public delegate CBORDataInfo CBORDataParser(byte[] data);
-
-    public delegate byte[] CBORDataPacker(CBORDataInfo data);
 
     /// <summary>
     /// CBOR数据类型
     /// </summary>
-    public class CBORDataType : AbsClassEnum
+    internal class CBORDataType : AbsClassEnum
     {
         private byte _header;
         private string _typeName;
@@ -41,14 +48,17 @@ namespace Mozi.IoT.Encode
         private CBORDataPacker _packer;
         private CBORDataParser _parser;
 
-        public static CBORDataType UnSignedInteger = new CBORDataType(0b00000000, "unsigned integer", new CBORDataParser(ParseUnSignedInteger), new CBORDataPacker(PackUnSignedInteger));
-        public static CBORDataType NegativeInteger = new CBORDataType(0b00100000, "netative integer", new CBORDataParser(ParseNegativeInteger), new CBORDataPacker(PackNegativeInteger));
-        public static CBORDataType StringArray = new CBORDataType(0b01000000, "string array", new CBORDataParser(ParseStringArray), new CBORDataPacker(PackStringArray));
-        public static CBORDataType StringText = new CBORDataType(0b01100000, "string text", new CBORDataParser(ParseStringText), new CBORDataPacker(PackStringText));
-        public static CBORDataType ByteArray = new CBORDataType(0b10000000, "byte array", new CBORDataParser(ParseByteArray), new CBORDataPacker(PackByteArray));
-        public static CBORDataType KeyPair = new CBORDataType(0b10100000, "map key/pair", new CBORDataParser(ParseKeyPair), new CBORDataPacker(PackKeyPair));
-        public static CBORDataType TagItem = new CBORDataType(0b11000000, "tag item", new CBORDataParser(ParseTagItem), new CBORDataPacker(ParseTagItem));
-        public static CBORDataType SimpleFloat = new CBORDataType(0b11100000, "simple float", new CBORDataParser(ParseSimpleFloat), new CBORDataPacker(PackSimpleFloat));
+        public static CBORDataType UnSignedInteger  = new CBORDataType(0b00000000, "unsigned integer", new CBORDataParser(ParseUnSignedInteger), new CBORDataPacker(PackUnSignedInteger));
+        public static CBORDataType NegativeInteger  = new CBORDataType(0b00100000, "netative integer", new CBORDataParser(ParseNegativeInteger), new CBORDataPacker(PackNegativeInteger));
+        public static CBORDataType StringArray      = new CBORDataType(0b01000000, "string array", new CBORDataParser(ParseStringArray), new CBORDataPacker(PackStringArray));
+        public static CBORDataType StringText       = new CBORDataType(0b01100000, "string text", new CBORDataParser(ParseStringText), new CBORDataPacker(PackStringText));
+        public static CBORDataType ByteArray        = new CBORDataType(0b10000000, "byte array", new CBORDataParser(ParseByteArray), new CBORDataPacker(PackByteArray));
+        public static CBORDataType KeyPair          = new CBORDataType(0b10100000, "map key/pair", new CBORDataParser(ParseKeyPair), new CBORDataPacker(PackKeyPair));
+        public static CBORDataType TagItem          = new CBORDataType(0b11000000, "tag item", new CBORDataParser(ParseTagItem), new CBORDataPacker(ParseTagItem));
+        public static CBORDataType SimpleFloat      = new CBORDataType(0b11100000, "simple float", new CBORDataParser(ParseSimpleFloat), new CBORDataPacker(PackSimpleFloat));
+
+        public CBORDataParser Parser { get { return _parser; } }
+        public CBORDataPacker Packer { get { return _packer; } }
 
         public CBORDataType(byte header, string dt, CBORDataParser parser, CBORDataPacker packer)
         {
@@ -344,7 +354,7 @@ namespace Mozi.IoT.Encode
     /// <summary>
     /// CBOR数据信息
     /// </summary>
-    public class CBORDataInfo
+    internal class CBORDataInfo
     {
         public CBORDataType DataType { get; set; }
         public long Length { get; set; }
