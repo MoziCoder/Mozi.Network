@@ -1,4 +1,5 @@
 ﻿using Mozi.IoT.Encode;
+using Mozi.IoT.Generic;
 using System;
 
 namespace Mozi.IoT

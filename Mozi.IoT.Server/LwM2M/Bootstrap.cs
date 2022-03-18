@@ -1,4 +1,6 @@
-﻿namespace Mozi.IoT.Server.LwM2M
+﻿using Mozi.IoT.Generic;
+
+namespace Mozi.IoT.Server.LwM2M
 {
     //发现
     //写入

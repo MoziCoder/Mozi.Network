@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mozi.NTP.Generic;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 

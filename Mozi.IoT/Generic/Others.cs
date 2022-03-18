@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Mozi.IoT
+namespace Mozi.IoT.Generic
 {
     public static class Others
     {

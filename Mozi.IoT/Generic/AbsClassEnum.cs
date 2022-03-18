@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace Mozi.NTP
+namespace Mozi.IoT.Generic
 {
     /// <summary>
     /// ·ÂÃ¶¾Ù ³éÏóÀà

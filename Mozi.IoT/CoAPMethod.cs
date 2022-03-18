@@ -1,4 +1,6 @@
-﻿namespace Mozi.IoT
+﻿using Mozi.IoT.Generic;
+
+namespace Mozi.IoT
 {
     // 代码 8bits=3bits+5bits
     // 高3位为分类 
@@ -44,7 +46,7 @@
     //     5.05 | Proxying Not Supported       | [RFC7252] |
     //     
     //  6.00-7.31 Reserved
-    
+
     /// <summary>
     /// CoAP操作代码
     /// </summary>

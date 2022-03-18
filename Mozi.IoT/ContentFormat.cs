@@ -1,4 +1,6 @@
-﻿namespace Mozi.IoT
+﻿using Mozi.IoT.Generic;
+
+namespace Mozi.IoT
 {
     ///<summary>
     /// 内容格式

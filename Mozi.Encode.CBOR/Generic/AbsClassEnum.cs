@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace Mozi.IoT
+namespace Mozi.Encode.CBOR
 {
     /// <summary>
     /// ·ÂÃ¶¾Ù ³éÏóÀà

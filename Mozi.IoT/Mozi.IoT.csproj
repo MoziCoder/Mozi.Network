@@ -38,7 +38,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbsClassEnum.cs" />
+    <Compile Include="Generic\AbsClassEnum.cs" />
     <Compile Include="Cache\CacheControl.cs" />
     <Compile Include="Cache\Global.cs" />
     <Compile Include="Cache\MemoryCache.cs" />
@@ -52,14 +52,13 @@
     <Compile Include="ContentFormat.cs" />
     <Compile Include="DNSResolver.cs" />
     <Compile Include="Encode\Base64.cs" />
-    <Compile Include="Encode\CBOREncoder.cs" />
     <Compile Include="Encode\Hex.cs" />
     <Compile Include="Encode\HtmlEncoder.cs" />
     <Compile Include="Encode\LinkFormator.cs" />
     <Compile Include="Encode\StringEncoder.cs" />
     <Compile Include="Encode\UrlEncoder.cs" />
     <Compile Include="CoAPOptionValue.cs" />
-    <Compile Include="Others.cs" />
+    <Compile Include="Generic\Others.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerEvent.cs" />
     <Compile Include="Session.cs" />
