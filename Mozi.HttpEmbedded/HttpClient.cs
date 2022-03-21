@@ -97,7 +97,7 @@ namespace Mozi.HttpEmbedded
             }
             else
             {
-                throw new Exception($"本地无法解析指定的链接地址:{url}");
+                throw new Exception($"分析指定的地址:{url}时出错，请检查地址是否合法");
             }
 
         }

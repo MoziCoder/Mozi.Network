@@ -4,7 +4,8 @@ using System.IO;
 using Mozi.IoT.Cache;
 using Mozi.IoT.Encode;
 
-// CoAP拥塞机制由请求方进行自主控制，故请求方需要实现拥塞控制算法
+//TODO CoAP协议约定拥塞机制由请求方进行自主控制，故请求方需要实现拥塞控制算法
+
 namespace Mozi.IoT
 {
 
@@ -34,8 +35,13 @@ namespace Mozi.IoT
         ///// </summary>
         //public ushort RemotePort { get { return _remotePort; } protected set { _remotePort = value; } }
 
+        /// <summary>
+        /// 服务端回应请求
+        /// </summary>
         public MessageTransmit Response;
-
+        /// <summary>
+        /// 发起请求
+        /// </summary>
         public MessageTransmit Request;
 
         private byte[] _token;
@@ -162,7 +168,7 @@ namespace Mozi.IoT
             }
             else
             {
-                throw new Exception($"本地无法解析指定的链接地址:{url}");
+                throw new Exception($"分析链接地址:{url}时出错，请检查URL地址是否合法");
             }
             return cp.MesssageId;
         }

@@ -72,8 +72,10 @@ namespace Mozi.IoT
         /// </summary>
         protected List<CoAPCode> SupportedRequest = new List<CoAPCode> { CoAPRequestMethod.Get, CoAPRequestMethod.Post, CoAPRequestMethod.Put, CoAPRequestMethod.Delete };
 
+        /// <summary>
+        /// 数据包接收事件，字节流数据包
+        /// </summary>
         public PackageReceive PackageReceived;
-
         /// <summary>
         /// 服务端口
         /// </summary>
@@ -107,7 +109,7 @@ namespace Mozi.IoT
             Start(BindPort);
         }
         /// <summary>
-        /// 启动本端服务
+        /// 启动本端服务 默认5683端口
         /// </summary>
         /// <param name="port"></param>
         public void Start(int port)

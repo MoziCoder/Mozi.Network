@@ -39,7 +39,7 @@ namespace Mozi.IoT
     //     
 
     /// <summary>
-    /// CoAP服务端
+    /// CoAP服务端　默认5683端口
     /// </summary>
     public class CoAPServer : CoAPPeer
     {
@@ -47,7 +47,13 @@ namespace Mozi.IoT
 
         private Cache.MessageCacheManager _cm;
 
+        /// <summary>
+        /// 接收到请求
+        /// </summary>
         public MessageTransmit RequestReceived;
+        /// <summary>
+        /// 发起响应请求
+        /// </summary>
         public MessageTransmit Responsed;
 
         private bool _proxyPassed = false;

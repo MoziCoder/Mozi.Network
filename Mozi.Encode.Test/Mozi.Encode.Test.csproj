@@ -4,16 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AA09C467-EB36-4927-8520-61285834051A}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Mozi.Encode</RootNamespace>
-    <AssemblyName>Mozi.Encode.CBOR</AssemblyName>
+    <ProjectGuid>{B59F9DBA-FAA9-4386-B614-731254004EFB}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Mozi.Encode.Test</RootNamespace>
+    <AssemblyName>Mozi.Encode.Test</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -30,29 +31,22 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Generic\AbsClassEnum.cs" />
-    <Compile Include="CBOREncoder.cs" />
-    <Compile Include="Generic\Others.cs" />
-    <Compile Include="Hex.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Serialize.cs" />
-    <Compile Include="StringEncoder.cs" />
-    <Compile Include="Undefined.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Readme.md" />
+    <ProjectReference Include="..\Mozi.Encode.CBOR\Mozi.Encode.CBOR.csproj">
+      <Project>{aa09c467-eb36-4927-8520-61285834051a}</Project>
+      <Name>Mozi.Encode.CBOR</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

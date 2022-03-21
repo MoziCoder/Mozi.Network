@@ -117,7 +117,7 @@ namespace Mozi.IoT
         /// Block2分块协商
         /// </summary>
         /// <param name="ctx"></param>
-        protected virtual void HandleBlock2Query(CoAPContext ctx)
+        internal virtual void HandleBlock2Query(CoAPContext ctx)
         {
             CoAPOption opt = ctx.Request.Options.Find(x => x.Option == CoAPOptionDefine.Block2);
             if (opt != null)
