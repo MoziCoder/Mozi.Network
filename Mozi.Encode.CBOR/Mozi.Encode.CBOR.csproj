@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HalfFloat.cs" />
     <Compile Include="Generic\AbsClassEnum.cs" />
     <Compile Include="CBOREncoder.cs" />
     <Compile Include="Generic\Others.cs" />

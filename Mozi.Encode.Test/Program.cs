@@ -67,6 +67,9 @@ namespace Mozi.Encode.Test
             Console.WriteLine(Hex.To(data_stringtext2));
 
             Console.WriteLine(CBOREncoder.Decode(data_stringtext2).ToString());
+            Console.WriteLine(Hex.To(BitConverter.GetBytes(100000.0f)));
+            HalfFloat f = new HalfFloat(1.0f);
+            HalfFloat f2 = HalfFloat.Decode(new byte[] { 62, 00 });
             Console.Read();
 
         }

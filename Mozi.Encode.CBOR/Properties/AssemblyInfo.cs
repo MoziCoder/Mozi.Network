@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
 [assembly: AssemblyTitle("Mozi.Encode.CBOR")]
-[assembly: AssemblyDescription("CBOR解码编码")]
+[assembly: AssemblyDescription("CBOR解码编码器")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("MoziCoder workgroup")]
 [assembly: AssemblyProduct("Mozi.Encode.CBOR")]
