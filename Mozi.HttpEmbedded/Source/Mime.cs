@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using Mozi.HttpEmbedded.Generic;
 
@@ -430,7 +429,7 @@ namespace Mozi.HttpEmbedded.Source
         /// <summary>
         /// 服务端脚本
         /// </summary>
-        private static readonly string[] ScriptExts = new string[] { };
+        private static readonly List<string> ScriptExts = new List<string>();
 
         /// <summary>
         /// 增加MIME类型
@@ -451,6 +450,29 @@ namespace Mozi.HttpEmbedded.Source
         public static void Remove(string ext)
         {
             Types.Remove(ext);
+        }
+        /// <summary>
+        /// 增加脚本扩展类型
+        /// </summary>
+        /// <param name="ext"></param>
+        /// <param name="contentType"></param>
+        public static void AddScript(string ext)
+        {
+            if (!ScriptExts.Contains(ext))
+            {
+                ScriptExts.Add(ext);
+            }
+        }
+        /// <summary>
+        /// 移除脚本扩展类型
+        /// </summary>
+        /// <param name="ext"></param>
+        public static void RemoveScript(string ext)
+        {
+            if (!ScriptExts.Contains(ext))
+            {
+                ScriptExts.Remove(ext);
+            }
         }
         /// <summary>
         /// 获取资源类型
