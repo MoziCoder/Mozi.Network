@@ -207,6 +207,11 @@ namespace Mozi.IoT
         {
             return SetOption(define, new EmptyOptionValue());
         }
+        /// <summary>
+        /// 设置选项值
+        /// </summary>
+        /// <param name="opt"></param>
+        /// <returns></returns>
         public CoAPPackage SetOption(CoAPOption opt)
         {
             int optGreater = Options.FindIndex(x => x.Option.OptionNumber > opt.Option.OptionNumber);
@@ -579,6 +584,9 @@ namespace Mozi.IoT
             return pack.ToString();
         }
     }
+    /// <summary>
+    /// CoAP包转字符串的格式类型
+    /// </summary>
     public enum CoAPPackageToStringType
     {
         HttpStyle,

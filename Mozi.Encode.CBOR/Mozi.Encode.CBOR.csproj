@@ -42,6 +42,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Base64.cs" />
+    <Compile Include="CBORDataType.cs" />
     <Compile Include="HalfFloat.cs" />
     <Compile Include="Generic\AbsClassEnum.cs" />
     <Compile Include="CBOREncoder.cs" />
@@ -51,6 +53,7 @@
     <Compile Include="Serialize.cs" />
     <Compile Include="StringEncoder.cs" />
     <Compile Include="Undefined.cs" />
+    <Compile Include="UrlEncoder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Readme.md" />

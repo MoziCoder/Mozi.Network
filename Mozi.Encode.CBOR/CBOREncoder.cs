@@ -1,4 +1,6 @@
-﻿namespace Mozi.Encode.CBOR
+﻿using System;
+
+namespace Mozi.Encode.CBOR
 {
     //TODO 进一步实现CBOR编码解码
 
@@ -34,77 +36,6 @@
         {
             return data.DataType.Serializer.Pack(data);
         }
-    }
-    /// <summary>
-    /// CBOR数据类型
-    /// </summary>
-    public class CBORDataType : AbsClassEnum
-    {
-        private byte _header;
-        private string _typeName;
-
-        public string TypeName { get => _typeName; set => _typeName = value; }
-        public int TypeIndex { get => _header >> 5; }
-        public byte Header { get => _header; set => _header = value; }
-        protected override string Tag => _header.ToString();
-
-        private CBORDataSerializer _serializer;
-        /// <summary>
-        /// 无符号整数
-        /// </summary>
-        public static CBORDataType UnsignedInteger = new CBORDataType(0b00000000, "unsigned integer", new UnsignedIntegerSerializer());
-        /// <summary>
-        /// 负整数
-        /// </summary>
-        public static CBORDataType NegativeInteger = new CBORDataType(0b00100000, "negative integer", new NegativeIntegerSerializer());
-        /// <summary>
-        /// Hex字符串
-        /// </summary>
-        public static CBORDataType StringArray = new CBORDataType(0b01000000, "hex string array", new StringArraySerializer());
-        /// <summary>
-        /// 字符串
-        /// </summary>
-        public static CBORDataType StringText = new CBORDataType(0b01100000, "string text", new StringTextSerialzier() );
-        /// <summary>
-        /// 数组
-        /// </summary>
-        public static CBORDataType ByteArray = new CBORDataType(0b10000000, "byte array", new ArraySerializer() );
-        /// <summary>
-        /// 键值对集合
-        /// </summary>
-        public static CBORDataType KeyPair = new CBORDataType(0b10100000, "map key/pair", new KeyPairSerializer());
-        /// <summary>
-        /// 标签项
-        /// </summary>
-        public static CBORDataType TagItem = new CBORDataType(0b11000000, "tag item", new TagItemSerializer() );
-        /// <summary>
-        /// 简单类型、浮点型（包含半精度）
-        /// </summary>
-        public static CBORDataType SimpleFloat = new CBORDataType(0b11100000, "simple float", new SimpleFloatSerializer() );
-        /// <summary>
-        /// 解码编码器
-        /// </summary>
-        public CBORDataSerializer Serializer { get { return _serializer; } }
-
-        public CBORDataType(byte header, string dt, CBORDataSerializer serializer)
-        {
-            _header = header;
-            _typeName = dt;
-            _serializer = serializer;
-            _serializer.DataType = this;
-        }
-        /// <summary>
-        /// 解析类型
-        /// </summary>
-        /// <param name="head"></param>
-        /// <returns></returns>
-        public static CBORDataType Parse(byte head)
-        {
-            head = (byte)(head & 0b11100000);
-            CBORDataType cb = Get<CBORDataType>(head.ToString());
-            return cb;
-        }
-
     }
 
     //0x00..0x17 	unsigned integer 0x00..0x17 (0..23)
@@ -181,7 +112,7 @@
         /// <summary>
         /// 指示数,解析时有意义，赋值时没有意义
         /// </summary>
-        public byte Indicator { get; set; }
+        public byte Indicator { get; internal set; }
         /// <summary>
         /// 数据大小，简单类型为有效数据编码程度，复合类型为集合大小
         /// </summary>
@@ -195,10 +126,24 @@
         /// </summary>
         public byte[] Data { get; set; }
         /// <summary>
+        /// 截取的数据包的尺寸，解析时且数据包合法时有效
+        /// </summary>
+        public long PackSize { get; internal set; }
+        /// <summary>
         /// 是否无限，是否是集合类型，集合类型使用0xff作为数据包的结束位
         /// </summary>
         public bool IsIndefinite { get; set; }
 
+        /// <summary>
+        /// 判断是否有冗余数据包，解析时有用
+        /// </summary>
+        internal bool IsRedundant
+        {
+            get
+            {
+                return (Data != null) && (PackSize != 0) && (Data.Length > PackSize);
+            }
+        }
         public CBORDataInfo(CBORDataType dataType, object value)
         {
             DataType = dataType;
@@ -212,6 +157,15 @@
         public override string ToString()
         {
             return DataType.Serializer.ToString(this);
+        }
+
+        internal void ClearRedunant()
+        {
+            if (IsRedundant)
+            {
+                byte[] data = new byte[PackSize];
+                Array.Copy(Data, data, PackSize);
+            }
         }
     }
 

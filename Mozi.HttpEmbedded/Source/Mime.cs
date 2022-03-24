@@ -143,6 +143,7 @@ namespace Mozi.HttpEmbedded.Source
             {"lha","application/octet-stream"},
             {"lml","x-lml/x-lml"},
             {"lmlpack","x-lml/x-lmlpack"},
+            {"log","text/plain" },
             {"lsf","video/x-ms-asf"},
             {"lsx","video/x-ms-asf"},
             {"lzh","application/x-lzh"},

@@ -7,12 +7,11 @@ namespace Mozi.Encode.CBOR
 
     //TODO 半精度类型还需要多测试
     /// <summary>
-    /// 半精度类型 1(sign)+5(exponent)+10(fraction)
+    /// 半精度类型
     /// </summary>
+    /// <remarks>1(sign)+5(exponent)+10(fraction)</remarks>
     public class HalfFloat
     {
-        private float _value;
-
         private byte sign=0;
         private byte exponent=0;
         private ushort fraction=0;

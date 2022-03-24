@@ -1,7 +1,7 @@
-﻿using Mozi.Encode.CBOR;
-using Mozi.Encode.Generic;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Mozi.Encode.CBOR;
+using Mozi.Encode.Generic;
 
 namespace Mozi.Encode
 {
@@ -9,29 +9,29 @@ namespace Mozi.Encode
     /// 数据序列化抽象类
     /// </summary>
     public abstract class CBORDataSerializer
-{
-    /// <summary>
-    /// 数据类型，这个类型是预定义的，与实际数据值没有关系
-    /// </summary>
-    public CBORDataType DataType { get; set; }
-    /// <summary>
-    /// 转字节流
-    /// </summary>
-    /// <param name="data"></param>
-    /// <returns></returns>
-    public abstract byte[] Pack(CBORDataInfo data);
-    /// <summary>
-    /// 解析字节流
-    /// </summary>
-    /// <param name="data"></param>
-    /// <returns></returns>
-    public abstract CBORDataInfo Parse(byte[] data);
-    /// <summary>
-    /// 转为带特征描述符号的字符串
-    /// </summary>
-    /// <returns></returns>
-    public abstract string ToString(CBORDataInfo di);
-}
+    {
+        /// <summary>
+        /// 数据类型，这个类型是预定义的，与实际数据值没有关系
+        /// </summary>
+        public CBORDataType DataType { get; set; }
+        /// <summary>
+        /// 转字节流
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public abstract byte[] Pack(CBORDataInfo data);
+        /// <summary>
+        /// 解析字节流
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public abstract CBORDataInfo Parse(byte[] data);
+        /// <summary>
+        /// 转为带特征描述符号的字符串
+        /// </summary>
+        /// <returns></returns>
+        public abstract string ToString(CBORDataInfo di);
+    }
     /// <summary>
     /// 正整数解码编码器
     /// </summary>
@@ -82,37 +82,42 @@ namespace Mozi.Encode
             byte head = data[0];
             di.Data = data;
             //低5位
-            byte indicator = (byte)(head & 00011111);
+            byte indicator = (byte)(head & 0b00011111);
             di.Indicator = indicator;
             //uint8
             if (indicator <= 23)
             {
                 di.Value = indicator;
                 di.Length = 1;
+                di.PackSize = 1;
                 //uint8
             }
             else if (indicator == 24)
             {
                 di.Value = data[0];
                 di.Length = 1;
+                di.PackSize = 2;
 
             }//uint16
             else if (indicator == 25)
             {
                 di.Value = BitConverter.ToUInt16(data.Revert(), 0);
                 di.Length = 2;
+                di.PackSize = 3;
                 //uint32
             }
             else if (indicator == 26)
             {
                 di.Value = BitConverter.ToUInt32(data.Revert(), 0);
                 di.Length = 4;
+                di.PackSize = 5;
                 //uint64
             }
             else if (indicator == 27)
             {
                 di.Value = BitConverter.ToUInt64(data.Revert(), 0);
                 di.Length = 8;
+                di.PackSize = 9;
             }
             return di;
         }
@@ -138,6 +143,7 @@ namespace Mozi.Encode
             {
                 data = new byte[1];
                 data[0] = (byte)(DataType.Header | (byte)valueRevert);
+                
             }
             else if (valueRevert < byte.MaxValue)
             {
@@ -183,28 +189,33 @@ namespace Mozi.Encode
             {
                 di.Value = (sbyte)(-1 - indicator);
                 di.Length = 1;
+                di.PackSize = 1;
             }
             //uint8
             else if (indicator == 24)
             {
                 di.Value = (sbyte)(-1 - data[0]);
                 di.Length = 1;
+                di.PackSize = 2;
             }//uint16+
             else if (indicator == 25)
             {
-                di.Value = (int)(-1 - BitConverter.ToUInt16(data.Revert(), 0));
+                di.Value = -1 - BitConverter.ToUInt16(data.Revert(), 0);
                 di.Length = 2;
+                di.PackSize = 3;
             }//uint32
             else if (indicator == 26)
             {
-                di.Value = (long)(-1 - BitConverter.ToUInt32(data.Revert(), 0));
+                di.Value = -1 - BitConverter.ToUInt32(data.Revert(), 0);
                 di.Length = 4;
+                di.PackSize = 5;
             }
             //uint64 此处会出现溢出，RFC文档并没有讲清楚这一点，属于设计漏洞
             else if (indicator == 27)
             {
-                di.Value = (long)(-1 - BitConverter.ToUInt32(data.Revert(), 0));
+                di.Value = -1 - BitConverter.ToUInt32(data.Revert(), 0);
                 di.Length = 8;
+                di.PackSize = 9;
             }
             return di;
         }
@@ -299,6 +310,7 @@ namespace Mozi.Encode
                 {
                     lenArr = indicator;
                     offset = 0;
+                    
                 }
                 else if (indicator == 24)
                 {
@@ -323,6 +335,7 @@ namespace Mozi.Encode
                 di.Length = lenArr;
                 //hex字符串 h''
                 di.Value = Hex.To(data, offset + 1, (int)lenArr);
+                di.PackSize = 1 + offset + lenArr;
             }
             else
             {
@@ -331,7 +344,7 @@ namespace Mozi.Encode
 
                 offset++;
                 while (data[offset] != 0xff)
-                {
+                {   
                     byte digit = data[offset];
                     if ((digit & DataType.Header) == DataType.Header)
                     {
@@ -342,18 +355,18 @@ namespace Mozi.Encode
                             itemData.Add(data[offset]);
                             offset++;
                         }
-
                         CBORDataInfo info = Parse(itemData.ToArray());
                         infValue.Add(info);
+                        di.PackSize += info.PackSize;
                     }
                     else
                     {
                         offset++;
                     }
                 }
-
                 di.Length = infValue.Count;
                 di.Value = infValue.ToArray();
+                di.PackSize = di.PackSize + 1 + 1;//Header+Breaker
             }
             return di;
         }
@@ -488,6 +501,7 @@ namespace Mozi.Encode
                 di.Length = lenArr;
                 //字符串 
                 di.Value = StringEncoder.Decode(data, offset + 1, (int)lenArr);
+                di.PackSize = 1 + offset + lenArr;
             }
             else
             {
@@ -510,6 +524,7 @@ namespace Mozi.Encode
 
                         CBORDataInfo info = Parse(itemData.ToArray());
                         infValue.Add(info);
+                        di.PackSize += info.PackSize;
                     }
                     else
                     {
@@ -519,6 +534,7 @@ namespace Mozi.Encode
 
                 di.Length = infValue.Count;
                 di.Value = infValue.ToArray();
+                di.PackSize += 2; //Header+Breaker
             }
             return di;
         }
@@ -552,14 +568,15 @@ namespace Mozi.Encode
             di.DataType = DataType;
             di.Data = data;
 
-            //int[] value = new int[];
+            Dictionary<object, object> list = new Dictionary<object, object>();
             int offset = 0;
-            while (offset < data.Length)
+            byte head = data[0];
+            //低5位
+            byte indicator = (byte)(head & 0b00011111);
+            di.Indicator = indicator;
+            long lenArr = 0;
+            if (indicator != 31)
             {
-                byte head = data[offset];
-                //低5位
-                byte indicator = (byte)(head & 0b00011111);
-                long lenArr = 0;
                 if (indicator <= 23)
                 {
                     lenArr = indicator;
@@ -585,24 +602,21 @@ namespace Mozi.Encode
                     lenArr = (long)BitConverter.ToUInt64(data, 1);
                     offset = 8;
                 }
-                else if (indicator == 31)
-                {
-                    //查找结束符号
-                    lenArr = Array.IndexOf(data, 0xff);
-                    lenArr = lenArr - 1;
-                    di.IsIndefinite = true;
-                }
-                int[] item = new int[lenArr];
-                for (int i = 0; i < lenArr; i++)
-                {
-                    //最多可表示 254
-                    item[i] = data[offset + 1 + i];
-                }
-                //value.Add(item);
-                offset = (int)(offset + lenArr) + 1;
             }
-            //di.Value = value.ToArray();
-            //di.Length = value.Count;
+            else
+            {
+                //查找结束符号
+                lenArr = Array.IndexOf(data, 0xff);
+                lenArr = lenArr - 1;
+                di.IsIndefinite = true;
+            }
+            //复合类型
+            for (int i = 0; i < lenArr; i++)
+            {
+
+            }
+            di.Value = list;
+            di.Length = list.Count;
             return di;
         }
 
@@ -633,45 +647,72 @@ namespace Mozi.Encode
             di.Data = data;
 
             Dictionary<object, object> list = new Dictionary<object, object>();
-            int offset = 0;
+            long offset = 0;
             byte head = data[0];
             //低5位
             byte indicator = (byte)(head & 0b00011111);
             di.Indicator = indicator;
             long lenArr = 0;
-            if (indicator <= 23)
+            if (indicator != 31)
             {
-                lenArr = indicator;
-                offset = 0;
-            }
-            else if (indicator == 24)
-            {
-                lenArr = data[1];
-                offset = 1;
-            }
-            else if (indicator == 25)
-            {
-                lenArr = BitConverter.ToUInt16(data, 1);
-                offset = 2;
-            }
-            else if (indicator == 26)
-            {
-                lenArr = BitConverter.ToUInt32(data, 1);
-                offset = 4;
-            }
-            else if (indicator == 27)
-            {
-                lenArr = (long)BitConverter.ToUInt64(data, 1);
-                offset = 8;
-            }
-            else if (indicator == 31)
-            {
+                if (indicator <= 23)
+                {
+                    lenArr = indicator;
+                    offset = 0;
+                }
+                else if (indicator == 24)
+                {
+                    lenArr = data[1];
+                    offset = 1;
+                }
+                else if (indicator == 25)
+                {
+                    lenArr = BitConverter.ToUInt16(data, 1);
+                    offset = 2;
+                }
+                else if (indicator == 26)
+                {
+                    lenArr = BitConverter.ToUInt32(data, 1);
+                    offset = 4;
+                }
+                else if (indicator == 27)
+                {
+                    lenArr = (long)BitConverter.ToUInt64(data, 1);
+                    offset = 8;
+                }
+                if (lenArr > 0)
+                {
+                    for (int i = 0; i < lenArr; i++)
+                    {
+                        var tag = data[offset + 1];
+                        byte[] frag = new byte[data.Length - offset];
+                        CBORDataInfo info;
+                        //字符串键名
+                        if (tag >= 0x60)
+                        {
+                            StringTextSerialzier st = new StringTextSerialzier();
+                            info=st.Parse(frag);
+                        }
+                        //数字键名
+                        else
+                        {
+                            UnsignedIntegerSerializer st = new UnsignedIntegerSerializer();
+                            info = st.Parse(frag);
+                        }
+                        info.ClearRedunant();
+                        offset += info.PackSize;
+
+                        //获取值
+
+                    }
+                }
+            }else{
                 //查找结束符号
                 lenArr = Array.IndexOf(data, 0xff);
                 lenArr = lenArr - 1;
                 di.IsIndefinite = true;
             }
-            //符合类型
+            //复合类型
             for (int i = 0; i < lenArr; i++)
             {
 
@@ -683,7 +724,37 @@ namespace Mozi.Encode
 
         public override string ToString(CBORDataInfo di)
         {
-            throw new NotImplementedException();
+            Dictionary<object, object> data = (Dictionary<object, object>)di.Value;
+            List<string> ls = new List<string>();
+            foreach(var r in data)
+            {
+                var key = (r.Key is string) ? $"\"{ r.Key}\"" : r.Key.ToString();
+                if (r.Value == null)
+                {
+                    ls.Add(key);
+                }
+                else
+                {
+                    string value;
+                    if (r.Value is string)
+                    {
+                        value = "\"" + r.Value.ToString() + "\"";
+                    }
+                    else
+                    {
+                        value = r.Value.ToString();
+
+                    }
+                    ls.Add(key + ":" + value);
+                }
+            }
+            if (!di.IsIndefinite) {
+                return "{" + string.Join(",", ls) + "}";
+            }
+            else
+            {
+                return "{_ " + string.Join(",", ls) + "}";
+            }
         }
     }
     /// <summary>
@@ -703,7 +774,7 @@ namespace Mozi.Encode
             byte head = data[0];
             di.Data = data;
             //低5位
-            byte indicator = (byte)(head & 00011111);
+            byte indicator = (byte)(head & 0b00011111);
             di.Indicator = indicator;
             //utc time
             if (indicator == 0)
@@ -717,28 +788,73 @@ namespace Mozi.Encode
             //unix timestamp
             else if (indicator == 1)
             {
+                //TODO 有点复杂
                 di.Value = data[0];
                 di.Length = 1;
             }
             //unsigned bignum
             else if (indicator == 2)
             {
-                di.Value = BitConverter.ToUInt16(data.Revert(), 0);
+                UnsignedIntegerSerializer serialzier = new UnsignedIntegerSerializer();
+                byte[] item = new byte[data.Length - 1];
+                Array.Copy(data, 1, item, 0, item.Length);
+                di.Value = serialzier.Parse(item);
                 di.Length = 1;
             }
             //negative bignum
             else if (indicator == 3)
             {
-                di.Value = BitConverter.ToUInt32(data.Revert(), 0);
+                NegativeIntegerSerializer serialzier = new NegativeIntegerSerializer();
+                byte[] item = new byte[data.Length - 1];
+                Array.Copy(data, 1, item, 0, item.Length);
+                di.Value = serialzier.Parse(item);
                 di.Length = 1;
             }
             //decimal Fraction
             else if (indicator == 4)
             {
+                //TODO 有点复杂
                 di.Value = BitConverter.ToUInt64(data.Revert(), 0);
                 di.Length = 1;
             }
-            //0xc5    bigfloat(data item "array" follows; see Section 3.4.4)
+            //big float
+            else if(indicator==5)
+            {
+
+            } //base64 url zero padding
+            else if(indicator==21){
+
+
+            }//base64 zero padding
+            else if (indicator == 22){
+
+
+            }//base16 hex
+            else if (indicator == 23){
+
+
+            }//URIs
+            else if (indicator == 32){
+
+
+            }//base64 url RFC4648
+            else if (indicator == 33)
+            {
+
+            //base64 encoded text RFC4648
+            }else if (indicator == 34)
+            {
+
+
+            }//regular expressions
+            else if (indicator == 35)
+            {
+
+            //MIME 
+            }else if (indicator == 36)
+            {
+
+            }
             //0xc6..0xd4(tag)
             //0xd5..0xd7  expected conversion(data item follows; see Section 3.4.5.2)
             //0xd8..0xdb(more tags; 1 / 2 / 4 / 8 bytes of tag number and then a data item follow)
@@ -747,7 +863,7 @@ namespace Mozi.Encode
 
         public override string ToString(CBORDataInfo di)
         {
-            throw new NotImplementedException();
+            return $"{di.Indicator}({di.Value})";
         }
     }
     /// <summary>
@@ -824,41 +940,48 @@ namespace Mozi.Encode
                 di.Value = indicator;
                 di.Length = 1;
                 //uint8
+                di.PackSize = 1;
             }
             else if (indicator == 20)
             {
                 di.Value = false;
                 di.Length = 1;
-
+                di.PackSize = 1;
             }
             else if (indicator == 21)
             {
                 di.Value = true;
                 di.Length = 1;
+                di.PackSize = 1;
             }
             else if (indicator == 22)
             {
                 di.Value = null;
                 di.Length = 1;
+                di.PackSize = 1;
             }
             else if (indicator == 23)
             {
                 //undefined
                 di.Value = Undefined.Value;
                 di.Length = 1;
+                di.PackSize = 1;
             }
             else if (indicator == 24)
             {
                 //byte
                 di.Value = data[1];
                 di.Length = 1;
+                di.PackSize = 2;
             }
             else if (indicator == 25)
             {
                 //half float->single float
                 byte[] arrFloat = new byte[2];
+                Array.Copy(data, 1, arrFloat, 0, 2);
                 di.Value = HalfFloat.Decode(arrFloat);
                 di.Length = 1;
+                di.PackSize = 3;
             }
             else if (indicator == 26)
             {
@@ -868,6 +991,7 @@ namespace Mozi.Encode
                 Array.Reverse(arrFloat);
                 di.Value = BitConverter.ToSingle(arrFloat, 0);
                 di.Length = 1;
+                di.PackSize = 5;
             }
             else if (indicator == 27)
             {
@@ -877,6 +1001,7 @@ namespace Mozi.Encode
                 Array.Reverse(arrFloat);
                 di.Value = BitConverter.ToSingle(arrFloat, 0);
                 di.Length = 1;
+                di.PackSize = 9;
             }
             return di;
         }
