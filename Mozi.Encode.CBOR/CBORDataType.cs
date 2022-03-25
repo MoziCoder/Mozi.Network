@@ -6,10 +6,19 @@
     public class CBORDataType : AbsClassEnum
     {
         private byte _header;
-        private string _typeName;
+        private string _name;
 
-        public string TypeName { get => _typeName; set => _typeName = value; }
+        /// <summary>
+        /// 类型名
+        /// </summary>
+        public string Name { get => _name; set => _name = value; }
+        /// <summary>
+        /// 主类型序号
+        /// </summary>
         public int TypeIndex { get => _header >> 5; }
+        /// <summary>
+        /// 主类型高三位值
+        /// </summary>
         public byte Header { get => _header; set => _header = value; }
         protected override string Tag => _header.ToString();
 
@@ -33,7 +42,7 @@
         /// <summary>
         /// 数组
         /// </summary>
-        public static CBORDataType ByteArray = new CBORDataType(0b10000000, "byte array", new ArraySerializer() );
+        public static CBORDataType DataArray = new CBORDataType(0b10000000, "byte array", new ArraySerializer() );
         /// <summary>
         /// 键值对集合
         /// </summary>
@@ -54,7 +63,7 @@
         public CBORDataType(byte header, string dt, CBORDataSerializer serializer)
         {
             _header = header;
-            _typeName = dt;
+            _name = dt;
             _serializer = serializer;
             _serializer.DataType = this;
         }
@@ -69,7 +78,5 @@
             CBORDataType cb = Get<CBORDataType>(head.ToString());
             return cb;
         }
-
     }
-
 }

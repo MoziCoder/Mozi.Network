@@ -24,7 +24,6 @@ namespace Mozi.Encode.CBOR
         {
             return Decode(data, 0, data.Length);
         }
-
         /// <summary>
         /// ½âÂë
         /// </summary>

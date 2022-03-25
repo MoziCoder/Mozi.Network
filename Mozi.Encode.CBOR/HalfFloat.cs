@@ -17,7 +17,15 @@ namespace Mozi.Encode.CBOR
         private ushort fraction=0;
 
         public static float MaxValue=(float)(1.1111111111f *Math.Pow(2,15)); 
-        public static float MinValue=(float)(-1*Math.Pow(2,-14)); 
+        public static float MinValue=(float)(-1*Math.Pow(2,-14));
+        //正无穷
+        public const float PostiveInfinity = 1F / 0F;
+        //负无穷
+        public const float NegativeInfinity = -1F / 0F;
+        /// <summary>
+        /// 非数字
+        /// </summary>
+        public const float NaN = 0F / 0F;
 
         private float Value
         {
@@ -34,11 +42,11 @@ namespace Mozi.Encode.CBOR
                 }
                 else if (exponent == 31 && fraction == 0 && sign == 0)
                 {
-                    dec = float.PositiveInfinity;
+                    dec = PostiveInfinity;
                 }
                 else if (exponent == 31 && fraction == 0 && sign == 1)
                 {
-                    dec = float.NegativeInfinity;
+                    dec = NegativeInfinity;
                 }
                 else
                 {

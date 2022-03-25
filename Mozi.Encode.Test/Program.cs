@@ -70,8 +70,42 @@ namespace Mozi.Encode.Test
             Console.WriteLine(Hex.To(BitConverter.GetBytes(100000.0f)));
             HalfFloat f = new HalfFloat(1.0f);
             HalfFloat f2 = HalfFloat.Decode(new byte[] { 62, 00 });
-            Console.Read();
 
+            //array pack
+            //array parse 
+
+
+            //keypair pack
+            //keypair parse 
+            Console.WriteLine(CBOREncoder.Decode(new byte[] { 0xa2, 0x61, 0x61, 0x01, 0x61, 0x62, 0x82, 0x02, 0x03 }).ToString());
+
+            //tagitem pack
+            //tagitem parse 
+
+            //simplefloat pack
+            //simplefloat parse 
+
+
+            //parse from text 
+
+            //unsigned integer 
+
+            //negative integer
+
+            //hex array
+
+            //string text
+
+            //array 
+
+            //keypair
+
+            //tagitem 
+
+            //simplefloat
+
+            CBOREncoder.Parse("(_ h'0102', h'030405')");
+            Console.Read();
         }
     }
 }

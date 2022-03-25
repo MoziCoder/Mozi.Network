@@ -19,7 +19,7 @@ namespace Mozi.Encode
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public abstract byte[] Pack(CBORDataInfo data);
+        public abstract byte[] Pack(CBORDataInfo info);
         /// <summary>
         /// 解析字节流
         /// </summary>
@@ -31,6 +31,7 @@ namespace Mozi.Encode
         /// </summary>
         /// <returns></returns>
         public abstract string ToString(CBORDataInfo di);
+
     }
     /// <summary>
     /// 正整数解码编码器
@@ -136,8 +137,8 @@ namespace Mozi.Encode
         {
             byte[] data;
             object value = info.Value;
-            Int64 valueReal = Int64.Parse(value.ToString());
-            UInt64 valueRevert = (ulong)Math.Abs(valueReal + 1);
+            long valueReal = long.Parse(value.ToString());
+            ulong valueRevert = (ulong)Math.Abs(valueReal + 1);
             int len = 0;
             if (valueRevert <= 23)
             {
@@ -158,7 +159,7 @@ namespace Mozi.Encode
                 len = 2;
                 Array.Copy(BitConverter.GetBytes(valueRevert).Revert(), 6, data, 1, 2);
             }
-            else if (valueRevert < UInt32.MaxValue)
+            else if (valueRevert < uint.MaxValue)
             {
                 data = new byte[5];
                 data[0] = (byte)(DataType.Header | (byte)26);
@@ -278,14 +279,14 @@ namespace Mozi.Encode
                 {
                     data = new byte[1 + 4 + lenPayload];
                     data[0] = (byte)(info.DataType.Header | 26);
-                    Array.Copy(BitConverter.GetBytes((UInt32)lenPayload).Revert(), 0, data, 1, 4);
+                    Array.Copy(BitConverter.GetBytes((uint)lenPayload).Revert(), 0, data, 1, 4);
                     Array.Copy(payload, 0, data, 5, payload.Length);
                 }
                 else
                 {
                     data = new byte[1 + 8 + lenPayload];
                     data[0] = (byte)(info.DataType.Header | 27);
-                    Array.Copy(BitConverter.GetBytes((UInt64)lenPayload).Revert(), 0, data, 1, 8);
+                    Array.Copy(BitConverter.GetBytes((ulong)lenPayload).Revert(), 0, data, 1, 8);
                     Array.Copy(payload, 0, data, 8, payload.Length);
                 }
             }
@@ -411,6 +412,7 @@ namespace Mozi.Encode
             }
             else
             {
+                //TODO 此处应对UNICODE进行解码
                 byte[] payload = StringEncoder.Encode((string)info.Value);
                 int lenPayload = payload.Length;
                 if (lenPayload <= 23)
@@ -433,18 +435,18 @@ namespace Mozi.Encode
                     Array.Copy(BitConverter.GetBytes((ushort)lenPayload).Revert(), 0, data, 1, 2);
                     Array.Copy(payload, 0, data, 3, lenPayload);
                 }
-                else if (lenPayload < UInt32.MaxValue)
+                else if (lenPayload < uint.MaxValue)
                 {
                     data = new byte[lenPayload + 1 + 4];
                     data[0] = (byte)(info.DataType.Header | (byte)26);
-                    Array.Copy(BitConverter.GetBytes((UInt32)lenPayload).Revert(), 0, data, 1, 4);
+                    Array.Copy(BitConverter.GetBytes((uint)lenPayload).Revert(), 0, data, 1, 4);
                     Array.Copy(payload, 0, data, 5, lenPayload);
                 }
                 else
                 {
                     data = new byte[lenPayload + 1 + 8];
                     data[0] = (byte)(info.DataType.Header | (byte)27);
-                    Array.Copy(BitConverter.GetBytes((UInt64)lenPayload).Revert(), 0, data, 1, 8);
+                    Array.Copy(BitConverter.GetBytes((ulong)lenPayload).Revert(), 0, data, 1, 8);
                     Array.Copy(payload, 0, data, 9, lenPayload);
                 }
             }
@@ -499,6 +501,7 @@ namespace Mozi.Encode
                     di.IsIndefinite = true;
                 }
                 di.Length = lenArr;
+                //TODO 此处应对UNICODE进行编码
                 //字符串 
                 di.Value = StringEncoder.Decode(data, offset + 1, (int)lenArr);
                 di.PackSize = 1 + offset + lenArr;
@@ -568,66 +571,126 @@ namespace Mozi.Encode
             di.DataType = DataType;
             di.Data = data;
 
-            Dictionary<object, object> list = new Dictionary<object, object>();
-            int offset = 0;
+            List<CBORDataInfo> list = new List<CBORDataInfo>();
+            long offset = 0;
             byte head = data[0];
             //低5位
             byte indicator = (byte)(head & 0b00011111);
             di.Indicator = indicator;
             long lenArr = 0;
-            if (indicator != 31)
+            if (indicator <= 23)
             {
-                if (indicator <= 23)
-                {
-                    lenArr = indicator;
-                    offset = 0;
-                }
-                else if (indicator == 24)
-                {
-                    lenArr = data[1];
-                    offset = 1;
-                }
-                else if (indicator == 25)
-                {
-                    lenArr = BitConverter.ToUInt16(data, 1);
-                    offset = 2;
-                }
-                else if (indicator == 26)
-                {
-                    lenArr = BitConverter.ToUInt32(data, 1);
-                    offset = 4;
-                }
-                else if (indicator == 27)
-                {
-                    lenArr = (long)BitConverter.ToUInt64(data, 1);
-                    offset = 8;
-                }
+                lenArr = indicator;
+                offset = 0;
             }
-            else
+            else if (indicator == 24)
             {
-                //查找结束符号
-                lenArr = Array.IndexOf(data, 0xff);
-                lenArr = lenArr - 1;
-                di.IsIndefinite = true;
+                lenArr = data[1];
+                offset = 1;
             }
-            //复合类型
-            for (int i = 0; i < lenArr; i++)
+            else if (indicator == 25)
             {
+                lenArr = BitConverter.ToUInt16(data, 1);
+                offset = 2;
+            }
+            else if (indicator == 26)
+            {
+                lenArr = BitConverter.ToUInt32(data, 1);
+                offset = 4;
+            }
+            else if (indicator == 27)
+            {
+                lenArr = (long)BitConverter.ToUInt64(data, 1);
+                offset = 8;
+            }else if (indicator == 31){
+                //TODO 会有问题吗？
+                lenArr = Array.LastIndexOf(data, 0xff);
+            }
+            if (lenArr > 0)
+            {
+                for (int i = 0; i < lenArr; i++)
+                {
+                    var tag = data[offset + 1];
+                    //结束符号
+                    if (tag == 0xff)
+                    {
+                        di.PackSize = offset + 1 + 1;
+                        di.IsIndefinite = true;
+                        break;
+                    }
+                    else
+                    {
+                        byte[] fragKey = new byte[data.Length - offset - 1];
+                        Array.Copy(data, offset + 1, fragKey, 0, fragKey.Length);
+                        CBORDataInfo info = CBOREncoder.Decode(fragKey);
 
+                        info.ClearRedunant();
+                        offset += info.PackSize;
+                        di.PackSize = offset + 1;
+                        list.Add(info);
+                    }
+                }
             }
             di.Value = list;
             di.Length = list.Count;
             return di;
         }
 
-        public override byte[] Pack(CBORDataInfo data)
+        public override byte[] Pack(CBORDataInfo info)
         {
-            throw new NotImplementedException();
+            var value = (List<CBORDataInfo>)info.Value;
+            int length = value.Count;
+            List<byte> payload = new List<byte>();
+            if (info.IsIndefinite)
+            {
+                payload.Add((byte)(DataType.Header | 31));
+            }
+            else
+            {
+                if (length <= 23)
+                {
+                    payload.Add((byte)(DataType.Header | (byte)length));
+                }
+                else if (length == 24)
+                {
+                    payload.Add((byte)(DataType.Header | (byte)24));
+                    payload.Add((byte)length);
+                }
+                else if (length == 25)
+                {
+                    payload.Add((byte)(DataType.Header | (byte)25));
+                    payload.AddRange(BitConverter.GetBytes((ushort)length));
+                }
+                else if (length == 26)
+                {
+                    payload.Add((byte)(DataType.Header | (byte)26));
+                    payload.AddRange(BitConverter.GetBytes((uint)length));
+                }
+                else if (length == 27)
+                {
+                    payload.Add((byte)(DataType.Header | (byte)27));
+                    payload.AddRange(BitConverter.GetBytes((ulong)length));
+                }
+            }
+            foreach (var i in value)
+            {
+                payload.AddRange(CBOREncoder.Encode(i));
+            }
+            if (info.IsIndefinite)
+            {
+                payload.Add(0xff);
+            }
+            return payload.ToArray();
         }
 
         public override string ToString(CBORDataInfo di)
         {
-            throw new NotImplementedException();
+            List<string> info = new List<string>();
+            foreach(var ci in (List<CBORDataInfo>)di.Value)
+            {
+                info.Add(ci.ToString());
+            }
+            return (di.IsIndefinite?"[_ ":"[") +string.Join(",",info)+ "]";
         }
     }
     /// <summary>
@@ -635,9 +698,55 @@ namespace Mozi.Encode
     /// </summary>
     internal class KeyPairSerializer : CBORDataSerializer
     {
-        public override byte[] Pack(CBORDataInfo data)
+        public override byte[] Pack(CBORDataInfo info)
         {
-            throw new NotImplementedException();
+            var value = (Dictionary<CBORDataInfo, CBORDataInfo>)info.Value;
+            int length = value.Count;
+            List<byte> payload = new List<byte>();
+            if (info.IsIndefinite)
+            {
+                payload.Add((byte)(DataType.Header | 31));
+            }
+            else
+            {
+                if (length <= 23)
+                {
+                    payload.Add((byte)(DataType.Header | (byte)length));
+                }
+                else if (length == 24)
+                {
+                    payload.Add((byte)(DataType.Header | (byte)24));
+                    payload.Add((byte)length);
+                }
+                else if (length == 25)
+                {
+                    payload.Add((byte)(DataType.Header | (byte)25));
+                    payload.AddRange(BitConverter.GetBytes((ushort)length));
+                }
+                else if (length == 26)
+                {
+                    payload.Add((byte)(DataType.Header | (byte)26));
+                    payload.AddRange(BitConverter.GetBytes((uint)length));
+                }
+                else if (length == 27)
+                {
+                    payload.Add((byte)(DataType.Header | (byte)27));
+                    payload.AddRange(BitConverter.GetBytes((ulong)length));
+                }
+            }
+            foreach(var i in value)
+            {
+                payload.AddRange(CBOREncoder.Encode(i.Key));
+                if(!(i.Value is null))
+                {
+                    payload.AddRange(CBOREncoder.Encode(i.Value));
+                }
+            }
+            if (info.IsIndefinite)
+            {
+                payload.Add(0xff);
+            }
+            return payload.ToArray();
         }
 
         public override CBORDataInfo Parse(byte[] data)
@@ -646,76 +755,96 @@ namespace Mozi.Encode
             di.DataType = DataType;
             di.Data = data;
 
-            Dictionary<object, object> list = new Dictionary<object, object>();
+            Dictionary<CBORDataInfo, CBORDataInfo> list = new Dictionary<CBORDataInfo, CBORDataInfo>();
             long offset = 0;
             byte head = data[0];
             //低5位
             byte indicator = (byte)(head & 0b00011111);
             di.Indicator = indicator;
             long lenArr = 0;
-            if (indicator != 31)
+            if (indicator <= 23)
             {
-                if (indicator <= 23)
+                lenArr = indicator;
+                offset = 0;
+            }
+            else if (indicator == 24)
+            {
+                lenArr = data[1];
+                offset = 1;
+            }
+            else if (indicator == 25)
+            {
+                lenArr = BitConverter.ToUInt16(data, 1);
+                offset = 2;
+            }
+            else if (indicator == 26)
+            {
+                lenArr = BitConverter.ToUInt32(data, 1);
+                offset = 4;
+            }
+            else if (indicator == 27)
+            {
+                lenArr = (long)BitConverter.ToUInt64(data, 1);
+                offset = 8;
+            }else if (indicator == 31)
+            {
+                //TODO 会有问题吗？
+                lenArr = Array.LastIndexOf(data, 0xff);
+            }
+            if (lenArr > 0)
+            {
+                for (int i = 0; i < lenArr; i++)
                 {
-                    lenArr = indicator;
-                    offset = 0;
-                }
-                else if (indicator == 24)
-                {
-                    lenArr = data[1];
-                    offset = 1;
-                }
-                else if (indicator == 25)
-                {
-                    lenArr = BitConverter.ToUInt16(data, 1);
-                    offset = 2;
-                }
-                else if (indicator == 26)
-                {
-                    lenArr = BitConverter.ToUInt32(data, 1);
-                    offset = 4;
-                }
-                else if (indicator == 27)
-                {
-                    lenArr = (long)BitConverter.ToUInt64(data, 1);
-                    offset = 8;
-                }
-                if (lenArr > 0)
-                {
-                    for (int i = 0; i < lenArr; i++)
+                    var tag = data[offset + 1];
+                    byte[] fragKey = new byte[data.Length - offset-1];
+                    Array.Copy(data, offset + 1, fragKey, 0, fragKey.Length);
+                    CBORDataInfo info;
+                    CBORDataInfo value;
+                    bool isKeyonly = false;
+                    //结束符号
+                    if (tag == 0xff)
                     {
-                        var tag = data[offset + 1];
-                        byte[] frag = new byte[data.Length - offset];
-                        CBORDataInfo info;
+                        di.PackSize = offset + 1+1;
+                        di.IsIndefinite = true;
+                        break;
+                    }
+                    //嵌套
+                    if ((tag & DataType.Header) == DataType.Header)
+                    {
+                        info = Parse(fragKey);
+                        isKeyonly = true;
+                    } else {
                         //字符串键名
                         if (tag >= 0x60)
                         {
-                            StringTextSerialzier st = new StringTextSerialzier();
-                            info=st.Parse(frag);
+                            var st = CBORDataType.StringText.Serializer;
+                            info = st.Parse(fragKey);
                         }
                         //数字键名
                         else
                         {
-                            UnsignedIntegerSerializer st = new UnsignedIntegerSerializer();
-                            info = st.Parse(frag);
+                            var st = CBORDataType.UnsignedInteger.Serializer;
+                            info = st.Parse(fragKey);
                         }
-                        info.ClearRedunant();
-                        offset += info.PackSize;
-
-                        //获取值
-
                     }
+                    info.ClearRedunant();
+                    offset += info.PackSize;
+                    if (!isKeyonly)
+                    {
+                        //获取值
+                        byte[] fragValue = new byte[data.Length - offset - 1];
+                        Array.Copy(data, offset + 1, fragValue, 0, fragValue.Length);
+                        value = CBOREncoder.Decode(fragValue);
+                        value.ClearRedunant();
+                    }
+                    else
+                    {
+                        value = null;
+                    }
+                    offset += value != null ? value.PackSize : 0;
+                    di.PackSize = offset + 1;
+                    list.Add(info, value);
                 }
-            }else{
-                //查找结束符号
-                lenArr = Array.IndexOf(data, 0xff);
-                lenArr = lenArr - 1;
-                di.IsIndefinite = true;
-            }
-            //复合类型
-            for (int i = 0; i < lenArr; i++)
-            {
-
             }
             di.Value = list;
             di.Length = list.Count;
@@ -724,41 +853,26 @@ namespace Mozi.Encode
 
         public override string ToString(CBORDataInfo di)
         {
-            Dictionary<object, object> data = (Dictionary<object, object>)di.Value;
+            Dictionary<CBORDataInfo, CBORDataInfo> data = (Dictionary<CBORDataInfo, CBORDataInfo>)di.Value;
             List<string> ls = new List<string>();
             foreach(var r in data)
             {
-                var key = (r.Key is string) ? $"\"{ r.Key}\"" : r.Key.ToString();
+                var key =r.Key.ToString();
                 if (r.Value == null)
                 {
                     ls.Add(key);
                 }
                 else
                 {
-                    string value;
-                    if (r.Value is string)
-                    {
-                        value = "\"" + r.Value.ToString() + "\"";
-                    }
-                    else
-                    {
-                        value = r.Value.ToString();
-
-                    }
+                    string value = r.Value.ToString();
                     ls.Add(key + ":" + value);
                 }
             }
-            if (!di.IsIndefinite) {
-                return "{" + string.Join(",", ls) + "}";
-            }
-            else
-            {
-                return "{_ " + string.Join(",", ls) + "}";
-            }
+            return (di.IsIndefinite ? "{_ " : "{" )+ string.Join(",", ls) + "}";
         }
     }
     /// <summary>
-    /// 标签项解码编码器 复合类型
+    /// 标记项类型解码编码器 复合类型
     /// </summary>
     internal class TagItemSerializer : CBORDataSerializer
     {
@@ -779,7 +893,7 @@ namespace Mozi.Encode
             //utc time
             if (indicator == 0)
             {
-                StringTextSerialzier serialzier = new StringTextSerialzier();
+                var serialzier =CBORDataType.StringText.Serializer;
                 byte[] item = new byte[data.Length - 1];
                 Array.Copy(data, 1, item, 0, item.Length);
                 di.Value = serialzier.Parse(item);
@@ -795,7 +909,7 @@ namespace Mozi.Encode
             //unsigned bignum
             else if (indicator == 2)
             {
-                UnsignedIntegerSerializer serialzier = new UnsignedIntegerSerializer();
+                var serialzier =  CBORDataType.UnsignedInteger.Serializer;
                 byte[] item = new byte[data.Length - 1];
                 Array.Copy(data, 1, item, 0, item.Length);
                 di.Value = serialzier.Parse(item);
@@ -804,7 +918,7 @@ namespace Mozi.Encode
             //negative bignum
             else if (indicator == 3)
             {
-                NegativeIntegerSerializer serialzier = new NegativeIntegerSerializer();
+                var serialzier = CBORDataType.UnsignedInteger.Serializer;
                 byte[] item = new byte[data.Length - 1];
                 Array.Copy(data, 1, item, 0, item.Length);
                 di.Value = serialzier.Parse(item);
@@ -851,7 +965,8 @@ namespace Mozi.Encode
             {
 
             //MIME 
-            }else if (indicator == 36)
+            }
+            else if (indicator == 36)
             {
 
             }
@@ -1012,12 +1127,37 @@ namespace Mozi.Encode
         /// <returns></returns>
         public override string ToString(CBORDataInfo di)
         {
-            if(di.Value is byte)
+            if(di.Value is null)
+            {
+                return "null";
+            }
+            else if(di.Value is byte)
             {
                 return "simple(" + di.Value.ToString() + ")";
             }else{
                 return di.Value.ToString();
             }
         }
+    }
+
+    /// <summary>
+    /// 特殊标记项类型
+    /// </summary>
+    public enum TagItemType
+    {
+        UTCTime = 0,
+        UnixTimestamp = 1,
+        UnsignedBigNum = 2,
+        NegativeBigNum = 3,
+        DecimalFraction = 4,
+        BigFloat = 5,
+        Base64UrlZeroPadding = 21,
+        Base64 = 22,
+        Base16Hex = 23,
+        Uris = 32,
+        Base64Url = 33,
+        Base64Text = 34,
+        RegularExpression = 35,
+        Mime = 36
     }
 }
