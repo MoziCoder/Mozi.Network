@@ -21,9 +21,18 @@ namespace Mozi.HttpEmbedded
     public class HttpClient
     {
         private const string Charset = "UTF-8";
-        private const string UserAgent = "Mozilla/5.0 (Linux;Android 4.4.2;OEM Device) AppleWebKit/537.36 (KHTML,like Gecko) Chrom/39.0.2171.71 Mobile Crosswalk/10.3.235.16 Mobile Safri/537.36 Mozi/1.3.7";
+        private string _userAgent = "Mozilla/5.0 (Linux;Android 4.4.2;OEM Device) AppleWebKit/537.36 (KHTML,like Gecko) Chrome/39.0.2171.71  Mozi/1.3.8";
         private const string Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
         private const string AcceptEncoding = "gzip, deflate";
+
+        /// <summary>
+        /// 接收到响应时触发回调
+        /// </summary>
+        public RequestComplete ResponseReceived;
+        /// <summary>
+        /// 用户代理
+        /// </summary>
+        public string UserAgent { get => _userAgent; set => _userAgent = value; }
 
         //TODO 此处应考虑Gzip解码
         /// <summary>
@@ -68,7 +77,7 @@ namespace Mozi.HttpEmbedded
                         req.SetHeader(h.Key, h.Value);
                     }
                 }
-                HttpContext hc = new HttpContext
+                HttpContext ctx = new HttpContext
                 {
                     Request = req
                 };
@@ -77,10 +86,15 @@ namespace Mozi.HttpEmbedded
                 {
                     //TODO 选择适当的时机关闭链接
                     HttpResponse resp = HttpResponse.Parse(y.Data);
-                    hc.Response = resp;
+                    ctx.Response = resp;
                     if (callback != null)
                     {
-                        callback(hc);
+                        callback(ctx);
+                    }
+
+                    if (ResponseReceived != null)
+                    {
+                        ResponseReceived(ctx);
                     }
                     sc.Shutdown();
                 });

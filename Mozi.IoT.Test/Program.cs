@@ -9,9 +9,9 @@ namespace Mozi.IoT.Test
         static void Main(string[] args)
         {
             //服务端
-            CoAPServer cs = new CoAPServer();
-            cs.Start();
-            Console.ReadLine();
+            //CoAPServer cs = new CoAPServer();
+            //cs.Start();
+            //Console.ReadLine();
 
             ////客户端 多线程并发
             //List<CoAPClient> ccs = new List<CoAPClient>();

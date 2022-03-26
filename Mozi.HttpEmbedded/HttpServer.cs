@@ -190,6 +190,11 @@ namespace Mozi.HttpEmbedded
 
         internal MemoryCache Cache { get { return _cache; }  }
 
+        /// <summary>
+        /// 服务端收到完整请求包时触发
+        /// </summary>
+        public Request Request;
+
         public HttpServer()
         {
             StartTime = DateTime.MinValue;
@@ -265,6 +270,8 @@ namespace Mozi.HttpEmbedded
                     context.Request = HttpRequest.Parse(args.Data);
                     context.Request.ClientAddress = args.IP;
 
+
+
                     //TODO HTTP/1.1 通过Connection控制连接 服务器同时对连接进行监测 保证服务器效率
                     //DONE 此处应判断Content-Length然后继续读流
                     //TODO 如何解决文件传输内存占用过大的问题
@@ -289,6 +296,12 @@ namespace Mozi.HttpEmbedded
 
                         //_sc.ProcessReceive(args.State);
                         return;
+                    }
+
+                    //当服务端接收到请求时触发
+                    if (Request != null)
+                    {
+                        Request(args.IP, args.Port, context.Request);
                     }
 
                     if (!EnableAuth)
@@ -779,4 +792,6 @@ namespace Mozi.HttpEmbedded
         //    _forbideIPAccess = true;
         //}
     }
+
+    public delegate void Request(string srcHost, int srcPort, HttpRequest request);
 }
