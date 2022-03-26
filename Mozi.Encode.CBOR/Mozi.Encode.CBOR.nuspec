@@ -7,7 +7,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
     <projectUrl>https://gitee.com/myui_admin/mozi.git</projectUrl>
-    <description>CBOR编码解码器，支持字符串解析到数据类型</description>
+    <description>CBOR编码解码器，支持字符串解析到数据类型，CBOR encode/decode,parser</description>
     <releaseNotes></releaseNotes>
     <copyright>Copyright © Jason 2022-2022</copyright>
     <tags>CBOR IoT</tags>

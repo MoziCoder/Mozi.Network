@@ -625,7 +625,7 @@ namespace Mozi.Encode
                         Array.Copy(data, offset + 1, fragKey, 0, fragKey.Length);
                         CBORDataInfo info = CBOREncoder.Decode(fragKey);
 
-                        info.ClearRedunant();
+                        info.ClearRedundant();
                         offset += info.PackSize;
                         di.PackSize = offset + 1;
                         list.Add(info);
@@ -828,7 +828,7 @@ namespace Mozi.Encode
                             info = st.Parse(fragKey);
                         }
                     }
-                    info.ClearRedunant();
+                    info.ClearRedundant();
                     offset += info.PackSize;
                     if (!isKeyonly)
                     {
@@ -836,7 +836,7 @@ namespace Mozi.Encode
                         byte[] fragValue = new byte[data.Length - offset - 1];
                         Array.Copy(data, offset + 1, fragValue, 0, fragValue.Length);
                         value = CBOREncoder.Decode(fragValue);
-                        value.ClearRedunant();
+                        value.ClearRedundant();
                     }
                     else
                     {
@@ -1219,7 +1219,6 @@ namespace Mozi.Encode
             }
         }
     }
-
     /// <summary>
     /// 特殊标记项类型
     /// </summary>

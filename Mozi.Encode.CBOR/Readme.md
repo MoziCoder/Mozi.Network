@@ -1,6 +1,6 @@
 ﻿# Mozi.Encode.CBOR
 
-CBOR数据编码解码器，MIME为application/cbor,是专为CoAP开发的数据传输类型。CBOR定义请参考RFC8949
+Mozi.Encode.CBOR是一个CBOR数据编码解码器。CBOR是专门为受限制物联网终端设计的数据交换格式数据的格式，MIME为application/cbor。CBOR定义请参考RFC8949。
 
 ## 应用范例
 

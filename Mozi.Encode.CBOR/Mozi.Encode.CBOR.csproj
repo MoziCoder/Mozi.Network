@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="Base16.cs" />
     <Compile Include="Base64.cs" />
+    <Compile Include="CBORDataInfo.cs" />
     <Compile Include="CBORDataType.cs" />
     <Compile Include="HalfFloat.cs" />
     <Compile Include="Generic\AbsClassEnum.cs" />

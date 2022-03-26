@@ -16,6 +16,9 @@ namespace Mozi.Encode.Test
             CBORDataInfo di_uint4 = new CBORDataInfo(CBORDataType.UnsignedInteger, 12345678);
             CBORDataInfo di_uint5 = new CBORDataInfo(CBORDataType.UnsignedInteger, 1234567891011);
 
+            //CBORDataInfo di = new CBORDataInfo(12);
+            //CBORDataInfo di5 = new CBORDataInfo(1234567891011);
+
             byte[] data_uint1 = CBOREncoder.Encode(di_uint1);
             byte[] data_uint2 = CBOREncoder.Encode(di_uint2);
             byte[] data_uint3 = CBOREncoder.Encode(di_uint3);

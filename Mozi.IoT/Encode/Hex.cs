@@ -2,8 +2,16 @@
 
 namespace Mozi.IoT.Encode
 {
+    /// <summary>
+    /// Hex转译
+    /// </summary>
     public class Hex
     {
+        /// <summary>
+        /// Hex字符串转字节流
+        /// </summary>
+        /// <param name="hexString"></param>
+        /// <returns></returns>
         public static byte[] From(string hexString)
         {
             hexString = hexString.Replace(" ", "");
@@ -19,14 +27,25 @@ namespace Mozi.IoT.Encode
             }
             return returnBytes;
         }
+        /// <summary>
+        /// 字节流转Hex字符串
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static string To(byte[] data)
         {
-            return To(data,0,data.Length);
+            return To(data, 0, data.Length);
         }
-
-        public static string To(byte[] data,int indStart,int length)
+        /// <summary>
+        /// 字节流转Hex字符串
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="indStart">起始位置</param>
+        /// <param name="length">截取长度</param>
+        /// <returns></returns>
+        public static string To(byte[] data, int indStart, int length)
         {
-            string s = BitConverter.ToString(data, indStart,length).Replace("-", string.Empty).ToLower();
+            string s = BitConverter.ToString(data, indStart, length).Replace("-", string.Empty).ToLower();
             return s;
         }
     }

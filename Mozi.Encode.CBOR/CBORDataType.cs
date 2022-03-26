@@ -20,9 +20,13 @@
         /// 主类型高三位值
         /// </summary>
         public byte Header { get => _header; set => _header = value; }
+        /// <summary>
+        /// 标识符
+        /// </summary>
         protected override string Tag => _header.ToString();
 
         private CBORDataSerializer _serializer;
+
         /// <summary>
         /// 无符号整数
         /// </summary>
@@ -42,7 +46,7 @@
         /// <summary>
         /// 数组
         /// </summary>
-        public static CBORDataType DataArray = new CBORDataType(0b10000000, "byte array", new ArraySerializer() );
+        public static CBORDataType DataArray = new CBORDataType(0b10000000, "data array", new ArraySerializer() );
         /// <summary>
         /// 键值对集合
         /// </summary>

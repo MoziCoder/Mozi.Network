@@ -18,15 +18,21 @@ namespace Mozi.Encode.CBOR
 
         public static float MaxValue=(float)(1.1111111111f *Math.Pow(2,15)); 
         public static float MinValue=(float)(-1*Math.Pow(2,-14));
-        //正无穷
+        /// <summary>
+        /// 正无穷
+        /// </summary>
         public const float PostiveInfinity = 1F / 0F;
-        //负无穷
+        /// <summary>
+        /// 负无穷
+        /// </summary>
         public const float NegativeInfinity = -1F / 0F;
         /// <summary>
         /// 非数字
         /// </summary>
         public const float NaN = 0F / 0F;
-
+        /// <summary>
+        /// 用浮点型表示的值
+        /// </summary>
         private float Value
         {
             get
