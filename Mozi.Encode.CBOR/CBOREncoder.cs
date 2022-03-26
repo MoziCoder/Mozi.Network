@@ -91,7 +91,7 @@ namespace Mozi.Encode.CBOR
                     {
                         items.Add(new CBORDataInfo(CBORDataType.StringArray, l.Trim(new char[] { 'h', '\'' })));
                     }
-                    info.Value = items;
+                    info.Value = items.ToArray();
                 }
                 else
                 {
@@ -153,10 +153,9 @@ namespace Mozi.Encode.CBOR
                     if (indicator == '"')
                     {
                         string itemName=data.Substring(offset,data.IndexOf('"')-offset+1);
-
                     }
                     else if (indicator == '{') { 
-                    
+                        
                     }
                     else
                     {

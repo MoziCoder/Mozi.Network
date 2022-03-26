@@ -7,6 +7,8 @@ namespace Mozi.Encode.Test
     {
         static void Main(string[] args)
         {
+            //通过类型实例化进行构造
+
             //unsigned integer pack
             CBORDataInfo di_uint1 = new CBORDataInfo(CBORDataType.UnsignedInteger,12);
             CBORDataInfo di_uint2 = new CBORDataInfo(CBORDataType.UnsignedInteger, 123);
@@ -104,7 +106,10 @@ namespace Mozi.Encode.Test
 
             //simplefloat
 
+
+            //字符串解析到类型
             CBOREncoder.Parse("(_ h'0102', h'030405')");
+
             Console.Read();
         }
     }

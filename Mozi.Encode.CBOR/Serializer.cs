@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Mozi.Encode.CBOR;
 using Mozi.Encode.Generic;
@@ -382,7 +383,7 @@ namespace Mozi.Encode
             else
             {
                 List<string> items = new List<string>();
-                foreach (var r in (CBORDataInfo[])di.Value)
+                foreach (var r in (ICollection)di.Value)
                 {
                     items.Add(r.ToString());
                 }
@@ -876,9 +877,20 @@ namespace Mozi.Encode
     /// </summary>
     internal class TagItemSerializer : CBORDataSerializer
     {
-        public override byte[] Pack(CBORDataInfo data)
+        public override byte[] Pack(CBORDataInfo info)
         {
-            throw new NotImplementedException();
+            List<byte> data = new List<byte>();
+            byte[] payload;
+            byte header = (byte)(DataType.Header| info.Indicator);
+            byte indicator = info.Indicator;
+            //TODO self described 55799
+            payload = CBOREncoder.Encode((CBORDataInfo)info.Value);
+            data.Add(header);
+            if (payload != null)
+            {
+                data.AddRange(payload);
+            }
+            return data.ToArray();
         }
 
         public override CBORDataInfo Parse(byte[] data)
@@ -902,8 +914,24 @@ namespace Mozi.Encode
             //unix timestamp
             else if (indicator == 1)
             {
-                //TODO 有点复杂
-                di.Value = data[0];
+                CBORDataSerializer serialzier;
+                //正数
+                if ((data[1] & CBORDataType.UnsignedInteger.Header) != CBORDataType.UnsignedInteger.Header)
+                {
+                    serialzier = CBORDataType.UnsignedInteger.Serializer;
+                }
+                //负数
+                else if((data[1] & CBORDataType.NegativeInteger.Header) != CBORDataType.NegativeInteger.Header)
+                {
+                    serialzier = CBORDataType.NegativeInteger.Serializer;
+                }
+                else
+                {
+                    serialzier = CBORDataType.SimpleFloat.Serializer;
+                }
+                byte[] item = new byte[data.Length - 1];
+                Array.Copy(data, 1, item, 0, item.Length);
+                di.Value = serialzier.Parse(item);
                 di.Length = 1;
             }
             //unsigned bignum
@@ -927,48 +955,100 @@ namespace Mozi.Encode
             //decimal Fraction
             else if (indicator == 4)
             {
-                //TODO 有点复杂
-                di.Value = BitConverter.ToUInt64(data.Revert(), 0);
+                var serialzier = CBORDataType.SimpleFloat.Serializer;
+                byte[] item = new byte[data.Length - 1];
+                Array.Copy(data, 1, item, 0, item.Length);
+                di.Value = serialzier.Parse(item);
                 di.Length = 1;
             }
             //big float
             else if(indicator==5)
             {
-
+                var serialzier = CBORDataType.SimpleFloat.Serializer;
+                byte[] item = new byte[data.Length - 1];
+                Array.Copy(data, 1, item, 0, item.Length);
+                di.Value = serialzier.Parse(item);
+                di.Length = 1;
             } //base64 url zero padding
             else if(indicator==21){
 
-
+                var serialzier = CBORDataType.StringText.Serializer;
+                byte[] item = new byte[data.Length - 1];
+                Array.Copy(data, 1, item, 0, item.Length);
+                di.Value = serialzier.Parse(item);
+                di.Length = 1;
             }//base64 zero padding
             else if (indicator == 22){
-
+                var serialzier = CBORDataType.StringText.Serializer;
+                byte[] item = new byte[data.Length - 1];
+                Array.Copy(data, 1, item, 0, item.Length);
+                di.Value = serialzier.Parse(item);
+                di.Length = 1;
 
             }//base16 hex
             else if (indicator == 23){
 
-
-            }//URIs
+                var serialzier = CBORDataType.DataArray.Serializer;
+                byte[] item = new byte[data.Length - 1];
+                Array.Copy(data, 1, item, 0, item.Length);
+                di.Value = serialzier.Parse(item);
+                di.Length = 1;
+            }//byte string
+            else if (indicator == 24)
+            {
+                var serialzier = CBORDataType.DataArray.Serializer;
+                byte[] item = new byte[data.Length - 1];
+                Array.Copy(data, 1, item, 0, item.Length);
+                di.Value = serialzier.Parse(item);
+                di.Length = 1;
+            }
+            //URIs
             else if (indicator == 32){
 
-
+                var serialzier = CBORDataType.StringText.Serializer;
+                byte[] item = new byte[data.Length - 1];
+                Array.Copy(data, 1, item, 0, item.Length);
+                di.Value = serialzier.Parse(item);
+                di.Length = 1;
             }//base64 url RFC4648
             else if (indicator == 33)
             {
-
-            //base64 encoded text RFC4648
-            }else if (indicator == 34)
+                var serialzier = CBORDataType.StringText.Serializer;
+                //base64 encoded text RFC4648
+                byte[] item = new byte[data.Length - 1];
+                Array.Copy(data, 1, item, 0, item.Length);
+                di.Value = serialzier.Parse(item);
+                di.Length = 1;
+            }
+            else if (indicator == 34)
             {
-
+                var serialzier = CBORDataType.StringText.Serializer;
+                byte[] item = new byte[data.Length - 1];
+                Array.Copy(data, 1, item, 0, item.Length);
+                di.Value = serialzier.Parse(item);
+                di.Length = 1;
 
             }//regular expressions
             else if (indicator == 35)
             {
+                var serialzier = CBORDataType.StringText.Serializer;
+                byte[] item = new byte[data.Length - 1];
+                Array.Copy(data, 1, item, 0, item.Length);
+                di.Value = serialzier.Parse(item);
+                di.Length = 1;
 
-            //MIME 
-            }
+            }//MIME
             else if (indicator == 36)
             {
-
+                var serialzier = CBORDataType.StringText.Serializer;
+                byte[] item = new byte[data.Length - 1];
+                Array.Copy(data, 1, item, 0, item.Length);
+                di.Value = serialzier.Parse(item);
+                di.Length = 1;
+            }//TODO self described 55799 0xd9d9f7
+            else if(indicator==25&&data[1]==0xd9)
+            {
+                throw new NotImplementedException("Self-Described type is not supported until now");   
             }
             //0xc6..0xd4(tag)
             //0xd5..0xd7  expected conversion(data item follows; see Section 3.4.5.2)
@@ -1154,10 +1234,12 @@ namespace Mozi.Encode
         Base64UrlZeroPadding = 21,
         Base64 = 22,
         Base16Hex = 23,
+        ByteString=24,
         Uris = 32,
         Base64Url = 33,
         Base64Text = 34,
         RegularExpression = 35,
-        Mime = 36
+        Mime = 36,
+        SelfDescribe= 55799
     }
 }
