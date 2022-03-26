@@ -1,7 +1,7 @@
-using Mozi.HttpEmbedded.Common;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Mozi.HttpEmbedded.Common;
 
 namespace Mozi.HttpEmbedded.Encode
 {

@@ -111,7 +111,7 @@ namespace Mozi.HttpEmbedded
         public static HeaderProperty XRequestedWith = new HeaderProperty("X-Requested-With");                                    // 	
 
         //通常在值为“XMLHttpRequest”时使用
-        //        Not standard
+        //Not standard
 
         //SOAP
         public static HeaderProperty SOAPAction = new HeaderProperty("SOAPAction");

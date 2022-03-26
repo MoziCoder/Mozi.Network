@@ -38,7 +38,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbsClassEnum.cs" />
+    <Compile Include="Generic\AbsClassEnum.cs" />
     <Compile Include="Cache\CacheControl.cs" />
     <Compile Include="Cache\Global.cs" />
     <Compile Include="Cache\MemoryCache.cs" />
@@ -58,7 +58,7 @@
     <Compile Include="Encode\StringEncoder.cs" />
     <Compile Include="Encode\UrlEncoder.cs" />
     <Compile Include="CoAPOptionValue.cs" />
-    <Compile Include="Others.cs" />
+    <Compile Include="Generic\Others.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerEvent.cs" />
     <Compile Include="Session.cs" />
@@ -84,9 +84,14 @@
     <None Include="rfc8974.pdf" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="RFC 6690 Constrained RESTful Environments %28CoRE%29 Link Format.html" />
+    <Content Include="RFC 7049 Concise Binary Object Representation %28CBOR%29.html" />
+    <Content Include="RFC 7228 Terminology for Constrained-Node Networks.html" />
     <Content Include="RFC 7252 The Constrained Application Protocol %28CoAP%29.html" />
     <Content Include="RFC 7959 Block-Wise Transfers in the Constrained Application Protocol %28CoAP%29.htm" />
+    <Content Include="RFC 8323 CoAP %28Constrained Application Protocol%29 over TCP, TLS, and WebSockets.htm" />
     <Content Include="RFC 8613 Object Security for Constrained RESTful Environments %28OSCORE%29.htm" />
+    <Content Include="RFC 8949 Concise Binary Object Representation %28CBOR%29.htm" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

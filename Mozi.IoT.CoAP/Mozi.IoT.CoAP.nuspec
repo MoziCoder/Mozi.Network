@@ -2,13 +2,13 @@
 <package >
 	<metadata>
 		<id>Mozi.IoT.CoAP</id>
-		<version>1.3.7</version>
+		<version>1.3.8</version>
 		<title>Mozi.IoT.CoAP</title>
 		<authors>Jason</authors>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<license type="expression">MIT</license>
 		<projectUrl>https://gitee.com/myui_admin/mozi</projectUrl>
-		<description>CoAP客户端调试工具，命令行调试工具,服务端请搜索Mozi.IoT.Server</description>
+		<description>CoAP客户端调试工具，命令行调试工具，服务端请搜索Mozi.IoT.Server</description>
 		<releaseNotes>CoAP客户端调试工具</releaseNotes>
 		<copyright>Copyright © Jason 2022</copyright>
 		<tags>IoT Client 调试工具</tags>

@@ -17,13 +17,27 @@ namespace Mozi.IoT
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class ResourceDescriptionAttribute : Attribute
     {
+        /// <summary>
+        /// 命名空间
+        /// </summary>
         public string Namespace { get; set; }
+        /// <summary>
+        /// 资源名称
+        /// </summary>
         public string Name { get; set; }
     }
-
+    /// <summary>
+    /// 资源信息
+    /// </summary>
     public class ResourceInfo
     {
+        /// <summary>
+        /// 命名空间
+        /// </summary>
         public string Namespace { get; set; }
+        /// <summary>
+        /// 资源名称
+        /// </summary>
         public string Name { get; set; }
         public Type ResourceType { get; set; }
 
@@ -103,7 +117,7 @@ namespace Mozi.IoT
         /// Block2分块协商
         /// </summary>
         /// <param name="ctx"></param>
-        protected virtual void HandleBlock2Query(CoAPContext ctx)
+        internal virtual void HandleBlock2Query(CoAPContext ctx)
         {
             CoAPOption opt = ctx.Request.Options.Find(x => x.Option == CoAPOptionDefine.Block2);
             if (opt != null)

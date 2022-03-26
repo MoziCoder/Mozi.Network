@@ -395,7 +395,7 @@ namespace Mozi.HttpEmbedded
                 //URL解码
                 path = UrlEncoder.Decode(path);
 
-                string fileext = GetFileExt(path);
+                string fileext = GetPathResourceExt(path);
                 string contenttype = Mime.GetContentType(fileext);
                 //判断资源类型
                 //TODO 此处应特殊处理某些类型的文件，比如.asp|.aspx|.jsp
@@ -554,7 +554,7 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        private string GetFileExt(string path)
+        private string GetPathResourceExt(string path)
         {
             string[] file = path.Split(new[] { (char)ASCIICode.QUESTION }, StringSplitOptions.RemoveEmptyEntries);
             string ext = "";

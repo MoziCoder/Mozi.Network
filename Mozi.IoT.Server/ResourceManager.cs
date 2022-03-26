@@ -102,7 +102,7 @@ namespace Mozi.IoT
             }
             else
             {
-                result=ctx.Response;
+                result = ctx.Response;
             }
             //对象置空
             instance = null;
@@ -152,9 +152,10 @@ namespace Mozi.IoT
                     ns = att.Namespace ?? "";
                     name = att.Name ?? type.Name;
                 }
-                if (!_apis.Exists(x => x.Namespace.Equals(ns) && x.Name.Equals(name))){
+                if (!_apis.Exists(x => x.Namespace.Equals(ns) && x.Name.Equals(name)))
+                {
                     _apis.Add(new ResourceInfo() { Namespace = ns, Name = name, ResourceType = type });
-                } 
+                }
             }
             return this;
         }

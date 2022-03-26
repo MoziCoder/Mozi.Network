@@ -1,6 +1,6 @@
 ﻿namespace Mozi.IoT.Server
 {
-    class LwM2MServer
+    class LwM2MClient
     {
     }
 }

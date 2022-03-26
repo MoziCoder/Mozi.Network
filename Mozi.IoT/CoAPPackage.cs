@@ -1,4 +1,5 @@
 ﻿using Mozi.IoT.Encode;
+using Mozi.IoT.Generic;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -133,6 +134,29 @@ namespace Mozi.IoT
                 return string.Join("&",query);
             }
         }
+        /// <summary>
+        /// 查询参数集合
+        /// </summary>
+        public Dictionary<string,string> QueryCollection 
+        { 
+            get 
+            {
+                Dictionary<string, string> queries = new Dictionary<string, string>();
+                foreach (CoAPOption op in Options)
+                {
+                    if (op.Option == CoAPOptionDefine.UriQuery)
+                    {
+                        string kp=(string)new StringOptionValue() { Pack = op.Value.Pack }.Value;
+                        string[] kps = kp.Split(new char[] { '=' });
+                        if (kps.Length == 2 && !queries.ContainsKey(kps[0]))
+                        {
+                            queries.Add(kps[0], kps[1]);
+                        }
+                    }
+                }
+                return queries;
+            }
+        }
 
         public CoAPPackageType PackageType
         {
@@ -183,6 +207,11 @@ namespace Mozi.IoT
         {
             return SetOption(define, new EmptyOptionValue());
         }
+        /// <summary>
+        /// 设置选项值
+        /// </summary>
+        /// <param name="opt"></param>
+        /// <returns></returns>
         public CoAPPackage SetOption(CoAPOption opt)
         {
             int optGreater = Options.FindIndex(x => x.Option.OptionNumber > opt.Option.OptionNumber);
@@ -555,6 +584,9 @@ namespace Mozi.IoT
             return pack.ToString();
         }
     }
+    /// <summary>
+    /// CoAP包转字符串的格式类型
+    /// </summary>
     public enum CoAPPackageToStringType
     {
         HttpStyle,

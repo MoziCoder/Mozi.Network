@@ -40,6 +40,7 @@
   <ItemGroup>
     <Compile Include="CoAPResource.cs" />
     <Compile Include="CoAPServer.cs" />
+    <Compile Include="Serialize\ISerializer.cs" />
     <Compile Include="LwM2MServer.cs" />
     <Compile Include="LwM2M\Bootstrap.cs" />
     <Compile Include="LwM2M\ConnectionManage.cs" />
@@ -60,5 +61,6 @@
     <None Include="Mozi.IoT.Server.nuspec" />
     <None Include="Readme.md" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

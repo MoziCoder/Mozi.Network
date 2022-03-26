@@ -2,7 +2,7 @@
 
 namespace Mozi.IoT.Encode
 {
-    class HtmlEncoder
+    public class HtmlEncoder
     {
         /// <summary>
         /// HTML实体字符串转普通字符串

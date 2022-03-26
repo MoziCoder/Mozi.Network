@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mozi.IoT.Generic;
+using System;
 using System.Collections.Generic;
 
 namespace Mozi.IoT
@@ -8,7 +9,7 @@ namespace Mozi.IoT
     // |    256-2047 | Specification Required               
     // |  2048-64999 | Expert Review                        
     // | 65000-65535 | Experimental use(no operational use) 
-       
+
     //       0 | (Reserved)             | [RFC7252] |
     //       1 | If-Match               | [RFC7252] |
     //       3 | Uri-Host               | [RFC7252] |
@@ -46,7 +47,7 @@ namespace Mozi.IoT
     // 当Option Delta号码<65804时：Option Delta位填入14；并且在后面的Option Delta(extended)位会占用2字节，并且填入的数为实际Option Delta值减去269
 
     //特别注意，填入的Option Delta值不可能为15（0x0f）当遇到15时，该包无效
-    
+
     /// <summary>
     /// 选项值定义
     /// </summary>

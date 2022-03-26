@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mozi.IoT.Generic;
+using System;
 
 namespace Mozi.IoT.Cache
 {

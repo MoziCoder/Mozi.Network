@@ -19,7 +19,6 @@ namespace Mozi.HttpEmbedded.Source
     internal sealed class StaticFiles
     {
         
-
         private string _root;
         private static StaticFiles _staticfiles;
         private static readonly char PathSeparator = Path.AltDirectorySeparatorChar;
@@ -122,7 +121,7 @@ namespace Mozi.HttpEmbedded.Source
         /// <returns></returns>
         public bool IsStatic(string ext)
         {
-            if (!string.IsNullOrEmpty(ext) && Mime.Types.ContainsKey(ext)&&!Mime.IsScript(ext))
+            if (!string.IsNullOrEmpty(ext) &&!Mime.IsScript(ext))
             {
                 return true;
             }
