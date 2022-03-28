@@ -24,7 +24,6 @@ namespace Mozi.Encode.CBOR
         /// <returns></returns>
         public static CBORDataInfo Decode(byte[] data)
         {
-            int offset = 0;
             CBORDataType cb = CBORDataType.Parse(data[0]);
             CBORDataInfo di = cb.Serializer.Parse(data);
             return di;
@@ -43,6 +42,7 @@ namespace Mozi.Encode.CBOR
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
+        /// <remarks>Parse方法还在测试中，暂时不能实用</remarks>
         public static CBORDataInfo Parse(string data)
         {
             Regex regUInt = new Regex("^(\\+)?\\d+$");

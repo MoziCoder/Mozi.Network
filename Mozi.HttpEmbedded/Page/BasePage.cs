@@ -4,7 +4,7 @@
     /// <summary>
     /// 页面抽象类
     /// </summary>
-    public abstract class BasePage
+    internal abstract class BasePage
     {
         /// <summary>
         /// 上下文对象
@@ -16,11 +16,11 @@
         /// <param name="url"></param>
         public abstract void RedirectTo(string url);
         /// <summary>
-        /// GET方法
+        /// GET方法回调
         /// </summary>
         public abstract void Get();
         /// <summary>
-        /// POST方法
+        /// POST方法回调
         /// </summary>
         public abstract void Post();
         /// <summary>
