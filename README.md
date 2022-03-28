@@ -1,108 +1,69 @@
-# Mozi.HttpEmbedded 嵌入式Web服务器
+# Mozi.Network
 
-## 项目介绍
+Mozi.Network是基于.Net开发的网络应用组件套装。所有的模块在实现时均以应用场景为出发点进行开发，保证模块精巧，功能完备，调用简单，可扩展性强，且调用不破坏宿主程序的逻辑结构。
 
-Mozi.HttpEmbedded是一个基于.Net构建的嵌入式Web服务器，为.Net App提供web服务功能。
+## 功能模块
 
-> 嵌入式的目标不是单片机，而是.Net应用程序。
-> 此项目并不会实现非常丰富的大型Web服务器功能
-> 项目基于.Net Framework 4.0开发,也可转换为.Net Core/.Net Standard项目,亦可作为.Net5.0项目引用库
+### [HttpEmbedded][httpembedded]　　
+	Http服务器
 
-## 特点
+### [IoT][iot]　　
+	IoT物联网标准通讯套件 网关，客户端，调试工具
+#### [IoT.Server][iotserver]
+	IoT服务端
+#### [IoT.Client][iotclient]
+	IoT客户端
+#### [IoT.CoAP][iotcoap]
+	IoT命令行调试工具
+### [iot4j][iot4j]
+    IoT(CoAP)的Java客户端实现
 
-Mozi.HttpEmbedded在Socket之上使用异步单线程模型,构建了一个HTTP服务器。
+### [SSDP][ssdp] 　　
+	SSDP/UPNP实现
 
-1. 嵌入式  
-	本项目可作为.Net应用的内嵌Web服务器，亦可作为单独Web服务器
-2. 轻量化  
-	项目编译结果小，部署程序占用系统资源少
-3. 可用性  
-	开箱即用，配置少，可控性高。同时遵从.Net平台Web项目开发的典型规范。
-4. 低耦合  
-	不改变现有业务逻辑，无需对现有代码进行改造，即可实现现有功能面向HTTP提供服务器
-5. 可控性  
-	宿主程序对Web服务高度可控
+### [StateService][stateservice]　　
+	自行设计的心跳服务组件，服务端,观察者及客户端
 
-## 典型应用场景
+### [Telnet][telnet] 　　
+	Telnet服务器及客户端实现
 
-业务体系或功能已开发完成，期望在项目中加入一个Web服务器功能，同时不对现有代码进行大规模改动。
+### [NTP][ntp]
+	NTP授时服务器，目前仅有SNTP功能
 
-1. APP内嵌WEB服务  
-	通过HTTP方式对应用终端数据或文件，进行主动推送、下载
-2. 简易WEB服务器  
-	仅用很少的系统资源即可快速搭建WEB服务器
+## [规划与展望][roadmap]
+	规划中的项目待总体设计完成后再进行开发，项目规划详情请查阅[Roadmap.md]。
 
-> 在经典的Asp.Net开发中，Web服务的部署高度依赖于IIS,.Net Core项目则可基于Kestrel/IIS部署。
-> 基于KESTREL或IIS部署的WEB项目，都基于Asp.Net体系。
+## 项目地址
 
-## 原理及功能
+- [Gitee][gitee]
 
-1. HTTP协议  
-	实现HTTP/1.1
+- [Github][github]
 
-2. 通讯认证  
-	实现基本认证(Basic)
+- [CSDN][codechina]
 
-3. Cookie管理  
-	支持标准Cookie
+## 项目下载
+	所有可用子项目均会发布到Nuget,并同步发布到Gitee发行版，同时提供可用的编译结果
 
-4. HTTP请求方法  
-	GET POST
-
-5. 路由  
-	实现了URL管理,参见Router模块
-
-6. 引用与依赖关系  
-	依赖于.Net Framework
-
-7. Payload压缩  
-	支持GZip，Deflate算法
-
-8. 字符编码  
-	字符编码使用UTF-8
-
-## 功能与版本迭代
-	不定期对Mozi.HttpEmbedded的功能进行完善,解决各种BUG。HTTP标准功能繁多，需要一步步实现。
+## 版本迭代
+	不定期对Mozi.Network的功能进行完善,解决各种BUG。应用中如果遇到无法解决的问题，请联系软件作者。
 
 ## 版权说明
-	本项目采用MIT开源协议，引用请注明出处。欢迎复制，引用和修改。意见建议疑问请联系软件作者，或提交ISSUE。
-
-## 用例说明
-
-~~~csharp
-
-    HttpServer hs = new HttpServer();
-    //配置端口并启动服务器
-    hs.SetPort(9000).Start();
-
-    //开启认证
-    hs.UseAuth(AuthorizationType.Basic).SetUser("admin", "admin");
-
-    //开启文件压缩
-    hs.UseGzip(new Compress.CompressOption() { 
-        MinContentLength=1024,
-        CompressLevel=2
-    });
-
-    //开启静态文件支持
-    hs.UseStaticFiles("");
-	//配置虚拟目录 虚拟目录下的文件可以随意访问
-	hs.SetVirtualDirectory("config", AppDomain.CurrentDomain.BaseDirectory + @"Config\");
-	
-	Router router = Router.Default;
-	//注入API
-    //1,此方法会扫描程序集内继承自BaseApi或属性标记为[BasicApi]的类
-    //2,Http通讯数据标准默认为xml,使用Router.Default.SetDataSerializer(ISerializer ser)更改序列化类型
-    router.Register($"{dllpath}");
-	router.SetDataSerializer(new JSONSerializer());
-
-    //路由映射
-    router.Map("services/{controller}/{action}");
-
-    Console.ReadLine();
-
-~~~
+	整个工程采用MIT开源协议，子项目如无特殊说明则默认采用MIT协议，如有说明则请仔细查看证书及说明文件。欢迎复制，引用和修改。复制请注明出处，引用请附带证书。意见建议疑问请联系软件作者，或提交ISSUE。
 
 ### By [Jason][1] on Feb. 5,2020
 
 [1]:mailto:brotherqian@163.com
+[gitee]:https://gitee.com/myui_admin/mozi.git
+[github]:https://github.com/MoziCoder/Mozi.HttpEmbedded.git
+[codechina]:https://codechina.csdn.net/mozi/mozi.httpembedded.git
+[httpembedded]:./Mozi.HttpEmbedded
+[ssdp]:./Mozi.SSDP
+[stateservice]:./Mozi.StateService
+[telnet]:./Mozi.Telnet
+[ntp]:./Mozi.NTP
+[iot]:./Mozi.IoT
+[iot4j]:https://gitee.com/myui/mozi.iot4j
+[iotserver]:./Mozi.IoT.Server
+[iotclient]:./Mozi.IoT.Client
+[iotcoap]:./Mozi.IoT.CoAP
+[roadmap]:./RoadMap.md
