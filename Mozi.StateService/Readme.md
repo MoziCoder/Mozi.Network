@@ -138,5 +138,5 @@ Mozi.StateService是一个基于.Net开发的UDP心跳组件，基于UDP Socket�
 
 [1]:mailto:brotherqian@163.com
 [gitee]:https://gitee.com/myui_admin/mozi.git
-[github]:https://github.com/MoziCoder/Mozi.HttpEmbedded.git
+[github]:https://github.com/MoziCoder/Mozi.Network.git
 [codechina]:https://codechina.csdn.net/mozi/mozi.httpembedded.git

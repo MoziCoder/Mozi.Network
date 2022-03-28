@@ -167,5 +167,5 @@ Mozi.HttpEmbedded在Socket之上使用异步单线程模型，构建了一个HTT
 
 [1]:mailto:brotherqian@163.com
 [gitee]:https://gitee.com/myui_admin/mozi.git
-[github]:https://github.com/MoziCoder/Mozi.HttpEmbedded.git
+[github]:https://github.com/MoziCoder/Mozi.Network.git
 [codechina]:https://codechina.csdn.net/mozi/mozi.httpembedded.git
