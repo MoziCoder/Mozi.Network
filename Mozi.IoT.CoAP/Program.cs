@@ -19,8 +19,6 @@ namespace Mozi.IoT.CoAP
     // Message-ID: 123456
     // Token: 01 02 03 04 05 06 07 08
 
-
-
     //public static CoAPOptionDefine IfMatch = new CoAPOptionDefine("If-Match", 1);
     //public static CoAPOptionDefine UriHost = new CoAPOptionDefine("Uri-Host", 3);
     //public static CoAPOptionDefine ETag = new CoAPOptionDefine("ETag", 4);

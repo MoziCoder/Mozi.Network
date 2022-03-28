@@ -190,6 +190,11 @@ namespace Mozi.HttpEmbedded
 
         internal MemoryCache Cache { get { return _cache; }  }
 
+        /// <summary>
+        /// 服务端收到完整请求包时触发
+        /// </summary>
+        public Request Request;
+
         public HttpServer()
         {
             StartTime = DateTime.MinValue;
@@ -265,6 +270,8 @@ namespace Mozi.HttpEmbedded
                     context.Request = HttpRequest.Parse(args.Data);
                     context.Request.ClientAddress = args.IP;
 
+
+
                     //TODO HTTP/1.1 通过Connection控制连接 服务器同时对连接进行监测 保证服务器效率
                     //DONE 此处应判断Content-Length然后继续读流
                     //TODO 如何解决文件传输内存占用过大的问题
@@ -291,6 +298,12 @@ namespace Mozi.HttpEmbedded
                         return;
                     }
 
+                    //当服务端接收到请求时触发
+                    if (Request != null)
+                    {
+                        Request(args.IP, args.Port, context.Request);
+                    }
+
                     if (!EnableAuth)
                     {
                         sc = HandleRequest(ref context);
@@ -302,7 +315,7 @@ namespace Mozi.HttpEmbedded
                 }
                 catch (Exception ex)
                 {
-                    //返回错误信息页面
+                    //50X 返回错误信息页面
                     string doc = DocLoader.Load("Error.html");
                     TemplateEngine pc = new TemplateEngine();
                     pc.LoadFromText(doc);
@@ -474,6 +487,21 @@ namespace Mozi.HttpEmbedded
                     }
                     else
                     {
+                        //50X 返回错误信息页面
+                        string doc = DocLoader.Load("Error.html");
+                        TemplateEngine pc = new TemplateEngine();
+                        pc.LoadFromText(doc);
+                        pc.Set("Error", new
+                        {
+                            Code = StatusCode.NotFound.Code.ToString(),
+                            Title = StatusCode.NotFound.Text,
+                            Time = DateTime.Now.ToUniversalTime().ToString("r"),
+                            Description = "未找到指定的资源",
+                            Source = "路径信息："+path,
+                        });
+                        pc.Prepare();
+                        context.Response.Write(pc.GetBuffer());
+                        context.Response.SetContentType(Mime.GetContentType("html"));
                         return StatusCode.NotFound;
                     }
                 }
@@ -779,4 +807,6 @@ namespace Mozi.HttpEmbedded
         //    _forbideIPAccess = true;
         //}
     }
+
+    public delegate void Request(string srcHost, int srcPort, HttpRequest request);
 }

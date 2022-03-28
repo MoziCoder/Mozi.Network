@@ -126,9 +126,11 @@ namespace Mozi.Encode.CBOR
                 {
                     info.Value = data.Trim(new char[] { '"' });
                 }
-            }//array
+            }
+            //array
             else if (data[0] == '[')
             {
+                //TODO 进一步实现数组的解析
                 //[_ "
 
                 info = new CBORDataInfo { DataType = CBORDataType.DataArray };
@@ -136,6 +138,7 @@ namespace Mozi.Encode.CBOR
             //keypair
             else if (data[0] == '{')
             {
+                //TODO 进一步实现键值对的解析
                 //"a":"b"|1:"b"
                 info = new CBORDataInfo { DataType = CBORDataType.KeyPair };
                 if (data.StartsWith("{_"))

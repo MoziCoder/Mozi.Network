@@ -9,9 +9,9 @@ namespace Mozi.IoT.Test
         static void Main(string[] args)
         {
             //服务端
-            CoAPServer cs = new CoAPServer();
-            cs.Start();
-            Console.ReadLine();
+            //CoAPServer cs = new CoAPServer();
+            //cs.Start();
+            //Console.ReadLine();
 
             ////客户端 多线程并发
             //List<CoAPClient> ccs = new List<CoAPClient>();
@@ -44,7 +44,7 @@ namespace Mozi.IoT.Test
             ////本地端口
             //cc.SetPort(12340);
             //cc.Start();
-            //cc.Get("coap://100.100.0.105/sensor/getinfo", CoAPMessageType.Confirmable);
+            //cc.Get("coap://127.0.0.1/sensor/getinfo", CoAPMessageType.Confirmable);
 
             ////客户端调用 高级方法 需要熟悉协议
             //CoAPPackage cp = new CoAPPackage();
