@@ -5,8 +5,11 @@ namespace Mozi.HttpEmbedded.Attributes
     /// <summary>
     /// 禁止访问的方法
     /// </summary>
+    /// <remarks>
+    /// 适用于公开的，又不允许HTTP访问的方法
+    /// </remarks>
     [AttributeUsage(AttributeTargets.Method)]
-    internal class ForbiddenMethodAttribute : Attribute
+    internal class HttpForbiddenAttribute : Attribute
     {
 
     }
@@ -39,11 +42,6 @@ namespace Mozi.HttpEmbedded.Attributes
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     internal class HttpDeleteAttribute : Attribute
-    {
-
-    }
-    [AttributeUsage(AttributeTargets.Method)]
-    internal class UrlRewriteAttribute : Attribute
     {
 
     }
