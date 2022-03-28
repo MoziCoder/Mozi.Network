@@ -6,6 +6,8 @@ using System.Reflection;
 
 namespace Mozi.HttpEmbedded.Page
 {
+    //TODO 多增加一些常见的方法接口，减少调用方的开发工作量
+
     //TODO 如何实现DLL热覆盖？
     /// <summary>
     /// 内置接口 API接口使用示范 
