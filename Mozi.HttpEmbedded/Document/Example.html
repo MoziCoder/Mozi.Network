@@ -1,16 +1,16 @@
-﻿/**
- * @author Jason
- * @date 2020-09-10
- * @description
- *    模板示例
- */
+﻿<!--
+  @author Jason
+  @date 2020-09-10
+  @description
+     模板示例
+-->
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
     <title>${Title}</title>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="Authorization" content="Jason" >
+    <meta name="Authorization" content="Jason">
     <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,maximum-scale=1,user-scalable=no">
 </head>
 <body>
@@ -57,30 +57,31 @@
 
     <!--数组类型-->
     <%foreach goods in goodslist%>
-        <div>
-            <h1>${goods.Name}</h1>
-            <p>${goods.Price}</p>
-        </div>
+    <div>
+        <h1>${goods.Name}</h1>
+        <p>${goods.Price}</p>
+    </div>
     <%end%>
 
     <!--for loop-->
     <dl>
-        <%for(int i=0;i<goods.Length;i++)%>
+        <%for(int i=0;i
+        <goods.Length;i++)%>
             <dt>${goods.Name}</dt>:<dd>${goods.Price}</dd>
-        <%end%>
+            <%end%>
     </dl>
     <!--if conditional-->
     <% if page==1 %>
-        <div>if condition</div>
+    <div>if condition</div>
     <% else if %>
-        <div>else if condition</div>
+    <div>else if condition</div>
     <% end %>
 
     <!--switch statement-->
     <% switch(pagecount)%>
-        <% case %>
+    <% case %>
 
-        <% break %>
+    <% break %>
     <% end %>
 </body>
 </html>

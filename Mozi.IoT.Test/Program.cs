@@ -44,7 +44,7 @@ namespace Mozi.IoT.Test
             ////本地端口
             //cc.SetPort(12340);
             //cc.Start();
-            //cc.Get("coap://100.100.0.105/sensor/getinfo", CoAPMessageType.Confirmable);
+            //cc.Get("coap://127.0.0.1/sensor/getinfo", CoAPMessageType.Confirmable);
 
             ////客户端调用 高级方法 需要熟悉协议
             //CoAPPackage cp = new CoAPPackage();

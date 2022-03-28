@@ -63,7 +63,7 @@ namespace Mozi.HttpEmbedded.Test
             HeartBeatService state = new HeartBeatService()
             {
                 Port = 13453,
-                RemoteHost = "100.100.0.111"
+                RemoteHost = "127.0.0.1"
             };
 
             state.ApplyDevice("Mozi", "80018001", "1.2.3");
@@ -79,13 +79,9 @@ namespace Mozi.HttpEmbedded.Test
             //    Console.WriteLine(ctx.Response.Body.Length);
             //}));
 
-            FileCollection files = new FileCollection();
-            files.Add(new File() { FileTempSavePath = @"C:\Users\FDXXB\Desktop\《互联网药品信息服务资格证书》申报资料最全范本.pdf", FieldName = "fileToUpload" });
-            //files.Add(new FileInfo(@"C:\Users\FDXXB\Desktop\湖北富迪实业股份有限公司-富迪MO软著申请表.pdf"));
-
-            hc.PostFile("http://127.0.0.1/Service/upload", files, new RequestComplete((ctx) => {
-                Console.WriteLine(ctx.Response.Body.Length);
-            }));
+            //hc.PostFile("http://127.0.0.1/Service/upload", files, new RequestComplete((ctx) => {
+            //    Console.WriteLine(ctx.Response.Body.Length);
+            //}));
             Console.ReadLine();
 
             //路径信息
