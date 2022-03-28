@@ -20,7 +20,7 @@ namespace Mozi.HttpEmbedded.Attributes
     /// API描述文档
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    public class ApiDescription : Attribute
+    internal class ApiDescription : Attribute
     {
         public string Namespace { get; set; }
     }
