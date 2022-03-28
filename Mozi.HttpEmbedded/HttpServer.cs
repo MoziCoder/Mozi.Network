@@ -315,7 +315,7 @@ namespace Mozi.HttpEmbedded
                 }
                 catch (Exception ex)
                 {
-                    //返回错误信息页面
+                    //50X 返回错误信息页面
                     string doc = DocLoader.Load("Error.html");
                     TemplateEngine pc = new TemplateEngine();
                     pc.LoadFromText(doc);
@@ -487,6 +487,21 @@ namespace Mozi.HttpEmbedded
                     }
                     else
                     {
+                        //50X 返回错误信息页面
+                        string doc = DocLoader.Load("Error.html");
+                        TemplateEngine pc = new TemplateEngine();
+                        pc.LoadFromText(doc);
+                        pc.Set("Error", new
+                        {
+                            Code = StatusCode.NotFound.Code.ToString(),
+                            Title = StatusCode.NotFound.Text,
+                            Time = DateTime.Now.ToUniversalTime().ToString("r"),
+                            Description = "未找到指定的资源",
+                            Source = "路径信息："+path,
+                        });
+                        pc.Prepare();
+                        context.Response.Write(pc.GetBuffer());
+                        context.Response.SetContentType(Mime.GetContentType("html"));
                         return StatusCode.NotFound;
                     }
                 }
