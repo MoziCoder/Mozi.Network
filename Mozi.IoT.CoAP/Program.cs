@@ -383,13 +383,16 @@ namespace Mozi.IoT.CoAP
                         try
                         {
                             int waitSeconds = 30;
+
                             if (observeSeconds > 0)
                             {
                                 waitSeconds = observeSeconds;
                             }
+
                             ExecuteAndWait(new Action(() => {
 
                                 Execute(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
+
                                 Console.Read();
 
                             }), waitSeconds * 1000);

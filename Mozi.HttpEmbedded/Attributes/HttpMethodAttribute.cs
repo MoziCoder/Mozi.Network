@@ -13,14 +13,16 @@ namespace Mozi.HttpEmbedded.Attributes
     {
 
     }
+
     /// <summary>
     /// 允许访问的动作
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method,AllowMultiple =false)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     internal class HttpGetAttribute : Attribute
     {
 
     }
+
     /// <summary>
     /// 允许访问的动作
     /// </summary>
@@ -29,6 +31,7 @@ namespace Mozi.HttpEmbedded.Attributes
     {
 
     }
+
     /// <summary>
     /// 允许访问的动作
     /// </summary>
@@ -37,6 +40,7 @@ namespace Mozi.HttpEmbedded.Attributes
     {
 
     }
+
     /// <summary>
     /// 允许访问的动作
     /// </summary>

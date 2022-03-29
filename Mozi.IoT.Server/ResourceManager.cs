@@ -5,6 +5,9 @@ using System.Reflection;
 
 namespace Mozi.IoT
 {
+    /// <summary>
+    /// 资源管理器
+    /// </summary>
     public class ResourceManager
     {
         public static ResourceManager _rm;
@@ -26,6 +29,11 @@ namespace Mozi.IoT
             //提供一个默认数据序列化接口
             //载入内部接口API
             LoadInternalApi();
+        }
+
+        public List<ResourceInfo> GetAll()
+        {
+            return _apis;
         }
         //TODO 注册时将Method也一并缓存
         /// <summary>
@@ -71,7 +79,7 @@ namespace Mozi.IoT
             }
             var ri = _apis.Find(x => x.Namespace.Equals(ns, StringComparison.OrdinalIgnoreCase) && x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
             Type cls = null;
-            cls = ri.ResourceType;
+            cls = ri.ClsType;
 
             //TODO 将Method缓存
             //TODO 介入Size2查询
@@ -145,19 +153,29 @@ namespace Mozi.IoT
             if (type.IsSubclassOf(typeof(CoAPResource)) || attribute.Length > 0)
             {
                 var attDesc = type.GetCustomAttributes(typeof(ResourceDescriptionAttribute), false);
-                string ns = "", name = "";
+                string ns = "", name = "",desc=null;
                 if (attDesc.Length > 0)
                 {
                     var att = (ResourceDescriptionAttribute)attDesc[0];
                     ns = att.Namespace ?? "";
                     name = att.Name ?? type.Name;
+                    desc = att.Description;
                 }
                 if (!_apis.Exists(x => x.Namespace.Equals(ns) && x.Name.Equals(name)))
                 {
-                    _apis.Add(new ResourceInfo() { Namespace = ns, Name = name, ResourceType = type });
+                    _apis.Add(new ResourceInfo() { Namespace = ns, Name = name,Description = desc, ClsType = type });
                 }
             }
             return this;
+        }
+        //TODO 资源上线
+        internal void SetOnline(string ns,string name){
+
+        }
+        //TODO 资源下线
+        internal void SetOffline(string ns,string name)
+        {
+
         }
     }
 }

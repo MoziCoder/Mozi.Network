@@ -1,5 +1,6 @@
-﻿using Mozi.IoT.Encode;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using Mozi.IoT.Encode;
 
 namespace Mozi.IoT
 {
@@ -7,7 +8,7 @@ namespace Mozi.IoT
     /// 资源标记属性
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    public class CoAPResourceAttribute : Attribute
+    internal class CoAPResourceAttribute : Attribute
     {
 
     }
@@ -25,6 +26,14 @@ namespace Mozi.IoT
         /// 资源名称
         /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// 文字描述
+        /// </summary>
+        public string Description { get; set; }
+        /// <summary>
+        /// 资源类型
+        /// </summary>
+        public string ResourceType { get; set; }
     }
     /// <summary>
     /// 资源信息
@@ -39,8 +48,18 @@ namespace Mozi.IoT
         /// 资源名称
         /// </summary>
         public string Name { get; set; }
-        public Type ResourceType { get; set; }
-
+        /// <summary>
+        /// 资源的定义声明类型
+        /// </summary>
+        public Type ClsType { get; set; }
+        /// <summary>
+        /// 文字描述
+        /// </summary>
+        public string Description { get; set; }
+        /// <summary>
+        /// 资源是否在线
+        /// </summary>
+        internal bool Online { get; set; }
         public override string ToString()
         {
             return (string.IsNullOrEmpty(Namespace) ? "" : ("/" + Namespace)) + "/" + Name;
@@ -155,7 +174,7 @@ namespace Mozi.IoT
     /// <remarks>
     /// 用于客户机查询服务时间或客户机时间校准
     /// </remarks>
-    [ResourceDescription(Namespace = "core", Name = "time")]
+    [ResourceDescription(Namespace = "core", Name = "time",Description ="isotime")]
     public class TimeResource : CoAPResource
     {
         public override uint ResourceSize { get => 1024; }
@@ -169,12 +188,47 @@ namespace Mozi.IoT
             return pack;
         }
     }
-
-    [ResourceDescription(Namespace = "", Name = "Discovery")]
-    internal class DiscoveryResource : CoAPResource
+    /// <summary>
+    /// 资源发现入口，遵循/.well-known/coap接口范式
+    /// </summary>
+    /// <remarks>地址/.well-known/coap为RFC定义的地址，如果标准化实现此路径会引发安全问题</remarks>
+    [ResourceDescription(Namespace = "core", Name = "link",Description ="discovery")]
+    public class LinkResource : CoAPResource
     {
         public override uint ResourceSize => 0;
+
+        public override CoAPPackage OnGet(CoAPContext ctx)
+        {
+            //TODO 此处需要查询缓冲
+            CoAPPackage pack = base.OnGet(ctx);
+            //返回Link-Format格式的资源入口信息
+            ResourceManager rm = ResourceManager.Default;
+            List<ResourceInfo> res=rm.GetAll();
+            LinkInfoCollection infos = new LinkInfoCollection();
+            foreach(var r in res)
+            {
+                infos.Add(new LinkInfo()
+                {
+                    Href = String.IsNullOrEmpty(r.Namespace) ? $"/{r.Name}" : $"/{r.Namespace}/{r.Name}",
+                    ResourceType= new string[] { r.Name },
+                    InterfaceDescription = new string[] { r.Description }
+                });
+            }
+            if (string.IsNullOrEmpty(ctx.Request.Query))
+            {
+                pack.Payload = StringEncoder.Encode(LinkFormator.ToString(infos));
+            }
+            else
+            {
+                List<LinkInfo> results = infos.Find(ctx.Request.Query);
+                pack.Payload = StringEncoder.Encode(LinkFormator.ToString(results));
+            }
+            
+            pack.Code = CoAPResponseCode.Content;
+            return pack;
+        }
     }
+
     [ResourceDescription(Namespace = "core", Name = "runtime")]
     public class RuntimeResource : CoAPResource
     {
