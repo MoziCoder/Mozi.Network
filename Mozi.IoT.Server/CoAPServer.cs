@@ -125,14 +125,12 @@ namespace Mozi.IoT
                 }
                 else
                 {
-                    ctx.Response.Code = CoAPResponseCode.MethodNotAllowed;
-                    ctx.Response.MessageType = CoAPMessageType.Reset;
+                    ctx.Response = new CoAPPackage()
+                    {
+                        Code = CoAPResponseCode.MethodNotAllowed,
+                        MessageType = CoAPMessageType.Reset
+                    };
                 }
-
-                //检查分块
-
-                //检查内容类型
-
             }
             catch (Exception ex)
             {
@@ -141,16 +139,15 @@ namespace Mozi.IoT
                     ctx.Response.Code = CoAPResponseCode.BadGateway;
                     ctx.Response.MessageType = CoAPMessageType.Reset;
                 }
-            }
-
-            if (ctx.Response == null)
-            {
-                ctx.Response = new CoAPPackage()
+                else
                 {
-                    Version = 1,
-                    MessageType = CoAPMessageType.Reset,
-                    Code = CoAPResponseCode.BadGateway,
-                };
+                    ctx.Response = new CoAPPackage()
+                    {
+                        Version = 1,
+                        MessageType = CoAPMessageType.Reset,
+                        Code = CoAPResponseCode.BadGateway,
+                    };
+                }
             }
 
             SendMessage(args.IP, args.Port, ctx.Response);
