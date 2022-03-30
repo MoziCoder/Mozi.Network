@@ -425,12 +425,15 @@ namespace Mozi.IoT.CoAP
             cc.SetPort(12340);
             cc.Start();
             cc.Response += new MessageTransmit((x, y,z) => {
+                Console.ForegroundColor = ConsoleColor.DarkGreen;
                 Console.WriteLine(z.ToString(CoAPPackageToStringType.HttpStyle));
+                Console.ForegroundColor = ConsoleColor.Gray;
                 responsed = true;
                 if (!observeMode)
                 {
                     Close();
                 }
+                
             });
             cc.Request += new MessageTransmit((x, y, z) =>
             {
