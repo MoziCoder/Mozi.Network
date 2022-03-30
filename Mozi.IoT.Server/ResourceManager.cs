@@ -145,25 +145,35 @@ namespace Mozi.IoT
         /// <summary>
         /// 单独注册某个接口模块
         /// </summary>
-        /// <param name="type">参数需继承自<see cref="T:CoAPResource"/>的类，或者类标记为<see cref="T:CoAPResourceAttribute"/>,其他类型无法注册</param>
+        /// <param name="type">参数需继承自<see cref="T:CoAPResource"/>的类，其他类型无法注册</param>
         /// <returns></returns>
         public ResourceManager Register(Type type)
         {
-            var attribute = type.GetCustomAttributes(typeof(CoAPResourceAttribute), false);
-            if (type.IsSubclassOf(typeof(CoAPResource)) || attribute.Length > 0)
+            if (type.IsSubclassOf(typeof(CoAPResource)))
             {
                 var attDesc = type.GetCustomAttributes(typeof(ResourceDescriptionAttribute), false);
-                string ns = "", name = "",desc=null;
+                string ns = "", name = type.Name,desc=null,href="",resType="";
                 if (attDesc.Length > 0)
                 {
                     var att = (ResourceDescriptionAttribute)attDesc[0];
                     ns = att.Namespace ?? "";
                     name = att.Name ?? type.Name;
                     desc = att.Description;
+                    href = string.IsNullOrEmpty(ns) ? $"/{name}" : $"/{ns}/{name}";
+                    resType = att.ResourceType;
                 }
                 if (!_apis.Exists(x => x.Namespace.Equals(ns) && x.Name.Equals(name)))
                 {
-                    _apis.Add(new ResourceInfo() { Namespace = ns, Name = name,Description = desc, ClsType = type });
+                    _apis.Add(new ResourceInfo() { 
+                        Namespace = ns, 
+                        Name = name,
+                        Description = desc, 
+                        ClsType = type,
+                        Online=true,
+                        Href=href,
+                        InterfaceDescription= string.IsNullOrEmpty(desc)?null:new string[] { desc },
+                        ResourceType= string.IsNullOrEmpty(resType) ? null : new string[] { resType },
+                    });
                 }
             }
             return this;

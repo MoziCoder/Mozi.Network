@@ -5,14 +5,6 @@ using Mozi.IoT.Encode;
 namespace Mozi.IoT
 {
     /// <summary>
-    /// 资源标记属性
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Class)]
-    internal class CoAPResourceAttribute : Attribute
-    {
-
-    }
-    /// <summary>
     /// 资源描述属性
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
@@ -38,7 +30,7 @@ namespace Mozi.IoT
     /// <summary>
     /// 资源信息
     /// </summary>
-    public class ResourceInfo
+    public class ResourceInfo:LinkInfo
     {
         /// <summary>
         /// 命名空间
@@ -59,7 +51,8 @@ namespace Mozi.IoT
         /// <summary>
         /// 资源是否在线
         /// </summary>
-        internal bool Online { get; set; }
+        public bool Online { get; set; }
+
         public override string ToString()
         {
             return (string.IsNullOrEmpty(Namespace) ? "" : ("/" + Namespace)) + "/" + Name;
@@ -136,6 +129,7 @@ namespace Mozi.IoT
         /// Block2分块协商
         /// </summary>
         /// <param name="ctx"></param>
+        /// <returns></returns>
         internal virtual void HandleBlock2Query(CoAPContext ctx)
         {
             CoAPOption opt = ctx.Request.Options.Find(x => x.Option == CoAPOptionDefine.Block2);
@@ -149,6 +143,7 @@ namespace Mozi.IoT
         /// 请求服务端资源大小，响应条件为 Get Size2=0
         /// </summary>
         /// <param name="ctx">响应上下文对象</param>
+        /// <returns></returns>
         internal virtual bool HandleSize2Query(CoAPContext ctx)
         {
             CoAPOption opt = ctx.Request.Options.Find(x => x.Option == CoAPOptionDefine.Size2);
@@ -205,15 +200,16 @@ namespace Mozi.IoT
             ResourceManager rm = ResourceManager.Default;
             List<ResourceInfo> res=rm.GetAll();
             LinkInfoCollection infos = new LinkInfoCollection();
-            foreach(var r in res)
-            {
-                infos.Add(new LinkInfo()
-                {
-                    Href = String.IsNullOrEmpty(r.Namespace) ? $"/{r.Name}" : $"/{r.Namespace}/{r.Name}",
-                    ResourceType= new string[] { r.Name },
-                    InterfaceDescription = new string[] { r.Description }
-                });
-            }
+            infos.AddRange(res);
+            //foreach(var r in res)
+            //{
+            //    infos.Add(new LinkInfo()
+            //    {
+            //        Href = String.IsNullOrEmpty(r.Namespace) ? $"/{r.Name}" : $"/{r.Namespace}/{r.Name}",
+            //        ResourceType= new string[] { r.Name },
+            //        InterfaceDescription = new string[] { r.Description }
+            //    });
+            //}
             if (string.IsNullOrEmpty(ctx.Request.Query))
             {
                 pack.Payload = StringEncoder.Encode(LinkFormator.ToString(infos));
