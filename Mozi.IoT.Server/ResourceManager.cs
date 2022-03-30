@@ -77,7 +77,7 @@ namespace Mozi.IoT
                     ns = string.Join("/", paths, 0, paths.Length - 1);
                 }
             }
-            var ri = _apis.Find(x => x.Namespace.Equals(ns, StringComparison.OrdinalIgnoreCase) && x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            var ri = _apis.Find(x => x.Namespace.Equals(ns, StringComparison.OrdinalIgnoreCase) && x.Name.Equals(name, StringComparison.OrdinalIgnoreCase)&&x.Online);
             Type cls = null;
             cls = ri.ClsType;
 

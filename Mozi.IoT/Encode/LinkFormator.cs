@@ -183,16 +183,11 @@ namespace Mozi.IoT.Encode
             }
             return info;
         }
-        ///// <summary>
-        ///// link-format集合转为字符串
-        ///// </summary>
-        ///// <param name="info"></param>
-        ///// <returns></returns>
-        //public static string ToString(LinkInfoCollection info)
-        //{
-
-        //}
-
+        /// <summary>
+        /// link-format集合转为字符串
+        /// </summary>
+        /// <param name="info"></param>
+        /// <returns></returns>
         public static string ToString(IEnumerable infos)
         {
             List<string> items = new List<string>();
@@ -240,7 +235,7 @@ namespace Mozi.IoT.Encode
                 {
                     item += $";if=\"{string.Join(" ", link.InterfaceDescription)}\"";
                 }
-                if (link.ResourceSize >= 0)
+                if (link.ResourceSize > 0)
                 {
                     item += $";sz={link.ResourceSize}";
                 }
@@ -441,7 +436,11 @@ namespace Mozi.IoT.Encode
         {
             return _items.IndexOf(item);
         }
-
+        /// <summary>
+        /// 查询过滤
+        /// </summary>
+        /// <param name="pattern"></param>
+        /// <returns></returns>
         public List<LinkInfo> Find(string pattern)
         {
                 string[] kp = pattern.Split(new char[] { '=' });
@@ -457,7 +456,7 @@ namespace Mozi.IoT.Encode
                                 {
                                     return _items.FindAll(x => x.RelationType != null);
                                 }else if (v.EndsWith("*")){
-                                    return _items.FindAll(x => x.RelationType != null && x.RelationType.Any(b => b.StartsWith(v.TrimEnd(new char[] { '*' }))));
+                                    return _items.FindAll(x => x.RelationType != null && x.RelationType.Any(b => !String.IsNullOrEmpty(b)&&b.StartsWith(v.TrimEnd(new char[] { '*' }))));
                                 }
                                 else
                                 {
@@ -468,15 +467,15 @@ namespace Mozi.IoT.Encode
                             {
                                 if (v == "*")
                                 {
-                                    return _items.FindAll(x => !String.IsNullOrEmpty(x.Anchor));
+                                    return _items.FindAll(x => !string.IsNullOrEmpty(x.Anchor));
                                 }
                                 else if (v.EndsWith("*"))
                                 {
-                                    return _items.FindAll(x =>!String.IsNullOrEmpty(x.Anchor)&& x.Anchor.StartsWith(v.TrimEnd(new char[] { '*' })));
+                                    return _items.FindAll(x =>!string.IsNullOrEmpty(x.Anchor)&& x.Anchor.StartsWith(v.TrimEnd(new char[] { '*' })));
                                 }
                                 else
                                 {
-                                    return _items.FindAll(x => !String.IsNullOrEmpty(x.Anchor) && x.Anchor==v);
+                                    return _items.FindAll(x => !string.IsNullOrEmpty(x.Anchor) && x.Anchor==v);
                                 }
                             }
                         case "rev":
@@ -498,75 +497,75 @@ namespace Mozi.IoT.Encode
                             {
                             if (v == "*")
                             {
-                                return _items.FindAll(x => !String.IsNullOrEmpty(x.HrefLang));
+                                return _items.FindAll(x => !string.IsNullOrEmpty(x.HrefLang));
                             }
                             else if (v.EndsWith("*"))
                             {
-                                return _items.FindAll(x => !String.IsNullOrEmpty(x.HrefLang) && x.HrefLang.StartsWith(v.TrimEnd(new char[] { '*' })));
+                                return _items.FindAll(x => !string.IsNullOrEmpty(x.HrefLang) && x.HrefLang.StartsWith(v.TrimEnd(new char[] { '*' })));
                             }
                             else
                             {
-                                return _items.FindAll(x => !String.IsNullOrEmpty(x.HrefLang) && x.HrefLang == v);
+                                return _items.FindAll(x => !string.IsNullOrEmpty(x.HrefLang) && x.HrefLang == v);
                             }
                         }
                         case "media":
                             {
                                 if (v == "*")
                                 {
-                                    return _items.FindAll(x => !String.IsNullOrEmpty(x.Media));
+                                    return _items.FindAll(x => !string.IsNullOrEmpty(x.Media));
                                 }
                                 else if (v.EndsWith("*"))
                                 {
-                                    return _items.FindAll(x => !String.IsNullOrEmpty(x.Media) && x.Media.StartsWith(v.TrimEnd(new char[] { '*' })));
+                                    return _items.FindAll(x => !string.IsNullOrEmpty(x.Media) && x.Media.StartsWith(v.TrimEnd(new char[] { '*' })));
                                 }
                                 else
                                 {
-                                    return _items.FindAll(x => !String.IsNullOrEmpty(x.Media) && x.Media == v);
+                                    return _items.FindAll(x => !string.IsNullOrEmpty(x.Media) && x.Media == v);
                                 }
                         }
                         case "title":
                             {
                             if (v == "*")
                             {
-                                return _items.FindAll(x => !String.IsNullOrEmpty(x.Title));
+                                return _items.FindAll(x => !string.IsNullOrEmpty(x.Title));
                             }
                             else if (v.EndsWith("*"))
                             {
-                                return _items.FindAll(x => !String.IsNullOrEmpty(x.Title) && x.Title.StartsWith(v.TrimEnd(new char[] { '*' })));
+                                return _items.FindAll(x => !string.IsNullOrEmpty(x.Title) && x.Title.StartsWith(v.TrimEnd(new char[] { '*' })));
                             }
                             else
                             {
-                                return _items.FindAll(x => !String.IsNullOrEmpty(x.Title) && x.Title == v);
+                                return _items.FindAll(x => !string.IsNullOrEmpty(x.Title) && x.Title == v);
                             }
                         }
                         case "title*":
                             {
                             if (v == "*")
                             {
-                                return _items.FindAll(x => !String.IsNullOrEmpty(x.Title2));
+                                return _items.FindAll(x => !string.IsNullOrEmpty(x.Title2));
                             }
                             else if (v.EndsWith("*"))
                             {
-                                return _items.FindAll(x => !String.IsNullOrEmpty(x.Title2) && x.Title2.StartsWith(v.TrimEnd(new char[] { '*' })));
+                                return _items.FindAll(x => !string.IsNullOrEmpty(x.Title2) && x.Title2.StartsWith(v.TrimEnd(new char[] { '*' })));
                             }
                             else
                             {
-                                return _items.FindAll(x => !String.IsNullOrEmpty(x.Title2) && x.Title2 == v);
+                                return _items.FindAll(x => !string.IsNullOrEmpty(x.Title2) && x.Title2 == v);
                             }
                         }
                         case "type":
                             {
                             if (v == "*")
                             {
-                                return _items.FindAll(x => !String.IsNullOrEmpty(x.Type));
+                                return _items.FindAll(x => !string.IsNullOrEmpty(x.Type));
                             }
                             else if (v.EndsWith("*"))
                             {
-                                return _items.FindAll(x => !String.IsNullOrEmpty(x.Type) && x.Type.StartsWith(v.TrimEnd(new char[] { '*' })));
+                                return _items.FindAll(x => !string.IsNullOrEmpty(x.Type) && x.Type.StartsWith(v.TrimEnd(new char[] { '*' })));
                             }
                             else
                             {
-                                return _items.FindAll(x => !String.IsNullOrEmpty(x.Type) && x.Type == v);
+                                return _items.FindAll(x => !string.IsNullOrEmpty(x.Type) && x.Type == v);
                             }
                         }
                         case "rt":
@@ -577,7 +576,7 @@ namespace Mozi.IoT.Encode
                                 }
                                 else if (v.EndsWith("*"))
                                 {
-                                    return _items.FindAll(x => x.ResourceType != null && x.ResourceType.Any(b => b.StartsWith(v.TrimEnd(new char[] { '*' }))));
+                                    return _items.FindAll(x => x.ResourceType != null && x.ResourceType.Any(b => !String.IsNullOrEmpty(b) && b.StartsWith(v.TrimEnd(new char[] { '*' }))));
                                 }
                                 else
                                 {
@@ -592,7 +591,7 @@ namespace Mozi.IoT.Encode
                                 }
                                 else if (v.EndsWith("*"))
                                 {
-                                    return _items.FindAll(x => x.InterfaceDescription != null && x.InterfaceDescription.Any(b => b.StartsWith(v.TrimEnd(new char[] { '*' }))));
+                                    return _items.FindAll(x => x.InterfaceDescription != null && x.InterfaceDescription.Any(b => !String.IsNullOrEmpty(b)&&b.StartsWith(v.TrimEnd(new char[] { '*' }))));
                                 }
                                 else
                                 {
@@ -622,11 +621,11 @@ namespace Mozi.IoT.Encode
                                 }
                                 else if (v.EndsWith("*"))
                                 {
-                                    return _items.FindAll(x => x.Extensions.Any(b => b.AttributeName == key&&(b.AttributeValue is string)&&String.IsNullOrEmpty(b.AttributeValue.ToString())&&b.AttributeValue.ToString().StartsWith(v.TrimEnd(new char[] { '*' }))));
+                                    return _items.FindAll(x => x.Extensions.Any(b => b.AttributeName == key&&(b.AttributeValue is string)&& string.IsNullOrEmpty(b.AttributeValue.ToString())&&b.AttributeValue.ToString().StartsWith(v.TrimEnd(new char[] { '*' }))));
                                 }
                                 else
                                 {
-                                return _items.FindAll(x => x.Extensions.Any(b => b.AttributeName == key && (b.AttributeValue is string) && String.IsNullOrEmpty(b.AttributeValue.ToString()) && b.AttributeValue.ToString()==v));
+                                return _items.FindAll(x => x.Extensions.Any(b => b.AttributeName == key && (b.AttributeValue is string) && string.IsNullOrEmpty(b.AttributeValue.ToString()) && b.AttributeValue.ToString()==v));
                             }
                             }
                     }

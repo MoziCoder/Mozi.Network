@@ -13,9 +13,6 @@ namespace Mozi.HttpEmbedded.WebDav
 
         public string Value;
 
-        /// <summary>
-        /// Standard constructor
-        /// </summary>
         public WebDavProperty()
         {
             Namespace = string.Empty;

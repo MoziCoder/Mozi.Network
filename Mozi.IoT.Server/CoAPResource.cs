@@ -223,7 +223,7 @@ namespace Mozi.IoT
                 List<LinkInfo> results = infos.Find(ctx.Request.Query);
                 pack.Payload = StringEncoder.Encode(LinkFormator.ToString(results));
             }
-            
+            pack.SetContentType(ContentFormat.LinkFormat);
             pack.Code = CoAPResponseCode.Content;
             return pack;
         }

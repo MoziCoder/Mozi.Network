@@ -13,7 +13,7 @@ namespace Mozi.HttpEmbedded.WebDav.Exceptions
         /// <param name="message"></param>
         /// <param name="innerException">
         /// </param>
-        public WebDavNotFoundException(string message = null, Exception innerException = null): base(StatusCode.NotFound, message, innerException)
+        public WebDavNotFoundException(string message = null, Exception innerException = null) : base(StatusCode.NotFound, message, innerException)
         {
 
         }

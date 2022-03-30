@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
+namespace Mozi.HttpEmbedded.WebDav.Storage.Disk
 {
     public sealed class WebDavDiskStore : IWebDavStore
     {

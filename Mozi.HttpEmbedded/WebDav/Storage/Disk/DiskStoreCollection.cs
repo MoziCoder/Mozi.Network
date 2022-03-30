@@ -6,7 +6,7 @@ using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Principal;
 
-namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
+namespace Mozi.HttpEmbedded.WebDav.Storage.Disk
 {
     public sealed class DiskStoreCollection : DiskStoreItem, IWebDavStoreCollection
     {

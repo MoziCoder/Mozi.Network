@@ -47,7 +47,7 @@ namespace Mozi.HttpEmbedded
 
         protected  SocketServer _sc = new SocketServer();
 
-        private WebDav.DavServer _davserver;
+        private WebDav.WebDAVServer _davserver;
 
         private int _port = 80;
         private int _iporthttps = 443;
@@ -680,7 +680,7 @@ namespace Mozi.HttpEmbedded
             //DONE WEBDAV服务初始化
             if (_davserver == null)
             {
-                _davserver = new WebDav.DavServer();
+                _davserver = new WebDav.WebDAVServer();
                 _davserver.SetStore(root);
             }
             return this;

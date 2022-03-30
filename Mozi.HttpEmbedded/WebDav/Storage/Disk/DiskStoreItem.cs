@@ -4,15 +4,14 @@ using System.Security.Principal;
 using System.Threading;
 using Mozi.HttpEmbedded.WebDav.Storage.Base;
 
-namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
+namespace Mozi.HttpEmbedded.WebDav.Storage.Disk
 {
 
     public class DiskStoreItem : WebDavStoreItemBase
     {
-        /// <summary>
-        /// Gets the Identity of the person logged on via HTTP Request.
-        /// </summary>
+
         protected readonly WindowsIdentity Identity;
+
         private readonly DiskStoreCollection _parentCollection;
         private readonly string _path;
 
@@ -23,7 +22,7 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
 
             _parentCollection = parentCollection;
             _path = path;
-            Identity = (WindowsIdentity)Thread.GetData(Thread.GetNamedDataSlot(DavServer.HttpUser));
+            Identity = (WindowsIdentity)Thread.GetData(Thread.GetNamedDataSlot(WebDAVServer.HttpUser));
         }
 
         public override string ItemPath
@@ -65,7 +64,7 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
             }
         }
 
-        public override DateTime CreationDate
+        public override DateTime CreateDate
         {
             get
             {
@@ -74,7 +73,7 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
             }
         }
 
-        public override DateTime ModificationDate
+        public override DateTime ModifyDate
         {
             get
             {

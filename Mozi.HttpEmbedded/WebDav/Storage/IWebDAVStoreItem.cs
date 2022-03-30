@@ -24,12 +24,12 @@ namespace Mozi.HttpEmbedded.WebDav.Storage
             get;
         }
 
-        DateTime CreationDate
+        DateTime CreateDate
         {
             get;
         }
 
-        DateTime ModificationDate
+        DateTime ModifyDate
         {
             get;
         }

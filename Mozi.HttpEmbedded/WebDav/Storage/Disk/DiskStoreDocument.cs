@@ -4,13 +4,13 @@ using Mozi.HttpEmbedded.Source;
 using Mozi.HttpEmbedded.WebDav.Exceptions;
 using Mozi.HttpEmbedded.WebDav.Utilities;
 
-namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
+namespace Mozi.HttpEmbedded.WebDav.Storage.Disk
 {
     /// <summary>
     /// </summary>
     public sealed class DiskStoreDocument : DiskStoreItem, IWebDavStoreDocument
     {
-        public DiskStoreDocument(DiskStoreCollection parentCollection, string path): base(parentCollection, path)
+        public DiskStoreDocument(DiskStoreCollection parentCollection, string path) : base(parentCollection, path)
         {
 
         }
@@ -32,13 +32,13 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
         {
             get
             {
-                return Md5Util.Md5Hash4Utf8String(ItemPath + ModificationDate + Hidden + Size);
+                return Md5Util.Md5Hash4Utf8String(ItemPath + ModifyDate + Hidden + Size);
             }
         }
 
 
 
-        public Stream OpenReadStream()
+        public Stream OpenRead()
         {
             Stream stream = null;
             try
@@ -54,7 +54,7 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.DiskStore
             return stream;
         }
 
-        public Stream OpenWriteStream(bool append)
+        public Stream OpenWrite(bool append)
         {
             if (append)
             {

@@ -20,13 +20,13 @@ namespace Mozi.HttpEmbedded.WebDav.Method
         /// <summary>
         /// œÏ”¶«Î«Û
         /// </summary>
-        /// <param name="server"><see cref="DavServer" /> </param>
+        /// <param name="server"><see cref="WebDAVServer" /> </param>
         /// <param name="context">
         /// <see cref="HttpContext" /> 
         ///  </param>
-        /// <param name="store"><see cref="IWebDavStore" /> <see cref="DavServer" /></param>
+        /// <param name="store"><see cref="IWebDavStore" /> <see cref="WebDAVServer" /></param>
         /// <exception cref="WebDavUnauthorizedException"></exception>
-        public StatusCode HandleRequest(DavServer server, HttpContext context, IWebDavStore store)
+        public StatusCode Invoke(WebDAVServer server, HttpContext context, IWebDavStore store)
         {
             bool isPropname = false;
             int depth = GetDepthHeader(context.Request);
@@ -259,7 +259,7 @@ namespace Mozi.HttpEmbedded.WebDav.Method
             switch (davProperty.Name)
             {
                 case "creationdate":
-                    return webDavStoreItem.CreationDate.ToUniversalTime().ToString("s") + "Z";
+                    return webDavStoreItem.CreateDate.ToUniversalTime().ToString("s") + "Z";
                 case "displayname":
                     return webDavStoreItem.Name;
                 case "getcontentlanguage":
@@ -271,7 +271,7 @@ namespace Mozi.HttpEmbedded.WebDav.Method
                 case "getetag":
                     return !webDavStoreItem.IsCollection ? "" + ((IWebDavStoreDocument)webDavStoreItem).Etag : "";
                 case "getlastmodified":
-                    return webDavStoreItem.ModificationDate.ToUniversalTime().ToString("R");
+                    return webDavStoreItem.ModifyDate.ToUniversalTime().ToString("R");
                 case "lockdiscovery":
                     return string.Empty;
                 case "resourcetype":

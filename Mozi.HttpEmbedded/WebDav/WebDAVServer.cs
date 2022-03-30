@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Mozi.HttpEmbedded.WebDav.Exceptions;
 using Mozi.HttpEmbedded.WebDav.Method;
 using Mozi.HttpEmbedded.WebDav.Storage;
 using Mozi.HttpEmbedded.WebDav.Storage.DiskStore;
@@ -9,7 +8,7 @@ namespace Mozi.HttpEmbedded.WebDav
     /// <summary>
     /// WebDAV服务器
     /// </summary>
-    public class DavServer
+    public class WebDAVServer
     {
         private IWebDavStore _store;
         /// <summary>
@@ -28,12 +27,12 @@ namespace Mozi.HttpEmbedded.WebDav
 
         public const string HttpUser = "WebDAV.User";
 
-        public DavServer()
+        public WebDAVServer()
         {
 
         }
 
-        public DavServer SetStore(string path)
+        public WebDAVServer SetStore(string path)
         {
             _store = new WebDavDiskStore(path);
             return this;
@@ -54,7 +53,7 @@ namespace Mozi.HttpEmbedded.WebDav
             }
             context.Response.AddHeader("DAV", "1,2,1#extend");
 
-            return methodHandler.HandleRequest(this, context, _store);
+            return methodHandler.Invoke(this, context, _store);
         }
     }
 }

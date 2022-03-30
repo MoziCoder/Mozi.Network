@@ -13,12 +13,12 @@ namespace Mozi.HttpEmbedded.WebDav.Method
         /// <summary>
         /// œÏ”¶«Î«Û
         /// </summary>
-        /// <param name="server"><see cref="DavServer" /> </param>
+        /// <param name="server"><see cref="WebDAVServer" /> </param>
         /// <param name="context"> 
         /// <see cref="HttpContext" /> 
         ///  </param>
-        /// <param name="store"><see cref="IWebDavStore" /> <see cref="DavServer" /></param>
-        public StatusCode HandleRequest(DavServer server, HttpContext context, IWebDavStore store)
+        /// <param name="store"><see cref="IWebDavStore" /> <see cref="WebDAVServer" /></param>
+        public StatusCode Invoke(WebDAVServer server, HttpContext context, IWebDavStore store)
         {
             IWebDavStoreCollection parentCollection = GetParentCollection(store, context.Request.Path);
 
@@ -41,7 +41,7 @@ namespace Mozi.HttpEmbedded.WebDav.Method
             if (context.Request.Body.Length < 0)
                 return StatusCode.LengthRequired;
 
-            using (Stream stream = doc.OpenWriteStream(false))
+            using (Stream stream = doc.OpenWrite(false))
             {
                 stream.Write(context.Request.Body, 0, context.Request.Body.Length);
             }
