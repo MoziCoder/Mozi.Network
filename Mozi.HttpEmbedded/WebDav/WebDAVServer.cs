@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Mozi.HttpEmbedded.WebDav.Method;
 using Mozi.HttpEmbedded.WebDav.Storage;
-using Mozi.HttpEmbedded.WebDav.Storage.DiskStore;
+using Mozi.HttpEmbedded.WebDav.Storage.Disk;
 
 namespace Mozi.HttpEmbedded.WebDav
 {
