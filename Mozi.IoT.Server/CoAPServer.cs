@@ -43,8 +43,6 @@ namespace Mozi.IoT
     /// </summary>
     public class CoAPServer : CoAPPeer
     {
-        private ulong _packageReceived = 0, _totalReceivedBytes;
-
         private Cache.MessageCacheManager _cm;
 
         /// <summary>
@@ -89,6 +87,8 @@ namespace Mozi.IoT
         /// <param name="args"></param>
         protected override void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
+            base.Socket_AfterReceiveEnd(sender, args);
+
             if (PackageReceived != null)
             {
                 PackageReceived(args.IP, args.Port, args.Data);
@@ -97,15 +97,16 @@ namespace Mozi.IoT
             CoAPContext ctx = new CoAPContext();
             ctx.ClientAddress = args.IP;
             ctx.ClientPort = args.Port;
-            _packageReceived++;
 
-            _totalReceivedBytes += (uint)args.Data.Length;
-
-            Console.WriteLine($"Rev count:{_packageReceived},current:{args.Data.Length}bytes,total:{_totalReceivedBytes}bytes");
+            Console.WriteLine($"Rev count:{PacketReceivedCount},current:{args.Data.Length}bytes,total:{TotalReceivedBytes}bytes");
 
             try
             {
                 ctx.Request = CoAPPackage.Parse(args.Data, CoAPPackageType.Request);
+                if (RequestReceived != null)
+                {
+                    RequestReceived(args.IP, args.Port, ctx.Request);
+                }
                 //_cm.Request(args.IP, req);
             }
             catch (Exception)

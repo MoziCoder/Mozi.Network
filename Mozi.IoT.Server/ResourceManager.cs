@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mozi.IoT.Serialize;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
@@ -21,6 +22,7 @@ namespace Mozi.IoT
         }
 
         private List<Assembly> _assemblies = new List<Assembly>();
+        private ISerializer _dataserializer;
 
         private readonly List<ResourceInfo> _apis = new List<ResourceInfo>();
 
@@ -186,6 +188,15 @@ namespace Mozi.IoT
         internal void SetOffline(string ns,string name)
         {
 
+        }
+
+        /// <summary>
+        /// 配置数据序列化组件,宿主程序需要实现一个序列化/反序列化功能，然后调用本方法注册
+        /// </summary>
+        /// <param name="ser"></param>
+        internal void SetDataSerializer(ISerializer ser)
+        {
+            _dataserializer = ser;
         }
     }
 }

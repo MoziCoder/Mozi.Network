@@ -194,22 +194,17 @@ namespace Mozi.IoT
 
         public override CoAPPackage OnGet(CoAPContext ctx)
         {
+            
             //TODO 此处需要查询缓冲
             CoAPPackage pack = base.OnGet(ctx);
+
             //返回Link-Format格式的资源入口信息
             ResourceManager rm = ResourceManager.Default;
             List<ResourceInfo> res=rm.GetAll();
             LinkInfoCollection infos = new LinkInfoCollection();
             infos.AddRange(res);
-            //foreach(var r in res)
-            //{
-            //    infos.Add(new LinkInfo()
-            //    {
-            //        Href = String.IsNullOrEmpty(r.Namespace) ? $"/{r.Name}" : $"/{r.Namespace}/{r.Name}",
-            //        ResourceType= new string[] { r.Name },
-            //        InterfaceDescription = new string[] { r.Description }
-            //    });
-            //}
+
+            //
             if (string.IsNullOrEmpty(ctx.Request.Query))
             {
                 pack.Payload = StringEncoder.Encode(LinkFormator.ToString(infos));
@@ -222,6 +217,7 @@ namespace Mozi.IoT
             pack.SetContentType(ContentFormat.LinkFormat);
             pack.Code = CoAPResponseCode.Content;
             return pack;
+
         }
     }
 
