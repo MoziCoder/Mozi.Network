@@ -86,7 +86,6 @@ namespace Mozi.IoT
                 _sc.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                 _sc.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.IpTimeToLive, 32);
                 _sc.Bind(endpoint);
-
                 receiveSocketArgs = new SocketAsyncEventArgs();
                 receiveSocketArgs.Completed += IO_Completed;
                 StateObject so = new StateObject();
@@ -98,7 +97,7 @@ namespace Mozi.IoT
                 DoReceive();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return false;
             }

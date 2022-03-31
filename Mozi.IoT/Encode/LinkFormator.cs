@@ -199,46 +199,57 @@ namespace Mozi.IoT.Encode
                 {
                     item += $";rel=\"{string.Join(" ", link.RelationType)}\"";
                 }
+
                 if (!string.IsNullOrEmpty(link.Anchor))
                 {
                     item += $";anchor=\"{link.Anchor}\"";
                 }
+
                 if (link.Rev != null && link.Rev.Length > 0)
                 {
                     item += $";rev=\"{string.Join(" ", link.Rev)}\"";
                 }
+
                 if (!string.IsNullOrEmpty(link.HrefLang))
                 {
                     item += $";hreflang=\"{link.HrefLang}\"";
                 }
+
                 if (!string.IsNullOrEmpty(link.Media))
                 {
                     item += $";media=\"{link.Media}\"";
                 }
+
                 if (!string.IsNullOrEmpty(link.Title))
                 {
                     item += $";title=\"{link.Title}\"";
                 }
+
                 if (!string.IsNullOrEmpty(link.Title2))
                 {
                     item += $";title*=\"{link.Title2}\"";
                 }
+
                 if (!string.IsNullOrEmpty(link.Type))
                 {
                     item += $";type=\"{link.Type}\"";
                 }
+
                 if (link.ResourceType != null && link.ResourceType.Length > 0)
                 {
                     item += $";rt=\"{string.Join(" ", link.ResourceType)}\"";
                 }
+
                 if (link.InterfaceDescription != null && link.InterfaceDescription.Length > 0)
                 {
                     item += $";if=\"{string.Join(" ", link.InterfaceDescription)}\"";
                 }
+
                 if (link.ResourceSize > 0)
                 {
                     item += $";sz={link.ResourceSize}";
                 }
+
                 if (!(link.ContentType is null))
                 {
                     item += $";ct={link.ContentType.Num}";

@@ -60,6 +60,8 @@
     <Compile Include="CoAPOptionValue.cs" />
     <Compile Include="Generic\Others.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serialize\DataSerializeType.cs" />
+    <Compile Include="Serialize\ISerializer.cs" />
     <Compile Include="ServerEvent.cs" />
     <Compile Include="Session.cs" />
     <Compile Include="UDPSocketIOCP.cs" />
