@@ -18,6 +18,7 @@ namespace Mozi.Encode.CBOR
 
         public static float MaxValue=(float)(1.1111111111f *Math.Pow(2,15)); 
         public static float MinValue=(float)(-1*Math.Pow(2,-14));
+
         /// <summary>
         /// 正无穷
         /// </summary>

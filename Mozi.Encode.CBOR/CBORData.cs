@@ -67,7 +67,7 @@ namespace Mozi.Encode.CBOR
     /// <summary>
     /// CBOR数据信息
     /// </summary>
-    public class CBORDataInfo
+    public class CBORData
     {
         /// <summary>
         /// 数据类型
@@ -108,35 +108,35 @@ namespace Mozi.Encode.CBOR
                 return (Data != null) && (PackSize != 0) && (Data.Length > PackSize);
             }
         }
-        public CBORDataInfo(CBORDataType dataType, object value)
+        public CBORData(CBORDataType dataType, object value)
         {
             DataType = dataType;
             Value = value;
         }
-        public CBORDataInfo()
+        public CBORData()
         {
 
         }
 
-        public CBORDataInfo(byte value):this(CBORDataType.UnsignedInteger, value)
+        public CBORData(byte value):this(CBORDataType.UnsignedInteger, value)
         {
             
         }
 
-        public CBORDataInfo(ushort value) : this(CBORDataType.UnsignedInteger, value)
+        public CBORData(ushort value) : this(CBORDataType.UnsignedInteger, value)
         {
 
         }
-        public CBORDataInfo(uint value) : this(CBORDataType.UnsignedInteger, value)
+        public CBORData(uint value) : this(CBORDataType.UnsignedInteger, value)
         {
 
         }
-        public CBORDataInfo(ulong value) : this(CBORDataType.UnsignedInteger, value)
+        public CBORData(ulong value) : this(CBORDataType.UnsignedInteger, value)
         {
 
         }
 
-        public CBORDataInfo(sbyte value) : this(CBORDataType.NegativeInteger, value)
+        public CBORData(sbyte value) : this(CBORDataType.NegativeInteger, value)
         {
 
         }
