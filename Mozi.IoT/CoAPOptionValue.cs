@@ -11,11 +11,22 @@ namespace Mozi.IoT
     public class OptionValue
     {
         protected byte[] _pack;
+        /// <summary>
+        /// 呈现值
+        /// </summary>
         public virtual object Value { get => _pack; set => _pack = (byte[])value; }
-
+        /// <summary>
+        /// 数据包
+        /// </summary>
         public virtual byte[] Pack { get => _pack; set => _pack = value; }
-
+        /// <summary>
+        /// 数据包的大小
+        /// </summary>
         public virtual int Length => _pack != null ? _pack.Length : 0;
+        /// <summary>
+        /// 转为字符串显示
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             if (_pack != null)

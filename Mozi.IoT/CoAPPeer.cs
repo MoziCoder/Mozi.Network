@@ -64,7 +64,6 @@ namespace Mozi.IoT
         /// 最大分块大小,单位Byte
         /// </summary>
         public const int MaxBlockSize = 2048;
-
         /// <summary>
         /// 当前端默认采用块大小,默认值为128bytes,单位Byte
         /// </summary>
@@ -74,12 +73,10 @@ namespace Mozi.IoT
         /// 受支持的请求方法
         /// </summary>
         protected List<CoAPCode> SupportedRequest = new List<CoAPCode> { CoAPRequestMethod.Get, CoAPRequestMethod.Post, CoAPRequestMethod.Put, CoAPRequestMethod.Delete };
-
         /// <summary>
         /// 数据包接收事件，字节流数据包
         /// </summary>
-        public PackageReceive PackageReceived;
-
+        public PackageReceive DatagramReceived;
         /// <summary>
         /// 服务端口
         /// </summary>
@@ -158,9 +155,9 @@ namespace Mozi.IoT
         {
             _packetReceived++;
             _totalReceivedBytes += args.Data != null ? (uint)args.Data.Length : 0;
-            if (PackageReceived != null)
+            if (DatagramReceived != null)
             {
-                PackageReceived(args.IP, args.Port, args.Data);
+                DatagramReceived(args.IP, args.Port, args.Data);
             }
         }
         /// <summary>
@@ -188,29 +185,6 @@ namespace Mozi.IoT
             _socket.SendTo(buffer, host, port);
             return pack.MesssageId;
         }
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="host"></param>
-        ///// <param name="port"></param>
-        ///// <param name="pack"></param>
-        ///// <returns></returns>
-        //public ushort RequestBlock1(string host,int port,CoAPPackage pack)
-        //{
-
-        //}
-        //public ushort HandleRequestBlock1(string host, int port, CoAPPackage pack)
-        //{
-
-        //}
-        //public ushort RequestBlock2(string host,int port,CoAPPackage pack)
-        //{
-
-        //}
-        //public ushort HandleRequestBlock2(string host,int port,CoAPPackage pack)
-        //{
-
-        //}
     }
     /// <summary>
     /// 包传递回调

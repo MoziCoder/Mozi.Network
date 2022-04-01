@@ -89,9 +89,9 @@ namespace Mozi.IoT
         {
             base.Socket_AfterReceiveEnd(sender, args);
 
-            if (PackageReceived != null)
+            if (DatagramReceived != null)
             {
-                PackageReceived(args.IP, args.Port, args.Data);
+                DatagramReceived(args.IP, args.Port, args.Data);
             }
 
             CoAPContext ctx = new CoAPContext();
