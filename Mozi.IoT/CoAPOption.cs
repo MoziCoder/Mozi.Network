@@ -55,32 +55,32 @@ namespace Mozi.IoT
     {
         private string _name = "";
 
-        public static CoAPOptionDefine IfMatch = new CoAPOptionDefine("If-Match", 1);
-        public static CoAPOptionDefine UriHost = new CoAPOptionDefine("Uri-Host", 3);
-        public static CoAPOptionDefine ETag = new CoAPOptionDefine("ETag", 4);
-        public static CoAPOptionDefine IfNoneMatch = new CoAPOptionDefine("If-None-Match", 5);
-        public static CoAPOptionDefine ExtendedTokenLength = new CoAPOptionDefine("Extended-Token-Length", 6); //RFC8974
+        public static CoAPOptionDefine IfMatch              = new CoAPOptionDefine("If-Match", 1);
+        public static CoAPOptionDefine UriHost              = new CoAPOptionDefine("Uri-Host", 3);
+        public static CoAPOptionDefine ETag                 = new CoAPOptionDefine("ETag", 4);
+        public static CoAPOptionDefine IfNoneMatch          = new CoAPOptionDefine("If-None-Match", 5);
+        public static CoAPOptionDefine ExtendedTokenLength  = new CoAPOptionDefine("Extended-Token-Length", 6); //RFC8974
 
-        public static CoAPOptionDefine UriPort = new CoAPOptionDefine("Uri-Port", 7);
-        public static CoAPOptionDefine LocationPath = new CoAPOptionDefine("Location-Path", 8);
-        public static CoAPOptionDefine UriPath = new CoAPOptionDefine("Uri-Path", 11);
-        public static CoAPOptionDefine ContentFormat = new CoAPOptionDefine("Content-Format", 12);
-        public static CoAPOptionDefine MaxAge = new CoAPOptionDefine("Max-Age", 14);
-        public static CoAPOptionDefine UriQuery = new CoAPOptionDefine("Uri-Query", 15);
-        public static CoAPOptionDefine Accept = new CoAPOptionDefine("Accept", 17);
-        public static CoAPOptionDefine LocationQuery = new CoAPOptionDefine("Location-Query", 20);
+        public static CoAPOptionDefine UriPort              = new CoAPOptionDefine("Uri-Port", 7);
+        public static CoAPOptionDefine LocationPath         = new CoAPOptionDefine("Location-Path", 8);
+        public static CoAPOptionDefine UriPath              = new CoAPOptionDefine("Uri-Path", 11);
+        public static CoAPOptionDefine ContentFormat        = new CoAPOptionDefine("Content-Format", 12);
+        public static CoAPOptionDefine MaxAge               = new CoAPOptionDefine("Max-Age", 14);
+        public static CoAPOptionDefine UriQuery             = new CoAPOptionDefine("Uri-Query", 15);
+        public static CoAPOptionDefine Accept               = new CoAPOptionDefine("Accept", 17);
+        public static CoAPOptionDefine LocationQuery        = new CoAPOptionDefine("Location-Query", 20);
 
-        public static CoAPOptionDefine Block2 = new CoAPOptionDefine("Block2", 23);    //RFC 7959
-        public static CoAPOptionDefine Block1 = new CoAPOptionDefine("Block1", 27);    //RFC 7959
+        public static CoAPOptionDefine Block2               = new CoAPOptionDefine("Block2", 23);    //RFC 7959
+        public static CoAPOptionDefine Block1               = new CoAPOptionDefine("Block1", 27);    //RFC 7959
 
-        public static CoAPOptionDefine Size2 = new CoAPOptionDefine("Size2", 28); //RFC 7959
+        public static CoAPOptionDefine Size2                = new CoAPOptionDefine("Size2", 28); //RFC 7959
 
-        public static CoAPOptionDefine ProxyUri = new CoAPOptionDefine("Proxy-Uri", 35);
-        public static CoAPOptionDefine ProxyScheme = new CoAPOptionDefine("Proxy-Scheme", 39);
+        public static CoAPOptionDefine ProxyUri             = new CoAPOptionDefine("Proxy-Uri", 35);
+        public static CoAPOptionDefine ProxyScheme          = new CoAPOptionDefine("Proxy-Scheme", 39);
 
-        public static CoAPOptionDefine Size1 = new CoAPOptionDefine("Size1", 60);
+        public static CoAPOptionDefine Size1                = new CoAPOptionDefine("Size1", 60);
 
-        public static CoAPOptionDefine Unknown = new CoAPOptionDefine("Unknown", 0);
+        public static CoAPOptionDefine Unknown              = new CoAPOptionDefine("Unknown", 0);
 
         public string Name
         {

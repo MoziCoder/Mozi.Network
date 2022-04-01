@@ -71,6 +71,9 @@ namespace Mozi.IoT
         {
             _cm = new Cache.MessageCacheManager(this);
         }
+
+        //TODO 通过CGI规范转发到WEB解释程序
+
         /// <summary>
         /// 设置此方法后，所有请求将转至后端HTTP服务器
         /// </summary>

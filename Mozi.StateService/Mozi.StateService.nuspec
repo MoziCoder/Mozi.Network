@@ -8,7 +8,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
     <projectUrl>https://gitee.com/myui_admin/mozi</projectUrl>
-    <description>UDP心跳服务和心跳服务网关,心跳协议为自行开发的协议。包含心跳客户端，服务端，订阅者</description>
+    <description>UDP心跳服务,心跳协议为自行开发的协议。组件包含心跳客户端，服务端，订阅者</description>
     <releaseNotes>心跳服务及心跳网关</releaseNotes>
     <copyright>Copyright © Jason 2021-2022</copyright>
     <tags>心跳 HeartBeat 心跳网关</tags>

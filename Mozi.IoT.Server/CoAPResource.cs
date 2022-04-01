@@ -204,7 +204,7 @@ namespace Mozi.IoT
             LinkInfoCollection infos = new LinkInfoCollection();
             infos.AddRange(res);
 
-            //
+            //如果没有查询过滤
             if (string.IsNullOrEmpty(ctx.Request.Query))
             {
                 pack.Payload = StringEncoder.Encode(LinkFormator.ToString(infos));
@@ -217,12 +217,11 @@ namespace Mozi.IoT
             pack.SetContentType(ContentFormat.LinkFormat);
             pack.Code = CoAPResponseCode.Content;
             return pack;
-
         }
     }
 
     [ResourceDescription(Namespace = "core", Name = "runtime")]
-    public class RuntimeResource : CoAPResource
+    internal class RuntimeResource : CoAPResource
     {
         public override uint ResourceSize { get => 0; }
 

@@ -38,6 +38,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cgi\FastCGI.cs" />
     <Compile Include="Generic\AbsClassEnum.cs" />
     <Compile Include="Cache\CacheControl.cs" />
     <Compile Include="Cache\Global.cs" />

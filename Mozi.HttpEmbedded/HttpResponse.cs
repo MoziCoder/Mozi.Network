@@ -47,7 +47,9 @@ namespace Mozi.HttpEmbedded
         /// 压缩类型
         /// </summary>
         public string ContentEncoding { get; set; }
-        //内容编码集
+        /// <summary>
+        /// 内容编码集
+        /// </summary>
         public string Charset { get { return _charset; } set { _charset = value; } }
         /// <summary>
         /// 文档是否被压缩过
@@ -304,6 +306,7 @@ namespace Mozi.HttpEmbedded
             int posCaret = 0;
             int index = 0;
             int dataLength = data.Length;
+
             while ((posCR < dataLength) && Array.IndexOf(data, ASCIICode.CR, posCR + 1) > 0)
             {
                 posCR = Array.IndexOf(data, ASCIICode.CR, posCR + 1);

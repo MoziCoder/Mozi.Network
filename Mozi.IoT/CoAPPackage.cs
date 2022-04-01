@@ -540,7 +540,7 @@ namespace Mozi.IoT
 
                 if (Token != null && Token.Length > 0)
                 {
-                    arrHeaders.Add(new KeyValuePair<string, string>("Token", Hex.To(Token)));
+                    arrHeaders.Add(new KeyValuePair<string, string>("Token", "0x"+Hex.To(Token)));
                 }
 
                 foreach(var opt in Options)
@@ -559,6 +559,11 @@ namespace Mozi.IoT
                         sOptValue = ct.ContentType;
                     }else if (opt.Option == CoAPOptionDefine.Size1 || opt.Option == CoAPOptionDefine.Size2){
                         var optValue = new UnsignedIntegerOptionValue() { Pack = opt.Value.Pack };
+                        sOptValue = optValue.ToString();
+                    }
+                    else if (opt.Option == CoAPOptionDefine.UriHost || opt.Option == CoAPOptionDefine.UriPath || opt.Option == CoAPOptionDefine.UriQuery || opt.Option == CoAPOptionDefine.LocationPath || opt.Option == CoAPOptionDefine.LocationQuery || opt.Option == CoAPOptionDefine.ProxyUri || opt.Option == CoAPOptionDefine.ProxyScheme)
+                    {
+                        var optValue = new StringOptionValue() { Pack = opt.Value.Pack };
                         sOptValue = optValue.ToString();
                     }
                     else
