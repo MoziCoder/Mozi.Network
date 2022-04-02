@@ -257,10 +257,6 @@ namespace Mozi.HttpEmbedded
         /// <param name="port"></param>
         public void SendTo(byte[] buffer)
         {
-            //if (_sc.Poll(100, SelectMode.SelectRead)&&_sc.Available==0)
-            //{
-            //    _connected = false;
-            //}
             if (_connected)
             {
                 _sc.SendTo(buffer, new IPEndPoint(IPAddress.Parse(_host), _iport));

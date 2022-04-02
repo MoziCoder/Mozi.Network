@@ -1,4 +1,9 @@
 # 更新历史
+[2022/03/31]
+[新增]
+新增项目Encode.CBOR,CBOR数据编码解码器
+在IoT中增加LinkFormat解析器
+
 [2022/03/09]
 [新增]
 IoT.Server中增加CoAPResource,ResourceManager用于管理后端资源API

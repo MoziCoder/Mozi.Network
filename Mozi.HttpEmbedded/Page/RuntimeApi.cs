@@ -233,6 +233,15 @@ namespace Mozi.HttpEmbedded.Page
                 data = Context.Request.Query,
                 success = true
             };
+            if (Context.Request.Method == RequestMethod.GET)
+            {
+                rm.success = true;
+            }
+            else
+            {
+                rm.success = false;
+                rm.message = "Not a GET request";
+            }
             return rm;
         }
         /// <summary>
@@ -246,6 +255,15 @@ namespace Mozi.HttpEmbedded.Page
                 data = Context.Request.Query,
                 success = true
             };
+            if (Context.Request.Method == RequestMethod.POST)
+            {
+                rm.success = true;
+            }
+            else
+            {
+                rm.success = false;
+                rm.message = "Not a POST request";
+            }
             return rm;
         }
         /// <summary>

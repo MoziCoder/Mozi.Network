@@ -10,11 +10,11 @@ namespace Mozi.Encode.Test
             //通过类型实例化进行构造
 
             //unsigned integer pack
-            CBORDataInfo di_uint1 = new CBORDataInfo(CBORDataType.UnsignedInteger,12);
-            CBORDataInfo di_uint2 = new CBORDataInfo(CBORDataType.UnsignedInteger, 123);
-            CBORDataInfo di_uint3 = new CBORDataInfo(CBORDataType.UnsignedInteger, 12345);
-            CBORDataInfo di_uint4 = new CBORDataInfo(CBORDataType.UnsignedInteger, 12345678);
-            CBORDataInfo di_uint5 = new CBORDataInfo(CBORDataType.UnsignedInteger, 1234567891011);
+            CBORData di_uint1 = new CBORData(CBORDataType.UnsignedInteger,12);
+            CBORData di_uint2 = new CBORData(CBORDataType.UnsignedInteger, 123);
+            CBORData di_uint3 = new CBORData(CBORDataType.UnsignedInteger, 12345);
+            CBORData di_uint4 = new CBORData(CBORDataType.UnsignedInteger, 12345678);
+            CBORData di_uint5 = new CBORData(CBORDataType.UnsignedInteger, 1234567891011);
 
             //CBORDataInfo di = new CBORDataInfo(12);
             //CBORDataInfo di5 = new CBORDataInfo(1234567891011);
@@ -32,11 +32,11 @@ namespace Mozi.Encode.Test
             Console.WriteLine(Hex.To(data_uint5));
 
             //negative integer pack
-            CBORDataInfo di_nint1 = new CBORDataInfo(CBORDataType.NegativeInteger, -12);
-            CBORDataInfo di_nint2 = new CBORDataInfo(CBORDataType.NegativeInteger, -123);
-            CBORDataInfo di_nint3 = new CBORDataInfo(CBORDataType.NegativeInteger, -12345);
-            CBORDataInfo di_nint4 = new CBORDataInfo(CBORDataType.NegativeInteger, -12345678);
-            CBORDataInfo di_nint5 = new CBORDataInfo(CBORDataType.NegativeInteger, -1234567891011);
+            CBORData di_nint1 = new CBORData(CBORDataType.NegativeInteger, -12);
+            CBORData di_nint2 = new CBORData(CBORDataType.NegativeInteger, -123);
+            CBORData di_nint3 = new CBORData(CBORDataType.NegativeInteger, -12345);
+            CBORData di_nint4 = new CBORData(CBORDataType.NegativeInteger, -12345678);
+            CBORData di_nint5 = new CBORData(CBORDataType.NegativeInteger, -1234567891011);
 
             byte[] data_nint1 = CBOREncoder.Encode(di_nint1);
             byte[] data_nint2 = CBOREncoder.Encode(di_nint2);
@@ -51,8 +51,8 @@ namespace Mozi.Encode.Test
             Console.WriteLine(Hex.To(data_nint5));
 
             //hex array pack
-            CBORDataInfo di_hexarray1 = new CBORDataInfo(CBORDataType.StringArray, "010203040506");
-            CBORDataInfo di_hexarray2 = new CBORDataInfo(CBORDataType.StringArray,new CBORDataInfo[] { new CBORDataInfo(CBORDataType.StringArray, "010203040506"), new CBORDataInfo(CBORDataType.StringArray, "010203040506") });
+            CBORData di_hexarray1 = new CBORData(CBORDataType.StringArray, "010203040506");
+            CBORData di_hexarray2 = new CBORData(CBORDataType.StringArray,new CBORData[] { new CBORData(CBORDataType.StringArray, "010203040506"), new CBORData(CBORDataType.StringArray, "010203040506") });
             di_hexarray2.IsIndefinite = true;
             byte[] data_hexarray1 = CBOREncoder.Encode(di_hexarray1);
             byte[] data_hexarray2 = CBOREncoder.Encode(di_hexarray2);
@@ -63,8 +63,8 @@ namespace Mozi.Encode.Test
             Console.WriteLine(CBOREncoder.Decode(data_hexarray2).ToString());
 
             //string text pack
-            CBORDataInfo di_stringtext1 = new CBORDataInfo(CBORDataType.StringText, "010203040506");
-            CBORDataInfo di_stringtext2 = new CBORDataInfo(CBORDataType.StringText, new CBORDataInfo[] { new CBORDataInfo(CBORDataType.StringText, "010203040506"), new CBORDataInfo(CBORDataType.StringText, "010203040506") });
+            CBORData di_stringtext1 = new CBORData(CBORDataType.StringText, "010203040506");
+            CBORData di_stringtext2 = new CBORData(CBORDataType.StringText, new CBORData[] { new CBORData(CBORDataType.StringText, "010203040506"), new CBORData(CBORDataType.StringText, "010203040506") });
             di_stringtext2.IsIndefinite = true;
             byte[] data_stringtext1 = CBOREncoder.Encode(di_stringtext1);
             byte[] data_stringtext2 = CBOREncoder.Encode(di_stringtext2);

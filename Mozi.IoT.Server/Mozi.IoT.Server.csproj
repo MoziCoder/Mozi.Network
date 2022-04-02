@@ -40,7 +40,6 @@
   <ItemGroup>
     <Compile Include="CoAPResource.cs" />
     <Compile Include="CoAPServer.cs" />
-    <Compile Include="Serialize\ISerializer.cs" />
     <Compile Include="LwM2MServer.cs" />
     <Compile Include="LwM2M\Bootstrap.cs" />
     <Compile Include="LwM2M\ConnectionManage.cs" />

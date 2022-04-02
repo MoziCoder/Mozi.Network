@@ -14,6 +14,7 @@ using Mozi.HttpEmbedded.Template;
 
 namespace Mozi.HttpEmbedded
 {
+
     //TODO 2020/09/19 增加WebService功能
     //TODO 2020/09/28 增加信号量机制
     //TODO 2021/05/05 实现HTTPS功能
@@ -47,7 +48,7 @@ namespace Mozi.HttpEmbedded
 
         protected  SocketServer _sc = new SocketServer();
 
-        private WebDav.DavServer _davserver;
+        private WebDav.WebDAVServer _davserver;
 
         private int _port = 80;
         private int _iporthttps = 443;
@@ -680,7 +681,7 @@ namespace Mozi.HttpEmbedded
             //DONE WEBDAV服务初始化
             if (_davserver == null)
             {
-                _davserver = new WebDav.DavServer();
+                _davserver = new WebDav.WebDAVServer();
                 _davserver.SetStore(root);
             }
             return this;
@@ -801,11 +802,6 @@ namespace Mozi.HttpEmbedded
         {
             _indexPages = pattern.Split(new char[] { ',' });
         }
-
-        //public void ForbideIPAccess()
-        //{
-        //    _forbideIPAccess = true;
-        //}
     }
 
     public delegate void Request(string srcHost, int srcPort, HttpRequest request);

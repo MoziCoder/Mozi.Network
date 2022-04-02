@@ -54,8 +54,6 @@ namespace Mozi.IoT
         public CoAPClient()
         {
             _cacheManager = new MessageCacheManager(this);
-            _socket = new UDPSocketIOCP();
-            _socket.AfterReceiveEnd += Socket_AfterReceiveEnd;
             _token = _cacheManager.GenerateToken(8);
             //配置本地服务口地址
         }
@@ -77,13 +75,7 @@ namespace Mozi.IoT
         /// <param name="args"></param>
         protected override void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
-            _packetReceived++;
-
-            if (PackageReceived != null)
-            {
-                PackageReceived(args.IP, args.Port, args.Data);
-            }
-
+            base.Socket_AfterReceiveEnd(sender, args);
             CoAPPackage pack = CoAPPackage.Parse(args.Data, CoAPPackageType.Response);
 
             if (pack != null)

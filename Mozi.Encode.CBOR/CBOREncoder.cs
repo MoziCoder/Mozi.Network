@@ -22,10 +22,10 @@ namespace Mozi.Encode.CBOR
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static CBORDataInfo Decode(byte[] data)
+        public static CBORData Decode(byte[] data)
         {
             CBORDataType cb = CBORDataType.Parse(data[0]);
-            CBORDataInfo di = cb.Serializer.Parse(data);
+            CBORData di = cb.Serializer.Parse(data);
             return di;
         }
         /// <summary>
@@ -33,7 +33,7 @@ namespace Mozi.Encode.CBOR
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static byte[] Encode(CBORDataInfo data)
+        public static byte[] Encode(CBORData data)
         {
             return data.DataType.Serializer.Pack(data);
         }
@@ -43,18 +43,18 @@ namespace Mozi.Encode.CBOR
         /// <param name="data"></param>
         /// <returns></returns>
         /// <remarks>Parse方法还在测试中，暂时不能实用</remarks>
-        public static CBORDataInfo Parse(string data)
+        public static CBORData Parse(string data)
         {
             Regex regUInt = new Regex("^(\\+)?\\d+$");
             Regex regNegInt = new Regex("^-\\d+$");
             Regex regTagItem=new Regex("\\d+\\(\\w+\\)") ;
             data = data.Trim();
-            CBORDataInfo info=null;
+            CBORData info=null;
             //unsigned integer
             UInt64 value;
             if (UInt64.TryParse(data, out value))
             {
-                info = new CBORDataInfo
+                info = new CBORData
                 {
                     DataType = CBORDataType.UnsignedInteger,
                     Value = value
@@ -63,7 +63,7 @@ namespace Mozi.Encode.CBOR
             }//negative integer
             else if (regNegInt.IsMatch(data))
             {
-                info = new CBORDataInfo
+                info = new CBORData
                 {
                     DataType = CBORDataType.NegativeInteger,
                     Value = long.Parse(data)
@@ -72,7 +72,7 @@ namespace Mozi.Encode.CBOR
             //hex array
             else if (data.StartsWith("h'")|data.StartsWith("(_ h")|data.StartsWith("(_h"))
             {
-                info = new CBORDataInfo
+                info = new CBORData
                 {
                     DataType = CBORDataType.StringArray
                 };
@@ -86,10 +86,10 @@ namespace Mozi.Encode.CBOR
                     data = data.Trim(new char[] { '(', ')', '_'}).Trim();
 
                     string[] list = data.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                    List<CBORDataInfo> items = new List<CBORDataInfo>();
+                    List<CBORData> items = new List<CBORData>();
                     foreach(var l in list)
                     {
-                        items.Add(new CBORDataInfo(CBORDataType.StringArray, l.Trim(new char[] { 'h', '\'' })));
+                        items.Add(new CBORData(CBORDataType.StringArray, l.Trim(new char[] { 'h', '\'' })));
                     }
                     info.Value = items.ToArray();
                 }
@@ -101,7 +101,7 @@ namespace Mozi.Encode.CBOR
             //string text
             else if (data[0] == '\"'|data.StartsWith("(_ \"") | data.StartsWith("(_\""))
             {
-                info = new CBORDataInfo
+                info = new CBORData
                 {
                     DataType = CBORDataType.StringText
                 };
@@ -115,10 +115,10 @@ namespace Mozi.Encode.CBOR
                     data = data.Trim(new char[] { '(', ')', '_' }).Trim();
 
                     string[] list = data.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                    List<CBORDataInfo> items = new List<CBORDataInfo>();
+                    List<CBORData> items = new List<CBORData>();
                     foreach (var l in list)
                     {
-                        items.Add(new CBORDataInfo(CBORDataType.StringText, l.Trim(new char[] { '"' })));
+                        items.Add(new CBORData(CBORDataType.StringText, l.Trim(new char[] { '"' })));
                     }
                     info.Value = items;
                 }
@@ -133,25 +133,25 @@ namespace Mozi.Encode.CBOR
                 //TODO 进一步实现数组的解析
                 //[_ "
 
-                info = new CBORDataInfo { DataType = CBORDataType.DataArray };
+                info = new CBORData { DataType = CBORDataType.DataArray };
             }
             //keypair
             else if (data[0] == '{')
             {
                 //TODO 进一步实现键值对的解析
                 //"a":"b"|1:"b"
-                info = new CBORDataInfo { DataType = CBORDataType.KeyPair };
+                info = new CBORData { DataType = CBORDataType.KeyPair };
                 if (data.StartsWith("{_"))
                 {
                     data = data.Trim(new char[] { '{', '}', '_' }).Trim();
                 }
                 int offset = 0;
-                Dictionary<CBORDataInfo, CBORDataInfo> list = new Dictionary<CBORDataInfo, CBORDataInfo>();
+                Dictionary<CBORData, CBORData> list = new Dictionary<CBORData, CBORData>();
                 while (offset < data.Length)
                 {
 
-                    CBORDataInfo key = new CBORDataInfo();
-                    CBORDataInfo kv = new CBORDataInfo();
+                    CBORData key = new CBORData();
+                    CBORData kv = new CBORData();
                     char indicator=data[offset];
                     if (indicator == '"')
                     {
@@ -181,14 +181,14 @@ namespace Mozi.Encode.CBOR
                 byte indicator = byte.Parse(data.Substring(0, data.IndexOf("(")));
                 string item = data.Substring(data.IndexOf("(") + 1).Trim(new char[] { ')' });
                 
-                info = new CBORDataInfo() { DataType = CBORDataType.TagItem };
+                info = new CBORData() { DataType = CBORDataType.TagItem };
                 info.Indicator = indicator;
                 info.Value = CBOREncoder.Parse(item);
             }
             //simplefloat
             else
             {
-                info = new CBORDataInfo() { DataType = CBORDataType.SimpleFloat };
+                info = new CBORData() { DataType = CBORDataType.SimpleFloat };
                 bool bValue;
                 string simpleText = "";
                 if (data.StartsWith("simple"))

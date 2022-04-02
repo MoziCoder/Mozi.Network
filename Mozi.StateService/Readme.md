@@ -33,7 +33,7 @@ Mozi.StateService是一个基于.Net开发的UDP心跳组件，基于UDP Socket�
 
 ~~~shell
 
-	dotnet add package Mozi.StateService --version 1.2.6
+	dotnet add package Mozi.StateService --version 1.3.8
 
 ~~~
 ## 使用说明
@@ -133,10 +133,15 @@ Mozi.StateService是一个基于.Net开发的UDP心跳组件，基于UDP Socket�
             Console.Title = hg.Clients.Count.ToString();
         }
     }
+
 ~~~
+
+## 版权说明
+	本项目采用MIT开源协议，引用请注明出处。欢迎复制，引用和修改。复制请注明出处，引用请附带证书。意见建议疑问请联系软件作者，或提交ISSUE。
+
 ### By [Jason][1] on Jun. 5,2021
 
 [1]:mailto:brotherqian@163.com
 [gitee]:https://gitee.com/myui_admin/mozi.git
-[github]:https://github.com/MoziCoder/Mozi.HttpEmbedded.git
+[github]:https://github.com/MoziCoder/Mozi.Network.git
 [codechina]:https://codechina.csdn.net/mozi/mozi.httpembedded.git

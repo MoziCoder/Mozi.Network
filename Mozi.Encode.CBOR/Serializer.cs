@@ -20,18 +20,18 @@ namespace Mozi.Encode
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public abstract byte[] Pack(CBORDataInfo info);
+        public abstract byte[] Pack(CBORData info);
         /// <summary>
         /// 解析字节流
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public abstract CBORDataInfo Parse(byte[] data);
+        public abstract CBORData Parse(byte[] data);
         /// <summary>
         /// 转为带特征描述符号的字符串
         /// </summary>
         /// <returns></returns>
-        public abstract string ToString(CBORDataInfo di);
+        public abstract string ToString(CBORData di);
 
     }
     /// <summary>
@@ -39,7 +39,7 @@ namespace Mozi.Encode
     /// </summary>
     internal class UnsignedIntegerSerializer : CBORDataSerializer
     {
-        public override byte[] Pack(CBORDataInfo info)
+        public override byte[] Pack(CBORData info)
         {
             byte[] data;
             object value = info.Value;
@@ -77,9 +77,9 @@ namespace Mozi.Encode
             return data;
         }
 
-        public override CBORDataInfo Parse(byte[] data)
+        public override CBORData Parse(byte[] data)
         {
-            CBORDataInfo di = new CBORDataInfo();
+            CBORData di = new CBORData();
             di.DataType = DataType;
             byte head = data[0];
             di.Data = data;
@@ -124,7 +124,7 @@ namespace Mozi.Encode
             return di;
         }
 
-        public override string ToString(CBORDataInfo di)
+        public override string ToString(CBORData di)
         {
             return di.Value.ToString();
         }
@@ -134,7 +134,7 @@ namespace Mozi.Encode
     /// </summary>
     internal class NegativeIntegerSerializer : CBORDataSerializer
     {
-        public override byte[] Pack(CBORDataInfo info)
+        public override byte[] Pack(CBORData info)
         {
             byte[] data;
             object value = info.Value;
@@ -178,9 +178,9 @@ namespace Mozi.Encode
 
         }
 
-        public override CBORDataInfo Parse(byte[] data)
+        public override CBORData Parse(byte[] data)
         {
-            CBORDataInfo di = new CBORDataInfo();
+            CBORData di = new CBORData();
             di.DataType = DataType;
             byte head = data[0];
             di.Data = data;
@@ -222,7 +222,7 @@ namespace Mozi.Encode
             return di;
         }
 
-        public override string ToString(CBORDataInfo di)
+        public override string ToString(CBORData di)
         {
             return di.Value.ToString();
         }
@@ -232,7 +232,7 @@ namespace Mozi.Encode
     /// </summary>
     internal class StringArraySerializer : CBORDataSerializer
     {
-        public override byte[] Pack(CBORDataInfo info)
+        public override byte[] Pack(CBORData info)
         {
             byte[] data;
             if (info.IsIndefinite)
@@ -243,7 +243,7 @@ namespace Mozi.Encode
                 //Array.Copy(payload, 0, data, 1, lenPayload);
                 List<byte> payload = new List<byte>();
                 payload.Add((byte)(info.DataType.Header | 31));
-                foreach (CBORDataInfo di in (CBORDataInfo[])info.Value)
+                foreach (CBORData di in (CBORData[])info.Value)
                 {
                     byte[] item = Pack(di);
                     payload.AddRange(item);
@@ -295,9 +295,9 @@ namespace Mozi.Encode
             return data;
         }
 
-        public override CBORDataInfo Parse(byte[] data)
+        public override CBORData Parse(byte[] data)
         {
-            CBORDataInfo di = new CBORDataInfo();
+            CBORData di = new CBORData();
             di.DataType = DataType;
             byte head = data[0];
             di.Data = data;
@@ -342,7 +342,7 @@ namespace Mozi.Encode
             else
             {
                 di.IsIndefinite = true;
-                List<CBORDataInfo> infValue = new List<CBORDataInfo>();
+                List<CBORData> infValue = new List<CBORData>();
 
                 offset++;
                 while (data[offset] != 0xff)
@@ -357,7 +357,7 @@ namespace Mozi.Encode
                             itemData.Add(data[offset]);
                             offset++;
                         }
-                        CBORDataInfo info = Parse(itemData.ToArray());
+                        CBORData info = Parse(itemData.ToArray());
                         infValue.Add(info);
                         di.PackSize += info.PackSize;
                     }
@@ -373,7 +373,7 @@ namespace Mozi.Encode
             return di;
         }
 
-        public override string ToString(CBORDataInfo di)
+        public override string ToString(CBORData di)
         {
             if (di.Value is string)
             {
@@ -396,14 +396,14 @@ namespace Mozi.Encode
     /// </summary>
     internal class StringTextSerialzier : CBORDataSerializer
     {
-        public override byte[] Pack(CBORDataInfo info)
+        public override byte[] Pack(CBORData info)
         {
             byte[] data;
             if (info.IsIndefinite)
             {
                 List<byte> payload = new List<byte>();
                 payload.Add((byte)(info.DataType.Header | 31));
-                foreach (CBORDataInfo di in (CBORDataInfo[])info.Value)
+                foreach (CBORData di in (CBORData[])info.Value)
                 {
                     byte[] item = Pack(di);
                     payload.AddRange(item);
@@ -454,9 +454,9 @@ namespace Mozi.Encode
             return data;
         }
 
-        public override CBORDataInfo Parse(byte[] data)
+        public override CBORData Parse(byte[] data)
         {
-            CBORDataInfo di = new CBORDataInfo();
+            CBORData di = new CBORData();
             di.DataType = DataType;
             byte head = data[0];
             di.Data = data;
@@ -510,7 +510,7 @@ namespace Mozi.Encode
             else
             {
                 di.IsIndefinite = true;
-                List<CBORDataInfo> infValue = new List<CBORDataInfo>();
+                List<CBORData> infValue = new List<CBORData>();
 
                 offset++;
                 while (data[offset] != 0xff)
@@ -526,7 +526,7 @@ namespace Mozi.Encode
                             offset++;
                         }
 
-                        CBORDataInfo info = Parse(itemData.ToArray());
+                        CBORData info = Parse(itemData.ToArray());
                         infValue.Add(info);
                         di.PackSize += info.PackSize;
                     }
@@ -543,7 +543,7 @@ namespace Mozi.Encode
             return di;
         }
 
-        public override string ToString(CBORDataInfo di)
+        public override string ToString(CBORData di)
         {
             if (di.Value is string)
             {
@@ -553,7 +553,7 @@ namespace Mozi.Encode
             else
             {
                 List<string> items = new List<string>();
-                foreach (var r in (CBORDataInfo[])di.Value)
+                foreach (var r in (CBORData[])di.Value)
                 {
                     items.Add(r.ToString());
                 }
@@ -566,13 +566,13 @@ namespace Mozi.Encode
     /// </summary>
     internal class ArraySerializer : CBORDataSerializer
     {
-        public override CBORDataInfo Parse(byte[] data)
+        public override CBORData Parse(byte[] data)
         {
-            CBORDataInfo di = new CBORDataInfo();
+            CBORData di = new CBORData();
             di.DataType = DataType;
             di.Data = data;
 
-            List<CBORDataInfo> list = new List<CBORDataInfo>();
+            List<CBORData> list = new List<CBORData>();
             long offset = 0;
             byte head = data[0];
             //低5位
@@ -623,7 +623,7 @@ namespace Mozi.Encode
                     {
                         byte[] fragKey = new byte[data.Length - offset - 1];
                         Array.Copy(data, offset + 1, fragKey, 0, fragKey.Length);
-                        CBORDataInfo info = CBOREncoder.Decode(fragKey);
+                        CBORData info = CBOREncoder.Decode(fragKey);
 
                         info.ClearRedundant();
                         offset += info.PackSize;
@@ -637,9 +637,9 @@ namespace Mozi.Encode
             return di;
         }
 
-        public override byte[] Pack(CBORDataInfo info)
+        public override byte[] Pack(CBORData info)
         {
-            var value = (List<CBORDataInfo>)info.Value;
+            var value = (List<CBORData>)info.Value;
             int length = value.Count;
             List<byte> payload = new List<byte>();
             if (info.IsIndefinite)
@@ -684,10 +684,10 @@ namespace Mozi.Encode
             return payload.ToArray();
         }
 
-        public override string ToString(CBORDataInfo di)
+        public override string ToString(CBORData di)
         {
             List<string> info = new List<string>();
-            foreach(var ci in (List<CBORDataInfo>)di.Value)
+            foreach(var ci in (List<CBORData>)di.Value)
             {
                 info.Add(ci.ToString());
             }
@@ -699,9 +699,9 @@ namespace Mozi.Encode
     /// </summary>
     internal class KeyPairSerializer : CBORDataSerializer
     {
-        public override byte[] Pack(CBORDataInfo info)
+        public override byte[] Pack(CBORData info)
         {
-            var value = (Dictionary<CBORDataInfo, CBORDataInfo>)info.Value;
+            var value = (Dictionary<CBORData, CBORData>)info.Value;
             int length = value.Count;
             List<byte> payload = new List<byte>();
             if (info.IsIndefinite)
@@ -750,13 +750,13 @@ namespace Mozi.Encode
             return payload.ToArray();
         }
 
-        public override CBORDataInfo Parse(byte[] data)
+        public override CBORData Parse(byte[] data)
         {
-            CBORDataInfo di = new CBORDataInfo();
+            CBORData di = new CBORData();
             di.DataType = DataType;
             di.Data = data;
 
-            Dictionary<CBORDataInfo, CBORDataInfo> list = new Dictionary<CBORDataInfo, CBORDataInfo>();
+            Dictionary<CBORData, CBORData> list = new Dictionary<CBORData, CBORData>();
             long offset = 0;
             byte head = data[0];
             //低5位
@@ -799,8 +799,8 @@ namespace Mozi.Encode
                     var tag = data[offset + 1];
                     byte[] fragKey = new byte[data.Length - offset-1];
                     Array.Copy(data, offset + 1, fragKey, 0, fragKey.Length);
-                    CBORDataInfo info;
-                    CBORDataInfo value;
+                    CBORData info;
+                    CBORData value;
                     bool isKeyonly = false;
                     //结束符号
                     if (tag == 0xff)
@@ -852,9 +852,9 @@ namespace Mozi.Encode
             return di;
         }
 
-        public override string ToString(CBORDataInfo di)
+        public override string ToString(CBORData di)
         {
-            Dictionary<CBORDataInfo, CBORDataInfo> data = (Dictionary<CBORDataInfo, CBORDataInfo>)di.Value;
+            Dictionary<CBORData, CBORData> data = (Dictionary<CBORData, CBORData>)di.Value;
             List<string> ls = new List<string>();
             foreach(var r in data)
             {
@@ -877,14 +877,14 @@ namespace Mozi.Encode
     /// </summary>
     internal class TagItemSerializer : CBORDataSerializer
     {
-        public override byte[] Pack(CBORDataInfo info)
+        public override byte[] Pack(CBORData info)
         {
             List<byte> data = new List<byte>();
             byte[] payload;
             byte header = (byte)(DataType.Header| info.Indicator);
             byte indicator = info.Indicator;
             //TODO self described 55799
-            payload = CBOREncoder.Encode((CBORDataInfo)info.Value);
+            payload = CBOREncoder.Encode((CBORData)info.Value);
             data.Add(header);
             if (payload != null)
             {
@@ -893,9 +893,9 @@ namespace Mozi.Encode
             return data.ToArray();
         }
 
-        public override CBORDataInfo Parse(byte[] data)
+        public override CBORData Parse(byte[] data)
         {
-            CBORDataInfo di = new CBORDataInfo();
+            CBORData di = new CBORData();
             di.DataType = DataType;
             byte head = data[0];
             di.Data = data;
@@ -1056,7 +1056,7 @@ namespace Mozi.Encode
             return di;
         }
 
-        public override string ToString(CBORDataInfo di)
+        public override string ToString(CBORData di)
         {
             return $"{di.Indicator}({di.Value})";
         }
@@ -1066,7 +1066,7 @@ namespace Mozi.Encode
     /// </summary>
     internal class SimpleFloatSerializer : CBORDataSerializer
     {
-        public override byte[] Pack(CBORDataInfo info)
+        public override byte[] Pack(CBORData info)
         {
             byte[] data;
             if(info.Value is double)
@@ -1119,9 +1119,9 @@ namespace Mozi.Encode
             return data;
         }
 
-        public override CBORDataInfo Parse(byte[] data)
+        public override CBORData Parse(byte[] data)
         {
-            CBORDataInfo di = new CBORDataInfo();
+            CBORData di = new CBORData();
             di.DataType = DataType;
             byte head = data[0];
             di.Data = data;
@@ -1205,7 +1205,7 @@ namespace Mozi.Encode
         /// </summary>
         /// <param name="di"></param>
         /// <returns></returns>
-        public override string ToString(CBORDataInfo di)
+        public override string ToString(CBORData di)
         {
             if(di.Value is null)
             {

@@ -12,12 +12,12 @@ namespace Mozi.HttpEmbedded.WebDav.Method
         /// <summary>
         /// œÏ”¶«Î«Û
         /// </summary>
-        /// <param name="server"><see cref="DavServer" /> </param>
+        /// <param name="server"><see cref="WebDAVServer" /> </param>
         /// <param name="context"> 
         /// <see cref="HttpContext" /> 
         ///  </param>
-        /// <param name="store"><see cref="IWebDavStore" /> <see cref="DavServer" /></param>
-        public StatusCode HandleRequest(DavServer server, HttpContext context, IWebDavStore store)
+        /// <param name="store"><see cref="IWebDavStore" /> <see cref="WebDAVServer" /></param>
+        public StatusCode Invoke(WebDAVServer server, HttpContext context, IWebDavStore store)
         {
             IWebDavStoreItem source = WebDavExtensions.GetStoreItem(context.Request.Path, store);
             if (source is IWebDavStoreDocument || source is IWebDavStoreCollection)

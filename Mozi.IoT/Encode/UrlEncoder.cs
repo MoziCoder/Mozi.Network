@@ -132,7 +132,7 @@ namespace Mozi.IoT.Encode
             string[] paths;
             bool isDomain = false;
 
-            Regex reg = new Regex("^[a-zA-Z]+://((([a-zA-Z0-9\\.-]+){2,})|(\\[?[a-zA-Z0-9\\.:]+){2,}\\]?)(:\\d+)?((/[a-zA-Z0-9-\\.%]{0,}){0,}(\\?)?([[%=a-zA-Z0-9-\\*\\.]+(&)?){0,})$");
+            Regex reg = new Regex("^[a-zA-Z]+://((([a-zA-Z0-9\\.-]+){2,})|(\\[?[a-zA-Z0-9\\.:]+){2,}\\]?)(:\\d+)?((/[a-zA-Z0-9-\\.%]{0,}){0,}(\\?)?([[%=a-zA-Z0-9-\\*\\./]+(&)?){0,})$");
             Regex regProto = new Regex("[a-zA-Z]+(?=://)");
             Regex regHost = new Regex("(?<=\\://)(([a-zA-Z0-9-]+\\.?){2,}|(\\[?[a-zA-Z0-9-\\.:]+){2,}]?)(:\\d+)?");
 
@@ -141,7 +141,7 @@ namespace Mozi.IoT.Encode
             Regex regDomain = new Regex("^(([a-zA-Z0-9-]+(\\.)?){2,})|(([a-zA-Z0-9-]+(\\.)?){2,}(?=:\\d+))$");
 
             Regex regPath = new Regex("(?<=(://(([a-zA-Z0-9-]+\\.?){2,}|(\\[?[a-zA-Z0-9-\\.:]+){2,}]?)(:\\d+)?))(/[a-zA-Z0-9-\\.%]{0,}){1,}((?=\\?))?");
-            Regex regQuery = new Regex("(?<=\\?)([%=a-zA-Z0-9-\\*\\.]+(&)?){1,}");
+            Regex regQuery = new Regex("(?<=\\?)([%=a-zA-Z0-9-\\*\\./]+(&)?){1,}");
 
             if (reg.IsMatch(url))
             {

@@ -10,7 +10,7 @@ namespace Mozi.Encode.CBOR
         /// <summary>
         /// Hex字符串转字节流
         /// </summary>
-        /// <param name="hexString"></param>
+        /// <param name="hexString">Hex字符串</param>
         /// <returns></returns>
         public static byte[] From(string hexString)
         {

@@ -10,7 +10,7 @@ namespace Mozi.HttpEmbedded.WebDav.Storage
         }
 
         /// <summary>
-        /// MIMEֵ <see cref="IWebDavStoreItem" />.
+        /// MIME <see cref="IWebDavStoreItem" />.
         /// </summary>
         string MimeType
         {
@@ -22,8 +22,8 @@ namespace Mozi.HttpEmbedded.WebDav.Storage
             get;
         }
 
-        Stream OpenReadStream();
+        Stream OpenRead();
 
-        Stream OpenWriteStream(bool append);
+        Stream OpenWrite(bool append);
     }
 }

@@ -43,8 +43,6 @@ namespace Mozi.IoT
     /// </summary>
     public class CoAPServer : CoAPPeer
     {
-        private ulong _packageReceived = 0, _totalReceivedBytes;
-
         private Cache.MessageCacheManager _cm;
 
         /// <summary>
@@ -73,6 +71,9 @@ namespace Mozi.IoT
         {
             _cm = new Cache.MessageCacheManager(this);
         }
+
+        //TODO 通过CGI规范转发到WEB解释程序
+
         /// <summary>
         /// 设置此方法后，所有请求将转至后端HTTP服务器
         /// </summary>
@@ -89,23 +90,26 @@ namespace Mozi.IoT
         /// <param name="args"></param>
         protected override void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
-            if (PackageReceived != null)
+            base.Socket_AfterReceiveEnd(sender, args);
+
+            if (DatagramReceived != null)
             {
-                PackageReceived(args.IP, args.Port, args.Data);
+                DatagramReceived(args.IP, args.Port, args.Data);
             }
 
             CoAPContext ctx = new CoAPContext();
             ctx.ClientAddress = args.IP;
             ctx.ClientPort = args.Port;
-            _packageReceived++;
 
-            _totalReceivedBytes += (uint)args.Data.Length;
-
-            Console.WriteLine($"Rev count:{_packageReceived},current:{args.Data.Length}bytes,total:{_totalReceivedBytes}bytes");
+            Console.WriteLine($"Rev count:{PacketReceivedCount},current:{args.Data.Length}bytes,total:{TotalReceivedBytes}bytes");
 
             try
             {
                 ctx.Request = CoAPPackage.Parse(args.Data, CoAPPackageType.Request);
+                if (RequestReceived != null)
+                {
+                    RequestReceived(args.IP, args.Port, ctx.Request);
+                }
                 //_cm.Request(args.IP, req);
             }
             catch (Exception)
@@ -125,14 +129,12 @@ namespace Mozi.IoT
                 }
                 else
                 {
-                    ctx.Response.Code = CoAPResponseCode.MethodNotAllowed;
-                    ctx.Response.MessageType = CoAPMessageType.Reset;
+                    ctx.Response = new CoAPPackage()
+                    {
+                        Code = CoAPResponseCode.MethodNotAllowed,
+                        MessageType = CoAPMessageType.Reset
+                    };
                 }
-
-                //检查分块
-
-                //检查内容类型
-
             }
             catch (Exception ex)
             {
@@ -141,16 +143,15 @@ namespace Mozi.IoT
                     ctx.Response.Code = CoAPResponseCode.BadGateway;
                     ctx.Response.MessageType = CoAPMessageType.Reset;
                 }
-            }
-
-            if (ctx.Response == null)
-            {
-                ctx.Response = new CoAPPackage()
+                else
                 {
-                    Version = 1,
-                    MessageType = CoAPMessageType.Reset,
-                    Code = CoAPResponseCode.BadGateway,
-                };
+                    ctx.Response = new CoAPPackage()
+                    {
+                        Version = 1,
+                        MessageType = CoAPMessageType.Reset,
+                        Code = CoAPResponseCode.BadGateway,
+                    };
+                }
             }
 
             SendMessage(args.IP, args.Port, ctx.Response);

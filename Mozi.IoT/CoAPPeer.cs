@@ -47,9 +47,11 @@ namespace Mozi.IoT
         /// <summary>
         /// 最大数据包尺寸 包含所有头信息和有效荷载 Byte
         /// </summary>
-        private int _maxTransferPackSize=512;
+        private int _maxTransferPackSize = 512;
 
         private int _blockSize = 128;
+
+        private ulong _packetSendCount, _totalSendBytes, _packetReceived = 0, _totalReceivedBytes;
 
         protected UDPSocketIOCP _socket;
 
@@ -71,11 +73,10 @@ namespace Mozi.IoT
         /// 受支持的请求方法
         /// </summary>
         protected List<CoAPCode> SupportedRequest = new List<CoAPCode> { CoAPRequestMethod.Get, CoAPRequestMethod.Post, CoAPRequestMethod.Put, CoAPRequestMethod.Delete };
-
         /// <summary>
         /// 数据包接收事件，字节流数据包
         /// </summary>
-        public PackageReceive PackageReceived;
+        public PackageReceive DatagramReceived;
         /// <summary>
         /// 服务端口
         /// </summary>
@@ -95,6 +96,22 @@ namespace Mozi.IoT
         /// 最大数据包尺寸 包含所有头信息和有效荷载
         /// </summary>
         internal int MaxTransferPackSize { get => _maxTransferPackSize; set => _maxTransferPackSize = value; }
+        /// <summary>
+        /// 累计接收到的包的数量
+        /// </summary>
+        public ulong PacketReceivedCount { get => _packetReceived; }
+        /// <summary>
+        /// 累计接收的字节数
+        /// </summary>
+        public ulong TotalReceivedBytes { get => _totalReceivedBytes; }
+        /// <summary>
+        /// 累计发出的包的数量
+        /// </summary>
+        public ulong PacketSendCount => _packetSendCount;
+        /// <summary>                                                               
+        /// 累计发出的字节数                                                                
+        /// </summary>
+        public ulong TotalSendBytes => _totalSendBytes; 
 
         public CoAPPeer()
         {
@@ -136,7 +153,12 @@ namespace Mozi.IoT
         /// <remarks>继承类如果覆盖该事件，则可以接管数据处理</remarks>
         protected virtual void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
-
+            _packetReceived++;
+            _totalReceivedBytes += args.Data != null ? (uint)args.Data.Length : 0;
+            if (DatagramReceived != null)
+            {
+                DatagramReceived(args.IP, args.Port, args.Data);
+            }
         }
         /// <summary>
         /// 是否受支持的请求方法<see cref="CoAPRequestMethod"/>
@@ -157,32 +179,12 @@ namespace Mozi.IoT
         /// <returns>MessageId</returns>
         public virtual ushort SendMessage(string host, int port, CoAPPackage pack)
         {
-            _socket.SendTo(pack.Pack(), host, port);
+            byte[] buffer = pack.Pack();
+            _totalSendBytes += (ulong)buffer.Length;
+            _packetSendCount++;
+            _socket.SendTo(buffer, host, port);
             return pack.MesssageId;
         }
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="host"></param>
-        ///// <param name="port"></param>
-        ///// <param name="pack"></param>
-        ///// <returns></returns>
-        //public ushort RequestBlock1(string host,int port,CoAPPackage pack)
-        //{
-
-        //}
-        //public ushort HandleRequestBlock1(string host, int port, CoAPPackage pack)
-        //{
-
-        //}
-        //public ushort RequestBlock2(string host,int port,CoAPPackage pack)
-        //{
-
-        //}
-        //public ushort HandleRequestBlock2(string host,int port,CoAPPackage pack)
-        //{
-
-        //}
     }
     /// <summary>
     /// 包传递回调

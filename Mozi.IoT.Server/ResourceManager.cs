@@ -1,10 +1,14 @@
-﻿using System;
+﻿using Mozi.IoT.Serialize;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 
 namespace Mozi.IoT
 {
+    /// <summary>
+    /// 资源管理器
+    /// </summary>
     public class ResourceManager
     {
         public static ResourceManager _rm;
@@ -18,6 +22,7 @@ namespace Mozi.IoT
         }
 
         private List<Assembly> _assemblies = new List<Assembly>();
+        private ISerializer _dataserializer;
 
         private readonly List<ResourceInfo> _apis = new List<ResourceInfo>();
 
@@ -26,6 +31,11 @@ namespace Mozi.IoT
             //提供一个默认数据序列化接口
             //载入内部接口API
             LoadInternalApi();
+        }
+
+        public List<ResourceInfo> GetAll()
+        {
+            return _apis;
         }
         //TODO 注册时将Method也一并缓存
         /// <summary>
@@ -69,9 +79,9 @@ namespace Mozi.IoT
                     ns = string.Join("/", paths, 0, paths.Length - 1);
                 }
             }
-            var ri = _apis.Find(x => x.Namespace.Equals(ns, StringComparison.OrdinalIgnoreCase) && x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            var ri = _apis.Find(x => x.Namespace.Equals(ns, StringComparison.OrdinalIgnoreCase) && x.Name.Equals(name, StringComparison.OrdinalIgnoreCase)&&x.Online);
             Type cls = null;
-            cls = ri.ResourceType;
+            cls = ri.ClsType;
 
             //TODO 将Method缓存
             //TODO 介入Size2查询
@@ -137,27 +147,56 @@ namespace Mozi.IoT
         /// <summary>
         /// 单独注册某个接口模块
         /// </summary>
-        /// <param name="type">参数需继承自<see cref="T:CoAPResource"/>的类，或者类标记为<see cref="T:CoAPResourceAttribute"/>,其他类型无法注册</param>
+        /// <param name="type">参数需继承自<see cref="T:CoAPResource"/>的类，其他类型无法注册</param>
         /// <returns></returns>
         public ResourceManager Register(Type type)
         {
-            var attribute = type.GetCustomAttributes(typeof(CoAPResourceAttribute), false);
-            if (type.IsSubclassOf(typeof(CoAPResource)) || attribute.Length > 0)
+            if (type.IsSubclassOf(typeof(CoAPResource)))
             {
                 var attDesc = type.GetCustomAttributes(typeof(ResourceDescriptionAttribute), false);
-                string ns = "", name = "";
+                string ns = "", name = type.Name,desc=null,href="",resType="";
                 if (attDesc.Length > 0)
                 {
                     var att = (ResourceDescriptionAttribute)attDesc[0];
                     ns = att.Namespace ?? "";
                     name = att.Name ?? type.Name;
+                    desc = att.Description;
+                    href = string.IsNullOrEmpty(ns) ? $"/{name}" : $"/{ns}/{name}";
+                    resType = att.ResourceType;
                 }
                 if (!_apis.Exists(x => x.Namespace.Equals(ns) && x.Name.Equals(name)))
                 {
-                    _apis.Add(new ResourceInfo() { Namespace = ns, Name = name, ResourceType = type });
+                    _apis.Add(new ResourceInfo() { 
+                        Namespace = ns, 
+                        Name = name,
+                        Description = desc, 
+                        ClsType = type,
+                        Online=true,
+                        Href=href,
+                        InterfaceDescription= string.IsNullOrEmpty(desc)?null:new string[] { desc },
+                        ResourceType= string.IsNullOrEmpty(resType) ? null : new string[] { resType },
+                    });
                 }
             }
             return this;
+        }
+        //TODO 资源上线
+        internal void SetOnline(string ns,string name){
+
+        }
+        //TODO 资源下线
+        internal void SetOffline(string ns,string name)
+        {
+
+        }
+
+        /// <summary>
+        /// 配置数据序列化组件,宿主程序需要实现一个序列化/反序列化功能，然后调用本方法注册
+        /// </summary>
+        /// <param name="ser"></param>
+        internal void SetDataSerializer(ISerializer ser)
+        {
+            _dataserializer = ser;
         }
     }
 }

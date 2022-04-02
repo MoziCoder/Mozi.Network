@@ -29,12 +29,12 @@ namespace Mozi.IoT
         private string _contentType = "";
 
         public string ContentType
-      {
-          get
-          {
-              return _contentType;
-          }
-      }
+        {
+            get
+            {
+                return _contentType;
+            }
+        }
 
         public ushort OptionValue
         {

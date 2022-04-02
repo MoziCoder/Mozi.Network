@@ -43,7 +43,7 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.Base
             }
         }
 
-        public virtual DateTime CreationDate
+        public virtual DateTime CreateDate
         {
             get
             {
@@ -51,7 +51,7 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.Base
             }
         }
 
-        public virtual DateTime ModificationDate
+        public virtual DateTime ModifyDate
         {
             get
             {

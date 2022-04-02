@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Mozi.IoT.Server
+namespace Mozi.IoT.Serialize
 {
     /// <summary>
     /// 数据序列化接口
@@ -28,15 +28,5 @@ namespace Mozi.IoT.Server
         /// <param name="data"></param>
         /// <returns></returns>
         IEnumerable<T> DecodeList<T>(string data);
-    }
-    /// <summary>
-    /// 接口数据序列化格式
-    /// </summary>
-    public enum DataSerializeType
-    {
-        Customize = -1,
-        XML = 0,
-        JSON = 1,
-        ProtoBuf = 2
     }
 }

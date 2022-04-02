@@ -14,13 +14,13 @@ namespace Mozi.HttpEmbedded.WebDav.Method
         /// <summary>
         /// 响应请求
         /// </summary>
-        /// <param name="server"><see cref="DavServer" /> </param>
+        /// <param name="server"><see cref="WebDAVServer" /> </param>
         /// <param name="context">
         /// <see cref="HttpContext" /> 
         ///  </param>
-        /// <param name="store"><see cref="IWebDavStore" /> <see cref="DavServer" /></param>
+        /// <param name="store"><see cref="IWebDavStore" /> <see cref="WebDAVServer" /></param>
         /// <exception cref="WebDavPreconditionFailedException"></exception>
-        public StatusCode HandleRequest(DavServer server, HttpContext context, IWebDavStore store)
+        public StatusCode Invoke(WebDAVServer server, HttpContext context, IWebDavStore store)
         {
             //头部信息
             int depth = GetDepthHeader(context.Request);
