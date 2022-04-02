@@ -1,5 +1,6 @@
 ﻿using Mozi.IoT.Encode;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Mozi.IoT.CoAP
@@ -75,8 +76,9 @@ namespace Mozi.IoT.CoAP
         /// <param name="args"></param>
         static void ParseRequest(IList<string> args)
         {
+
             //Console.WriteLine(String.Join("|", args));
-            var dicArgs = new Dictionary<string, object>();
+            var dicArgs = new List<KeyValuePair<string, object>>();
             if (args != null && args.Count > 0)
             {
                 if (args.Count > 0)
@@ -172,7 +174,7 @@ namespace Mozi.IoT.CoAP
                                             argValueReal = argValue;
                                         }
                                     }
-                                    dicArgs.Add(argName.ToLower(), argValueReal);
+                                    dicArgs.Add(new KeyValuePair<string,object>(argName.ToLower(), argValueReal));
                                 }
                                 //包体
                                 else
@@ -186,6 +188,7 @@ namespace Mozi.IoT.CoAP
                                 CoAPOptionDefine optName = CoAPOptionDefine.Unknown;
                                 OptionValue optValue = null;
                                 bool isOption = true;
+                                
                                 if (r.Value == null)
                                 {
                                     optValue = new EmptyOptionValue();
@@ -383,16 +386,13 @@ namespace Mozi.IoT.CoAP
                         try
                         {
                             int waitSeconds = 30;
-
                             if (observeSeconds > 0)
                             {
                                 waitSeconds = observeSeconds;
                             }
-
                             ExecuteAndWait(new Action(() => {
 
                                 Execute(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
-
                                 Console.Read();
 
                             }), waitSeconds * 1000);
@@ -433,7 +433,6 @@ namespace Mozi.IoT.CoAP
                 {
                     Close();
                 }
-                
             });
             cc.Request += new MessageTransmit((x, y, z) =>
             {
