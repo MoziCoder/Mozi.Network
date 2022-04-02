@@ -139,7 +139,7 @@ namespace Mozi.IoT.CoAP
                                 //参数
                                 if (argName.StartsWith("-"))
                                 {
-                                    
+
                                     argName = argName.Substring(1);
                                     if (args.Count > i + 1)
                                     {
@@ -158,13 +158,13 @@ namespace Mozi.IoT.CoAP
                                     }
                                     else if (argValue.StartsWith("0x"))
                                     {
-                                        argValueReal= Hex.From(argValue.Substring(2));
+                                        argValueReal = Hex.From(argValue.Substring(2));
                                     }
                                     //整数
                                     else
                                     {
                                         uint intValue;
-                                        if(uint.TryParse(argValue,out intValue))
+                                        if (uint.TryParse(argValue, out intValue))
                                         {
                                             argValueReal = intValue;
                                         }
@@ -174,7 +174,7 @@ namespace Mozi.IoT.CoAP
                                             argValueReal = argValue;
                                         }
                                     }
-                                    dicArgs.Add(new KeyValuePair<string,object>(argName.ToLower(), argValueReal));
+                                    dicArgs.Add(new KeyValuePair<string, object>(argName.ToLower(), argValueReal));
                                 }
                                 //包体
                                 else
@@ -188,12 +188,12 @@ namespace Mozi.IoT.CoAP
                                 CoAPOptionDefine optName = CoAPOptionDefine.Unknown;
                                 OptionValue optValue = null;
                                 bool isOption = true;
-                                
+
                                 if (r.Value == null)
                                 {
                                     optValue = new EmptyOptionValue();
                                 }
-                                else if(r.Value is string)
+                                else if (r.Value is string)
                                 {
                                     optValue = new StringOptionValue() { Value = r.Value };
                                 }
@@ -270,47 +270,47 @@ namespace Mozi.IoT.CoAP
                                             optName = CoAPOptionDefine.IfMatch;
                                         }
                                         break;
-                                    case  "etag":
+                                    case "etag":
                                         {
                                             optName = CoAPOptionDefine.ETag;
                                         }
                                         break;
-                                    case  "ifnonematch":
+                                    case "ifnonematch":
                                         {
                                             optName = CoAPOptionDefine.IfNoneMatch;
                                         }
                                         break;
-                                    case  "extendedtokenlength":
+                                    case "extendedtokenlength":
                                         {
                                             optName = CoAPOptionDefine.ExtendedTokenLength;
                                         }
                                         break;
-                                    case  "locationpath":
+                                    case "locationpath":
                                         {
                                             optName = CoAPOptionDefine.LocationPath;
                                         }
                                         break;
-                                    case  "contentformat":
+                                    case "contentformat":
                                         {
                                             optName = CoAPOptionDefine.ContentFormat;
                                         }
                                         break;
-                                    case  "maxage":
+                                    case "maxage":
                                         {
                                             optName = CoAPOptionDefine.MaxAge;
                                         }
                                         break;
-                                    case  "accept":
+                                    case "accept":
                                         {
                                             optName = CoAPOptionDefine.Accept;
                                         }
                                         break;
-                                    case  "locationquery":
+                                    case "locationquery":
                                         {
                                             optName = CoAPOptionDefine.LocationQuery;
                                         }
                                         break;
-                                    case  "block2":
+                                    case "block2":
                                         {
                                             optName = CoAPOptionDefine.Block2;
                                             if (!string.IsNullOrEmpty((string)r.Value))
@@ -319,7 +319,7 @@ namespace Mozi.IoT.CoAP
                                             }
                                         }
                                         break;
-                                    case  "block1":
+                                    case "block1":
                                         {
                                             optName = CoAPOptionDefine.Block1;
                                             if (!string.IsNullOrEmpty((string)r.Value))
@@ -328,17 +328,17 @@ namespace Mozi.IoT.CoAP
                                             }
                                         }
                                         break;
-                                    case  "size2":
+                                    case "size2":
                                         {
                                             optName = CoAPOptionDefine.Size2;
                                         }
                                         break;
-                                    case  "proxyuri":
+                                    case "proxyuri":
                                         {
                                             optName = CoAPOptionDefine.ProxyUri;
                                         }
                                         break;
-                                    case  "proxyscheme":
+                                    case "proxyscheme":
                                         {
                                             optName = CoAPOptionDefine.ProxyScheme;
                                         }
@@ -371,9 +371,9 @@ namespace Mozi.IoT.CoAP
                                 // "size1"
                             }
 
-                            if (!string.IsNullOrEmpty(payload)&& (cp.Code == CoAPRequestMethod.Post || cp.Code == CoAPRequestMethod.Put))
+                            if (!string.IsNullOrEmpty(payload) && (cp.Code == CoAPRequestMethod.Post || cp.Code == CoAPRequestMethod.Put))
                             {
-                                if(payload.StartsWith("0x"))
+                                if (payload.StartsWith("0x"))
                                 {
                                     cp.Payload = Hex.From(payload.Substring(2));
                                 }
@@ -383,25 +383,7 @@ namespace Mozi.IoT.CoAP
                                 }
                             }
                         }
-                        try
-                        {
-                            int waitSeconds = 30;
-                            if (observeSeconds > 0)
-                            {
-                                waitSeconds = observeSeconds;
-                            }
-                            ExecuteAndWait(new Action(() => {
-
-                                Execute(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
-                                Console.Read();
-
-                            }), waitSeconds * 1000);
-
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex.StackTrace);
-                        }
+                        Execute(observeSeconds, cp, uri);
                     }
                     else
                     {
@@ -417,7 +399,32 @@ namespace Mozi.IoT.CoAP
             }
         }
 
-        public static void Execute(string host,int port,CoAPPackage cp)
+        private static void Execute(int observeSeconds, CoAPPackage cp, UriInfo uri)
+        {
+            try
+            {
+                int waitSeconds = 30;
+                if (observeSeconds > 0)
+                {
+                    waitSeconds = observeSeconds;
+                }
+
+                ExecuteAndWait(new Action(() =>
+                {
+
+                    SendRequest(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
+                    Console.Read();
+
+                }), waitSeconds * 1000);
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+            }
+        }
+
+        public static void SendRequest(string host,int port,CoAPPackage cp)
         {
             sendrequest = true;
             CoAPClient cc = new CoAPClient();
