@@ -137,6 +137,15 @@ namespace Mozi.HttpEmbedded
             Send(url, RequestMethod.GET, headers,null,callback);
         }
         /// <summary>
+        /// HttpGet方法
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="callback"></param>
+        public void Get(string url,RequestComplete callback)
+        {
+            Get(url, null, callback);
+        }
+        /// <summary>
         /// HttpPost方法
         /// </summary>
         /// <param name="url">url地址，格式http://{host|domain}[:{port}]/[{path}[?query]]</param>
@@ -156,6 +165,15 @@ namespace Mozi.HttpEmbedded
         public void Post(string url,byte[] body, RequestComplete callback)
         {
             Post(url, null, body, callback);
+        }
+        /// <summary>
+        /// HttpPost方法
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="body"></param>
+        public void Post(string url,byte[] body)
+        {
+            Post(url, body);
         }
         /// <summary>
         /// HttpPost方法
@@ -180,12 +198,31 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// HttpPost方法
         /// </summary>
+        /// <param name="url"></param>
+        /// <param name="headers"></param>
+        /// <param name="body"></param>
+        public void Post(string url, Dictionary<HeaderProperty, string> headers, string body)
+        {
+            Post(url, headers, body, null);
+        }
+        /// <summary>
+        /// HttpPost方法
+        /// </summary>
         /// <param name="url">url地址，格式http://{host|domain}[:{port}]/[{path}[?query]]</param>
         /// <param name="body">请求文本，文本会被编码成UTF-8格式。请求时会附加<see cref="HeaderProperty.ContentType"/>头属性</param>
         /// <param name="callback">回调方法</param>
         public void Post(string url,string body,RequestComplete callback)
         {
             Post(url, null, body, callback);
+        }
+        /// <summary>
+        /// HttpPost方法
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="body"></param>
+        public void Post(string url,string body)
+        {
+            Post(url, body, null);
         }
         //TODO 文件传输应加入进度显示
         /// <summary>
