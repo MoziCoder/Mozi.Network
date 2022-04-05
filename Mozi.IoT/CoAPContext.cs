@@ -5,8 +5,12 @@ namespace Mozi.IoT
     /// <summary>
     /// 请求上下文对象
     /// </summary>
+    /// <remarks>
+    /// 注意Request和Response并不是紧密关联，响应不是必须的，服务端有可能在收到响应后不会做出任何回应
+    /// </remarks>
     public class CoAPContext : IDisposable
     {
+
         private bool _disposedValue;
 
         /// <summary>
@@ -33,7 +37,6 @@ namespace Mozi.IoT
         {
             Dispose(disposing: false);
         }
-
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposedValue)

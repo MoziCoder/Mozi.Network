@@ -81,7 +81,9 @@ namespace Mozi.IoT
         public static CoAPOptionDefine Size1                = new CoAPOptionDefine("Size1", 60);
 
         public static CoAPOptionDefine Unknown              = new CoAPOptionDefine("Unknown", 0);
-
+        /// <summary>
+        /// 选项名称
+        /// </summary>
         public string Name
         {
             get
@@ -89,7 +91,6 @@ namespace Mozi.IoT
                 return _name;
             }
         }
-
         /// <summary>
         /// 选项序号
         /// </summary>
@@ -102,7 +103,6 @@ namespace Mozi.IoT
             _name = name;
             OptionNumber = optionNumber;
         }
-
         public bool Critical
         {
             get
@@ -110,7 +110,6 @@ namespace Mozi.IoT
                 return (((byte)OptionNumber) & 0x01) == 0x01;
             }
         }
-
         public bool UnSafe
         {
             get
@@ -118,7 +117,6 @@ namespace Mozi.IoT
                 return (((byte)OptionNumber) & 0x02) == 0x02;
             }
         }
-
         public bool NoCacheKey
         {
             get
@@ -126,7 +124,6 @@ namespace Mozi.IoT
                 return (((byte)OptionNumber) & 0x1e) == 0x1e;
             }
         }
-
         public override string ToString()
         {
             return string.Format("Option Name:{0},OptionNumber:{1},Figure:{2}", Name, OptionNumber, string.Join(",", Critical ? "Critical" : "", UnSafe ? "UnSafe" : "", NoCacheKey ? "NoCacheKey" : ""));

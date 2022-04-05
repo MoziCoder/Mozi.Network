@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
 [assembly: AssemblyTitle("Mozi.IoT.Core")]
-[assembly: AssemblyDescription("IoT物联网协议核心")]
+[assembly: AssemblyDescription("IoT物联网协议解析与通讯核心")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("MoziCoder workgroup")]
 [assembly: AssemblyProduct("Mozi.IoT")]

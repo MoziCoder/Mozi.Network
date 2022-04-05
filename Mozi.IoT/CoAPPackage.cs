@@ -30,6 +30,7 @@ namespace Mozi.IoT
         /// </summary>
         public CoAPMessageType MessageType { get; set; }
         /// <summary>
+        /// 
         /// RFC7252定义：
         /// 
         /// Token长度 4bits
@@ -37,9 +38,11 @@ namespace Mozi.IoT
         /// 9-15为保留使用 
         /// 
         /// RFC8974定义
+        /// 
         /// 13-指示TokenLength>8  Token=4+8bits  TKL-Ext=Token.Lenght-13
         /// 14-指示TokenLength>269 Token=4+16bits TKL-Ext=Token.Length-269
         /// 15-报错 
+        /// 
         /// </summary>
         public byte TokenLength
         {
