@@ -1,6 +1,5 @@
 ﻿using Mozi.IoT.Encode;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Mozi.IoT.CoAP
@@ -94,9 +93,10 @@ namespace Mozi.IoT.CoAP
 
                         int observeSeconds = -1;
 
-                        CoAPPackage cp = new CoAPPackage();
-
-                        cp.MessageType = CoAPMessageType.Confirmable;
+                        CoAPPackage cp = new CoAPPackage
+                        {
+                            MessageType = CoAPMessageType.Confirmable
+                        };
 
                         if (arg0.Equals("get", StringComparison.OrdinalIgnoreCase))
                         {
@@ -551,7 +551,7 @@ namespace Mozi.IoT.CoAP
                             "\r\n   2.其它识别为普通字符串同时被编码成字节流，编码方式为UTF-8" +
                             "\r\n   3.带空格的字符串请用\"\"进行包裹" +
                             "\r\n示例：" +
-                            "\r\n   coap get coap://127.0.0.1:5683/core/time?type=1 -block1 0/0/128" +
+                            "\r\n   coap get coap://127.0.0.1:5683/core/time?type=1 -block2 0/0/128" +
                             "\r\n";
             Console.Write(helpText);
         }

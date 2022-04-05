@@ -51,8 +51,8 @@ namespace Mozi.Encode.CBOR
             data = data.Trim();
             CBORData info=null;
             //unsigned integer
-            UInt64 value;
-            if (UInt64.TryParse(data, out value))
+            ulong value;
+            if (ulong.TryParse(data, out value))
             {
                 info = new CBORData
                 {
@@ -227,7 +227,7 @@ namespace Mozi.Encode.CBOR
                 }
                 else
                 {
-                    double dValue = Double.Parse(data);
+                    double dValue = double.Parse(data);
                     if (value <= HalfFloat.MaxValue && value >= HalfFloat.MinValue)
                     {
                         info.Value = new HalfFloat((float)dValue);
@@ -245,5 +245,4 @@ namespace Mozi.Encode.CBOR
             return info;
         }
     }
-
 }

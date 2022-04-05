@@ -44,9 +44,6 @@ Mozi.SSDP是一个基于.Net开发的SSDP组件，目标是为.Net应用程序�
 
 [Mozi.HttpEmbedded][httpembedded] > 1.2.5
 
-## 版权说明
-	本项目采用MIT开源协议，引用请注明出处。欢迎复制，引用和修改。复制请注明出处，引用请附带证书。意见建议疑问请联系软件作者，或提交ISSUE。
-
 ## 用例说明
 
 ~~~csharp
@@ -224,6 +221,9 @@ Mozi.SSDP是一个基于.Net开发的SSDP组件，目标是为.Net应用程序�
     }
 
 ~~~
+## 版权说明
+	本项目采用MIT开源协议，引用请注明出处。欢迎复制，引用和修改。复制请注明出处，引用请附带证书。意见建议疑问请联系软件作者，或提交ISSUE。
+
 ### By [Jason][1] on Feb. 5,2020
 
 [1]:mailto:brotherqian@163.com

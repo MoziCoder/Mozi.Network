@@ -51,7 +51,7 @@ Mozi.IoT.CoAP为Iot.Client调试工具，使用命令行方式对CoAPClient进�
             3.带空格的字符串请用""进行包裹" 
 
       示例：
-         coap get coap://127.0.0.1:5683/core/time?type=1 -block1 0/0/128
+         coap get coap://127.0.0.1:5683/core/time?type=1 -block2 0/0/128
 
 ~~~
 
