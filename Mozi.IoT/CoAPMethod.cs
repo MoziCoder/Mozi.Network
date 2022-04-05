@@ -85,6 +85,9 @@ namespace Mozi.IoT
         {
             get { return _name; }
         }
+        /// <summary>
+        /// 代码描述字符串
+        /// </summary>
         public string Description
         {
             get
@@ -157,8 +160,7 @@ namespace Mozi.IoT
         /// 类似HTTP 200 
         /// </summary>
         public static CoAPResponseCode Content = new CoAPResponseCode("Content", "Content", 2, 5);
-
-        public static CoAPResponseCode Continue = new CoAPResponseCode("Content", "Content", 2, 31);
+        public static CoAPResponseCode Continue = new CoAPResponseCode("Continue", "Continue", 2, 31);
 
         public static CoAPResponseCode BadRequest = new CoAPResponseCode("BadRequest", "Bad Request", 4, 0);
         public static CoAPResponseCode Unauthorized = new CoAPResponseCode("Unauthorized", "Unauthorized", 4, 1);
