@@ -101,8 +101,6 @@ namespace Mozi.IoT
             ctx.ClientAddress = args.IP;
             ctx.ClientPort = args.Port;
 
-            Console.WriteLine($"Rev count:{PacketReceivedCount},current:{args.Data.Length}bytes,total:{TotalReceivedBytes}bytes");
-
             try
             {
                 ctx.Request = CoAPPackage.Parse(args.Data, CoAPPackageType.Request);

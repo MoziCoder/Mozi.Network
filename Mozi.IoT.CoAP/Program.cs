@@ -153,6 +153,10 @@ namespace Mozi.IoT.CoAP
                                     {
                                         argValue = "";
                                     }
+                                    else
+                                    {
+                                        i++;
+                                    }
                                     object argValueReal = null;
                                     //空字符串
                                     if (string.IsNullOrEmpty(argValue))
@@ -562,11 +566,12 @@ namespace Mozi.IoT.CoAP
                             "\r\n  -locationquery           " +
                             "\r\n  -block2                  Block2设置，格式：Num/MoreFlag/Size" +
                             "\r\n  -block1                  Block1设置，格式：Num/MoreFlag/Size" +
-                            "\r\n                           Num:0~1045785,MoreFlag:[0|1],Size:0~1024" +
+                            "\r\n                           Num:0~1045785,MoreFlag:[0|1],Size:[16|32|64|128|256|512|1024|2048]" +
                             "\r\n  -size2                   " +
                             "\r\n  -proxyuri                " +
                             "\r\n  -proxyscheme             " +
                             "\r\n  -size1                   " +
+                            "\r\n"+
                             "\r\n 注：" +
                             "\r\n 1.字符串变量值用\"\"包裹" +
                             "\r\n 2.整型变量值用，直接输入整数即可，如 -size 1024" +

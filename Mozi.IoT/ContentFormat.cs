@@ -20,14 +20,16 @@ namespace Mozi.IoT
     ///     application/octet-stream | -        | 42 | [RFC2045] [RFC2046]    |
     ///     application/exi          | -        | 47 | [REC-exi-20140211]     |
     ///     application/json         | -        | 50 | [RFC7159]              |
-    ///     applicaiton/cbor         | -        | 60 | [RFC7159]              |
+    ///     application/cbor         | -        | 60 | [RFC7159]              |
     ///     
     public class ContentFormat : AbsClassEnum
     {
         private ushort _num = 0;
 
         private string _contentType = "";
-
+        /// <summary>
+        /// 内容MIME的字符串表示
+        /// </summary>
         public string ContentType
         {
             get
@@ -43,6 +45,9 @@ namespace Mozi.IoT
                 return _num;
             }
         }
+        /// <summary>
+        /// MIME注册序号
+        /// </summary>
         public ushort Num { get { return _num; } }
 
         protected override string Tag => _num.ToString();
@@ -53,7 +58,7 @@ namespace Mozi.IoT
         public static ContentFormat Stream = new ContentFormat("application/octet-stream", 42);
         public static ContentFormat EXI = new ContentFormat("application/exi", 47);
         public static ContentFormat JSON = new ContentFormat("application/json", 50);
-        public static ContentFormat CBOR = new ContentFormat("applicaiton/cbor", 60);
+        public static ContentFormat CBOR = new ContentFormat("application/cbor", 60);
 
         internal ContentFormat(string contentType, ushort num)
         {
