@@ -542,7 +542,8 @@ namespace Mozi.IoT.CoAP
                             "\r\n" +
                             "\r\n  -time                    监听若干秒，参数值为整数，单位为秒。" +
                             "\r\n  -dump                    跟随值为文件路径，将编码好的数据包转储到文件，同时不会发起请求"+
-                            "\r\n"+
+                            "\r\n  -file                    需要上传的文件的路径" +
+                            "\r\n" +
                             "\r\n  -type                    消息类型,取值范围" +
                             "\r\n                            con   --Confirmable" +
                             "\r\n                            non   --NonConfirmable" +
