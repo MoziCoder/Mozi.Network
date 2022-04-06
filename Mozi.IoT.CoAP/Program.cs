@@ -1,6 +1,7 @@
 ﻿using Mozi.IoT.Encode;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Mozi.IoT.CoAP
 {
@@ -56,6 +57,9 @@ namespace Mozi.IoT.CoAP
         private static bool observeMode = false;
 
         private static String _filePath = "";
+        private static bool needDump = false;
+        private static String _filePathDump = "";
+
         private static string _url = "";
 
         static void Main(string[] args)
@@ -223,6 +227,12 @@ namespace Mozi.IoT.CoAP
                                             _filePath = r.Value.ToString();
                                         }
                                         break;
+                                    case "dump":
+                                        {
+                                            needDump = true;
+                                            _filePathDump = r.Value.ToString();
+                                        }
+                                        break;
                                     case "type":
                                         {
                                             if (!string.IsNullOrEmpty((string)r.Value))
@@ -383,7 +393,18 @@ namespace Mozi.IoT.CoAP
                                 }
                             }
                         }
-                        Execute(observeSeconds, cp, uri);
+                        if (!needDump)
+                        {
+                            Execute(observeSeconds, cp, uri);
+                        }else{
+                            FileStream fs = new FileStream(_filePathDump, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                            StreamWriter sw = new StreamWriter(fs);
+                            sw.Write(BitConverter.ToString(cp.Pack()));
+                            sw.Flush();
+                            sw.Close();
+                            fs.Close();
+                            Console.WriteLine($"Hex bytes dumped to \"{_filePathDump}\"");
+                        }
                     }
                     else
                     {
@@ -519,12 +540,14 @@ namespace Mozi.IoT.CoAP
                             "\r\n  coap://{host}[:{port}]/{path}[?{query}]" +
                             "\r\n\r\noptions 请求选项参数如下：" +
                             "\r\n" +
+                            "\r\n  -time                    监听若干秒，参数值为整数，单位为秒。" +
+                            "\r\n  -dump                    跟随值为文件路径，将编码好的数据包转储到文件，同时不会发起请求"+
+                            "\r\n"+
                             "\r\n  -type                    消息类型,取值范围" +
                             "\r\n                            con   --Confirmable" +
                             "\r\n                            non   --NonConfirmable" +
                             "\r\n                            ack   --Acknowledgement" +
-                            "\r\n                            rst   --Reset" +
-                            "\r\n  -time                    监听若干秒，参数值为整数，单位为秒。" +
+                            "\r\n                            rst   --Reset" +                           
                             "\r\n" +
                             "\r\n  -token                   格式：0x0f0e" +
                             "\r\n  -ifmatch                 " +
@@ -546,7 +569,8 @@ namespace Mozi.IoT.CoAP
                             "\r\n 注：" +
                             "\r\n 1.字符串变量值用\"\"包裹" +
                             "\r\n 2.整型变量值用，直接输入整数即可，如 -size 1024" +
-                            "\r\n\r\nbody 说明：" +
+                            "\r\n" +
+                            "\r\nbody 说明：" +
                             "\r\n   1.0x开始的字符串被识别为HEX字符串并被转为字节流" +
                             "\r\n   2.其它识别为普通字符串同时被编码成字节流，编码方式为UTF-8" +
                             "\r\n   3.带空格的字符串请用\"\"进行包裹" +
