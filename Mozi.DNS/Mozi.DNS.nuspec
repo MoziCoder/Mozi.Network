@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Mozi.DNS</id>
-    <version>1.3.10</version>
+    <version>1.4.1</version>
     <title>Mozi.DNS</title>
     <authors>Jason</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
