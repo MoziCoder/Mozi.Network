@@ -1,6 +1,6 @@
-﻿using Mozi.IoT.Generic;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Mozi.IoT.Generic;
 
 namespace Mozi.IoT
 {
