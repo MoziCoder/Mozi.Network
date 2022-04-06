@@ -355,6 +355,7 @@ namespace Mozi.HttpEmbedded
                             //Content-Disposition
                             if (index == 1)
                             {
+                                //TODO 文件名会有乱码的问题，如何解决？文件名的编码格式不同
                                 //内容描述信息
                                 //Content-Disposition: form-data; name="{field.name}"; filename="{file.name}"
                                 string disposition = StringEncoder.Decode(fraghead);

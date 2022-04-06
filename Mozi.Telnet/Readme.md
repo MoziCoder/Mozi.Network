@@ -72,6 +72,10 @@ Mozi.Telnet是一个基于.Net开发的Telnet组件，基于UDP Socket开发，�
     }
 
 ~~~
+
+## 版权说明
+	本项目采用MIT开源协议，引用请注明出处。欢迎复制，引用和修改。复制请注明出处，引用请附带证书。意见建议疑问请联系软件作者，或提交ISSUE。
+
 ### By [Jason][1] on Jun. 5,2021
 
 [1]:mailto:brotherqian@163.com

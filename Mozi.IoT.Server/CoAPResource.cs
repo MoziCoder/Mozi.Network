@@ -172,7 +172,7 @@ namespace Mozi.IoT
     [ResourceDescription(Namespace = "core", Name = "time",Description ="isotime")]
     public class TimeResource : CoAPResource
     {
-        public override uint ResourceSize { get => 1024; }
+        public override uint ResourceSize { get => 0; }
 
         public override CoAPPackage OnGet(CoAPContext ctx)
         {
@@ -220,6 +220,41 @@ namespace Mozi.IoT
         }
     }
 
+    //TODO 还未实现
+    [ResourceDescription(Namespace = "core", Name = "cache", Description = "cache")]
+    internal class CacheResource : CoAPResource
+    {
+        private static byte[] _buffer = new byte[] { };
+        private static byte[] Buffer
+        {
+            get { return _buffer; }
+            set { _buffer = value; }
+        }
+        public override uint ResourceSize => (uint)Buffer.Length;
+
+        public override CoAPPackage OnGet(CoAPContext ctx)
+        {
+            return base.OnGet(ctx);
+        }
+
+        public override CoAPPackage OnPost(CoAPContext ctx)
+        {
+            return base.OnPost(ctx);
+        }
+
+        public override CoAPPackage OnPut(CoAPContext ctx)
+        {
+            return base.OnPut(ctx);
+        }
+
+        public override CoAPPackage OnDelete(CoAPContext ctx)
+        {
+            return base.OnDelete(ctx);
+        }
+    }
+    /// <summary>
+    /// 运行时
+    /// </summary>
     [ResourceDescription(Namespace = "core", Name = "runtime")]
     internal class RuntimeResource : CoAPResource
     {

@@ -39,7 +39,6 @@ namespace Mozi.IoT
             }
         }
     }
-
     /// <summary>
     /// 空选项值
     /// </summary>
@@ -309,6 +308,12 @@ namespace Mozi.IoT
                     MoreFlag = pms[1] == "1",
                     Size = ushort.Parse(pms[2])
                 };
+                ushort log = (ushort)Math.Ceiling(Math.Log(bv.Size, 2));
+                if (log > (4+7))
+                {
+                    log = (4+7);
+                }
+                bv.Size = (ushort)Math.Pow(2, log);
             }
             return bv;
         }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 // UDP使用对等模式工作，客户机和服务器地位对等，且CoAP协议定义的客户机和服务器也是对等关系，角色可以随时互换。
 // 服务端一般承载较大的并发压力和更复杂的业务逻辑，同时需要更强的算力。客户机则多用于信息采集，数据上报，资料下载等轻量型计算。
-// 基于上述原因，还是对从协议实现上对客户机和服务器进行角色区分。
+// 基于上述原因，还是应从实现上对客户机和服务器进行角色区分。
 
 namespace Mozi.IoT
 {
@@ -39,6 +39,7 @@ namespace Mozi.IoT
     //     SendTime*=2
     // When TryCount >{MAX_RETRANSMIT} then 
     //     Send(Rest)
+
     /// <summary>
     /// CoAP对等端
     /// </summary>
@@ -171,12 +172,14 @@ namespace Mozi.IoT
         }
         /// <summary>
         /// 发送请求消息,此方法为高级方法。
-        /// 1,如果对协议不够了解，请不要调用。
-        /// 2,DOMAIN地址请先转换为IP地址，然后填充到“Uri-Host”选项中
-        /// 3,MessageId值由调用方生成并控制
         /// </summary>
         /// <param name="pack"></param>
         /// <returns>MessageId</returns>
+        /// <remarks>
+        ///     1,如果对协议不够了解，请不要调用。
+        ///     2,DOMAIN地址请先转换为IP地址，然后填充到“Uri-Host”选项中
+        ///     3,MessageId值由调用方生成并控制   
+        /// </remarks>
         public virtual ushort SendMessage(string host, int port, CoAPPackage pack)
         {
             byte[] buffer = pack.Pack();
