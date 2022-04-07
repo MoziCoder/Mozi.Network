@@ -14,6 +14,7 @@ namespace Mozi.IoT.Cache
         void Remove(string name, string param);
         void ReStore();
         void Store();
+
     }
 
     public class MemoryCache : ICache

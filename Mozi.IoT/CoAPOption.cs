@@ -126,7 +126,7 @@ namespace Mozi.IoT
         }
         public override string ToString()
         {
-            return string.Format("Option Name:{0},OptionNumber:{1},Figure:{2}", Name, OptionNumber, string.Join(",", Critical ? "Critical" : "", UnSafe ? "UnSafe" : "", NoCacheKey ? "NoCacheKey" : ""));
+            return string.Format("OptionName:{0},OptionNumber:{1},Figure:{2}", Name, OptionNumber, string.Join(",", Critical ? "Critical" : "", UnSafe ? "UnSafe" : "", NoCacheKey ? "NoCacheKey" : ""));
         }
     }
 

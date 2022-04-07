@@ -564,7 +564,7 @@ namespace Mozi.IoT.CoAP
                             "\r\n  coap://{host}[:{port}]/{path}[?{query}]" +
                             "\r\n\r\noptions 请求选项参数如下：" +
                             "\r\n" +
-                            "\r\n  -time                    监听若干秒，参数值为整数，单位为秒。" +
+                            "\r\n  -time                    阻塞式监听若干秒，参数值为整数，单位为秒。" +
                             "\r\n  -dump                    值为文件路径，将编码好的数据包转储到文件，不发起请求"+
                             "\r\n  -file                    需要上传的文件的路径" +
                             "\r\n  -round                   重复发起请求的次数（最高100次），需-time参数进行配合" +
