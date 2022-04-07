@@ -1,5 +1,7 @@
 ﻿namespace Mozi.HttpEmbedded.Page
 {
+    //TODO 待模版引擎实现完成后再实现此模块
+
     //TODO PUT DELETE 方法一般被列为不安全的方法，故暂时不实现
     /// <summary>
     /// 页面抽象类

@@ -26,7 +26,7 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// HTTP协议版本
         /// </summary>
-        public HttpVersion ProtocolVersion { get; set; }
+        public HttpVersion Version { get; set; }
         /// <summary>
         /// 状态码
         /// </summary>
@@ -84,7 +84,7 @@ namespace Mozi.HttpEmbedded
         public HttpResponse()
         {
             _headers = new TransformHeader();
-            ProtocolVersion = HttpVersion.Version11;
+            Version = HttpVersion.Version11;
             _cookies = new ResponseCookie();
         }
         /// <summary>
@@ -93,7 +93,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="version"></param>
         public void SetVersion(HttpVersion version)
         {
-            ProtocolVersion = version;
+            Version = version;
         }
         /// <summary>
         /// 设置Cookie
@@ -278,7 +278,7 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public byte[] GetStatusLine()
         {
-            return StringEncoder.Encode(string.Format("HTTP/{0} {1} {2}", ProtocolVersion.Version, Status.Code, Status.Text));
+            return StringEncoder.Encode(string.Format("HTTP/{0} {1} {2}", Version.Version, Status.Code, Status.Text));
         }
         /// <summary>
         /// 重定向302
@@ -364,7 +364,7 @@ namespace Mozi.HttpEmbedded
             string sProtoVersion = sProtocol.Substring(sProtocol.IndexOf((char)ASCIICode.DIVIDE) + 1);
 
             resp.Status = AbsClassEnum.Get<StatusCode>(sStatusCode);
-            resp.ProtocolVersion = AbsClassEnum.Get<HttpVersion>(sProtoVersion);
+            resp.Version = AbsClassEnum.Get<HttpVersion>(sProtoVersion);
 
         }
         /// <summary>

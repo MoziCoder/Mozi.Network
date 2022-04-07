@@ -14,7 +14,9 @@ namespace Mozi.HttpEmbedded
     /// </summary>
     public class HttpRequest
     {
+
         private byte[] _body = new byte[] { };
+
         private TransformHeader _headers;
         private FileCollection _files;
         private RequestCookie _cookies;
@@ -26,7 +28,7 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 协议版本
         /// </summary>
-        public HttpVersion ProtocolVersion { get; protected set; }
+        public HttpVersion Version { get; protected set; }
         /// <summary>
         /// 请求路径
         /// </summary>
@@ -125,7 +127,7 @@ namespace Mozi.HttpEmbedded
         public HttpRequest()
         {
             //默认HTTP/1.1
-            ProtocolVersion = HttpVersion.Version11;
+            Version = HttpVersion.Version11;
             _headers = new TransformHeader();
             _files = new FileCollection();
             _cookies = new RequestCookie();
@@ -620,7 +622,7 @@ namespace Mozi.HttpEmbedded
             string sProtoVersion = sProtocol.Substring(sProtocol.IndexOf((char)ASCIICode.DIVIDE) + 1);
 
             req.Protocol = AbsClassEnum.Get<ProtocolType>(sProtoType);
-            req.ProtocolVersion = AbsClassEnum.Get<HttpVersion>(sProtoVersion);
+            req.Version = AbsClassEnum.Get<HttpVersion>(sProtoVersion);
 
         }
         //TODO 此功能需要重试以进行验证
@@ -715,7 +717,7 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public HttpRequest SetProtocol(HttpVersion version)
         {
-            ProtocolVersion = version;
+            Version = version;
             return this;
         }
         /// <summary>
@@ -739,7 +741,7 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public byte[] GetRequestLine()
         {
-            return StringEncoder.Encode(string.Format("{0} {1} HTTP/{2}", Method.Name, Path, ProtocolVersion.Version));
+            return StringEncoder.Encode(string.Format("{0} {1} HTTP/{2}", Method.Name, Path, Version.Version));
         }
         /// <summary>
         /// 设置URI信息，分别注入到<see cref="HeaderProperty.Host"/>和<see cref="HeaderProperty.Referer"/>两个头属性中
