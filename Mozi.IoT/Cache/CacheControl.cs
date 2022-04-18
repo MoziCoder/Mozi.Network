@@ -10,6 +10,7 @@ namespace Mozi.IoT.Cache
     /// </summary>
     public class CacheControl
     {
+
         private static CacheControl _control;
 
         public CacheControl Instance
@@ -21,6 +22,7 @@ namespace Mozi.IoT.Cache
         {
 
         }
+
         /// <summary>
         /// ETAG生成器
         /// </summary>

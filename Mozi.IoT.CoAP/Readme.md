@@ -17,9 +17,10 @@ Mozi.IoT.CoAP为Iot.Client调试工具，使用命令行方式对CoAPClient进�
 
       options 请求选项参数如下：
 
-        -dump                    跟随值为文件路径，将编码好的数据包转储到文件，同时不会发起请求
+        -dump                    值为文件路径，将编码好的数据包转储到文件，不发起请求
         -file                    需要上传的文件的路径
-        -time                    监听若干秒，参数值为整数，单位为秒
+        -time                    阻塞式监听若干秒，参数值为整数，单位为秒
+        -round                   重复发起请求的次数（最高100次），需-time参数进行配合
 
         -type                    消息类型,取值
                                     con   --Confirmable

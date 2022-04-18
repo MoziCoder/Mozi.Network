@@ -198,4 +198,19 @@ namespace Mozi.Live.RTP
         public static StatusCode OptionNotSupported                        = new StatusCode( 551   ,"Option Not Supported"); //all                     
         public static StatusCode ProxyUnavailable                          = new StatusCode( 553, "Proxy Unavailable"); //all                      
     }
+
+    public class RTSPRequest
+    {
+
+    }
+
+    public class RTSPResponse
+    {
+
+    }
+
+    public class RTSPProtocol
+    {
+
+    }
 }

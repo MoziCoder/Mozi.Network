@@ -37,7 +37,6 @@ namespace Mozi.IoT
                 return _contentType;
             }
         }
-
         public ushort OptionValue
         {
             get

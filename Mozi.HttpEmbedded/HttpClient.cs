@@ -1,7 +1,7 @@
-﻿using Mozi.HttpEmbedded.Encode;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Mozi.HttpEmbedded.Encode;
 
 namespace Mozi.HttpEmbedded
 {
@@ -184,7 +184,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="callback">回调方法</param>
         public void Post(string url, Dictionary<HeaderProperty, string> headers, string body,RequestComplete callback)
         {
-            byte[] bytesBody = Encode.StringEncoder.Encode(body);
+            byte[] payload = Encode.StringEncoder.Encode(body);
             if (headers == null)
             {
                 headers = new Dictionary<HeaderProperty, string>();
@@ -193,7 +193,7 @@ namespace Mozi.HttpEmbedded
             {
                 headers.Add(HeaderProperty.ContentType, $"text/plain; charset={Charset}");
             }
-            Post(url, headers, bytesBody, callback);
+            Post(url, headers, payload, callback);
         }
         /// <summary>
         /// HttpPost方法

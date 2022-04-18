@@ -10,6 +10,7 @@ namespace Mozi.IoT
     /// </summary>
     public class OptionValue
     {
+        
         protected byte[] _pack;
         /// <summary>
         /// 呈现值
@@ -38,6 +39,7 @@ namespace Mozi.IoT
                 return "";
             }
         }
+
     }
     /// <summary>
     /// 空选项值

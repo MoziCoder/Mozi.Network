@@ -52,6 +52,7 @@ namespace Mozi.IoT
     /// </summary>
     public class CoAPCode : AbsClassEnum
     {
+
         private string _name = "", _description;
 
         private byte _category = 0, _detail = 0;
@@ -103,7 +104,7 @@ namespace Mozi.IoT
             get { return ((byte)(_category << 5) + _detail).ToString(); }
         }
         /// <summary>
-        /// 
+        /// 数据包
         /// </summary>
         public byte Pack
         {
@@ -145,6 +146,7 @@ namespace Mozi.IoT
         {
             return Name;
         }
+
     }
     /// <summary>
     /// 响应码
@@ -186,6 +188,7 @@ namespace Mozi.IoT
         {
 
         }
+
         public override string ToString()
         {
             return Category + "." + Detail + " " + Description;

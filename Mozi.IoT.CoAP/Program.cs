@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 namespace Mozi.IoT.CoAP
 {
@@ -56,9 +57,10 @@ namespace Mozi.IoT.CoAP
 
         private static bool observeMode = false;
 
-        private static String _filePath = "";
+        private static String _filePathUpload = "";
         private static bool needDump = false;
         private static String _filePathDump = "";
+        private static int _round = -1;
 
         private static string _url = "";
 
@@ -221,22 +223,26 @@ namespace Mozi.IoT.CoAP
                                             observeSeconds = int.Parse(r.Value.ToString());
                                             if (observeSeconds > 0)
                                             {
-                                                observeMode = true;
+                                                observeMode = true; 
                                             }
+                                            continue;
                                         }
-                                        break;
                                     case "file":
                                         {
-                                            isOption = false;
-                                            _filePath = r.Value.ToString();
+                                            _filePathUpload = r.Value.ToString();
+                                            continue;
                                         }
-                                        break;
                                     case "dump":
                                         {
                                             needDump = true;
                                             _filePathDump = r.Value.ToString();
+                                            continue;
                                         }
-                                        break;
+                                    case "round":
+                                        {
+                                            int.TryParse(r.Value.ToString(),out _round);
+                                            continue;
+                                        }
                                     case "type":
                                         {
                                             if (!string.IsNullOrEmpty((string)r.Value))
@@ -477,10 +483,11 @@ namespace Mozi.IoT.CoAP
             //{
             //    cp.Token = mc.GenerateToken(8);
             //}
-            if (_filePath != "")
+            if (_filePathUpload != "")
             {
-                if(cp.Code == CoAPRequestMethod.Put || cp.Code == CoAPRequestMethod.Post){
-                    cc.PostFile(_url, CoAPMessageType.Confirmable, ContentFormat.Stream, _filePath);
+                if(cp.Code == CoAPRequestMethod.Put || cp.Code == CoAPRequestMethod.Post)
+                {
+                    cc.PostFile(_url, CoAPMessageType.Confirmable, ContentFormat.Stream, _filePathUpload);
                 }
                 else
                 {
@@ -489,7 +496,20 @@ namespace Mozi.IoT.CoAP
             }
             else
             {
-                cc.SendMessage(host, port, cp);
+                int loop = 1;
+                if (_round > 0)
+                {
+                    loop = _round;
+                    if (loop > 100)
+                    {
+                        loop = 100;
+                    }
+                }
+                for (int i = 0; i < loop; i++)
+                {
+                    cc.SendMessage(host, port, cp);
+                    Thread.Sleep(100);
+                }
             }
         }
 
@@ -544,9 +564,10 @@ namespace Mozi.IoT.CoAP
                             "\r\n  coap://{host}[:{port}]/{path}[?{query}]" +
                             "\r\n\r\noptions 请求选项参数如下：" +
                             "\r\n" +
-                            "\r\n  -time                    监听若干秒，参数值为整数，单位为秒。" +
-                            "\r\n  -dump                    跟随值为文件路径，将编码好的数据包转储到文件，同时不会发起请求"+
+                            "\r\n  -time                    阻塞式监听若干秒，参数值为整数，单位为秒。" +
+                            "\r\n  -dump                    值为文件路径，将编码好的数据包转储到文件，不发起请求"+
                             "\r\n  -file                    需要上传的文件的路径" +
+                            "\r\n  -round                   重复发起请求的次数（最高100次），需-time参数进行配合" +
                             "\r\n" +
                             "\r\n  -type                    消息类型,取值范围" +
                             "\r\n                            con   --Confirmable" +
@@ -566,15 +587,17 @@ namespace Mozi.IoT.CoAP
                             "\r\n  -locationquery           " +
                             "\r\n  -block2                  Block2设置，格式：Num/MoreFlag/Size" +
                             "\r\n  -block1                  Block1设置，格式：Num/MoreFlag/Size" +
-                            "\r\n                           Num:0~1045785,MoreFlag:[0|1],Size:[16|32|64|128|256|512|1024|2048]" +
+                            "\r\n                               Num:0~1045785," +
+                            "\r\n                               MoreFlag:[0|1]," +
+                            "\r\n                               Size:2**([0-7]+4,2)" +
                             "\r\n  -size2                   " +
                             "\r\n  -proxyuri                " +
                             "\r\n  -proxyscheme             " +
                             "\r\n  -size1                   " +
                             "\r\n"+
                             "\r\n 注：" +
-                            "\r\n 1.字符串变量值用\"\"包裹" +
-                            "\r\n 2.整型变量值用，直接输入整数即可，如 -size 1024" +
+                            "\r\n    1.字符串变量值用\"\"包裹" +
+                            "\r\n    2.整型变量值用，直接输入整数即可，如 -size 1024" +
                             "\r\n" +
                             "\r\nbody 说明：" +
                             "\r\n   1.0x开始的字符串被识别为HEX字符串并被转为字节流" +

@@ -2,15 +2,15 @@
 <package>
   <metadata>
     <id>Mozi.HttpEmbedded</id>
-    <version>1.3.10</version>
+    <version>1.4.1</version>
     <title>Mozi.HttpEmbedded</title>
     <authors>Jason</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
     <projectUrl>https://gitee.com/myui_admin/mozi</projectUrl>
-    <description>HTTP服务器组件，使用它可以很容易地为程序引入一个HTTP服务器</description>
+    <description>HTTP服务器组件，使用它可以很容易地为程序引入一个HTTP服务器。A web server,http server</description>
     <releaseNotes>嵌入式WEB服务器</releaseNotes>
     <copyright>Copyright © Jason 2020-2022</copyright>
-    <tags>HTTP EMBEDDED 嵌入式 WEB 微内核 服务器</tags>
+    <tags>HTTP EMBEDDED 嵌入式 WEB 微内核 服务器 httpserver</tags>
   </metadata>
 </package>

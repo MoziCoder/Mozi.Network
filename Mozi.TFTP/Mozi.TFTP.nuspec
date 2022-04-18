@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Mozi.TFTP</id>
-    <version>1.3.10</version>
+    <version>1.4.1</version>
 	<title>Mozi.TFTP</title>
     <authors>Jason</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>

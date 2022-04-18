@@ -2,7 +2,7 @@
 <package >
 	<metadata>
 		<id>Mozi.IoT.CoAP</id>
-		<version>1.3.10</version>
+		<version>1.4.1</version>
 		<title>Mozi.IoT.CoAP</title>
 		<authors>Jason</authors>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -13,8 +13,8 @@
 		<copyright>Copyright © Jason 2022</copyright>
 		<tags>IoT Client 调试工具</tags>
 		<dependencies>
-			<dependency id="Mozi.IoT" version="[1.3.8,]" />
-			<dependency id="Mozi.IoT.Client" version="[1.3.8,]" />
+			<dependency id="Mozi.IoT" version="[1.3.10,]" />
+			<dependency id="Mozi.IoT.Client" version="[1.3.10,]" />
 		</dependencies>
 	</metadata>
 </package>
