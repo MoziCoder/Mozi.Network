@@ -70,10 +70,10 @@ namespace Mozi.IoT
         public static CoAPOptionDefine Accept               = new CoAPOptionDefine("Accept", 17);
         public static CoAPOptionDefine LocationQuery        = new CoAPOptionDefine("Location-Query", 20);
 
-        public static CoAPOptionDefine Block2               = new CoAPOptionDefine("Block2", 23);    //RFC 7959
-        public static CoAPOptionDefine Block1               = new CoAPOptionDefine("Block1", 27);    //RFC 7959
+        public static CoAPOptionDefine Block2               = new CoAPOptionDefine("Block2", 23);              //RFC 7959
+        public static CoAPOptionDefine Block1               = new CoAPOptionDefine("Block1", 27);              //RFC 7959
 
-        public static CoAPOptionDefine Size2                = new CoAPOptionDefine("Size2", 28); //RFC 7959
+        public static CoAPOptionDefine Size2                = new CoAPOptionDefine("Size2", 28);               //RFC 7959
 
         public static CoAPOptionDefine ProxyUri             = new CoAPOptionDefine("Proxy-Uri", 35);
         public static CoAPOptionDefine ProxyScheme          = new CoAPOptionDefine("Proxy-Scheme", 39);
@@ -91,6 +91,7 @@ namespace Mozi.IoT
                 return _name;
             }
         }
+
         /// <summary>
         /// 选项序号
         /// </summary>

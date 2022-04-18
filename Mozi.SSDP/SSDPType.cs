@@ -17,7 +17,9 @@ namespace Mozi.SSDP
         public static SSDPType PropChange = new SSDPType("upnp", "propchange");
 
         private readonly string _name;
+
         private readonly string _domain;
+
         //discover all alive byebye
         public SSDPType(string domain,string name)
         {
