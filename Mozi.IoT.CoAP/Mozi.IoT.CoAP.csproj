@@ -47,13 +47,13 @@
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
     <ProjectReference Include="..\Mozi.IoT\Mozi.IoT.csproj">
-      <Project>{A59E18F0-30E5-41E7-9504-02993BCA949B}</Project>
+      <Project>{a59e18f0-30e5-41e7-9504-02993bca949b}</Project>
       <Name>Mozi.IoT</Name>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="CoAP调试工具 Mozi.IoT.CoAP.doc" />
+    <None Include="CoAP调试工具 Mozi.IoT.CoAP应用详解.doc" />
     <None Include="Mozi.IoT.CoAP.nuspec" />
     <None Include="Readme.md" />
   </ItemGroup>

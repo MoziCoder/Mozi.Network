@@ -305,14 +305,36 @@ namespace Mozi.IoT.CoAP
                                             optName = CoAPOptionDefine.ExtendedTokenLength;
                                         }
                                         break;
-                                    case "locationpath":
-                                        {
-                                            optName = CoAPOptionDefine.LocationPath;
-                                        }
-                                        break;
+                                    //case "locationpath":
+                                    //    {
+                                    //        optName = CoAPOptionDefine.LocationPath;
+                                    //    }
+                                    //    break;
                                     case "contentformat":
                                         {
                                             optName = CoAPOptionDefine.ContentFormat;
+                                            if (!string.IsNullOrEmpty(r.Value.ToString()))
+                                            {
+                                                UnsignedIntegerOptionValue newValue = new UnsignedIntegerOptionValue();
+                                                ContentFormat format=null;
+                                                int fmNum;
+
+                                                if(int.TryParse(r.Value.ToString(), out fmNum))
+                                                {
+                                                    format = ContentFormat.Parse(fmNum);
+                                                }
+
+                                                if(format is null)
+                                                {
+                                                    format = ContentFormat.Parse(r.Value.ToString());
+                                                }
+                                                                                                
+                                                if (!(format is null))
+                                                {
+                                                    newValue.Value = format.Num;
+                                                    optValue =newValue;
+                                                }                                                                   
+                                            }
                                         }
                                         break;
                                     case "maxage":
@@ -325,11 +347,11 @@ namespace Mozi.IoT.CoAP
                                             optName = CoAPOptionDefine.Accept;
                                         }
                                         break;
-                                    case "locationquery":
-                                        {
-                                            optName = CoAPOptionDefine.LocationQuery;
-                                        }
-                                        break;
+                                    //case "locationquery":
+                                    //    {
+                                    //        optName = CoAPOptionDefine.LocationQuery;
+                                    //    }
+                                    //    break;
                                     case "block2":
                                         {
                                             optName = CoAPOptionDefine.Block2;
@@ -371,7 +393,10 @@ namespace Mozi.IoT.CoAP
                                 }
                                 if (isOption)
                                 {
-                                    cp.SetOption(optName, optValue);
+                                    if (optValue != null)
+                                    {
+                                        cp.SetOption(optName, optValue);
+                                    }
                                 }
 
                                 // "ifmatch"
@@ -580,11 +605,11 @@ namespace Mozi.IoT.CoAP
                             "\r\n  -etag                    " +
                             "\r\n  -ifnonematch             " +
                             "\r\n  -extendedtokenlength     " +
-                            "\r\n  -locationpath            " +
+                            //"\r\n  -locationpath            " +
                             "\r\n  -contentformat           " +
-                            "\r\n  -maxage                  " +
+                            //"\r\n  -maxage                  " +
                             "\r\n  -accept                  " +
-                            "\r\n  -locationquery           " +
+                            //"\r\n  -locationquery           " +
                             "\r\n  -block2                  Block2设置，格式：Num/MoreFlag/Size" +
                             "\r\n  -block1                  Block1设置，格式：Num/MoreFlag/Size" +
                             "\r\n                               Num:0~1045785," +
