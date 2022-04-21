@@ -43,14 +43,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Mozi.IoT.Client.nuspec" />
+    <None Include="Readme.md" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Mozi.IoT\Mozi.IoT.csproj">
       <Project>{a59e18f0-30e5-41e7-9504-02993bca949b}</Project>
       <Name>Mozi.IoT</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Mozi.IoT.Client.nuspec" />
-    <None Include="Readme.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -37,13 +37,6 @@ namespace Mozi.IoT
                 return _contentType;
             }
         }
-        public ushort OptionValue
-        {
-            get
-            {
-                return _num;
-            }
-        }
         /// <summary>
         /// MIME注册序号
         /// </summary>
@@ -51,18 +44,85 @@ namespace Mozi.IoT
 
         protected override string Tag => _num.ToString();
 
-        public static ContentFormat TextPlain = new ContentFormat("text/plain", 0);
-        public static ContentFormat LinkFormat = new ContentFormat("application/link-format", 40);
-        public static ContentFormat XML = new ContentFormat("application/xml", 41);
-        public static ContentFormat Stream = new ContentFormat("application/octet-stream", 42);
-        public static ContentFormat EXI = new ContentFormat("application/exi", 47);
-        public static ContentFormat JSON = new ContentFormat("application/json", 50);
-        public static ContentFormat CBOR = new ContentFormat("application/cbor", 60);
+        public static ContentFormat TextPlain   = new ContentFormat("text/plain", 0);
+        public static ContentFormat LinkFormat  = new ContentFormat("application/link-format", 40);
+        public static ContentFormat XML         = new ContentFormat("application/xml", 41);
+        public static ContentFormat Stream      = new ContentFormat("application/octet-stream", 42);
+        public static ContentFormat EXI         = new ContentFormat("application/exi", 47);
+        public static ContentFormat JSON        = new ContentFormat("application/json", 50);
+        public static ContentFormat CBOR        = new ContentFormat("application/cbor", 60);
 
         internal ContentFormat(string contentType, ushort num)
         {
             _contentType = contentType;
             _num = num;
+        }
+        /// <summary>
+        /// 从内容类型字符串解析内容类型,如text/plain,application/cbor
+        /// </summary>
+        /// <param name="contentFormat"></param>
+        /// <returns></returns>
+        public static ContentFormat Parse(string contentFormat)
+        {
+
+            if (!string.IsNullOrEmpty(contentFormat))
+            {
+                string[] items = contentFormat.Split(new char[] { ';' });
+                string cf = items[0].Trim();
+                switch (cf)
+                {
+                    case "text/plain":
+                    case "plain":
+                        return TextPlain;
+                    case "application/link-format":
+                    case "link-format":
+                    case "linkformat":
+                        return LinkFormat;
+                    case "application/xml":
+                    case "xml":
+                        return XML;
+                    case "application/octet-stream":
+                    case "octet-stream":
+                    case "octetstream":
+                    case "stream":
+                        return Stream;
+                    case "application/exi":
+                    case "exi":
+                        return EXI;
+                    case "application/json":
+                    case "json":
+                        return JSON;
+                    case "application/cbor":
+                    case "cbor":
+                        return CBOR;
+                }
+                return null;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        /// <summary>
+        /// 从内容类型注册号解析内容类型,取值范围请查看<see cref="ContentFormat"/>中定义的几个静态变量的{Num}值
+        /// <list type="bullet">
+        ///     <item><see cref="ContentFormat.TextPlain"/></item>
+        ///     <item><see cref="ContentFormat.TextPlain"/> </item>
+        ///     <item><see cref="ContentFormat.LinkFormat"/></item>
+        ///     <item><see cref="ContentFormat.XML"/>       </item>
+        ///     <item><see cref="ContentFormat.Stream"/>    </item>
+        ///     <item><see cref="ContentFormat.EXI"/>       </item>
+        ///     <item><see cref="ContentFormat.JSON"/>      </item>
+        ///     <item><see cref="ContentFormat.CBOR"/></item>
+        /// </list>         
+        /// </summary>
+        /// <param name="formatRegistryNumber"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// </remarks>
+        public static ContentFormat Parse(int formatRegistryNumber)
+        {
+            return Get<ContentFormat>(formatRegistryNumber.ToString());
         }
     }
 }

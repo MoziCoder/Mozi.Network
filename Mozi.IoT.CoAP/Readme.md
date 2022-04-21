@@ -32,12 +32,9 @@ Mozi.IoT.CoAP为Iot.Client调试工具，使用命令行方式对CoAPClient进�
         -ifmatch                 
         -etag                    
         -ifnonematch             
-        -extendedtokenlength     
-        -locationpath            
-        -contentformat           
-        -maxage                  
-        -accept                  
-        -locationquery           
+        -extendedtokenlength              
+        -contentformat                            
+        -accept                      
         -block2                  Block2设置，格式：Num/MoreFlag/Size
         -block1                  Block1设置，格式：Num/MoreFlag/Size
                                  Num:0~1045785,MoreFlag:[0|1],Size:[16|32|64|128|256|512|1024|2048]
