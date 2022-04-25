@@ -61,6 +61,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mozi.Encode.Test", "Mozi.En
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mozi.IoT", "Mozi.IoT\Mozi.IoT.csproj", "{A59E18F0-30E5-41E7-9504-02993BCA949B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mozi.IoT.Common", "Mozi.IoT.Common\Mozi.IoT.Common.csproj", "{060F8FE1-27DD-4E1B-8436-B25B8797E763}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -418,6 +420,18 @@ Global
 		{A59E18F0-30E5-41E7-9504-02993BCA949B}.ReleaseBinaries|Any CPU.Build.0 = Release|Any CPU
 		{A59E18F0-30E5-41E7-9504-02993BCA949B}.ReleaseBinaries|x86.ActiveCfg = Release|Any CPU
 		{A59E18F0-30E5-41E7-9504-02993BCA949B}.ReleaseBinaries|x86.Build.0 = Release|Any CPU
+		{060F8FE1-27DD-4E1B-8436-B25B8797E763}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{060F8FE1-27DD-4E1B-8436-B25B8797E763}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{060F8FE1-27DD-4E1B-8436-B25B8797E763}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{060F8FE1-27DD-4E1B-8436-B25B8797E763}.Debug|x86.Build.0 = Debug|Any CPU
+		{060F8FE1-27DD-4E1B-8436-B25B8797E763}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{060F8FE1-27DD-4E1B-8436-B25B8797E763}.Release|Any CPU.Build.0 = Release|Any CPU
+		{060F8FE1-27DD-4E1B-8436-B25B8797E763}.Release|x86.ActiveCfg = Release|Any CPU
+		{060F8FE1-27DD-4E1B-8436-B25B8797E763}.Release|x86.Build.0 = Release|Any CPU
+		{060F8FE1-27DD-4E1B-8436-B25B8797E763}.ReleaseBinaries|Any CPU.ActiveCfg = Release|Any CPU
+		{060F8FE1-27DD-4E1B-8436-B25B8797E763}.ReleaseBinaries|Any CPU.Build.0 = Release|Any CPU
+		{060F8FE1-27DD-4E1B-8436-B25B8797E763}.ReleaseBinaries|x86.ActiveCfg = Release|Any CPU
+		{060F8FE1-27DD-4E1B-8436-B25B8797E763}.ReleaseBinaries|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

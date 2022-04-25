@@ -18,6 +18,7 @@ namespace Mozi.HttpEmbedded.Page
         /// 无参方法
         /// </summary>
         /// <returns></returns>
+        [Description("Hello")]
         public string Hello()
         {
             return "Welcome to Mozi.HttpEmbedded";

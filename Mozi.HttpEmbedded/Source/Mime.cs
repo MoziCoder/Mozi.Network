@@ -430,7 +430,7 @@ namespace Mozi.HttpEmbedded.Source
         /// <summary>
         /// 服务端脚本
         /// </summary>
-        private static readonly List<string> ScriptExts = new List<string>();
+        private static readonly List<string> ScriptExts = new List<string>() { };
 
         /// <summary>
         /// 增加MIME类型

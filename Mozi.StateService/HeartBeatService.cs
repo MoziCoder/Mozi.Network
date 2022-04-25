@@ -160,7 +160,7 @@ namespace Mozi.StateService
         /// <summary>
         /// 设置用户名
         /// </summary>
-        /// <param name="userName"></param>
+        /// <param name="userName">“UserName"可以灵活承载一些业务，但不建议使用较长的字符串，避免整体数据超过MTU值</param>
         /// <returns></returns>
         public HeartBeatService SetUserName(string userName)
         {
