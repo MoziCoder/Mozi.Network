@@ -257,7 +257,7 @@ namespace Mozi.HttpEmbedded.Source
         /// <param name="end"></param>
         /// <param name="totalSize"></param>
         /// <returns></returns>
-        public byte[] Load(string path, string ext, int start, int end,ref int totalSize)
+        public byte[] Load(string path, string ext, long start, long end,ref long totalSize)
         {
             if (end > start && start >= 0)
             {
@@ -266,10 +266,13 @@ namespace Mozi.HttpEmbedded.Source
                 {
                     filepath = GetVirtualFilePhysicalDirectory(path);
                 }
-                using (FileStream fs = new FileStream(filepath, FileMode.Open))
+                using (FileStream fs = new FileStream(filepath, FileMode.Open,FileAccess.Read))
                 {
+                    totalSize = fs.Length;
                     byte[] data = new byte[end - start + 1];
-                    fs.Read(data, start, end - start + 1);
+                    fs.Seek(start, SeekOrigin.Begin);
+                    fs.Read(data, 0, data.Length);
+                    fs.Close();
                     return data;
                 }
             }

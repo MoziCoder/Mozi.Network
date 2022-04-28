@@ -2,11 +2,14 @@
 
 namespace Mozi.HttpEmbedded.Cache
 {
+
+    //TODO 实现全局调用委托
+
     /// <summary>
-    /// 全局数据
+    /// 全局对象
     /// 此处定义的数据会被全局使用 仅只读 功能类似于宏
     /// </summary>
-    public class Global
+    internal class Global
     {
 
         private readonly Dictionary<string, object> _data = new Dictionary<string, object>();
@@ -28,6 +31,7 @@ namespace Mozi.HttpEmbedded.Cache
                 _data.Add(key, value);
             }
             return this;
+
         }
         /// <summary>
         /// 获取键值

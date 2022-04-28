@@ -16,8 +16,11 @@ namespace Mozi.HttpEmbedded
         public static HeaderProperty AcceptCharset = new HeaderProperty("Accept-Charset");                                        // 	列出用户代理支持的字符集。 	HTTP Content Negotiation 	HTTP/1.1
         public static HeaderProperty AcceptFeatures = new HeaderProperty("Accept-Features");                                      // 	HTTP Content Negotiation 	RFC 2295, §8.2
         public static HeaderProperty AcceptEncoding = new HeaderProperty("Accept-Encoding");                                      // 	列出用户代理支持的压缩方法。 	HTTP Content Negotiation 	HTTP/1.1
-        public static HeaderProperty AcceptLanguage = new HeaderProperty("Accept-Language");                                      // 	列出用户代理期望的页面语言。 	HTTP Content Negotiation 	HTTP/1.1
-        //Accept-Ranges 			
+        public static HeaderProperty AcceptLanguage = new HeaderProperty("Accept-Language");                                      // 	列出用户代理期望的页面语言。
+                                                                                                                                  // 		HTTP Content Negotiation 	HTTP/1.1
+
+        //
+        public static HeaderProperty AcceptRanges = new HeaderProperty("Accept-Ranges");			
         public static HeaderProperty AccessControlAllowCredentials = new HeaderProperty("Access-Control-Allow-Credentials");      // 	HTTP Access Control and Server Side Access Control 	W3C Cross-Origin Resource Sharing
         public static HeaderProperty AccessControlAllowOrigin = new HeaderProperty("Access-Control-Allow-Origin");                // 	HTTP Access Control and Server Side Access Control 	W3C Cross-Origin Resource Sharing
         public static HeaderProperty AccessControlAllowMethods = new HeaderProperty("Access-Control-Allow-Methods");              // 	HTTP Access Control and Server Side Access Control 	W3C Cross-Origin Resource Sharing

@@ -464,27 +464,11 @@ namespace Mozi.HttpEmbedded
                 else if (st.Enabled && isStatic)
                 {
                     //目录加载
-                    //if (pathReal.EndsWith("/"))
-                    //{
 
-                    //}
                     //响应静态文件
                     if (st.Exists(pathReal, ""))
                     {
-                        string ifmodifiedsince = context.Request.Headers.GetValue(HeaderProperty.IfModifiedSince.PropertyName);
-                        if (st.CheckIfModified(pathReal, ifmodifiedsince))
-                        {
-                            DateTime dtModified = st.GetLastModifiedTime(pathReal).ToUniversalTime();
-                            context.Response.AddHeader(HeaderProperty.LastModified, dtModified.ToString("r"));
-                            context.Response.Write(st.Load(pathReal, ""));                            
-                            
-                            //ETag 仅测试 不具备判断缓存的能力
-                            context.Response.AddHeader(HeaderProperty.ETag, string.Format("{0:x2}:{1:x2}", dtModified.ToUniversalTime().Ticks, context.Response.ContentLength));
-                        }
-                        else
-                        {
-                            return StatusCode.NotModified;
-                        }
+                        return HandleRequestStaticFile(ref context, st, pathReal,contenttype);
                     }
                     else
                     {
@@ -544,12 +528,150 @@ namespace Mozi.HttpEmbedded
         }
 
         //TODO 静态文件统一处理
-        private StatusCode HandleRequestStaticFile(ref HttpContext context)
+        private StatusCode HandleRequestStaticFile(ref HttpContext context, StaticFiles st, string pathReal,string contentType)
         {
-            //全量发送
+            string ifmodifiedsince = context.Request.Headers.GetValue(HeaderProperty.IfModifiedSince.PropertyName);
+            string range = context.Request.Headers.GetValue(HeaderProperty.Range.PropertyName);
+            context.Response.AddHeader(HeaderProperty.AcceptRanges, "bytes");
 
-            //部分发送
-            return StatusCode.Success;
+            if (st.CheckIfModified(pathReal, ifmodifiedsince))
+            {
+                if (string.IsNullOrEmpty(range))
+                {
+                    DateTime dtModified = st.GetLastModifiedTime(pathReal).ToUniversalTime();
+                    context.Response.AddHeader(HeaderProperty.LastModified, dtModified.ToString("r"));
+                    context.Response.Write(st.Load(pathReal, ""));
+                    //ETag 仅测试 不具备判断缓存的能力
+                    context.Response.AddHeader(HeaderProperty.ETag, string.Format("{0:x2}:{1:x2}", dtModified.ToUniversalTime().Ticks, context.Response.ContentLength));
+                    return StatusCode.Success;
+                }
+                else
+                {
+                    //TODO 断点续传功能还需要进一步测试
+
+                    //Range: bytes=0-1024,2048-4096,4097-
+                    string[] info = range.Split(new char[] { (char)ASCIICode.EQUAL }, StringSplitOptions.RemoveEmptyEntries);
+                    if (info.Length > 1)
+                    {
+                        //bytes
+                        string unit = info[0];
+                        string[] ranges = info[1].Split(new char[] { (char)ASCIICode.COMMA },StringSplitOptions.RemoveEmptyEntries);
+
+                        ContentRange[] arrRanges = new ContentRange[ranges.Length];
+
+                        for(int i = 0; i < arrRanges.Length; i++)
+                        {
+                            //这里用-1表示范围未赋值
+                            arrRanges[i]= new ContentRange() { Start = -1, End = -1 };
+                            var r = arrRanges[i];
+                            string[] rinfo = ranges[0].Trim().Split(new char[] { (char)ASCIICode.MINUS }, StringSplitOptions.RemoveEmptyEntries);
+                            string sStart = "", sEnd = "";
+                            if (ranges[0].StartsWith(((char)ASCIICode.MINUS).ToString()))
+                            {
+                                sEnd = rinfo[0];
+                            }
+                            else
+                            {
+                                sStart = rinfo[0];
+                                sEnd = rinfo.Length > 1 ? rinfo[1] : "";
+                            }
+
+                            if (!string.IsNullOrEmpty(sStart))
+                            {
+                                r.Start=uint.Parse(sStart);
+                            }
+
+                            if (!string.IsNullOrEmpty(sEnd))
+                            {
+                                r.End = uint.Parse(sEnd);
+                            }
+                        }
+                        long fileSize = st.GetFileSize(pathReal);
+                        if (arrRanges.Length == 0)
+                        {
+                            return StatusCode.RangeNotSatisfiable;
+                        }
+                        //单个范围值 
+                        else if (arrRanges.Length == 1)
+                        {
+                            ContentRange r = arrRanges[0];
+                            if ((r.Start == -1 && r.End == -1) || (r.Start > r.End))
+                            {
+                                return StatusCode.RangeNotSatisfiable;
+                            }
+                            else
+                            {
+                                long start, end;
+                                if (r.Start == -1)
+                                {
+                                    start = fileSize - r.End;
+                                    end = fileSize - 1;
+                                }else if (r.End == -1){
+                                    start = r.Start;
+                                    end = fileSize - 1;
+                                }
+                                else
+                                {
+                                    start = r.Start;
+                                    end = r.End;
+                                }
+                                long totalSize = 0;
+                                context.Response.Write(st.Load(pathReal, "", start, end, ref totalSize));
+                                context.Response.AddHeader(HeaderProperty.ContentRange, string.Format("bytes {0}-{1}/{2}",start,end,totalSize));
+                            }
+                        }
+                        //多个范围值
+                        else
+                        {
+                            string boundary = CacheControl.GenerateRandom(8);
+                            context.Response.SetContentType("multipart/byteranges; boundary="+boundary);
+                            foreach(var r in arrRanges)
+                            {
+                                if ((r.Start == -1 && r.End == -1)||(r.Start>r.End))
+                                {
+                                    return StatusCode.RangeNotSatisfiable;
+                                }
+                                else
+                                {
+                                    long start, end;
+                                    if (r.Start == -1)
+                                    {
+                                        start = fileSize - r.End;
+                                        end = fileSize - 1;
+                                    }
+                                    else if (r.End == -1)
+                                    {
+                                        start = r.Start;
+                                        end = fileSize - 1;
+                                    }
+                                    else
+                                    {
+                                        start = r.Start;
+                                        end = r.End;
+                                    }
+                                    long totalSize = 0;
+                                    context.Response.Write("--" + boundary);
+                                    TransformHeader header = new TransformHeader();
+                                    header.Add(HeaderProperty.ContentType,contentType);
+                                    header.Add(HeaderProperty.ContentRange, string.Format("bytes {0}-{1}/{2}", start, end, totalSize));
+                                    context.Response.Write(st.Load(pathReal, "", start, end, ref totalSize));
+                                    context.Response.AddHeader(HeaderProperty.ContentRange, string.Format("bytes {0}-{1}/{2}", start, end, totalSize));
+                                }
+                            }
+                            context.Response.Write("--" + boundary + "--");
+                        }
+                        return StatusCode.PartialContent;
+                    }
+                    else
+                    {
+                        return StatusCode.RangeNotSatisfiable;
+                    }
+                }
+            }
+            else
+            {
+                return StatusCode.NotModified;
+            }
         }
         /// <summary>
         /// 处理METHOD-OPTIONS请求
@@ -805,4 +927,15 @@ namespace Mozi.HttpEmbedded
     }
 
     public delegate void Request(string srcHost, int srcPort, HttpRequest request);
+
+    /// <summary>
+    /// 请求内容的范围
+    /// </summary>
+    public class ContentRange
+    {
+        //数据为uint 这里为了表示更大范围，用Int64表示
+        public long Start { get; set; }
+
+        public long End { get; set; }
+    }
 }
