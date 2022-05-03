@@ -5,7 +5,7 @@ namespace Mozi.HttpEmbedded.Attributes
     /// <summary>
     /// 响应内容 文档类型
     /// </summary>
-    [AttributeUsage(AttributeTargets.ReturnValue)]
+    [AttributeUsage(AttributeTargets.Method,AllowMultiple =false)]
     internal class ContentTypeAttribute : Attribute
     {
         private string contentType;

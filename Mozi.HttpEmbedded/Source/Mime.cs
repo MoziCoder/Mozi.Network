@@ -189,6 +189,7 @@ namespace Mozi.HttpEmbedded.Source
             {"mpeg","video/mpeg"},
             {"mpg","video/mpeg"},
             {"mpg4","video/mp4"},
+            {"flv","video/x-flv" },
             {"mpga","audio/mpeg"},
             {"mpn","application/vnd.mophun.application"},
             {"mpp","application/vnd.ms-project"},

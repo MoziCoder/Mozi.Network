@@ -81,7 +81,6 @@
     <Compile Include="Auth\User.cs" />
     <Compile Include="Cache\MemoryCache.cs" />
     <Compile Include="Cert\CertManager.cs" />
-    <Compile Include="Common\Encrypt.cs" />
     <Compile Include="Encode\Hex.cs" />
     <Compile Include="Extension\Others.cs" />
     <Compile Include="Common\UrlTree.cs" />
@@ -189,7 +188,6 @@
     <None Include="License.md" />
     <None Include="Mozi.HttpEmbedded.nuspec" />
     <None Include="Readme.md" />
-    <None Include="WebDav\packages.config" />
     <None Include="WebDav\README.md" />
   </ItemGroup>
   <ItemGroup>

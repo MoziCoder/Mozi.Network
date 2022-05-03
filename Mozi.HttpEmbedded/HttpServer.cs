@@ -31,6 +31,7 @@ namespace Mozi.HttpEmbedded
 
     //Transfer-Encoding: chunked 主要是为解决服务端无法预测Content-Length的问题
 
+    //TODO 已实现断点续传
     /*断点续传*/
     //client->  
     //    HTTP GET /document.ext
@@ -67,7 +68,7 @@ namespace Mozi.HttpEmbedded
         private string _tempPath = AppDomain.CurrentDomain.BaseDirectory + @"Temp\";
         private string _serverRoot = AppDomain.CurrentDomain.BaseDirectory;
 
-        private string _serverName = "HttpEmbedded";
+        private string _serverName = "Mozi.HttpEmbedded";
 
         //默认首页为index.html,index.htm
 
@@ -102,7 +103,7 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         public HttpVersion ProtocolVersion { get; set; }
         /// <summary>
-        /// 是否使用基本认证
+        /// 是否使用访问认证
         /// </summary>
         public bool EnableAuth { get; private set; }
         /// <summary>
@@ -320,7 +321,7 @@ namespace Mozi.HttpEmbedded
                     string doc = DocLoader.Load("Error.html");
                     TemplateEngine pc = new TemplateEngine();
                     pc.LoadFromText(doc);
-                    pc.Set("Error", new
+                    pc.Set("Error", new HandleError
                     {
                         Code = StatusCode.InternalServerError.Code.ToString(),
                         Title = StatusCode.InternalServerError.Text,
@@ -343,6 +344,7 @@ namespace Mozi.HttpEmbedded
             //最后响应数据     
             if (args.Socket != null && args.Socket.Connected&&context.Request!=null)
             {
+                
                 context.Response.AddHeader(HeaderProperty.Server, ServerName);
                 context.Response.SetStatus(sc);
 
@@ -351,6 +353,7 @@ namespace Mozi.HttpEmbedded
                 //判断客户机支持的压缩类型
                 var acceptEncoding = context.Request.Headers.GetValue(HeaderProperty.AcceptEncoding.PropertyName) ?? "";
                 var acceptEncodings = acceptEncoding.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
                 //忽略对媒体类型的压缩 默认GZIP作为压缩类型
                 if (EnableCompress && !Mime.IsMedia(context.Response.ContentType) && acceptEncodings.Contains("gzip"))
                 {
@@ -361,9 +364,32 @@ namespace Mozi.HttpEmbedded
                         context.Response.AddHeader(HeaderProperty.ContentEncoding, "gzip");
                     }
                 }
+
+                var chunked = false;
+                //Transfer-Encoding:chunked
+                if (context.Response.Headers.Contains(HeaderProperty.TransferEncoding.PropertyName))
+                {
+                    var tranferEncoding=context.Response.Headers[HeaderProperty.TransferEncoding.PropertyName];
+                    if (!string.IsNullOrEmpty(tranferEncoding) && tranferEncoding == "chunked")
+                    {
+                        context.Response.DontAddAutoHeader = true;
+                        context.Response.AddHeader(HeaderProperty.Date, DateTime.Now.ToUniversalTime().ToString("r"));
+                        context.Response.AddHeader(HeaderProperty.ContentType, context.Response.ContentType + (!string.IsNullOrEmpty(context.Response.Charset) ? "; " + context.Response.Charset : ""));
+                    }
+                    chunked = true;
+                }
+                else
+                {                                       
+                }
+
                 args.Socket.Send(context.Response.GetBuffer());
-                //等待指定的秒数，以发送完剩余数据
-                args.Socket.Close(12);
+
+                if (!chunked)
+                {
+                    //等待指定的秒数，以发送完剩余数据
+                    args.Socket.Close(12);
+                }
+
             }
             GC.Collect();
         }
@@ -476,7 +502,7 @@ namespace Mozi.HttpEmbedded
                         string doc = DocLoader.Load("Error.html");
                         TemplateEngine pc = new TemplateEngine();
                         pc.LoadFromText(doc);
-                        pc.Set("Error", new
+                        pc.Set("Error", new HandleError
                         {
                             Code = StatusCode.NotFound.Code.ToString(),
                             Title = StatusCode.NotFound.Text,
@@ -492,8 +518,6 @@ namespace Mozi.HttpEmbedded
                 }
                 else
                 {
-                    //动态页面默认ContentType为txt/plain
-                    context.Response.SetContentType(Mime.GetContentType("txt"));
                     //响应动态页面
                     return HandleRequestRoutePages(ref context);
                 }
@@ -521,6 +545,11 @@ namespace Mozi.HttpEmbedded
                 if (result != null)
                 {
                     context.Response.Write(result.ToString());
+                }
+                //动态页面默认ContentType为txt/plain
+                if (string.IsNullOrEmpty(context.Response.ContentType))
+                {
+                    context.Response.SetContentType(Mime.GetContentType("txt"));
                 }
                 return StatusCode.Success;
             }
@@ -885,6 +914,7 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 检查访问黑名单
         /// </summary>
+        /// <param name="ipAddress"></param>
         private bool CheckIfAccessBlocked(string ipAddress)
         {
             return AccessManager.Instance.CheckBlackList(ipAddress);
@@ -919,10 +949,49 @@ namespace Mozi.HttpEmbedded
         /// 设置首页 
         /// <para>设置默认首页后会关闭默认页面的返回,多个页面用","分割，优先访问前面的地址</para>
         /// </summary>
-        /// <param name="filePath"></param>
+        /// <param name="pattern"></param>
         public void SetIndexPage(string pattern)
         {
             _indexPages = pattern.Split(new char[] { ',' });
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="peer"></param>
+        /// <param name="data"></param>
+        internal void SendChunkedData(Socket peer,byte[] data)
+        {
+            if (peer.Connected)
+            {
+                UnsignedIntegerOptionValue ui = new UnsignedIntegerOptionValue();
+                ui.Value = data.Length;
+                string len=Hex.To(ui.Pack);
+                peer.Send(StringEncoder.Encode(len));
+                peer.Send(new byte[] { ASCIICode.CR, ASCIICode.LF });
+                peer.Send(data);
+                peer.Send(new byte[] { ASCIICode.CR, ASCIICode.LF });
+            }
+        }
+        /// <summary>
+        /// Chunked结束符号
+        /// </summary>
+        /// <param name="peer"></param>
+        internal void SendChunkedEndData(Socket peer)
+        {
+            if (peer.Connected)
+            {
+                string end = "0\r\n\r\n";
+                peer.Send(StringEncoder.Encode(end));
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="handler"></param>
+        internal void Register(string name,Handler handler)
+        {
+
         }
     }
 

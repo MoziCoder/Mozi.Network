@@ -1,61 +1,70 @@
 ﻿using System.Collections.Generic;
 
-namespace Mozi.HttpEmbedded.Cache
+namespace Mozi.HttpEmbedded
 {
 
     //TODO 实现全局调用委托
+    public delegate bool Handler(string[] args);
 
     /// <summary>
     /// 全局对象
-    /// 此处定义的数据会被全局使用 仅只读 功能类似于宏
     /// </summary>
+    /// <remarks>此处可实现匿名委托调用，控制反转等功能</remarks>
     internal class Global
     {
 
-        private readonly Dictionary<string, object> _data = new Dictionary<string, object>();
+        //全局委托
+        private readonly Dictionary<string, Handler> _handlers = new Dictionary<string, Handler>(new Generic.StringCompareIgnoreCase());
 
         /// <summary>
-        /// 设置键值
+        /// 注册委托
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public Global Set(string key, object value)
+        /// <param name="name"></param>
+        /// <param name="handler"></param>
+        public void Register(string name, Handler handler)
         {
-            if (_data.ContainsKey(key))
+            if (_handlers.ContainsKey(name))
             {
-                _data[key] = value;
+                _handlers[name] = handler;
             }
             else
             {
-                _data.Add(key, value);
+                _handlers.Add(name, handler);
             }
-            return this;
-
         }
         /// <summary>
-        /// 获取键值
+        /// 反注册委托
         /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public object Get(string key)
+        /// <param name="name"></param>
+        public void UnRegister(string name)
         {
-            return _data[key];
+            _handlers.Remove(name);
         }
         /// <summary>
-        /// 索引器
+        /// 查找
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="name"></param>
         /// <returns></returns>
-        public object this[string key]
+        internal Handler Find(string name)
         {
-            get
+            return _handlers.ContainsKey(name) ? _handlers[name] : null;
+        }
+        /// <summary>
+        /// 调用
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        internal bool Invoke(string name, string[] args)
+        {
+            Handler handler = Find(name);
+            if (handler != null)
             {
-                return Get(key);
+                return handler.Invoke(args);
             }
-            set
+            else
             {
-                Set(key, value);
+                return false;
             }
         }
     }

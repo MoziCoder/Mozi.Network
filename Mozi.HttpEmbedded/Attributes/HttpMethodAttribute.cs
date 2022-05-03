@@ -15,7 +15,7 @@ namespace Mozi.HttpEmbedded.Attributes
     }
 
     /// <summary>
-    /// 允许访问的动作
+    /// 允许使用GET方法
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     internal class HttpGetAttribute : Attribute
@@ -24,7 +24,7 @@ namespace Mozi.HttpEmbedded.Attributes
     }
 
     /// <summary>
-    /// 允许访问的动作
+    /// 允许使用POST方法
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     internal class HttpPostAttribute : Attribute
@@ -33,7 +33,7 @@ namespace Mozi.HttpEmbedded.Attributes
     }
 
     /// <summary>
-    /// 允许访问的动作
+    /// 允许使用PUT方法
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     internal class HttpPutAttribute : Attribute
@@ -42,7 +42,7 @@ namespace Mozi.HttpEmbedded.Attributes
     }
 
     /// <summary>
-    /// 允许访问的动作
+    /// 允许使用DELETE方法
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     internal class HttpDeleteAttribute : Attribute

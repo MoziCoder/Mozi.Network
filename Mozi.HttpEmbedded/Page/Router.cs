@@ -36,6 +36,8 @@ namespace Mozi.HttpEmbedded.Page
 
         };
 
+        private Global _global = new Global();
+
         public static Router Default
         {
             get { return _r ?? (_r = new Router()); }
@@ -109,12 +111,19 @@ namespace Mozi.HttpEmbedded.Page
             
             //调用方法
             object result = method.Invoke(instance, BindingFlags.IgnoreCase, null, args, CultureInfo.CurrentCulture);
+            var attributes = method.GetCustomAttributes(typeof(ContentTypeAttribute), false);
+            if (attributes.Length > 0)
+            {
+                ctx.Response.SetContentType(((ContentTypeAttribute)attributes[0]).ContentType);
+            }
             //对象置空
             instance = null;
+            
             if (method.ReturnType != typeof(void))
             {
                 if (_dataserializer != null)
                 {
+                  
                     return _dataserializer.Encode(result);
                 }
                 else
@@ -126,6 +135,7 @@ namespace Mozi.HttpEmbedded.Page
             {
                 return null;
             }
+
         }
         internal AccessObject GetMethodInfo(HttpContext ctx)
         {
@@ -183,6 +193,7 @@ namespace Mozi.HttpEmbedded.Page
             }
             return this;
         }
+
         /// <summary>
         /// 路由注入
         /// </summary>
@@ -237,6 +248,16 @@ namespace Mozi.HttpEmbedded.Page
         {
             _dataserializer = ser;
         }
+
+        public void RegisterGlobalMethod(string name,Handler hadler)
+        {
+            _global.Register(name, hadler);
+        }
+
+        public void UnRegisterGlobalMethod(string name)
+        {
+            _global.UnRegister(name);
+        }
         /// <summary>
         /// 返回所有的API类
         /// </summary>
@@ -245,6 +266,7 @@ namespace Mozi.HttpEmbedded.Page
         {
             return _apis;
         }
+
         /// <summary>
         /// 路由映射
         /// </summary>
