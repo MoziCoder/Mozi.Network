@@ -81,7 +81,6 @@
     <Compile Include="Auth\User.cs" />
     <Compile Include="Cache\MemoryCache.cs" />
     <Compile Include="Cert\CertManager.cs" />
-    <Compile Include="Common\Encrypt.cs" />
     <Compile Include="Encode\Hex.cs" />
     <Compile Include="Extension\Others.cs" />
     <Compile Include="Common\UrlTree.cs" />
@@ -112,7 +111,7 @@
     <Compile Include="Page\BaseApi.cs" />
     <Compile Include="Page\BasePage.cs" />
     <Compile Include="Serialize\DataSerializeType.cs" />
-    <Compile Include="Cache\Global.cs" />
+    <Compile Include="Global.cs" />
     <Compile Include="Template\TemplateEngine.cs" />
     <Compile Include="Page\Router.cs" />
     <Compile Include="Page\RuntimeApi.cs" />
@@ -181,6 +180,7 @@
     <None Include="Mozi.HttpEmbedded.svg" />
     <EmbeddedResource Include="Document\WebService.html" />
     <Content Include="RFC 3986 Uniform Resource Identifier %28URI%29 Generic Syntax.html" />
+    <Content Include="RFC 7230 - Hypertext Transfer Protocol %28HTTP_1.1%29 Message Syntax and Routing.htm" />
     <Content Include="Source\mime.data" />
   </ItemGroup>
   <ItemGroup>
@@ -189,7 +189,6 @@
     <None Include="License.md" />
     <None Include="Mozi.HttpEmbedded.nuspec" />
     <None Include="Readme.md" />
-    <None Include="WebDav\packages.config" />
     <None Include="WebDav\README.md" />
   </ItemGroup>
   <ItemGroup>

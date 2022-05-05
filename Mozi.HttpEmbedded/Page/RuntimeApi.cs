@@ -18,6 +18,7 @@ namespace Mozi.HttpEmbedded.Page
         /// 无参方法
         /// </summary>
         /// <returns></returns>
+        [Description("Hello")]
         public string Hello()
         {
             return "Welcome to Mozi.HttpEmbedded";
@@ -180,7 +181,8 @@ namespace Mozi.HttpEmbedded.Page
         /// 列出所有API
         /// </summary>
         /// <returns></returns>
-        public ResponseMessage ListApi()
+        [Attributes.ContentType(ContentType = "application/json")]
+        public  ResponseMessage ListApi()
         {
             ResponseMessage rm = new ResponseMessage();
             List<Type> types = Router.Default.GetTypes();

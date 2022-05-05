@@ -31,6 +31,7 @@ namespace Mozi.HttpEmbedded
 
     //Transfer-Encoding: chunked 主要是为解决服务端无法预测Content-Length的问题
 
+    //TODO 已实现断点续传
     /*断点续传*/
     //client->  
     //    HTTP GET /document.ext
@@ -67,7 +68,7 @@ namespace Mozi.HttpEmbedded
         private string _tempPath = AppDomain.CurrentDomain.BaseDirectory + @"Temp\";
         private string _serverRoot = AppDomain.CurrentDomain.BaseDirectory;
 
-        private string _serverName = "HttpEmbedded";
+        private string _serverName = "Mozi.HttpEmbedded";
 
         //默认首页为index.html,index.htm
 
@@ -102,7 +103,7 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         public HttpVersion ProtocolVersion { get; set; }
         /// <summary>
-        /// 是否使用基本认证
+        /// 是否使用访问认证
         /// </summary>
         public bool EnableAuth { get; private set; }
         /// <summary>
@@ -196,6 +197,7 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         public Request Request;
 
+        public Router Router = Router.Default;
         public HttpServer()
         {
             StartTime = DateTime.MinValue;
@@ -320,7 +322,7 @@ namespace Mozi.HttpEmbedded
                     string doc = DocLoader.Load("Error.html");
                     TemplateEngine pc = new TemplateEngine();
                     pc.LoadFromText(doc);
-                    pc.Set("Error", new
+                    pc.Set("Error", new HandleError
                     {
                         Code = StatusCode.InternalServerError.Code.ToString(),
                         Title = StatusCode.InternalServerError.Text,
@@ -343,6 +345,7 @@ namespace Mozi.HttpEmbedded
             //最后响应数据     
             if (args.Socket != null && args.Socket.Connected&&context.Request!=null)
             {
+                
                 context.Response.AddHeader(HeaderProperty.Server, ServerName);
                 context.Response.SetStatus(sc);
 
@@ -351,6 +354,7 @@ namespace Mozi.HttpEmbedded
                 //判断客户机支持的压缩类型
                 var acceptEncoding = context.Request.Headers.GetValue(HeaderProperty.AcceptEncoding.PropertyName) ?? "";
                 var acceptEncodings = acceptEncoding.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
                 //忽略对媒体类型的压缩 默认GZIP作为压缩类型
                 if (EnableCompress && !Mime.IsMedia(context.Response.ContentType) && acceptEncodings.Contains("gzip"))
                 {
@@ -361,9 +365,32 @@ namespace Mozi.HttpEmbedded
                         context.Response.AddHeader(HeaderProperty.ContentEncoding, "gzip");
                     }
                 }
+
+                var chunked = false;
+                //Transfer-Encoding:chunked
+                if (context.Response.Headers.Contains(HeaderProperty.TransferEncoding.PropertyName))
+                {
+                    var tranferEncoding=context.Response.Headers[HeaderProperty.TransferEncoding.PropertyName];
+                    if (!string.IsNullOrEmpty(tranferEncoding) && tranferEncoding == "chunked")
+                    {
+                        context.Response.DontAddAutoHeader = true;
+                        context.Response.AddHeader(HeaderProperty.Date, DateTime.Now.ToUniversalTime().ToString("r"));
+                        context.Response.AddHeader(HeaderProperty.ContentType, context.Response.ContentType + (!string.IsNullOrEmpty(context.Response.Charset) ? "; " + context.Response.Charset : ""));
+                    }
+                    chunked = true;
+                }
+                else
+                {                                       
+                }
+
                 args.Socket.Send(context.Response.GetBuffer());
-                //等待指定的秒数，以发送完剩余数据
-                args.Socket.Close(12);
+
+                if (!chunked)
+                {
+                    //等待指定的秒数，以发送完剩余数据
+                    args.Socket.Close(12);
+                }
+
             }
             GC.Collect();
         }
@@ -464,27 +491,11 @@ namespace Mozi.HttpEmbedded
                 else if (st.Enabled && isStatic)
                 {
                     //目录加载
-                    //if (pathReal.EndsWith("/"))
-                    //{
 
-                    //}
                     //响应静态文件
                     if (st.Exists(pathReal, ""))
                     {
-                        string ifmodifiedsince = context.Request.Headers.GetValue(HeaderProperty.IfModifiedSince.PropertyName);
-                        if (st.CheckIfModified(pathReal, ifmodifiedsince))
-                        {
-                            DateTime dtModified = st.GetLastModifiedTime(pathReal).ToUniversalTime();
-                            context.Response.AddHeader(HeaderProperty.LastModified, dtModified.ToString("r"));
-                            context.Response.Write(st.Load(pathReal, ""));                            
-                            
-                            //ETag 仅测试 不具备判断缓存的能力
-                            context.Response.AddHeader(HeaderProperty.ETag, string.Format("{0:x2}:{1:x2}", dtModified.ToUniversalTime().Ticks, context.Response.ContentLength));
-                        }
-                        else
-                        {
-                            return StatusCode.NotModified;
-                        }
+                        return HandleRequestStaticFile(ref context, st, pathReal,contenttype);
                     }
                     else
                     {
@@ -492,7 +503,7 @@ namespace Mozi.HttpEmbedded
                         string doc = DocLoader.Load("Error.html");
                         TemplateEngine pc = new TemplateEngine();
                         pc.LoadFromText(doc);
-                        pc.Set("Error", new
+                        pc.Set("Error", new HandleError
                         {
                             Code = StatusCode.NotFound.Code.ToString(),
                             Title = StatusCode.NotFound.Text,
@@ -508,8 +519,6 @@ namespace Mozi.HttpEmbedded
                 }
                 else
                 {
-                    //动态页面默认ContentType为txt/plain
-                    context.Response.SetContentType(Mime.GetContentType("txt"));
                     //响应动态页面
                     return HandleRequestRoutePages(ref context);
                 }
@@ -528,28 +537,172 @@ namespace Mozi.HttpEmbedded
         /// <param name="context"></param>
         private StatusCode HandleRequestRoutePages(ref HttpContext context)
         {
-            Router router = Router.Default;
-            if (router.Match(context.Request.Path) != null)
+            
+            if (Router.Match(context.Request.Path) != null)
             {
                 //判断返回结果
                 object result = null;
-                result = router.Invoke(context);
+                result = Router.Invoke(context);
                 if (result != null)
                 {
                     context.Response.Write(result.ToString());
                 }
+                //动态页面默认ContentType为txt/plain
+                if (string.IsNullOrEmpty(context.Response.ContentType))
+                {
+                    context.Response.SetContentType(Mime.GetContentType("txt"));
+                }
                 return StatusCode.Success;
             }
             return StatusCode.NotFound;
+
         }
 
         //TODO 静态文件统一处理
-        private StatusCode HandleRequestStaticFile(ref HttpContext context)
+        private StatusCode HandleRequestStaticFile(ref HttpContext context, StaticFiles st, string pathReal,string contentType)
         {
-            //全量发送
+            string ifmodifiedsince = context.Request.Headers.GetValue(HeaderProperty.IfModifiedSince.PropertyName);
+            string range = context.Request.Headers.GetValue(HeaderProperty.Range.PropertyName);
+            context.Response.AddHeader(HeaderProperty.AcceptRanges, "bytes");
 
-            //部分发送
-            return StatusCode.Success;
+            if (st.CheckIfModified(pathReal, ifmodifiedsince))
+            {
+                if (string.IsNullOrEmpty(range))
+                {
+                    DateTime dtModified = st.GetLastModifiedTime(pathReal).ToUniversalTime();
+                    context.Response.AddHeader(HeaderProperty.LastModified, dtModified.ToString("r"));
+                    context.Response.Write(st.Load(pathReal, ""));
+                    //ETag 仅测试 不具备判断缓存的能力
+                    context.Response.AddHeader(HeaderProperty.ETag, string.Format("{0:x2}:{1:x2}", dtModified.ToUniversalTime().Ticks, context.Response.ContentLength));
+                    return StatusCode.Success;
+                }
+                else
+                {
+                    //TODO 断点续传功能还需要进一步测试
+
+                    //Range: bytes=0-1024,2048-4096,4097-
+                    string[] info = range.Split(new char[] { (char)ASCIICode.EQUAL }, StringSplitOptions.RemoveEmptyEntries);
+                    if (info.Length > 1)
+                    {
+                        //bytes
+                        string unit = info[0];
+                        string[] ranges = info[1].Split(new char[] { (char)ASCIICode.COMMA },StringSplitOptions.RemoveEmptyEntries);
+
+                        ContentRange[] arrRanges = new ContentRange[ranges.Length];
+
+                        for(int i = 0; i < arrRanges.Length; i++)
+                        {
+                            //这里用-1表示范围未赋值
+                            arrRanges[i]= new ContentRange() { Start = -1, End = -1 };
+                            var r = arrRanges[i];
+                            string[] rinfo = ranges[0].Trim().Split(new char[] { (char)ASCIICode.MINUS }, StringSplitOptions.RemoveEmptyEntries);
+                            string sStart = "", sEnd = "";
+                            if (ranges[0].StartsWith(((char)ASCIICode.MINUS).ToString()))
+                            {
+                                sEnd = rinfo[0];
+                            }
+                            else
+                            {
+                                sStart = rinfo[0];
+                                sEnd = rinfo.Length > 1 ? rinfo[1] : "";
+                            }
+
+                            if (!string.IsNullOrEmpty(sStart))
+                            {
+                                r.Start=uint.Parse(sStart);
+                            }
+
+                            if (!string.IsNullOrEmpty(sEnd))
+                            {
+                                r.End = uint.Parse(sEnd);
+                            }
+                        }
+                        long fileSize = st.GetFileSize(pathReal);
+                        if (arrRanges.Length == 0)
+                        {
+                            return StatusCode.RangeNotSatisfiable;
+                        }
+                        //单个范围值 
+                        else if (arrRanges.Length == 1)
+                        {
+                            ContentRange r = arrRanges[0];
+                            if ((r.Start == -1 && r.End == -1) || (r.Start > r.End))
+                            {
+                                return StatusCode.RangeNotSatisfiable;
+                            }
+                            else
+                            {
+                                long start, end;
+                                if (r.Start == -1)
+                                {
+                                    start = fileSize - r.End;
+                                    end = fileSize - 1;
+                                }else if (r.End == -1){
+                                    start = r.Start;
+                                    end = fileSize - 1;
+                                }
+                                else
+                                {
+                                    start = r.Start;
+                                    end = r.End;
+                                }
+                                long totalSize = 0;
+                                context.Response.Write(st.Load(pathReal, "", start, end, ref totalSize));
+                                context.Response.AddHeader(HeaderProperty.ContentRange, string.Format("bytes {0}-{1}/{2}",start,end,totalSize));
+                            }
+                        }
+                        //多个范围值
+                        else
+                        {
+                            string boundary = CacheControl.GenerateRandom(8);
+                            context.Response.SetContentType("multipart/byteranges; boundary="+boundary);
+                            foreach(var r in arrRanges)
+                            {
+                                if ((r.Start == -1 && r.End == -1)||(r.Start>r.End))
+                                {
+                                    return StatusCode.RangeNotSatisfiable;
+                                }
+                                else
+                                {
+                                    long start, end;
+                                    if (r.Start == -1)
+                                    {
+                                        start = fileSize - r.End;
+                                        end = fileSize - 1;
+                                    }
+                                    else if (r.End == -1)
+                                    {
+                                        start = r.Start;
+                                        end = fileSize - 1;
+                                    }
+                                    else
+                                    {
+                                        start = r.Start;
+                                        end = r.End;
+                                    }
+                                    long totalSize = 0;
+                                    context.Response.Write("--" + boundary);
+                                    TransformHeader header = new TransformHeader();
+                                    header.Add(HeaderProperty.ContentType,contentType);
+                                    header.Add(HeaderProperty.ContentRange, string.Format("bytes {0}-{1}/{2}", start, end, totalSize));
+                                    context.Response.Write(st.Load(pathReal, "", start, end, ref totalSize));
+                                    context.Response.AddHeader(HeaderProperty.ContentRange, string.Format("bytes {0}-{1}/{2}", start, end, totalSize));
+                                }
+                            }
+                            context.Response.Write("--" + boundary + "--");
+                        }
+                        return StatusCode.PartialContent;
+                    }
+                    else
+                    {
+                        return StatusCode.RangeNotSatisfiable;
+                    }
+                }
+            }
+            else
+            {
+                return StatusCode.NotModified;
+            }
         }
         /// <summary>
         /// 处理METHOD-OPTIONS请求
@@ -763,6 +916,7 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 检查访问黑名单
         /// </summary>
+        /// <param name="ipAddress"></param>
         private bool CheckIfAccessBlocked(string ipAddress)
         {
             return AccessManager.Instance.CheckBlackList(ipAddress);
@@ -797,12 +951,72 @@ namespace Mozi.HttpEmbedded
         /// 设置首页 
         /// <para>设置默认首页后会关闭默认页面的返回,多个页面用","分割，优先访问前面的地址</para>
         /// </summary>
-        /// <param name="filePath"></param>
+        /// <param name="pattern"></param>
         public void SetIndexPage(string pattern)
         {
             _indexPages = pattern.Split(new char[] { ',' });
         }
+        /// <summary>
+        /// 发送Chunked数据
+        /// </summary>
+        /// <param name="peer"></param>
+        /// <param name="data"></param>
+        internal void SendChunkedData(Socket peer,byte[] data)
+        {
+            if (peer.Connected)
+            {
+                UnsignedIntegerOptionValue ui = new UnsignedIntegerOptionValue();
+                ui.Value = data.Length;
+                string len=Hex.To(ui.Pack);
+                peer.Send(StringEncoder.Encode(len));
+                peer.Send(new byte[] { ASCIICode.CR, ASCIICode.LF });
+                peer.Send(data);
+                peer.Send(new byte[] { ASCIICode.CR, ASCIICode.LF });
+            }
+        }
+        /// <summary>
+        /// Chunked结束符号
+        /// </summary>
+        /// <param name="peer"></param>
+        internal void SendChunkedEndData(Socket peer)
+        {
+            if (peer.Connected)
+            {
+                string end = "0\r\n\r\n";
+                peer.Send(StringEncoder.Encode(end));
+            }
+        }
+        /// <summary>
+        /// 注册简易处理方法，默认为仅响应GET请求。方法原型为<see cref="RegisterHandler(string, RequestMethod, Handler)"/>
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="handler"></param>
+        public void RegisterHandler(string name,Handler handler)
+        {
+            Router.Get(name, handler);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name">方法名</param>
+        /// <param name="method">HTTP请求类型</param>
+        /// <param name="handler">委托</param>
+        public void RegisterHandler(string name,RequestMethod method,Handler handler)
+        {
+            Router.RegisterGlobalMethod(name, method, handler);
+        }
     }
 
     public delegate void Request(string srcHost, int srcPort, HttpRequest request);
+
+    /// <summary>
+    /// 请求内容的范围
+    /// </summary>
+    public class ContentRange
+    {
+        //数据为uint 这里为了表示更大范围，用Int64表示
+        public long Start { get; set; }
+
+        public long End { get; set; }
+    }
 }

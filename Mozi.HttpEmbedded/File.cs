@@ -106,8 +106,11 @@ namespace Mozi.HttpEmbedded
     public class FileCollectionEnumerator : IEnumerator
     {
         private int _index;
+
         private List<File> _collection;
+
         private File value;
+
         public FileCollectionEnumerator(List<File> colletion)
         {
             _collection = colletion;

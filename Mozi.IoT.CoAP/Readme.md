@@ -1,6 +1,6 @@
 ﻿# Mozi.IoT.CoAP 
 
-Mozi.IoT.CoAP为Iot.Client调试工具，使用命令行方式对CoAPClient进行调试。
+Mozi.IoT.CoAP为Iot.Client调试工具，使用命令行方式对CoAP协议进行调试。
 
 ## 命令调用方式
 ~~~shell

@@ -189,6 +189,7 @@ namespace Mozi.HttpEmbedded.Source
             {"mpeg","video/mpeg"},
             {"mpg","video/mpeg"},
             {"mpg4","video/mp4"},
+            {"flv","video/x-flv" },
             {"mpga","audio/mpeg"},
             {"mpn","application/vnd.mophun.application"},
             {"mpp","application/vnd.ms-project"},
@@ -430,7 +431,7 @@ namespace Mozi.HttpEmbedded.Source
         /// <summary>
         /// 服务端脚本
         /// </summary>
-        private static readonly List<string> ScriptExts = new List<string>();
+        private static readonly List<string> ScriptExts = new List<string>() { };
 
         /// <summary>
         /// 增加MIME类型

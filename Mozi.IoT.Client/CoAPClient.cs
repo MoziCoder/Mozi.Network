@@ -183,7 +183,11 @@ namespace Mozi.IoT
         /// <param name="url">
         ///     地址中的要素会被分解注入到Options中
         ///     <list type="table">
-        ///         <listheader>URI格式:{host}-IPV4地址,IPV6地址,Domain域名;{path}-路径,请使用REST样式路径;{query}为查询参数字符串</listheader>
+        ///         <listheader>
+        ///             URI格式:{host}-IPV4地址,IPV6地址,Domain域名;
+        ///             {path}-路径,请使用REST样式路径;
+        ///             {query}为查询参数字符串
+        ///         </listheader>
         ///         <item><term>格式1：</term>coap://{host}[:{port}]/{path}</item>
         ///         <item><term>格式2：</term>coap://{host}[:{port}]/{path}[?{query}]</item>
         ///         <item><term>格式3：</term>coap://{host}[:{port}]/{path1}[/{path2}]...[/{pathN}][?{query}]</item> 

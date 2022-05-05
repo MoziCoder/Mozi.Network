@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Mozi.HttpEmbedded.Cache
+namespace Mozi.IoT.Cache
 {
     /// <summary>
     /// 全局数据

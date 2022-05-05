@@ -14,6 +14,7 @@
 
 ## 规划
 
+### iot4c iotclient c/c++实现
 ### SMTP服务器
 ### DNS服务器
 ### TFTP服务器
@@ -24,6 +25,7 @@
 ### Live 实时流媒体传输协议(RTSP)
 
 ## 文档修订
+### 2022/04/23 Jason 公布iot4c iotclient c/c++实现计划
 ### 2022/03/28 Jason 实现CBOR编码解码器
 ### 2022/03/02 Jason 增加实时流媒体传输协议(RTSP)计划
 ### 2022/01/21 Jason 公布IoT客户端实现

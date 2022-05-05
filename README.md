@@ -17,6 +17,8 @@ Mozi.Network是基于.Net开发的网络应用组件套装。项目实现了几�
 	IoT命令行调试工具
 ### [iot4j][iot4j]
     IoT(CoAP)的Java客户端实现
+### [iot4c][iot4c]
+	IoT(CoAP)的c/c++客户端实现(目前还在规划中)
 
 ### [SSDP][ssdp] 　　
 	SSDP/UPNP实现
@@ -66,6 +68,7 @@ Mozi.Network是基于.Net开发的网络应用组件套装。项目实现了几�
 [ntp]:./Mozi.NTP
 [iot]:./Mozi.IoT
 [iot4j]:https://gitee.com/myui/mozi.iot4j
+[iot4c]:https://gitee.com/myui/iot4c
 [iotserver]:./Mozi.IoT.Server
 [iotclient]:./Mozi.IoT.Client
 [iotcoap]:./Mozi.IoT.CoAP

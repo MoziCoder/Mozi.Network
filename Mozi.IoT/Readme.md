@@ -6,6 +6,7 @@ Mozi.IoT是一个物联网标准通讯组件(CoAP协议)，包含网关服务器
 CoAP（Constrained Application Protocol）受限应用协议，是一种在物联网世界的类web协议，RFC规范定义为RFC7252,7959,8613,8974。该协议使用在资源受限的物联网设备上。物联网设备的ram，rom都通常非常小，不能运行消耗资源比较多的TCP和HTTP。
 
 ## 功能模块
+
 ### .Net 
 
 #### [IoT.Server][iotserver] 网关服务器
@@ -14,10 +15,16 @@ CoAP（Constrained Application Protocol）受限应用协议，是一种在物�
 #### [IoT.Client][iotclient] 客户端 
 	IoT.Client是客户端实现，CoAPClient是CoAP协议的客户端，鉴于.Net项目基本不用于嵌入式场景，此客户端实现可作为测试工具。
 
+###　[IoT.CoAP][iotcoap] 调试工具
+    CoAP协议命令行调试工具
+
 ### Java
 
 ### [iot4j][iot4j]
     iot4j是IoT(CoAP)的Java客户端实现
+
+### [iot4c][iot4c]
+    IoT(CoAP)的c/c++客户端实现(目前还在规划中)
 
 ## CoAP协议实现完成度
 	实现了RFC7252中约定的大部分功能，目前可以应对基本的CoAP协议调试。
@@ -30,6 +37,7 @@ CoAP（Constrained Application Protocol）受限应用协议，是一种在物�
 2. .Net客户端调用类库      [已实现]
 3. .Java客户端调用包       [已实现]
 4. C/C++可移植客户端项目   [规划中]
+5. CoAP调试工具            [已实现]
 
 ## 待完成的功能
 - 拥塞算法
@@ -67,7 +75,7 @@ CoAP（Constrained Application Protocol）受限应用协议，是一种在物�
 
 ### Java
 
-~~~Java
+~~~java
 
 import com.mozicoder.iot4j.CoAPClient;
 
@@ -104,4 +112,6 @@ public class Main{
 [1]:mailto:brotherqian@163.com
 [iotserver]:../Mozi.IoT.Server
 [iotclient]:../Mozi.IoT.Client
+[iotcoap]:../Mozi.IoT.CoAP
 [iot4j]:https://gitee.com/myui/mozi.iot4j
+[iot4c]:https://gitee.com/myui/iot4c

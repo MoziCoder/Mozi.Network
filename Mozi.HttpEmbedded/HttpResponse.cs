@@ -21,6 +21,7 @@ namespace Mozi.HttpEmbedded
         private string _charset = "";
 
         private TransformHeader _headers;
+
         private ResponseCookie _cookies;
 
         /// <summary>

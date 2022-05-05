@@ -450,8 +450,6 @@ namespace Mozi.IoT
 
         }
         /// <summary>
-
-        /// <summary>
         /// 将URI信息配置到包中，即domain,port,paths,queries注入到"Options"中
         /// <list type="bullet">
         ///     <listheader>自动注入的Option</listheader>
@@ -615,10 +613,10 @@ namespace Mozi.IoT
         private string _name = "";
         private byte _typeValue;
 
-        public static CoAPMessageType Confirmable = new CoAPMessageType("Confirmable", 0);
-        public static CoAPMessageType NonConfirmable = new CoAPMessageType("NonConfirmable", 1);
-        public static CoAPMessageType Acknowledgement = new CoAPMessageType("Acknowledgement", 2);
-        public static CoAPMessageType Reset = new CoAPMessageType("Reset", 3);
+        public static CoAPMessageType Confirmable       = new CoAPMessageType("Confirmable", 0);
+        public static CoAPMessageType NonConfirmable    = new CoAPMessageType("NonConfirmable", 1);
+        public static CoAPMessageType Acknowledgement   = new CoAPMessageType("Acknowledgement", 2);
+        public static CoAPMessageType Reset             = new CoAPMessageType("Reset", 3);
 
         public byte Value
         {

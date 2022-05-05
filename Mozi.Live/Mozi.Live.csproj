@@ -69,5 +69,8 @@
   <ItemGroup>
     <None Include="Readme.md" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Flv\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
