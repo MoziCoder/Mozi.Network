@@ -1,10 +1,10 @@
-﻿using Mozi.HttpEmbedded.Page;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Reflection;
+using Mozi.HttpEmbedded.Page;
 using Mozi.HttpEmbedded.Common;
 using Mozi.StateService;
-using System.Reflection;
 
 namespace Mozi.HttpEmbedded.Test
 {
@@ -73,7 +73,7 @@ namespace Mozi.HttpEmbedded.Test
             state.Activate();
 
             HttpClient hc = new HttpClient();
- 
+
             //hc.Get("http://127.0.0.1/index.html", null, new RequestComplete((ctx) =>
             //{
             //    Console.WriteLine(ctx.Response.Body.Length);
@@ -82,6 +82,13 @@ namespace Mozi.HttpEmbedded.Test
             //hc.PostFile("http://127.0.0.1/Service/upload", files, new RequestComplete((ctx) => {
             //    Console.WriteLine(ctx.Response.Body.Length);
             //}));
+
+            //简易接口注册
+            hs.RegisterHandler("reboot", (x) => {
+                Console.WriteLine("call reboot");
+                return true;
+            });
+
             Console.ReadLine();
 
             //路径信息
@@ -104,7 +111,9 @@ namespace Mozi.HttpEmbedded.Test
             //      http://{ip}:{port}/{controller}/{action}
 
             //内置API 请参看Runtime.cs文件
-            
+
+
+
         }
 
         /// <summary>

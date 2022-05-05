@@ -23,6 +23,7 @@ namespace Mozi.HttpEmbedded.Page
         private List<Assembly> _assemblies = new List<Assembly>();
 
         private readonly List<Type> _apis = new List<Type>();
+
         //数据序列化对象
         private ISerializer _dataserializer;
 
@@ -49,6 +50,7 @@ namespace Mozi.HttpEmbedded.Page
             //载入内部接口API
             LoadInternalApi();
         }
+
         //TODO 注册时将Method也一并缓存
         /// <summary>
         /// 从程序集载入接口
@@ -76,10 +78,37 @@ namespace Mozi.HttpEmbedded.Page
         /// <param name="ctx"></param>
         internal object Invoke(HttpContext ctx)
         {
+           
             string path = ctx.Request.Path;
+
             //确定路径映射关系
             AccessPoint ap = Match(path);
+            string name = ctx.Request.Method.Name+"::"+ap.Action;
 
+            if (_global.Exists(name))
+            {
+                return InvokeFromGlobal(ref ctx, ap);
+            }
+            else
+            {
+                return InvokeFromModule(ref ctx, ap);
+            }
+
+        }
+        /// <summary>
+        /// 简易调用
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <param name="ap"></param>
+        /// <returns></returns>
+        internal object InvokeFromGlobal(ref HttpContext ctx,AccessPoint ap)
+        {
+            Handler handler = _global.Find(ctx.Request.Method.Name + "::" + ap.Action);
+            return handler.Invoke(ctx);
+        }
+
+        private object InvokeFromModule(ref HttpContext ctx, AccessPoint ap)
+        {
             //TODO 此处路由有问题，需要改进
             //TODO 此处考虑加入域控制，否则会出现api重复
             Type cls = _apis.Find(x => x.Name.Equals(ap.Controller, StringComparison.OrdinalIgnoreCase));
@@ -91,6 +120,7 @@ namespace Mozi.HttpEmbedded.Page
 
             //开始装配参数
             object[] args = new object[pms.Length];
+
             for (int i = 0; i < pms.Length; i++)
             {
                 var argname = pms[i].Name;
@@ -108,22 +138,23 @@ namespace Mozi.HttpEmbedded.Page
             object instance = Activator.CreateInstance(cls);
             //注入上下文变量
             ((BaseApi)instance).Context = ctx;
-            
+
             //调用方法
             object result = method.Invoke(instance, BindingFlags.IgnoreCase, null, args, CultureInfo.CurrentCulture);
-            var attributes = method.GetCustomAttributes(typeof(ContentTypeAttribute), false);
-            if (attributes.Length > 0)
+            var ctTypes = method.GetCustomAttributes(typeof(ContentTypeAttribute), false);
+            if (ctTypes.Length > 0)
             {
-                ctx.Response.SetContentType(((ContentTypeAttribute)attributes[0]).ContentType);
+                ctx.Response.SetContentType(((ContentTypeAttribute)ctTypes[0]).ContentType);
             }
+
             //对象置空
             instance = null;
-            
+
             if (method.ReturnType != typeof(void))
             {
                 if (_dataserializer != null)
                 {
-                  
+
                     return _dataserializer.Encode(result);
                 }
                 else
@@ -135,8 +166,8 @@ namespace Mozi.HttpEmbedded.Page
             {
                 return null;
             }
-
         }
+
         internal AccessObject GetMethodInfo(HttpContext ctx)
         {
             string path = ctx.Request.Path;
@@ -231,6 +262,7 @@ namespace Mozi.HttpEmbedded.Page
         /// <returns></returns>
         public AccessPoint Match(string path)
         {
+            //TODO 此处要对接Global
             foreach (var mapper in _mappers)
             {
                 if (mapper.Match(path))
@@ -238,8 +270,13 @@ namespace Mozi.HttpEmbedded.Page
                     return mapper.Parse(path);
                 }
             }
+           
+            if (_global.Exists(RequestMethod.GET.Name + "::" + path) || _global.Exists(RequestMethod.POST.Name + "::" + path)){
+                return new AccessPoint() { Domain = "", Controller = "", Action = path };
+            }
             return null;
         }
+
         /// <summary>
         /// 配置数据序列化组件,宿主程序需要实现一个序列化/反序列化功能，然后调用本方法注册
         /// </summary>
@@ -248,13 +285,35 @@ namespace Mozi.HttpEmbedded.Page
         {
             _dataserializer = ser;
         }
-
-        public void RegisterGlobalMethod(string name,Handler hadler)
+        /// <summary>
+        /// 注册GET简易接口
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="handler"></param>
+        public void Get(string name,Handler handler)
         {
-            _global.Register(name, hadler);
+            RegisterGlobalMethod(name, RequestMethod.GET, handler);
+        }
+        /// <summary>
+        /// 注册POST简易接口
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="handler"></param>
+        public void Post(string name,Handler handler)
+        {
+            RegisterGlobalMethod(name, RequestMethod.POST, handler);
         }
 
-        public void UnRegisterGlobalMethod(string name)
+        internal void RegisterGlobalMethod(string name, RequestMethod method,Handler hadler)
+        {
+            if (name.IndexOf((char)ASCIICode.DIVIDE) != 0)
+            {
+                name = "/" + name;
+            }
+            _global.Register(method.Name+"::"+name, hadler);
+        }
+
+        internal void UnRegisterGlobalMethod(string name)
         {
             _global.UnRegister(name);
         }
@@ -326,11 +385,7 @@ namespace Mozi.HttpEmbedded.Page
             public bool Match(string path)
             {
                 var m = Matcher.Match(path);
-                if (m != null && m.Success && m.Index == 0)
-                {
-                    return true;
-                }
-                return false;
+                return m != null && m.Success && m.Index == 0;
             }
             /// <summary>
             /// 解析入口点

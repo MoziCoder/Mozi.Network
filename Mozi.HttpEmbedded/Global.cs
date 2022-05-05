@@ -4,7 +4,7 @@ namespace Mozi.HttpEmbedded
 {
 
     //TODO 实现全局调用委托
-    public delegate bool Handler(string[] args);
+    public delegate bool Handler(HttpContext ctx);
 
     /// <summary>
     /// 全局对象
@@ -32,6 +32,7 @@ namespace Mozi.HttpEmbedded
                 _handlers.Add(name, handler);
             }
         }
+
         /// <summary>
         /// 反注册委托
         /// </summary>
@@ -39,6 +40,10 @@ namespace Mozi.HttpEmbedded
         public void UnRegister(string name)
         {
             _handlers.Remove(name);
+        }
+        internal bool Exists(string name)
+        {
+            return _handlers.ContainsKey(name);
         }
         /// <summary>
         /// 查找
@@ -55,12 +60,12 @@ namespace Mozi.HttpEmbedded
         /// <param name="name"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        internal bool Invoke(string name, string[] args)
+        internal bool Invoke(string name, HttpContext ctx)
         {
             Handler handler = Find(name);
             if (handler != null)
             {
-                return handler.Invoke(args);
+                return handler.Invoke(ctx);
             }
             else
             {

@@ -7,6 +7,7 @@ namespace Mozi.HttpEmbedded
     /// </summary>
     public class RequestMethod : AbsClassEnum
     {
+        
         //HTTP/0.9
         /// <summary>
         /// GET方法请求一个指定资源的表示形式. 使用GET的请求应该只被用于获取数据.
@@ -96,5 +97,6 @@ namespace Mozi.HttpEmbedded
         {
             _name = name;
         }
+
     }
 }

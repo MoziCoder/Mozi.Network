@@ -197,6 +197,7 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         public Request Request;
 
+        public Router Router = Router.Default;
         public HttpServer()
         {
             StartTime = DateTime.MinValue;
@@ -536,12 +537,12 @@ namespace Mozi.HttpEmbedded
         /// <param name="context"></param>
         private StatusCode HandleRequestRoutePages(ref HttpContext context)
         {
-            Router router = Router.Default;
-            if (router.Match(context.Request.Path) != null)
+            
+            if (Router.Match(context.Request.Path) != null)
             {
                 //判断返回结果
                 object result = null;
-                result = router.Invoke(context);
+                result = Router.Invoke(context);
                 if (result != null)
                 {
                     context.Response.Write(result.ToString());
@@ -554,6 +555,7 @@ namespace Mozi.HttpEmbedded
                 return StatusCode.Success;
             }
             return StatusCode.NotFound;
+
         }
 
         //TODO 静态文件统一处理
@@ -955,7 +957,7 @@ namespace Mozi.HttpEmbedded
             _indexPages = pattern.Split(new char[] { ',' });
         }
         /// <summary>
-        /// 
+        /// 发送Chunked数据
         /// </summary>
         /// <param name="peer"></param>
         /// <param name="data"></param>
@@ -985,13 +987,23 @@ namespace Mozi.HttpEmbedded
             }
         }
         /// <summary>
-        /// 
+        /// 注册简易处理方法，默认为仅响应GET请求。方法原型为<see cref="RegisterHandler(string, RequestMethod, Handler)"/>
         /// </summary>
         /// <param name="name"></param>
         /// <param name="handler"></param>
-        internal void Register(string name,Handler handler)
+        public void RegisterHandler(string name,Handler handler)
         {
-
+            Router.Get(name, handler);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name">方法名</param>
+        /// <param name="method">HTTP请求类型</param>
+        /// <param name="handler">委托</param>
+        public void RegisterHandler(string name,RequestMethod method,Handler handler)
+        {
+            Router.RegisterGlobalMethod(name, method, handler);
         }
     }
 

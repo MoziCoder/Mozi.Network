@@ -520,14 +520,14 @@ namespace Mozi.HttpEmbedded
         {
             if (req.Headers.Contains(HeaderProperty.AcceptLanguage.PropertyName))
             {
-                var language = req.Headers.GetValue(HeaderProperty.AcceptLanguage.PropertyName) ?? "";
-                var languages = language.Split(new char[] { (char)ASCIICode.COMMA }, StringSplitOptions.RemoveEmptyEntries);
-                req.AcceptLanguage = new LanguagePriority[languages.Length];
+                var lang = req.Headers.GetValue(HeaderProperty.AcceptLanguage.PropertyName) ?? "";
+                var langs = lang.Split(new char[] { (char)ASCIICode.COMMA }, StringSplitOptions.RemoveEmptyEntries);
+                req.AcceptLanguage = new LanguagePriority[langs.Length];
                 try
                 {
-                    for (int i = 0; i < languages.Length; i++)
+                    for (int i = 0; i < langs.Length; i++)
                     {
-                        var lan = languages[i];
+                        var lan = langs[i];
                         var lans = lan.Split(new char[] { (char)ASCIICode.COMMA }, StringSplitOptions.RemoveEmptyEntries);
                         req.AcceptLanguage[i] = new LanguagePriority()
                         {
