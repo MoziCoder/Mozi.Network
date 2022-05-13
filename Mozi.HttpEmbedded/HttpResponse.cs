@@ -333,8 +333,10 @@ namespace Mozi.HttpEmbedded
                 index++;
                 //TODO 置空对象
             }
-
-            //解析Cookie
+            //Content-Type
+            ParseHeaderContentType(ref resp);
+            //Content-Encoding
+            ParseHeaderContentEncoding(ref resp);
             //解析数据 荷载部分
             if (data.Length > posCR + 4)
             {
@@ -399,6 +401,42 @@ namespace Mozi.HttpEmbedded
             HttpCookie cookie = HttpCookie.Parse(setCookieValue);
             resp.Cookies.Set(cookie.Name, cookie.Domain, cookie.Path, cookie.Value);
         }
+        /// <summary>
+        /// 解析文档内容类型
+        /// </summary>
+        /// <param name="resp"></param>
+        private static void ParseHeaderContentType(ref HttpResponse resp)
+        {
+            if (resp.Headers.Contains(HeaderProperty.ContentType.PropertyName))
+            {
+                var contentType = resp.Headers.GetValue(HeaderProperty.ContentType.PropertyName);
+                string[] cts = contentType.Split(new[] { ((char)ASCIICode.SEMICOLON).ToString() + ((char)ASCIICode.SPACE).ToString() }, StringSplitOptions.RemoveEmptyEntries);
+                if (cts.Length > 0)
+                {
+                    resp.ContentType = cts[0];
+                    if (cts.Length > 2)
+                    {
+                        resp.Charset = cts[2];
+                    }
+                }
+            }
+        }
+        /// <summary>
+        /// 解析文档压缩类型
+        /// </summary>
+        /// <param name="resp"></param>
+        private static void ParseHeaderContentEncoding(ref HttpResponse resp)
+        {
+            if (resp.Headers.Contains(HeaderProperty.ContentEncoding.PropertyName))
+            {
+                resp.ContentEncoding = resp.Headers.GetValue(HeaderProperty.ContentEncoding.PropertyName);
+                if (resp.ContentEncoding != Compress.ContentEncoding.None.ToString())
+                {
+                    resp.ContentEncoded = true;
+                }
+            }
+        }
+
         ~HttpResponse()
         {
             _body = null;
