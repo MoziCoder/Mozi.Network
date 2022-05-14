@@ -466,7 +466,7 @@ namespace Mozi.SSDP
             request.SetPath("*").SetMethod(RequestMethodUPnP.MSEARCH);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
-            SendTo(data);
+            SendMessage(data);
         }
         /// <summary>
         /// 查找设备简化方法，参看<see cref="Search(SearchPackage)"/>
@@ -483,7 +483,7 @@ namespace Mozi.SSDP
             request.SetPath("*").SetMethod(RequestMethodUPnP.MSEARCH);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
-            SendTo(data);
+            SendMessage(data);
         }
         //NOTIFY * HTTP/1.1     
         //HOST: 239.255.255.250:1900    
@@ -516,7 +516,7 @@ namespace Mozi.SSDP
             request.SetPath("*").SetMethod(RequestMethodUPnP.NOTIFY);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
-            SendTo(data);
+            SendMessage(data);
         }
 
         //NOTIFY * HTTP/1.1     
@@ -540,7 +540,7 @@ namespace Mozi.SSDP
             request.SetPath("*").SetMethod(RequestMethodUPnP.NOTIFY);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
-            SendTo(data);
+            SendMessage(data);
         }
         /// <summary>
         /// update信息
@@ -552,7 +552,7 @@ namespace Mozi.SSDP
             request.SetPath("*").SetMethod(RequestMethodUPnP.NOTIFY);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
-            SendTo(data);
+            SendMessage(data);
         }
         //HTTP/1.1 200 OK
         //CACHE-CONTROL: max-age = seconds until advertisement expires
@@ -585,7 +585,7 @@ namespace Mozi.SSDP
             resp.SetHeaders(pk.GetHeaders());
             resp.SetStatus(StatusCode.Success);
             byte[] data = resp.GetBuffer(true);
-            SendTo(data);
+            SendMessage(data);
         }
         //POST path of control URL HTTP/1.1 
         //HOST: host of control URL:port of control URL
@@ -614,7 +614,7 @@ namespace Mozi.SSDP
             request.SetHeader("CONTENT-LENGTH", request.ContentLength);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
-            SendTo(data);
+            SendMessage(data);
         }
         //POST path of control URL HTTP/1.1 
         //HOST: host of control URL:port of control URL
@@ -672,7 +672,7 @@ namespace Mozi.SSDP
             request.SetPath(pk.Path).SetMethod(RequestMethodUPnP.SUBSCRIBE);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
-            SendTo(data);
+            SendMessage(data);
         }
 
         //UNSUBSCRIBE publisher path HTTP/1.1 
@@ -688,14 +688,13 @@ namespace Mozi.SSDP
             request.SetPath(pk.Path).SetMethod(RequestMethodUPnP.UNSUBSCRIBE);
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
-            SendTo(data);
+            SendMessage(data);
         }
 
-        protected void SendTo(byte[] data)
+        protected void SendMessage(byte[] data)
         {
             _socket.SocketMain.SendTo(data, _remoteEP);
         }
-
         /// <summary>
         /// 设置描述文档地址
         /// </summary>
@@ -904,11 +903,29 @@ namespace Mozi.SSDP
     /// </summary>
     public class USNDesc
     {
+        /// <summary>
+        /// 域名，关联URN字段
+        /// </summary>
         public string Domain = "schemas-upnp-org";
+        /// <summary>
+        /// 是否根设备
+        /// </summary>
         public bool IsRootDevice = false;
+        /// <summary>
+        /// 指示是服务还是设备
+        /// </summary>
         public ServiceCategory ServiceType = ServiceCategory.Service;
+        /// <summary>
+        /// 设备UUID
+        /// </summary>
         public string DeviceId = "";
+        /// <summary>
+        /// 如果<see cref="ServiceType"/>是<see cref="ServiceCategory.Service"/>,指示的是服务类型；如果<see cref="ServiceType"/>是<see cref="ServiceCategory.Device"/>，指示的是设备类型。
+        /// </summary>
         public string ServiceName = "simplehost";
+        /// <summary>
+        /// 服务或设备的版本
+        /// </summary>
         public int Version = 1;
         /// <summary>
         /// 转为USN格式字符串

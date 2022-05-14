@@ -64,7 +64,7 @@ namespace Mozi.IoT.CoAP
         private static int _round = -1;
 
         private static string _url = "";
-
+        //用信号量取代Action->BeginInvoke，适应.NetCore
         static SemaphoreSlim semaphore = new SemaphoreSlim(0,1);
 
         static void Main(string[] args)
@@ -542,8 +542,10 @@ namespace Mozi.IoT.CoAP
             {
                 Console.WriteLine("超时时间已到，尚未收到服务端响应\r\n");
             }
+            //使用信号量代替后，此句无用
             //Environment.Exit(0);
         }
+        //此部分被信号量代替，不再使用
         /// <summary>
         /// 执行并阻塞一定的时间
         /// </summary>
