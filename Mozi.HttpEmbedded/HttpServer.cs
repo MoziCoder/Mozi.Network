@@ -15,11 +15,14 @@ using Mozi.HttpEmbedded.Template;
 namespace Mozi.HttpEmbedded
 {
 
+    //DONE 2020/09/18 考虑增加断点续传的功能
+    //TODO 2020/09/18 增加缓存功能
+    //DONE 2020/09/19 增加默认页面功能
     //TODO 2020/09/19 增加WebService功能
     //TODO 2020/09/28 增加信号量机制
     //TODO 2021/05/05 实现HTTPS功能
     //TODO 2021/05/05 实现管道机制pipelining 即同一TCP链接允许发起多个HTTP请求 HTTP/1.1
-    //TODO 2021/05/07 增加分块传输 chunked
+    //DONE 2021/05/07 增加分块传输 chunked
     //TODO 2021/06/21 实现多端口监听
     //TODO 2021/06/21 是否考虑增加中间件功能
     //TODO 2021/11/22 增加禁用缓存的功能 禁止304
@@ -414,9 +417,7 @@ namespace Mozi.HttpEmbedded
                 return StatusCode.Unauthorized;
             }
         }
-        //TODO 2020/09/18 考虑增加断点续传的功能
-        //TODO 2020/09/18 增加缓存功能
-        //DONE 2020/09/19 增加默认页面功能
+
         /// <summary>
         /// 处理请求
         /// </summary>

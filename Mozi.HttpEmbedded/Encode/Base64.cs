@@ -7,6 +7,7 @@ namespace Mozi.HttpEmbedded.Encode
     /// </summary>
     public class Base64
     {
+
         public static string To(string data)
         {
             byte[] infos = StringEncoder.Encode(data);
@@ -17,5 +18,6 @@ namespace Mozi.HttpEmbedded.Encode
         {
             return StringEncoder.Decode(Convert.FromBase64String(data));
         }
+
     }
 }

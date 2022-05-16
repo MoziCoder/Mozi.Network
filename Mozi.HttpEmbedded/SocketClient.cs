@@ -79,7 +79,9 @@ namespace Mozi.HttpEmbedded
         {
             get { return _host; }
         }
-
+        /// <summary>
+        /// 连接超时时间，毫秒
+        /// </summary>
         public int ConnectTimeout
         {
             get { return _connectTimeout; }
@@ -88,6 +90,9 @@ namespace Mozi.HttpEmbedded
                 _connectTimeout = value;
             }
         }
+        /// <summary>
+        /// 发送超时时间，毫秒
+        /// </summary>
         public int SendTimeout
         {
             get
