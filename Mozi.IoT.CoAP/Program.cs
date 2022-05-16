@@ -313,9 +313,18 @@ namespace Mozi.IoT.CoAP
                                     //        optName = CoAPOptionDefine.LocationPath;
                                     //    }
                                     //    break;
+                                    case "accept":
                                     case "contentformat":
                                         {
-                                            optName = CoAPOptionDefine.ContentFormat;
+                                            if (r.Key.Equals("accept"))
+                                            {
+                                                optName = CoAPOptionDefine.Accept;
+                                            }
+                                            else
+                                            {
+                                                optName = CoAPOptionDefine.ContentFormat;
+                                            }
+                                            
                                             if (!string.IsNullOrEmpty(r.Value.ToString()))
                                             {
                                                 UnsignedIntegerOptionValue newValue = new UnsignedIntegerOptionValue();
@@ -343,11 +352,6 @@ namespace Mozi.IoT.CoAP
                                     case "maxage":
                                         {
                                             optName = CoAPOptionDefine.MaxAge;
-                                        }
-                                        break;
-                                    case "accept":
-                                        {
-                                            optName = CoAPOptionDefine.Accept;
                                         }
                                         break;
                                     //case "locationquery":

@@ -52,7 +52,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="CoAP.runtimeconfig.json" />
+    <None Include="coap.runtimeconfig.json" />
     <None Include="CoAP调试工具 Mozi.IoT.CoAP.doc" />
     <None Include="CoAP调试工具 Mozi.IoT.CoAP应用详解.doc" />
     <None Include="Mozi.IoT.CoAP.nuspec" />
