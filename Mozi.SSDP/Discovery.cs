@@ -3,6 +3,64 @@ using Mozi.HttpEmbedded;
 
 namespace Mozi.SSDP
 {
+    //NOTIFY* HTTP/1.1     
+    //HOST: 239.255.255.250:1900    
+    //CACHE-CONTROL: max-age = seconds until advertisement expires    
+    //LOCATION: URL for UPnP description for root device
+    //NT: search target
+    //NTS: ssdp:alive 
+    //SERVER: OS/versionUPnP/1.0product/version 
+    //USN: advertisement UUI
+    /// <summary>
+    /// 公告包
+    /// </summary>
+    public abstract class AbsAdvertisePackage
+    {
+
+        private string _host = "";
+
+        public string HOST
+        {
+            get
+            {
+                return _host;
+            }
+            set
+            {
+                try
+                {
+                    string[] hostItmes = value.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (hostItmes.Length == 2)
+                    {
+                        HostIp = hostItmes[0];
+                        HostPort = ushort.Parse(hostItmes[1]);
+                    }
+                    _host = value;
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+        }
+        public string Path { get; set; }
+
+        public string HostIp { get; private set; }
+        public int HostPort { get; private set; }
+
+        public AbsAdvertisePackage()
+        {
+            _host = string.Format("{0}:{1}", SSDPProtocol.MulticastAddress, SSDPProtocol.ProtocolPort);
+            //HostIp = SSDPProtocol.MulticastAddress;
+            //HostPort = SSDPProtocol.ProtocolPort;
+            Path = "*";
+        }
+
+        public virtual TransformHeader GetHeaders()
+        {
+            throw new NotImplementedException();
+        }
+    }
     /// <summary>
     /// 在线数据包
     /// </summary>
@@ -23,7 +81,7 @@ namespace Mozi.SSDP
             headers.Add("NTS", SSDPType.Alive.ToString());
             headers.Add("USN", USN.ToString());
             headers.Add("LOCATION", Location);
-            headers.Add("CACHE-CONTROL", $"max-age = {CacheTimeout}");
+            headers.Add("CACHE-CONTROL", $"max-age={CacheTimeout}");
             return headers;
         }
 

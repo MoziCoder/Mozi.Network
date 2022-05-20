@@ -1,5 +1,4 @@
-﻿
-namespace Mozi.IoT.Cgi
+﻿namespace Mozi.IoT.Cgi
 {
 
     /// <summary>

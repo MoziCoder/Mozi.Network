@@ -40,13 +40,13 @@
     <Compile Include="Control.cs" />
     <Compile Include="Discovery.cs" />
     <Compile Include="Event.cs" />
+    <Compile Include="ISSDPService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestMethodUPnP.cs" />
     <Compile Include="Schemas.cs" />
     <Compile Include="SSDPHeader.cs" />
     <Compile Include="SSDPHost.cs" />
     <Compile Include="SSDPService.cs" />
-    <Compile Include="SSDPCache.cs" />
     <Compile Include="SSDPCacheManager.cs" />
     <Compile Include="SSDPType.cs" />
     <Compile Include="UDPSocket.cs" />
