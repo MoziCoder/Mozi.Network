@@ -97,9 +97,11 @@ namespace Mozi.IoT
                 DatagramReceived(args.IP, args.Port, args.Data);
             }
 
-            CoAPContext ctx = new CoAPContext();
-            ctx.ClientAddress = args.IP;
-            ctx.ClientPort = args.Port;
+            CoAPContext ctx = new CoAPContext
+            {
+                ClientAddress = args.IP,
+                ClientPort = args.Port
+            };
 
             try
             {

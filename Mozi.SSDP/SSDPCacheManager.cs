@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Mozi.SSDP
 {
@@ -7,6 +8,7 @@ namespace Mozi.SSDP
     /// </summary>
     public class SSDPCacheManager
     {
+
         public static SSDPCacheManager _cm;
         /// <summary>
         /// 单实例
@@ -22,5 +24,17 @@ namespace Mozi.SSDP
         {
 
         }
+
+    }
+    /// <summary>
+    /// 缓存
+    /// </summary>
+    public class SSDPCache
+    {
+        public string USN { get; set; }
+        public string ServiceType { get; set; }
+        public DateTime AddTime { get; set; }
+        public int Expiration { get; set; }
+        public string Location { get; set; }
     }
 }

@@ -68,6 +68,8 @@
     <Compile Include="Attributes\HttpMethodAttribute.cs" />
     <Compile Include="Attributes\ContentTypeAttribute.cs" />
     <Compile Include="Common\DNSResolver.cs" />
+    <Compile Include="ContentRange.cs" />
+    <Compile Include="Encode\Encrypt.cs" />
     <Compile Include="HttpClient.cs" />
     <Compile Include="HttpServerQUIC.cs" />
     <Compile Include="Memory\BufferPool.cs" />
@@ -180,7 +182,12 @@
     <None Include="Mozi.HttpEmbedded.svg" />
     <EmbeddedResource Include="Document\WebService.html" />
     <Content Include="RFC 3986 Uniform Resource Identifier %28URI%29 Generic Syntax.html" />
+    <Content Include="RFC 5987 Character Set and Language Encoding for Hypertext Transfer Protocol %28HTTP%29 Header Field Parameters.html" />
+    <Content Include="RFC 6750 - The OAuth 2.0 Authorization Framework Bearer Token Usage.htm" />
     <Content Include="RFC 7230 - Hypertext Transfer Protocol %28HTTP_1.1%29 Message Syntax and Routing.htm" />
+    <Content Include="RFC 7486 - HTTP Origin-Bound Authentication %28HOBA%29.htm" />
+    <Content Include="RFC 7616 - HTTP Digest Access Authentication.htm" />
+    <Content Include="RFC 7617 - The %27Basic%27 HTTP Authentication Scheme.htm" />
     <Content Include="Source\mime.data" />
   </ItemGroup>
   <ItemGroup>

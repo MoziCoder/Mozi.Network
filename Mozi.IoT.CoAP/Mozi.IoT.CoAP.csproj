@@ -7,7 +7,7 @@
     <ProjectGuid>{B92C76CE-3F4B-4E73-958F-8D20EB6C8013}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>Mozi.IoT.CoAP</RootNamespace>
-    <AssemblyName>CoAP</AssemblyName>
+    <AssemblyName>coap</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -52,6 +52,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="coap.runtimeconfig.json" />
     <None Include="CoAP调试工具 Mozi.IoT.CoAP.doc" />
     <None Include="CoAP调试工具 Mozi.IoT.CoAP应用详解.doc" />
     <None Include="Mozi.IoT.CoAP.nuspec" />

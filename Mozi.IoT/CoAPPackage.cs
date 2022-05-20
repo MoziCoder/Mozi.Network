@@ -1,8 +1,8 @@
-﻿using Mozi.IoT.Encode;
-using Mozi.IoT.Generic;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Mozi.IoT.Encode;
+using Mozi.IoT.Generic;
 
 namespace Mozi.IoT
 {

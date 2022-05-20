@@ -15,11 +15,14 @@ using Mozi.HttpEmbedded.Template;
 namespace Mozi.HttpEmbedded
 {
 
+    //DONE 2020/09/18 考虑增加断点续传的功能
+    //TODO 2020/09/18 增加缓存功能
+    //DONE 2020/09/19 增加默认页面功能
     //TODO 2020/09/19 增加WebService功能
     //TODO 2020/09/28 增加信号量机制
     //TODO 2021/05/05 实现HTTPS功能
     //TODO 2021/05/05 实现管道机制pipelining 即同一TCP链接允许发起多个HTTP请求 HTTP/1.1
-    //TODO 2021/05/07 增加分块传输 chunked
+    //DONE 2021/05/07 增加分块传输 chunked
     //TODO 2021/06/21 实现多端口监听
     //TODO 2021/06/21 是否考虑增加中间件功能
     //TODO 2021/11/22 增加禁用缓存的功能 禁止304
@@ -204,7 +207,6 @@ namespace Mozi.HttpEmbedded
             Timezone = string.Format("UTC{0:+00;-00;}:00", TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).Hours);
             //配置默认服务器名
             _serverName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name + "/" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            Auth = new Authenticator();
             _sc.OnServerStart += Socket_OnServerStart;
             _sc.OnClientConnect += Socket_OnClientConnect;
             _sc.OnReceiveStart += Socket_OnReceiveStart;
@@ -402,7 +404,7 @@ namespace Mozi.HttpEmbedded
         private StatusCode HandleAuth(ref HttpContext context)
         {
             var authorization = context.Request.Headers.GetValue(HeaderProperty.Authorization.PropertyName);
-            if (!string.IsNullOrEmpty(authorization) && Auth.Check(authorization))
+            if (!string.IsNullOrEmpty(authorization) && Auth.Check(authorization,context.Request.Method.Name))
             {
                 context.Request.IsAuthorized = true;
                 return HandleRequest(ref context);
@@ -410,13 +412,11 @@ namespace Mozi.HttpEmbedded
             else
             {
                 //发送验证要求
-                context.Response.AddHeader(HeaderProperty.WWWAuthenticate, string.Format("{0} realm=\"{1}\"", Auth.AuthType.Name, AuthorizationType.REALM));
+                context.Response.AddHeader(HeaderProperty.WWWAuthenticate,Auth.GetChallenge());
                 return StatusCode.Unauthorized;
             }
         }
-        //TODO 2020/09/18 考虑增加断点续传的功能
-        //TODO 2020/09/18 增加缓存功能
-        //DONE 2020/09/19 增加默认页面功能
+
         /// <summary>
         /// 处理请求
         /// </summary>
@@ -768,8 +768,20 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public HttpServer UseAuth(AuthorizationType at)
         {
-            EnableAuth = true;
-            Auth.SetAuthType(at);
+            if (at != AuthorizationType.None)
+            {
+                EnableAuth = true;
+                if (Auth == null)
+                {
+                    Auth = new Authenticator();
+                }
+                Auth.SetAuthType(at);
+            }
+            else
+            {
+                EnableAuth = false;
+                Auth = null;
+            }
             return this;
         }
         /// <summary>
@@ -1008,15 +1020,4 @@ namespace Mozi.HttpEmbedded
     }
 
     public delegate void Request(string srcHost, int srcPort, HttpRequest request);
-
-    /// <summary>
-    /// 请求内容的范围
-    /// </summary>
-    public class ContentRange
-    {
-        //数据为uint 这里为了表示更大范围，用Int64表示
-        public long Start { get; set; }
-
-        public long End { get; set; }
-    }
 }

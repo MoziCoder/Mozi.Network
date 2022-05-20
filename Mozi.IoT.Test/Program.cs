@@ -8,11 +8,12 @@ namespace Mozi.IoT.Test
         {
             //服务端
             CoAPServer cs = new CoAPServer();
-            cs.RequestReceived += new MessageTransmit((a, b, c) =>
+            cs.RequestReceived += new MessageTransmit((host, port, pack) =>
             {
                 //Console.WriteLine($"Rev count:{PacketReceivedCount},current:{args.Data.Length}bytes,total:{TotalReceivedBytes}bytes");
-                Console.WriteLine($"From:[{a}:{b}]");
-                Console.WriteLine(c.ToString());
+                Console.WriteLine($"From:[{host}:{port}]");
+                Console.WriteLine(pack.ToString());
+                Console.Title = String.Format("count:{0},bytes:{1}", cs.PacketReceivedCount, cs.TotalReceivedBytes);
             });
             cs.Start();
             Console.ReadLine();

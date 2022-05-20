@@ -1,8 +1,27 @@
 # 更新历史
+[2022/05/05]
+[新增]
+HttpEmbedded中新增断点续传
+HttpEmbedded中增加API简易注册接口， 无需继承BaseApi即可实现接口
+HttpEmbedded中增加Transfer-Encoding:chunked,分块传输
+
+[2022/04/21]
+[变更]
+1，移除IoT.CoAP中的部分命令行参数，包括-locationquery -locationpath -maxage
+2，IoT.CoAP中增加了 -round参数，用于重复发起请求
+3，将iot4c项目独立出来
+[2022/04/06]
+[优化]
+解决IoT.CoAP参数不能重复的问题，增加了-file -dump参数
+
 [2022/03/31]
 [新增]
-新增项目Encode.CBOR,CBOR数据编码解码器
-在IoT中增加LinkFormat解析器
+IoT增加LinkFormat序列化器
+CoAPServer增加数据序列化接口
+HttpEmbedded增加40x报错页面
+
+[优化]
+CoAPServer数据接收的处理逻辑
 
 [2022/03/09]
 [新增]
@@ -32,3 +51,27 @@ HttpEmbedded模块中增加HttpClient
 [2021/12/15] 
 [新增]
 公开IoT项目
+
+[2021/12/02] 
+[优化]优化部分已知BUG
+[新增]增加NTP授时服务器模块
+
+[2021/11/17] 
+[新增]Telnet服务器组件
+[优化]HttpEmbedded组件中，对SocketServer传递参数进行丰富
+
+[2021/07/13] 
+[修复]
+Mozi.StateService解决心跳包解析错误的问题
+[新增]
+Mozi.StateService增加订阅者功能
+Mozi.StateService抛弃BeginInvoke调用方式
+Mozi.SSDP抛弃BeginInvoke调用方式
+Mozi.HttpEmbedded开始着手实现模板引擎
+
+[2021/06/23] 
+[优化]
+HeartBeatService功能丰富
+HttpResponse增加SetCookie方法
+HttpResponse增加Parse方法
+Runtime中增加Cache方法

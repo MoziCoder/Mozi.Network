@@ -51,18 +51,21 @@ namespace Mozi.IoT.CoAP
     /// </summary>
     class Program
     {
+
         private static bool responsed = false;
 
         private static bool sendrequest = false;
 
         private static bool observeMode = false;
 
-        private static String _filePathUpload = "";
-        private static bool needDump = false;
-        private static String _filePathDump = "";
+        private static string _filePathUpload = "";
+        private static bool _needDump = false;
+        private static string _filePathDump = "";
         private static int _round = -1;
 
         private static string _url = "";
+        //用信号量取代Action->BeginInvoke，适应.NetCore
+        static SemaphoreSlim semaphore = new SemaphoreSlim(0,1);
 
         static void Main(string[] args)
         {
@@ -234,7 +237,7 @@ namespace Mozi.IoT.CoAP
                                         }
                                     case "dump":
                                         {
-                                            needDump = true;
+                                            _needDump = true;
                                             _filePathDump = r.Value.ToString();
                                             continue;
                                         }
@@ -310,9 +313,18 @@ namespace Mozi.IoT.CoAP
                                     //        optName = CoAPOptionDefine.LocationPath;
                                     //    }
                                     //    break;
+                                    case "accept":
                                     case "contentformat":
                                         {
-                                            optName = CoAPOptionDefine.ContentFormat;
+                                            if (r.Key.Equals("accept"))
+                                            {
+                                                optName = CoAPOptionDefine.Accept;
+                                            }
+                                            else
+                                            {
+                                                optName = CoAPOptionDefine.ContentFormat;
+                                            }
+                                            
                                             if (!string.IsNullOrEmpty(r.Value.ToString()))
                                             {
                                                 UnsignedIntegerOptionValue newValue = new UnsignedIntegerOptionValue();
@@ -340,11 +352,6 @@ namespace Mozi.IoT.CoAP
                                     case "maxage":
                                         {
                                             optName = CoAPOptionDefine.MaxAge;
-                                        }
-                                        break;
-                                    case "accept":
-                                        {
-                                            optName = CoAPOptionDefine.Accept;
                                         }
                                         break;
                                     //case "locationquery":
@@ -428,7 +435,7 @@ namespace Mozi.IoT.CoAP
                                 }
                             }
                         }
-                        if (!needDump)
+                        if (!_needDump)
                         {
                             Execute(observeSeconds, cp, uri);
                         }else{
@@ -465,14 +472,8 @@ namespace Mozi.IoT.CoAP
                     waitSeconds = observeSeconds;
                 }
 
-                ExecuteAndWait(new Action(() =>
-                {
-
-                    SendRequest(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
-                    Console.Read();
-
-                }), waitSeconds * 1000);
-
+                SendRequest(uri.Host, uri.Port == 0 ? CoAPProtocol.Port : uri.Port, cp);
+                semaphore.Wait(waitSeconds * 1000);
             }
             catch (Exception ex)
             {
@@ -488,13 +489,14 @@ namespace Mozi.IoT.CoAP
             cc.SetPort(12340);
             cc.Start();
             cc.Response += new MessageTransmit((x, y,z) => {
+                responsed = true;
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
                 Console.WriteLine(z.ToString(CoAPPackageToStringType.HttpStyle));
                 Console.ForegroundColor = ConsoleColor.Gray;
-                responsed = true;
+                
                 if (!observeMode)
                 {
-                    Close();
+                    semaphore.Release();
                 }
             });
             cc.Request += new MessageTransmit((x, y, z) =>
@@ -544,8 +546,10 @@ namespace Mozi.IoT.CoAP
             {
                 Console.WriteLine("超时时间已到，尚未收到服务端响应\r\n");
             }
-            Environment.Exit(0);
+            //使用信号量代替后，此句无用
+            //Environment.Exit(0);
         }
+        //此部分被信号量代替，不再使用
         /// <summary>
         /// 执行并阻塞一定的时间
         /// </summary>

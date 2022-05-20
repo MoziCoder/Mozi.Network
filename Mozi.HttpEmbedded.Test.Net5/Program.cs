@@ -4,7 +4,6 @@
  * 目的是为测试组件库在.Net5环境下的运行情况
  * 
  */
-
 using Mozi.HttpEmbedded.Auth;
 using Mozi.HttpEmbedded.Page;
 using System;
@@ -15,6 +14,7 @@ using Mozi.StateService;
 
 namespace Mozi.HttpEmbedded.Test.Net5
 {
+    
     public delegate void TaskExceptionThrowing(object sender, Exception ex);
 
     static class Program
@@ -48,6 +48,7 @@ namespace Mozi.HttpEmbedded.Test.Net5
                 MinContentLength = 1024,
                 CompressLevel = 2
             });
+
             //程序集注入
             //1,此方法会扫描程序集内继承自BaseApi或属性标记为[BasicApi]的类
             //2,Http通讯数据标准默认为xml,使用Router.Default.SetDataSerializer(ISerializer ser)更改序列化类型
