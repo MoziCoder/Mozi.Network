@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+
+
+
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>
+            
+    
+        RFC 7617 - The &#39;Basic&#39; HTTP Authentication Scheme
+    
+
+        </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            @media only screen
+            and (min-width: 992px)
+            and (max-width: 1199px) {
+                body { font-size: 14pt; }
+                div.content { width: 96ex; margin: 0 auto; }
+            }
+            @media only screen
+            and (min-width: 768px)
+            and (max-width: 991px) {
+                body { font-size: 14pt; }
+                div.content { width: 96ex; margin: 0 auto; }
+            }
+            @media only screen
+            and (min-width: 480px)
+            and (max-width: 767px) {
+                body { font-size: 11pt; }
+                div.content { width: 96ex; margin: 0 auto; }
+            }
+            @media only screen
+            and (max-width: 479px) {
+                body { font-size: 8pt; }
+                div.content { width: 96ex; margin: 0 auto; }
+            }
+            @media only screen
+            and (min-width : 375px)
+            and (max-width : 667px) {
+                body { font-size: 9.5pt; }
+                div.content { width: 96ex; margin: 0; }
+            }
+            @media only screen
+            and (min-width: 1200px) {
+                body { font-size: 10pt; margin: 0 4em; }
+                div.content { width: 96ex; margin: 0; }
+            }
+            h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+                font-weight: bold;
+                /* line-height: 0pt; */
+                display: inline;
+                white-space: pre;
+                font-family: monospace;
+                font-size: 1em;
+                font-weight: bold;
+            }
+            pre {
+                font-size: 1em;
+                margin-top: 0px;
+                margin-bottom: 0px;
+            }
+            .pre {
+                white-space: pre;
+                font-family: monospace;
+            }
+            .header{
+                font-weight: bold;
+            }
+            .newpage {
+                page-break-before: always;
+            }
+            .invisible {
+                text-decoration: none;
+                color: white;
+            }
+            @media print {
+                body {
+                    margin-top: 5em;
+                    font-family: monospace;
+                    font-size: 10.5pt;
+                }
+                h1, h2, h3, h4, h5, h6 {
+                    font-size: 1em;
+                }
+
+                a:link, a:visited {
+                    color: inherit;
+                    text-decoration: none;
+                }
+                .noprint {
+                    display: none;
+                }
+            }
+            @media screen {
+                .grey, .grey a:link, .grey a:visited {
+                    color: #777;
+                }
+                .meta-info {
+                    background-color: #EEE;
+                    width: 96ex;
+                }
+                .top {
+                    border-top: 7px solid #EEE;
+                }
+                .pad {
+                    padding-top: 7px;
+                    line-height: 24px;
+                    padding-bottom: 4px;
+                }
+                .bgwhite  { background-color: white; }
+                .bgred    { background-color: #F44; }
+                .bggrey   { background-color: #666; }
+                .bgbrown  { background-color: #840; }
+                .bgorange { background-color: #FA0; }
+                .bgyellow { background-color: #EE0; }
+                .bgmagenta{ background-color: #F4F; }
+                .bgblue   { background-color: #66F; }
+                .bgcyan   { background-color: #4DD; }
+                .bggreen  { background-color: #4F4; }
+
+                .legend   { font-size: 90%; }
+                .cplate   { font-size: 70%; border: solid grey 1px; }
+            }
+
+            
+    .bgwhite  { background-color: white; }
+    .bgred    { background-color: #F44; }
+    .bggrey   { background-color: #666; }
+    .bgbrown  { background-color: #840; }
+    .bgorange { background-color: #FA0; }
+    .bgyellow { background-color: #EE0; }
+    .bgmagenta{ background-color: #F4F; }
+    .bgblue   { background-color: #66F; }
+    .bgcyan   { background-color: #4DD; }
+    .bggreen  { background-color: #4F4; }
+    .draftcontent { margin-top:1em;}
+
+        </style>
+        
+    <link rel="alternate"
+          type="application/atom+xml"
+          title="Document changes"
+          href="/feed/document-changes/draft-ietf-httpauth-basicauth-update/">
+    <meta name="description"
+          
+              content="The &#39;Basic&#39; HTTP Authentication Scheme (RFC 7617)"
+          >
+
+        
+            <link rel="shortcut icon"
+                  href="https://www.ietf.org/lib/dt/8.2.0/ietf/images/ietf-icon-blue3.png">
+        
+        <link rel="apple-touch-icon"
+              href="https://www.ietf.org/lib/dt/8.2.0/ietf/images/apple-touch-icon.png">
+    </head>
+    <body >
+        <div class="content" id="content">
+            
+<!-- [html-validate-disable-block no-inline-style, attr-quotes, void-style -- FIXME: it's everywhere in this old code] -->
+    
+    <div class="rfcmarkup">
+        <div class="noprint" style="height: .5em;">
+            <div onmouseover="this.style.cursor='pointer';"
+                 onclick="showLegend();"
+                 onmouseout="hideLegend()"
+                 style="height: .5em; min-height: .5em; width: 96ex; "
+                 class="meta-info bgblue"
+                 title="Click for color legend.">
+            </div>
+            <div id="legend"
+                 class="meta-info noprint pre legend"
+                 style="position:absolute; top: 4px; left: 4ex; visibility:hidden; background-color: white; padding: 4px 9px 5px 7px; border: solid #345 1px; "
+                 onmouseover="showLegend();"
+                 onmouseout="hideLegend();">
+            </div>
+        </div>
+        
+            <div class="noprint">
+                <pre class="pre meta-info">[<a href="https://datatracker.ietf.org" title="Document search and retrieval page">Search</a>] [<a href="https://www.rfc-editor.org/rfc/rfc7617.txt" title="Plaintext version of this document">txt</a>|<a href="https://www.rfc-editor.org/rfc/rfc7617.html" title="HTML version of this document, from XML2RFC">html</a>|<a href="https://www.rfc-editor.org/rfc/pdfrfc/rfc7617.txt.pdf" title="PDF version of this document">pdf</a>|<a href="/doc/rfc7617/bibtex/" title="BibTex entry for this document">bibtex</a>] [<a href="/doc/rfc7617/" title="Datatracker information for this document">Tracker</a>] [<a href="/group/httpauth/" title="The working group handling this document">WG</a>] [<a href="mailto:draft-ietf-httpauth-basicauth-update@ietf.org?subject=draft-ietf-httpauth-basicauth-update" title="Send email to the document authors">Email</a>] [<a href="https://www.ietf.org/rfcdiff?difftype=--hwdiff&amp;url2=draft-ietf-httpauth-basicauth-update-07.txt" title="Inline diff (wdiff)">Diff1</a>] [<a href="https://www.ietf.org/rfcdiff?url2=draft-ietf-httpauth-basicauth-update-07.txt" title="Side-by-side diff">Diff2</a>] [<a href="https://www.ietf.org/tools/idnits?url=https://www.ietf.org/archive/id/draft-ietf-httpauth-basicauth-update-07.txt" title="Run an idnits check of this document">Nits</a>]
+From: <a href="/doc/html/draft-ietf-httpauth-basicauth-update-07">draft-ietf-httpauth-basicauth-update-07</a>          Proposed Standard
+                                                        <a class="text-warning" href="/ipr/search/?submit=draft&amp;id=draft-ietf-httpauth-basicauth-update">IPR declarations</a></pre>
+            </div>
+        
+        <div class="draftcontent"><pre>Internet Engineering Task Force (IETF)                        J. Reschke
+Request for Comments: 7617                                    greenbytes
+Obsoletes: <a href="/doc/html/rfc2617">2617</a>                                           September 2015
+Category: Standards Track
+ISSN: 2070-1721
+
+
+                 <span class="h1">The &#x27;Basic&#x27; HTTP Authentication Scheme</span>
+
+Abstract
+
+   This document defines the &quot;Basic&quot; Hypertext Transfer Protocol (HTTP)
+   authentication scheme, which transmits credentials as user-id/
+   password pairs, encoded using Base64.
+
+Status of This Memo
+
+   This is an Internet Standards Track document.
+
+   This document is a product of the Internet Engineering Task Force
+   (IETF).  It represents the consensus of the IETF community.  It has
+   received public review and has been approved for publication by the
+   Internet Engineering Steering Group (IESG).  Further information on
+   Internet Standards is available in <a href="/doc/html/rfc5741#section-2">Section&nbsp;2 of RFC 5741</a>.
+
+   Information about the current status of this document, any errata,
+   and how to provide feedback on it may be obtained at
+   <a href="https://www.rfc-editor.org/info/rfc7617">http://www.rfc-editor.org/info/rfc7617</a>.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="grey">Reschke                      Standards Track                    [Page 1]</span></pre>
+<hr class='noprint'/><!--NewPage--><pre class='newpage'><span id="page-2" ></span>
+<span class="grey"><a href="/doc/html/rfc7617">RFC 7617</a>           &#x27;Basic&#x27; HTTP Authentication Scheme     September 2015</span>
+
+
+Copyright Notice
+
+   Copyright (c) 2015 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to <a href="/doc/html/bcp78">BCP 78</a> and the IETF Trust&#x27;s Legal
+   Provisions Relating to IETF Documents
+   (<a href="https://trustee.ietf.org/license-info">http://trustee.ietf.org/license-info</a>) in effect on the date of
+   publication of this document.  Please review these documents
+   carefully, as they describe your rights and restrictions with respect
+   to this document.  Code Components extracted from this document must
+   include Simplified BSD License text as described in Section 4.e of
+   the Trust Legal Provisions and are provided without warranty as
+   described in the Simplified BSD License.
+
+   This document may contain material from IETF Documents or IETF
+   Contributions published or made publicly available before November
+   10, 2008.  The person(s) controlling the copyright in some of this
+   material may not have granted the IETF Trust the right to allow
+   modifications of such material outside the IETF Standards Process.
+   Without obtaining an adequate license from the person(s) controlling
+   the copyright in such materials, this document may not be modified
+   outside the IETF Standards Process, and derivative works of it may
+   not be created outside the IETF Standards Process, except to format
+   it for publication as an RFC or to translate it into languages other
+   than English.
+
+Table of Contents
+
+   <a href="#section-1">1</a>.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   <a href="#page-3">3</a>
+     <a href="#section-1.1">1.1</a>.  Terminology and Notation  . . . . . . . . . . . . . . . .   <a href="#page-3">3</a>
+   <a href="#section-2">2</a>.  The &#x27;Basic&#x27; Authentication Scheme . . . . . . . . . . . . . .   <a href="#page-3">3</a>
+     <a href="#section-2.1">2.1</a>.  The &#x27;charset&#x27; auth-param  . . . . . . . . . . . . . . . .   <a href="#page-5">5</a>
+     <a href="#section-2.2">2.2</a>.  Reusing Credentials . . . . . . . . . . . . . . . . . . .   <a href="#page-7">7</a>
+   <a href="#section-3">3</a>.  Internationalization Considerations . . . . . . . . . . . . .   <a href="#page-8">8</a>
+   <a href="#section-4">4</a>.  Security Considerations . . . . . . . . . . . . . . . . . . .   <a href="#page-8">8</a>
+   <a href="#section-5">5</a>.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   <a href="#page-9">9</a>
+   <a href="#section-6">6</a>.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  <a href="#page-10">10</a>
+     <a href="#section-6.1">6.1</a>.  Normative References  . . . . . . . . . . . . . . . . . .  <a href="#page-10">10</a>
+     <a href="#section-6.2">6.2</a>.  Informative References  . . . . . . . . . . . . . . . . .  <a href="#page-11">11</a>
+   <a href="#appendix-A">Appendix A</a>.  Changes from <a href="/doc/html/rfc2617">RFC 2617</a>  . . . . . . . . . . . . . . .  <a href="#page-13">13</a>
+   <a href="#appendix-B">Appendix B</a>.  Deployment Considerations for the &#x27;charset&#x27;
+                Parameter  . . . . . . . . . . . . . . . . . . . . .  <a href="#page-13">13</a>
+     <a href="#appendix-B.1">B.1</a>.  User Agents . . . . . . . . . . . . . . . . . . . . . . .  <a href="#page-13">13</a>
+     <a href="#appendix-B.2">B.2</a>.  Servers . . . . . . . . . . . . . . . . . . . . . . . . .  <a href="#page-13">13</a>
+     <a href="#appendix-B.3">B.3</a>.  Why not simply switch the default encoding to UTF-8?  . .  <a href="#page-14">14</a>
+   Acknowledgements  . . . . . . . . . . . . . . . . . . . . . . . .  <a href="#page-14">14</a>
+   Author&#x27;s Address  . . . . . . . . . . . . . . . . . . . . . . . .  <a href="#page-15">15</a>
+
+
+
+<span class="grey">Reschke                      Standards Track                    [Page 2]</span></pre>
+<hr class='noprint'/><!--NewPage--><pre class='newpage'><span id="page-3" ></span>
+<span class="grey"><a href="/doc/html/rfc7617">RFC 7617</a>           &#x27;Basic&#x27; HTTP Authentication Scheme     September 2015</span>
+
+
+<span class="h2"><a class="selflink" id="section-1" href="#section-1">1</a>.  Introduction</span>
+
+   This document defines the &quot;Basic&quot; Hypertext Transfer Protocol (HTTP)
+   authentication scheme, which transmits credentials as user-id/
+   password pairs, encoded using Base64 (HTTP authentication schemes are
+   defined in [<a href="/doc/html/rfc7235" title="&quot;Hypertext Transfer Protocol (HTTP/1.1): Authentication&quot;">RFC7235</a>]).
+
+   This scheme is not considered to be a secure method of user
+   authentication unless used in conjunction with some external secure
+   system such as TLS (Transport Layer Security, [<a href="/doc/html/rfc5246" title="&quot;The Transport Layer Security (TLS) Protocol Version 1.2&quot;">RFC5246</a>]), as the
+   user-id and password are passed over the network as cleartext.
+
+   The &quot;Basic&quot; scheme previously was defined in <a href="/doc/html/rfc2617#section-2">Section&nbsp;2 of [RFC2617]</a>.
+   This document updates the definition, and also addresses
+   internationalization issues by introducing the &#x27;charset&#x27;
+   authentication parameter (<a href="#section-2.1">Section 2.1</a>).
+
+   Other documents updating <a href="/doc/html/rfc2617">RFC 2617</a> are &quot;Hypertext Transfer Protocol
+   (HTTP/1.1): Authentication&quot; ([<a href="/doc/html/rfc7235" title="&quot;Hypertext Transfer Protocol (HTTP/1.1): Authentication&quot;">RFC7235</a>], defining the authentication
+   framework), &quot;HTTP Digest Access Authentication&quot; ([<a href="/doc/html/rfc7616" title="&quot;HTTP Digest Access Authentication&quot;">RFC7616</a>], updating
+   the definition of the &quot;Digest&quot; authentication scheme), and &quot;HTTP
+   Authentication-Info and Proxy-Authentication-Info Response Header
+   Fields&quot; ([<a href="/doc/html/rfc7615" title="&quot;HTTP Authentication-Info and Proxy- Authentication-Info Response Header Fields&quot;">RFC7615</a>]).  Taken together, these four documents obsolete
+   <a href="/doc/html/rfc2617">RFC 2617</a>.
+
+<span class="h3"><a class="selflink" id="section-1.1" href="#section-1.1">1.1</a>.  Terminology and Notation</span>
+
+   The key words &quot;MUST&quot;, &quot;MUST NOT&quot;, &quot;REQUIRED&quot;, &quot;SHALL&quot;, &quot;SHALL NOT&quot;,
+   &quot;SHOULD&quot;, &quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;, &quot;MAY&quot;, and &quot;OPTIONAL&quot; in this
+   document are to be interpreted as described in [<a href="/doc/html/rfc2119" title="&quot;Key words for use in RFCs to Indicate Requirement Levels&quot;">RFC2119</a>].
+
+   The terms &quot;protection space&quot; and &quot;realm&quot; are defined in <a href="/doc/html/rfc7235#section-2.2">Section&nbsp;2.2
+   of [RFC7235]</a>.
+
+   The terms &quot;(character) repertoire&quot; and &quot;character encoding scheme&quot;
+   are defined in <a href="/doc/html/rfc6365#section-2">Section&nbsp;2 of [RFC6365]</a>.
+
+<span class="h2"><a class="selflink" id="section-2" href="#section-2">2</a>.  The &#x27;Basic&#x27; Authentication Scheme</span>
+
+   The Basic authentication scheme is based on the model that the client
+   needs to authenticate itself with a user-id and a password for each
+   protection space (&quot;realm&quot;).  The realm value is a free-form string
+   that can only be compared for equality with other realms on that
+   server.  The server will service the request only if it can validate
+   the user-id and password for the protection space applying to the
+   requested resource.
+
+
+
+
+
+<span class="grey">Reschke                      Standards Track                    [Page 3]</span></pre>
+<hr class='noprint'/><!--NewPage--><pre class='newpage'><span id="page-4" ></span>
+<span class="grey"><a href="/doc/html/rfc7617">RFC 7617</a>           &#x27;Basic&#x27; HTTP Authentication Scheme     September 2015</span>
+
+
+   The Basic authentication scheme utilizes the Authentication Framework
+   as follows.
+
+   In challenges:
+
+   o  The scheme name is &quot;Basic&quot;.
+
+   o  The authentication parameter &#x27;realm&#x27; is REQUIRED (<a href="/doc/html/rfc7235#section-2.2">[RFC7235],
+      Section&nbsp;2.2</a>).
+
+   o  The authentication parameter &#x27;charset&#x27; is OPTIONAL (see
+      <a href="#section-2.1">Section 2.1</a>).
+
+   o  No other authentication parameters are defined -- unknown
+      parameters MUST be ignored by recipients, and new parameters can
+      only be defined by revising this specification.
+
+   See also <a href="/doc/html/rfc7235#section-4.1">Section&nbsp;4.1 of [RFC7235]</a>, which discusses the complexity of
+   parsing challenges properly.
+
+   Note that both scheme and parameter names are matched case-
+   insensitively.
+
+   For credentials, the &quot;token68&quot; syntax defined in <a href="/doc/html/rfc7235#section-2.1">Section&nbsp;2.1 of
+   [RFC7235]</a> is used.  The value is computed based on user-id and
+   password as defined below.
+
+   Upon receipt of a request for a URI within the protection space that
+   lacks credentials, the server can reply with a challenge using the
+   401 (Unauthorized) status code (<a href="/doc/html/rfc7235#section-3.1">[RFC7235], Section&nbsp;3.1</a>) and the
+   WWW-Authenticate header field (<a href="/doc/html/rfc7235#section-4.1">[RFC7235], Section&nbsp;4.1</a>).
+
+   For instance:
+
+      HTTP/1.1 401 Unauthorized
+      Date: Mon, 04 Feb 2014 16:50:53 GMT
+      WWW-Authenticate: Basic realm=&quot;WallyWorld&quot;
+
+   where &quot;WallyWorld&quot; is the string assigned by the server to identify
+   the protection space.
+
+   A proxy can respond with a similar challenge using the 407 (Proxy
+   Authentication Required) status code (<a href="/doc/html/rfc7235#section-3.2">[RFC7235], Section&nbsp;3.2</a>) and the
+   Proxy-Authenticate header field (<a href="/doc/html/rfc7235#section-4.3">[RFC7235], Section&nbsp;4.3</a>).
+
+
+
+
+
+
+
+<span class="grey">Reschke                      Standards Track                    [Page 4]</span></pre>
+<hr class='noprint'/><!--NewPage--><pre class='newpage'><span id="page-5" ></span>
+<span class="grey"><a href="/doc/html/rfc7617">RFC 7617</a>           &#x27;Basic&#x27; HTTP Authentication Scheme     September 2015</span>
+
+
+   To receive authorization, the client
+
+   1.  obtains the user-id and password from the user,
+
+   2.  constructs the user-pass by concatenating the user-id, a single
+       colon (&quot;:&quot;) character, and the password,
+
+   3.  encodes the user-pass into an octet sequence (see below for a
+       discussion of character encoding schemes),
+
+   4.  and obtains the basic-credentials by encoding this octet sequence
+       using Base64 (<a href="/doc/html/rfc4648#section-4">[RFC4648], Section&nbsp;4</a>) into a sequence of US-ASCII
+       characters ([<a href="/doc/html/rfc0020">RFC0020</a>]).
+
+   The original definition of this authentication scheme failed to
+   specify the character encoding scheme used to convert the user-pass
+   into an octet sequence.  In practice, most implementations chose
+   either a locale-specific encoding such as ISO-8859-1 ([<a href="#ref-ISO-8859-1">ISO-8859-1</a>]),
+   or UTF-8 ([<a href="/doc/html/rfc3629" title="&quot;UTF-8, a transformation format of ISO 10646&quot;">RFC3629</a>]).  For backwards compatibility reasons, this
+   specification continues to leave the default encoding undefined, as
+   long as it is compatible with US-ASCII (mapping any US-ASCII
+   character to a single octet matching the US-ASCII character code).
+
+   The user-id and password MUST NOT contain any control characters (see
+   &quot;CTL&quot; in <a href="/doc/html/rfc5234#appendix-B.1">Appendix&nbsp;B.1 of [RFC5234]</a>).
+
+   Furthermore, a user-id containing a colon character is invalid, as
+   the first colon in a user-pass string separates user-id and password
+   from one another; text after the first colon is part of the password.
+   User-ids containing colons cannot be encoded in user-pass strings.
+
+   Note that many user agents produce user-pass strings without checking
+   that user-ids supplied by users do not contain colons; recipients
+   will then treat part of the username input as part of the password.
+
+   If the user agent wishes to send the user-id &quot;Aladdin&quot; and password
+   &quot;open sesame&quot;, it would use the following header field:
+
+      Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
+<span class="h3"><a class="selflink" id="section-2.1" href="#section-2.1">2.1</a>.  The &#x27;charset&#x27; auth-param</span>
+
+   In challenges, servers can use the &#x27;charset&#x27; authentication parameter
+   to indicate the character encoding scheme they expect the user agent
+   to use when generating &quot;user-pass&quot; (a sequence of octets).  This
+   information is purely advisory.
+
+
+
+
+
+<span class="grey">Reschke                      Standards Track                    [Page 5]</span></pre>
+<hr class='noprint'/><!--NewPage--><pre class='newpage'><span id="page-6" ></span>
+<span class="grey"><a href="/doc/html/rfc7617">RFC 7617</a>           &#x27;Basic&#x27; HTTP Authentication Scheme     September 2015</span>
+
+
+   The only allowed value is &quot;UTF-8&quot;; it is to be matched case-
+   insensitively (see <a href="/doc/html/rfc2978#section-2.3">[RFC2978], Section&nbsp;2.3</a>).  It indicates that the
+   server expects character data to be converted to Unicode
+   Normalization Form C (&quot;NFC&quot;; see <a href="/doc/html/rfc5198#section-3">Section&nbsp;3 of [RFC5198]</a>) and to be
+   encoded into octets using the UTF-8 character encoding scheme
+   ([<a href="/doc/html/rfc3629" title="&quot;UTF-8, a transformation format of ISO 10646&quot;">RFC3629</a>]).
+
+   For the user-id, recipients MUST support all characters defined in
+   the &quot;UsernameCasePreserved&quot; profile defined in <a href="/doc/html/rfc7613#section-3.3">Section&nbsp;3.3 of
+   [RFC7613]</a>, with the exception of the colon (&quot;:&quot;) character.
+
+   For the password, recipients MUST support all characters defined in
+   the &quot;OpaqueString&quot; profile defined in <a href="/doc/html/rfc7613#section-4.2">Section&nbsp;4.2 of [RFC7613]</a>.
+
+   Other values are reserved for future use.
+
+      Note: The &#x27;charset&#x27; is only defined on challenges, as Basic
+      authentication uses a single token for credentials (&#x27;token68&#x27;
+      syntax); thus, the credentials syntax isn&#x27;t extensible.
+
+      Note: The name &#x27;charset&#x27; has been chosen for consistency with
+      <a href="/doc/html/rfc2831#section-2.1.1">Section&nbsp;2.1.1 of [RFC2831]</a>.  A better name would have been
+      &#x27;accept-charset&#x27;, as it is not about the message it appears in,
+      but the server&#x27;s expectation.
+
+   In the example below, the server prompts for authentication in the
+   &quot;foo&quot; realm, using Basic authentication, with a preference for the
+   UTF-8 character encoding scheme:
+
+      WWW-Authenticate: Basic realm=&quot;foo&quot;, charset=&quot;UTF-8&quot;
+
+   Note that the parameter value can be either a token or a quoted
+   string; in this case, the server chose to use the quoted-string
+   notation.
+
+   The user&#x27;s name is &quot;test&quot;, and the password is the string &quot;123&quot;
+   followed by the Unicode character U+00A3 (POUND SIGN).  Using the
+   character encoding scheme UTF-8, the user-pass becomes:
+
+      &#x27;t&#x27; &#x27;e&#x27; &#x27;s&#x27; &#x27;t&#x27; &#x27;:&#x27; &#x27;1&#x27; &#x27;2&#x27; &#x27;3&#x27; pound
+      74  65  73  74  3A  31  32  33  C2  A3
+
+   Encoding this octet sequence in Base64 (<a href="/doc/html/rfc4648#section-4">[RFC4648], Section&nbsp;4</a>) yields:
+
+      dGVzdDoxMjPCow==
+
+
+
+
+
+
+<span class="grey">Reschke                      Standards Track                    [Page 6]</span></pre>
+<hr class='noprint'/><!--NewPage--><pre class='newpage'><span id="page-7" ></span>
+<span class="grey"><a href="/doc/html/rfc7617">RFC 7617</a>           &#x27;Basic&#x27; HTTP Authentication Scheme     September 2015</span>
+
+
+   Thus, the Authorization header field would be:
+
+      Authorization: Basic dGVzdDoxMjPCow==
+
+   Or, for proxy authentication:
+
+      Proxy-Authorization: Basic dGVzdDoxMjPCow==
+
+<span class="h3"><a class="selflink" id="section-2.2" href="#section-2.2">2.2</a>.  Reusing Credentials</span>
+
+   Given the absolute URI (<a href="/doc/html/rfc3986#section-4.3">[RFC3986], Section&nbsp;4.3</a>) of an authenticated
+   request, the authentication scope of that request is obtained by
+   removing all characters after the last slash (&quot;/&quot;) character of the
+   path component (&quot;hier_part&quot;; see <a href="/doc/html/rfc3986#section-3">[RFC3986], Section&nbsp;3</a>).  A client
+   SHOULD assume that resources identified by URIs with a prefix-match
+   of the authentication scope are also within the protection space
+   specified by the realm value of that authenticated request.
+
+   A client MAY preemptively send the corresponding Authorization header
+   field with requests for resources in that space without receipt of
+   another challenge from the server.  Similarly, when a client sends a
+   request to a proxy, it MAY reuse a user-id and password in the Proxy-
+   Authorization header field without receiving another challenge from
+   the proxy server.
+
+   For example, given an authenticated request to:
+
+      http://example.com/docs/index.html
+
+   requests to the URIs below could use the known credentials:
+
+      http://example.com/docs/
+      http://example.com/docs/test.doc
+      http://example.com/docs/?page=1
+
+   while the URIs
+
+      http://example.com/other/
+      https://example.com/docs/
+
+   would be considered to be outside the authentication scope.
+
+   Note that a URI can be part of multiple authentication scopes (such
+   as &quot;http://example.com/&quot; and &quot;http://example.com/docs/&quot;).  This
+   specification does not define which of these should be treated with
+   higher priority.
+
+
+
+
+
+<span class="grey">Reschke                      Standards Track                    [Page 7]</span></pre>
+<hr class='noprint'/><!--NewPage--><pre class='newpage'><span id="page-8" ></span>
+<span class="grey"><a href="/doc/html/rfc7617">RFC 7617</a>           &#x27;Basic&#x27; HTTP Authentication Scheme     September 2015</span>
+
+
+<span class="h2"><a class="selflink" id="section-3" href="#section-3">3</a>.  Internationalization Considerations</span>
+
+   User-ids or passwords containing characters outside the US-ASCII
+   character repertoire will cause interoperability issues, unless both
+   communication partners agree on what character encoding scheme is to
+   be used.  Servers can use the new &#x27;charset&#x27; parameter (<a href="#section-2.1">Section 2.1</a>)
+   to indicate a preference of &quot;UTF-8&quot;, increasing the probability that
+   clients will switch to that encoding.
+
+   The &#x27;realm&#x27; parameter carries data that can be considered textual;
+   however, [<a href="/doc/html/rfc7235" title="&quot;Hypertext Transfer Protocol (HTTP/1.1): Authentication&quot;">RFC7235</a>] does not define a way to reliably transport non-
+   US-ASCII characters.  This is a known issue that would need to be
+   addressed in a revision to that specification.
+
+<span class="h2"><a class="selflink" id="section-4" href="#section-4">4</a>.  Security Considerations</span>
+
+   The Basic authentication scheme is not a secure method of user
+   authentication, nor does it in any way protect the entity, which is
+   transmitted in cleartext across the physical network used as the
+   carrier.  HTTP does not prevent the addition of enhancements (such as
+   schemes to use one-time passwords) to Basic authentication.
+
+   The most serious flaw of Basic authentication is that it results in
+   the cleartext transmission of the user&#x27;s password over the physical
+   network.  Many other authentication schemes address this problem.
+
+   Because Basic authentication involves the cleartext transmission of
+   passwords, it SHOULD NOT be used (without enhancements such as HTTPS
+   [<a href="/doc/html/rfc2818" title="&quot;HTTP Over TLS&quot;">RFC2818</a>]) to protect sensitive or valuable information.
+
+   A common use of Basic authentication is for identification purposes
+   -- requiring the user to provide a user-id and password as a means of
+   identification, for example, for purposes of gathering accurate usage
+   statistics on a server.  When used in this way it is tempting to
+   think that there is no danger in its use if illicit access to the
+   protected documents is not a major concern.  This is only correct if
+   the server issues both user-id and password to the users and, in
+   particular, does not allow the user to choose his or her own
+   password.  The danger arises because naive users frequently reuse a
+   single password to avoid the task of maintaining multiple passwords.
+
+   If a server permits users to select their own passwords, then the
+   threat is not only unauthorized access to documents on the server but
+   also unauthorized access to any other resources on other systems that
+   the user protects with the same password.  Furthermore, in the
+   server&#x27;s password database, many of the passwords may also be users&#x27;
+   passwords for other sites.  The owner or administrator of such a
+   system could therefore expose all users of the system to the risk of
+
+
+
+<span class="grey">Reschke                      Standards Track                    [Page 8]</span></pre>
+<hr class='noprint'/><!--NewPage--><pre class='newpage'><span id="page-9" ></span>
+<span class="grey"><a href="/doc/html/rfc7617">RFC 7617</a>           &#x27;Basic&#x27; HTTP Authentication Scheme     September 2015</span>
+
+
+   unauthorized access to all those other sites if this information is
+   not maintained in a secure fashion.  This raises both security and
+   privacy concerns ([<a href="/doc/html/rfc6973" title="&quot;Privacy Considerations for Internet Protocols&quot;">RFC6973</a>]).  If the same user-id and password
+   combination is in use to access other accounts, such as an email or
+   health portal account, personal information could be exposed.
+
+   Basic authentication is also vulnerable to spoofing by counterfeit
+   servers.  If a user can be led to believe that she is connecting to a
+   host containing information protected by Basic authentication when,
+   in fact, she is connecting to a hostile server or gateway, then the
+   attacker can request a password, store it for later use, and feign an
+   error.  Server implementers ought to guard against this sort of
+   counterfeiting; in particular, software components that can take over
+   control over the message framing on an existing connection need to be
+   used carefully or not at all (for instance: NPH (&quot;Non-Parsed Header&quot;)
+   scripts as described in <a href="/doc/html/rfc3875#section-5">Section&nbsp;5 of [RFC3875]</a>).
+
+   Servers and proxies implementing Basic authentication need to store
+   user passwords in some form in order to authenticate a request.
+   These passwords ought to be stored in such a way that a leak of the
+   password data doesn&#x27;t make them trivially recoverable.  This is
+   especially important when users are allowed to set their own
+   passwords, since users are known to choose weak passwords and to
+   reuse them across authentication realms.  While a full discussion of
+   good password hashing techniques is beyond the scope of this
+   document, server operators ought to make an effort to minimize risks
+   to their users in the event of a password data leak.  For example,
+   servers ought to avoid storing user passwords in plaintext or as
+   unsalted digests.  For more discussion about modern password hashing
+   techniques, see the &quot;Password Hashing Competition&quot;
+   (&lt;<a href="https://password-hashing.net">https://password-hashing.net</a>&gt;).
+
+   The use of the UTF-8 character encoding scheme and of normalization
+   introduces additional security considerations; see <a href="/doc/html/rfc3629#section-10">Section&nbsp;10 of
+   [RFC3629]</a> and <a href="/doc/html/rfc5198#section-6">Section&nbsp;6 of [RFC5198]</a> for more information.
+
+<span class="h2"><a class="selflink" id="section-5" href="#section-5">5</a>.  IANA Considerations</span>
+
+   IANA maintains the &quot;Hypertext Transfer Protocol (HTTP) Authentication
+   Scheme Registry&quot; ([<a href="/doc/html/rfc7235" title="&quot;Hypertext Transfer Protocol (HTTP/1.1): Authentication&quot;">RFC7235</a>]) at &lt;<a href="https://www.iana.org/assignments/http-authschemes">http://www.iana.org/assignments/</a>
+   <a href="https://www.iana.org/assignments/http-authschemes">http-authschemes</a>&gt;.
+
+   The entry for the &quot;Basic&quot; authentication scheme has been updated to
+   reference this specification.
+
+
+
+
+
+
+
+<span class="grey">Reschke                      Standards Track                    [Page 9]</span></pre>
+<hr class='noprint'/><!--NewPage--><pre class='newpage'><span id="page-10" ></span>
+<span class="grey"><a href="/doc/html/rfc7617">RFC 7617</a>           &#x27;Basic&#x27; HTTP Authentication Scheme     September 2015</span>
+
+
+<span class="h2"><a class="selflink" id="section-6" href="#section-6">6</a>.  References</span>
+
+<span class="h3"><a class="selflink" id="section-6.1" href="#section-6.1">6.1</a>.  Normative References</span>
+
+   [<a id="ref-RFC20">RFC20</a>]    Cerf, V., &quot;ASCII format for network interchange&quot;, STD 80,
+              <a href="/doc/html/rfc20">RFC 20</a>, DOI 10.17487/RFC0020, October 1969,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc20">http://www.rfc-editor.org/info/rfc20</a>&gt;.
+
+   [<a id="ref-RFC2119">RFC2119</a>]  Bradner, S., &quot;Key words for use in RFCs to Indicate
+              Requirement Levels&quot;, <a href="/doc/html/bcp14">BCP 14</a>, <a href="/doc/html/rfc2119">RFC 2119</a>,
+              DOI 10.17487/RFC2119, March 1997,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc2119">http://www.rfc-editor.org/info/rfc2119</a>&gt;.
+
+   [<a id="ref-RFC2978">RFC2978</a>]  Freed, N. and J. Postel, &quot;IANA Charset Registration
+              Procedures&quot;, <a href="/doc/html/bcp19">BCP 19</a>, <a href="/doc/html/rfc2978">RFC 2978</a>, DOI 10.17487/RFC2978,
+              October 2000, &lt;<a href="https://www.rfc-editor.org/info/rfc2978">http://www.rfc-editor.org/info/rfc2978</a>&gt;.
+
+   [<a id="ref-RFC3629">RFC3629</a>]  Yergeau, F., &quot;UTF-8, a transformation format of ISO
+              10646&quot;, STD 63, <a href="/doc/html/rfc3629">RFC 3629</a>, DOI 10.17487/RFC3629, November
+              2003, &lt;<a href="https://www.rfc-editor.org/info/rfc3629">http://www.rfc-editor.org/info/rfc3629</a>&gt;.
+
+   [<a id="ref-RFC3986">RFC3986</a>]  Berners-Lee, T., Fielding, R., and L. Masinter, &quot;Uniform
+              Resource Identifier (URI): Generic Syntax&quot;, STD 66,
+              <a href="/doc/html/rfc3986">RFC 3986</a>, DOI 10.17487/RFC3986, January 2005,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc3986">http://www.rfc-editor.org/info/rfc3986</a>&gt;.
+
+   [<a id="ref-RFC4648">RFC4648</a>]  Josefsson, S., &quot;The Base16, Base32, and Base64 Data
+              Encodings&quot;, <a href="/doc/html/rfc4648">RFC 4648</a>, DOI 10.17487/RFC4648, October 2006,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc4648">http://www.rfc-editor.org/info/rfc4648</a>&gt;.
+
+   [<a id="ref-RFC5198">RFC5198</a>]  Klensin, J. and M. Padlipsky, &quot;Unicode Format for Network
+              Interchange&quot;, <a href="/doc/html/rfc5198">RFC 5198</a>, DOI 10.17487/RFC5198, March 2008,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc5198">http://www.rfc-editor.org/info/rfc5198</a>&gt;.
+
+   [<a id="ref-RFC5234">RFC5234</a>]  Crocker, D., Ed. and P. Overell, &quot;Augmented BNF for Syntax
+              Specifications: ABNF&quot;, STD 68, <a href="/doc/html/rfc5234">RFC 5234</a>,
+              DOI 10.17487/RFC5234, January 2008,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc5234">http://www.rfc-editor.org/info/rfc5234</a>&gt;.
+
+   [<a id="ref-RFC6365">RFC6365</a>]  Hoffman, P. and J. Klensin, &quot;Terminology Used in
+              Internationalization in the IETF&quot;, <a href="/doc/html/bcp166">BCP 166</a>, <a href="/doc/html/rfc6365">RFC 6365</a>,
+              DOI 10.17487/RFC6365, September 2011,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc6365">http://www.rfc-editor.org/info/rfc6365</a>&gt;.
+
+   [<a id="ref-RFC7235">RFC7235</a>]  Fielding, R., Ed. and J. Reschke, Ed., &quot;Hypertext Transfer
+              Protocol (HTTP/1.1): Authentication&quot;, <a href="/doc/html/rfc7235">RFC 7235</a>,
+              DOI 10.17487/RFC7235, June 2014,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc7235">http://www.rfc-editor.org/info/rfc7235</a>&gt;.
+
+
+
+<span class="grey">Reschke                      Standards Track                   [Page 10]</span></pre>
+<hr class='noprint'/><!--NewPage--><pre class='newpage'><span id="page-11" ></span>
+<span class="grey"><a href="/doc/html/rfc7617">RFC 7617</a>           &#x27;Basic&#x27; HTTP Authentication Scheme     September 2015</span>
+
+
+   [<a id="ref-RFC7613">RFC7613</a>]  Saint-Andre, P. and A. Melnikov, &quot;Preparation,
+              Enforcement, and Comparison of Internationalized Strings
+              Representing Usernames and Passwords&quot;, <a href="/doc/html/rfc7613">RFC 7613</a>,
+              DOI 10.17487/RFC7613, August 2015,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc7613">http://www.rfc-editor.org/info/rfc7613</a>&gt;.
+
+<span class="h3"><a class="selflink" id="section-6.2" href="#section-6.2">6.2</a>.  Informative References</span>
+
+   [<a id="ref-ISO-8859-1">ISO-8859-1</a>]
+              International Organization for Standardization,
+              &quot;Information technology -- 8-bit single-byte coded graphic
+              character sets -- Part 1: Latin alphabet No. 1&quot;, ISO/IEC
+              8859-1:1998, 1998.
+
+   [<a id="ref-RFC2617">RFC2617</a>]  Franks, J., Hallam-Baker, P., Hostetler, J., Lawrence, S.,
+              Leach, P., Luotonen, A., and L. Stewart, &quot;HTTP
+              Authentication: Basic and Digest Access Authentication&quot;,
+              <a href="/doc/html/rfc2617">RFC 2617</a>, DOI 10.17487/RFC2617, June 1999,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc2617">http://www.rfc-editor.org/info/rfc2617</a>&gt;.
+
+   [<a id="ref-RFC2818">RFC2818</a>]  Rescorla, E., &quot;HTTP Over TLS&quot;, <a href="/doc/html/rfc2818">RFC 2818</a>,
+              DOI 10.17487/RFC2818, May 2000,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc2818">http://www.rfc-editor.org/info/rfc2818</a>&gt;.
+
+   [<a id="ref-RFC2831">RFC2831</a>]  Leach, P. and C. Newman, &quot;Using Digest Authentication as a
+              SASL Mechanism&quot;, <a href="/doc/html/rfc2831">RFC 2831</a>, DOI 10.17487/RFC2831, May 2000,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc2831">http://www.rfc-editor.org/info/rfc2831</a>&gt;.
+
+   [<a id="ref-RFC3875">RFC3875</a>]  Robinson, D. and K. Coar, &quot;The Common Gateway Interface
+              (CGI) Version 1.1&quot;, <a href="/doc/html/rfc3875">RFC 3875</a>, DOI 10.17487/RFC3875,
+              October 2004, &lt;<a href="https://www.rfc-editor.org/info/rfc3875">http://www.rfc-editor.org/info/rfc3875</a>&gt;.
+
+   [<a id="ref-RFC5246">RFC5246</a>]  Dierks, T. and E. Rescorla, &quot;The Transport Layer Security
+              (TLS) Protocol Version 1.2&quot;, <a href="/doc/html/rfc5246">RFC 5246</a>,
+              DOI 10.17487/RFC5246, August 2008,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc5246">http://www.rfc-editor.org/info/rfc5246</a>&gt;.
+
+   [<a id="ref-RFC6973">RFC6973</a>]  Cooper, A., Tschofenig, H., Aboba, B., Peterson, J.,
+              Morris, J., Hansen, M., and R. Smith, &quot;Privacy
+              Considerations for Internet Protocols&quot;, <a href="/doc/html/rfc6973">RFC 6973</a>,
+              DOI 10.17487/RFC6973, July 2013,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc6973">http://www.rfc-editor.org/info/rfc6973</a>&gt;.
+
+   [<a id="ref-RFC7231">RFC7231</a>]  Fielding, R., Ed. and J. Reschke, Ed., &quot;Hypertext Transfer
+              Protocol (HTTP/1.1): Semantics and Content&quot;, <a href="/doc/html/rfc7231">RFC 7231</a>,
+              DOI 10.17487/RFC7231, June 2014,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc7231">http://www.rfc-editor.org/info/rfc7231</a>&gt;.
+
+
+
+
+<span class="grey">Reschke                      Standards Track                   [Page 11]</span></pre>
+<hr class='noprint'/><!--NewPage--><pre class='newpage'><span id="page-12" ></span>
+<span class="grey"><a href="/doc/html/rfc7617">RFC 7617</a>           &#x27;Basic&#x27; HTTP Authentication Scheme     September 2015</span>
+
+
+   [<a id="ref-RFC7615">RFC7615</a>]  Reschke, J., &quot;HTTP Authentication-Info and Proxy-
+              Authentication-Info Response Header Fields&quot;, <a href="/doc/html/rfc7615">RFC 7615</a>,
+              DOI 10.17487/RFC7615, September 2015,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc7615">http://www.rfc-editor.org/info/rfc7615</a>&gt;.
+
+   [<a id="ref-RFC7616">RFC7616</a>]  Shekh-Yusef, R., Ed., Ahrens, D., and S. Bremer, &quot;HTTP
+              Digest Access Authentication&quot;, <a href="/doc/html/rfc7616">RFC 7616</a>,
+              DOI 10.17487/RFC7616, September 2015,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc7616">http://www.rfc-editor.org/info/rfc7616</a>&gt;.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="grey">Reschke                      Standards Track                   [Page 12]</span></pre>
+<hr class='noprint'/><!--NewPage--><pre class='newpage'><span id="page-13" ></span>
+<span class="grey"><a href="/doc/html/rfc7617">RFC 7617</a>           &#x27;Basic&#x27; HTTP Authentication Scheme     September 2015</span>
+
+
+<span class="h2"><a class="selflink" id="appendix-A" href="#appendix-A">Appendix A</a>.  Changes from <a href="/doc/html/rfc2617">RFC 2617</a></span>
+
+   The scheme definition has been rewritten to be consistent with newer
+   specifications such as [<a href="/doc/html/rfc7235" title="&quot;Hypertext Transfer Protocol (HTTP/1.1): Authentication&quot;">RFC7235</a>].
+
+   The new authentication parameter &#x27;charset&#x27; has been added.  It is
+   purely advisory, so existing implementations do not need to change,
+   unless they want to take advantage of the additional information that
+   previously wasn&#x27;t available.
+
+<span class="h2"><a class="selflink" id="appendix-B" href="#appendix-B">Appendix B</a>.  Deployment Considerations for the &#x27;charset&#x27; Parameter</span>
+
+<span class="h3"><a class="selflink" id="appendix-B.1" href="#appendix-B.1">B.1</a>.  User Agents</span>
+
+   User agents not implementing &#x27;charset&#x27; will continue to work as
+   before, ignoring the new parameter.
+
+   User agents that already default to the UTF-8 encoding implement
+   &#x27;charset&#x27; by definition.
+
+   Other user agents can keep their default behavior and switch to UTF-8
+   when seeing the new parameter.
+
+<span class="h3"><a class="selflink" id="appendix-B.2" href="#appendix-B.2">B.2</a>.  Servers</span>
+
+   Servers that do not support non-US-ASCII characters in credentials do
+   not require any changes to support &#x27;charset&#x27;.
+
+   Servers that need to support non-US-ASCII characters, but cannot use
+   the UTF-8 character encoding scheme will not be affected; they will
+   continue to function as well or as badly as before.
+
+   Finally, servers that need to support non-US-ASCII characters and can
+   use the UTF-8 character encoding scheme can opt in by specifying the
+   &#x27;charset&#x27; parameter in the authentication challenge.  Clients that do
+   understand the &#x27;charset&#x27; parameter will then start to use UTF-8,
+   while other clients will continue to send credentials in their
+   default encoding, broken credentials, or no credentials at all.
+   Until all clients are upgraded to support UTF-8, servers are likely
+   to see both UTF-8 and &quot;legacy&quot; encodings in requests.  When
+   processing as UTF-8 fails (due to a failure to decode as UTF-8 or a
+   mismatch of user-id/password), a server might try a fallback to the
+   previously supported legacy encoding in order to accommodate these
+   legacy clients.  Note that implicit retries need to be done
+   carefully; for instance, some subsystems might detect repeated login
+   failures and treat them as a potential credentials-guessing attack.
+
+
+
+
+
+<span class="grey">Reschke                      Standards Track                   [Page 13]</span></pre>
+<hr class='noprint'/><!--NewPage--><pre class='newpage'><span id="page-14" ></span>
+<span class="grey"><a href="/doc/html/rfc7617">RFC 7617</a>           &#x27;Basic&#x27; HTTP Authentication Scheme     September 2015</span>
+
+
+<span class="h3"><a class="selflink" id="appendix-B.3" href="#appendix-B.3">B.3</a>.  Why not simply switch the default encoding to UTF-8?</span>
+
+   There are sites in use today that default to a local character
+   encoding scheme, such as ISO-8859-1 ([<a href="#ref-ISO-8859-1">ISO-8859-1</a>]), and expect user
+   agents to use that encoding.  Authentication on these sites will stop
+   working if the user agent switches to a different encoding, such as
+   UTF-8.
+
+   Note that sites might even inspect the User-Agent header field
+   (<a href="/doc/html/rfc7231#section-5.5.3">[RFC7231], Section&nbsp;5.5.3</a>) to decide which character encoding scheme
+   to expect from the client.  Therefore, they might support UTF-8 for
+   some user agents, but default to something else for others.  User
+   agents in the latter group will have to continue to do what they do
+   today until the majority of these servers have been upgraded to
+   always use UTF-8.
+
+Acknowledgements
+
+   This specification takes over the definition of the &quot;Basic&quot; HTTP
+   Authentication Scheme, previously defined in <a href="/doc/html/rfc2617">RFC 2617</a>.  We thank John
+   Franks, Phillip M. Hallam-Baker, Jeffery L. Hostetler, Scott
+   D. Lawrence, Paul J. Leach, Ari Luotonen, and Lawrence C. Stewart for
+   their work on that specification, from which significant amounts of
+   text were borrowed.  See <a href="/doc/html/rfc2617#section-6">Section&nbsp;6 of [RFC2617]</a> for further
+   acknowledgements.
+
+   The internationalization problem with respect to the character
+   encoding scheme used for user-pass was reported as a Mozilla bug back
+   in the year 2000 (see
+   &lt;<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=41489">https://bugzilla.mozilla.org/show_bug.cgi?id=41489</a>&gt; and also the
+   more recent &lt;<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=656213">https://bugzilla.mozilla.org/show_bug.cgi?id=656213</a>&gt;).
+   It was Andrew Clover&#x27;s idea to address it using a new auth-param.
+
+   We also thank the members of the HTTPAUTH Working Group and other
+   reviewers, namely, Stephen Farrell, Roy Fielding, Daniel Kahn
+   Gillmor, Tony Hansen, Bjoern Hoehrmann, Kari Hurtta, Amos Jeffries,
+   Benjamin Kaduk, Michael Koeller, Eric Lawrence, Barry Leiba, James
+   Manger, Alexey Melnikov, Kathleen Moriarty, Juergen Schoenwaelder,
+   Yaron Sheffer, Meral Shirazipour, Michael Sweet, and Martin Thomson
+   for feedback on this revision.
+
+
+
+
+
+
+
+
+
+
+
+<span class="grey">Reschke                      Standards Track                   [Page 14]</span></pre>
+<hr class='noprint'/><!--NewPage--><pre class='newpage'><span id="page-15" ></span>
+<span class="grey"><a href="/doc/html/rfc7617">RFC 7617</a>           &#x27;Basic&#x27; HTTP Authentication Scheme     September 2015</span>
+
+
+Author&#x27;s Address
+
+   Julian F. Reschke
+   greenbytes GmbH
+   Hafenweg 16
+   Muenster, NW  48155
+   Germany
+
+   Email: julian.reschke@greenbytes.de
+   URI:   <a href="http://greenbytes.de/tech/webdav/">http://greenbytes.de/tech/webdav/</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Reschke                      Standards Track                   [Page 15]
+</pre></div>
+    </div>
+
+            
+        </div>
+        
+    
+    <script>
+        var legend_html = 'Color legend:<br> \
+        <table> \
+        <tr><td>Unknown:</td>                   <td><span class="bgwhite">&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr> \
+        <tr><td>Draft:</td>                     <td><span class="bgred">&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr> \
+        <tr><td>Informational:</td>             <td><span class="bgorange">&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr> \
+        <tr><td>Experimental:</td>              <td><span class="bgyellow">&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr> \
+        <tr><td>Best Common Practice:</td>      <td><span class="bgmagenta">&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr> \
+        <tr><td>Proposed Standard:</td>         <td><span class="bgblue">&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr> \
+        <tr><td>Draft Standard (old designation):</td> <td><span class="bgcyan">&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr> \
+        <tr><td>Internet Standard:</td>         <td><span class="bggreen">&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr> \
+        <tr><td>Historic:</td>                  <td><span class="bggrey">&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr> \
+        <tr><td>Obsolete:</td>                  <td><span class="bgbrown">&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr> \
+        </table>';
+        function showLegend() {
+            var elem = document.getElementById('legend');
+            elem.innerHTML = legend_html
+            elem.style.visibility='visible';
+        }
+        function hideLegend() {
+            var elem = document.getElementById('legend');
+            elem.style.visibility='hidden';
+            elem.innerHTML = "";
+        }
+    </script>
+
+</body>
+</html>

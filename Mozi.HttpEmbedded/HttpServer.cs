@@ -207,7 +207,6 @@ namespace Mozi.HttpEmbedded
             Timezone = string.Format("UTC{0:+00;-00;}:00", TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).Hours);
             //配置默认服务器名
             _serverName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name + "/" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            Auth = new Authenticator();
             _sc.OnServerStart += Socket_OnServerStart;
             _sc.OnClientConnect += Socket_OnClientConnect;
             _sc.OnReceiveStart += Socket_OnReceiveStart;
@@ -405,7 +404,7 @@ namespace Mozi.HttpEmbedded
         private StatusCode HandleAuth(ref HttpContext context)
         {
             var authorization = context.Request.Headers.GetValue(HeaderProperty.Authorization.PropertyName);
-            if (!string.IsNullOrEmpty(authorization) && Auth.Check(authorization))
+            if (!string.IsNullOrEmpty(authorization) && Auth.Check(authorization,context.Request.Method.Name))
             {
                 context.Request.IsAuthorized = true;
                 return HandleRequest(ref context);
@@ -413,7 +412,7 @@ namespace Mozi.HttpEmbedded
             else
             {
                 //发送验证要求
-                context.Response.AddHeader(HeaderProperty.WWWAuthenticate, string.Format("{0} realm=\"{1}\"", Auth.AuthType.Name, AuthorizationType.REALM));
+                context.Response.AddHeader(HeaderProperty.WWWAuthenticate,Auth.GetChallenge());
                 return StatusCode.Unauthorized;
             }
         }
@@ -769,8 +768,20 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public HttpServer UseAuth(AuthorizationType at)
         {
-            EnableAuth = true;
-            Auth.SetAuthType(at);
+            if (at != AuthorizationType.None)
+            {
+                EnableAuth = true;
+                if (Auth == null)
+                {
+                    Auth = new Authenticator();
+                }
+                Auth.SetAuthType(at);
+            }
+            else
+            {
+                EnableAuth = false;
+                Auth = null;
+            }
             return this;
         }
         /// <summary>

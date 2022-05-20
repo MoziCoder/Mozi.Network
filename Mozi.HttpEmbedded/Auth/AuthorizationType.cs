@@ -7,16 +7,24 @@ namespace Mozi.HttpEmbedded.Auth
     /// </summary>
     public class AuthorizationType : AbsClassEnum
     {
-        public const string REALM/*提示明文*/ = "HttpEmbedded";
-
         /// <summary>
         /// 基本认证 明文传输 不安全
         /// </summary>
         public static readonly AuthorizationType Basic = new AuthorizationType("Basic");
 
         //TODO 未实现高级认证
-        internal static AuthorizationType Digest = new AuthorizationType("Digest");
+        public static AuthorizationType Digest = new AuthorizationType("Digest");
+
         internal static AuthorizationType WSSE = new AuthorizationType("WSSE");
+
+        //Bearer
+        //HOBA
+        //Mutual
+
+        /// <summary>
+        /// 无认证
+        /// </summary>
+        public static AuthorizationType None = new AuthorizationType("none");
 
         private string _name;
 

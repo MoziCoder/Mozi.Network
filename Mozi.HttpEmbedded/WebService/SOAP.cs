@@ -174,7 +174,7 @@ namespace Mozi.HttpEmbedded.WebService
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        public static SoapEnvelope ParseDocument(string content,SoapVersion version)
+        public static SoapEnvelope Parse(string content,SoapVersion version)
         {
             SoapEnvelope envelope = new SoapEnvelope();
             XmlDocument doc = new XmlDocument();

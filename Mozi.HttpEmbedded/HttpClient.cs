@@ -21,10 +21,18 @@ namespace Mozi.HttpEmbedded
     /// </summary>
     public class HttpClient
     {
-        private const string Charset = "UTF-8";
+       
+        public string Charset = "UTF-8";
         private string _userAgent = "Mozilla/5.0 (Linux;Android 4.4.2;OEM Device) AppleWebKit/537.36 (KHTML,like Gecko) Chrome/39.0.2171.71  Mozi/1.3.8";
         private const string Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
         private const string AcceptEncoding = "gzip, deflate";
+
+        //public Dictionary<HeaderProperty, string> DefaultHeader = new Dictionary<HeaderProperty, string>() 
+        //{
+        //    { HeaderProperty.UserAgent,"Mozilla/5.0 (Linux;Android 4.4.2;OEM Device) AppleWebKit/537.36 (KHTML,like Gecko) Chrome/39.0.2171.71  Mozi/1.3.8" },
+        //    { HeaderProperty.Accept,"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" },
+        //    { HeaderProperty.AcceptEncoding,"gzip, deflate" }
+        //};
 
         /// <summary>
         /// 接收到响应时触发回调
@@ -89,6 +97,7 @@ namespace Mozi.HttpEmbedded
                         req.SetHeader(h.Key, h.Value);
                     }
                 }
+
                 HttpContext ctx = new HttpContext
                 {
                     Request = req
