@@ -9,11 +9,11 @@ namespace Mozi.HttpEmbedded
     /// </summary>
     public class HeaderProperty : AbsClassEnum
     {
-        public static HeaderProperty Accept         = new HeaderProperty("Accept");                                                       // 	用户代理期望的MIME 类型列表 	HTTP Content Negotiation 	HTTP/1.1
-        public static HeaderProperty AcceptCH       = new HeaderProperty("Accept-CH");                                                  // 
+        public static HeaderProperty Accept         = new HeaderProperty("Accept");                                               // 	用户代理期望的MIME 类型列表 	HTTP Content Negotiation 	HTTP/1.1
+        public static HeaderProperty AcceptCH       = new HeaderProperty("Accept-CH");                                            // 
 
         //    列出配置数据，服务器可据此来选择适当的响应。 	HTTP Client Hints 	
-        public static HeaderProperty AcceptCharset  = new HeaderProperty("Accept-Charset");                                        // 	列出用户代理支持的字符集。 	HTTP Content Negotiation 	HTTP/1.1
+        public static HeaderProperty AcceptCharset  = new HeaderProperty("Accept-Charset");                                       // 	列出用户代理支持的字符集。 	HTTP Content Negotiation 	HTTP/1.1
         public static HeaderProperty AcceptFeatures = new HeaderProperty("Accept-Features");                                      // 	HTTP Content Negotiation 	RFC 2295, §8.2
         public static HeaderProperty AcceptEncoding = new HeaderProperty("Accept-Encoding");                                      // 	列出用户代理支持的压缩方法。 	HTTP Content Negotiation 	HTTP/1.1
         public static HeaderProperty AcceptLanguage = new HeaderProperty("Accept-Language");                                      // 	列出用户代理期望的页面语言。
@@ -21,9 +21,9 @@ namespace Mozi.HttpEmbedded
         //
         public static HeaderProperty AcceptRanges                  = new HeaderProperty("Accept-Ranges");			
         public static HeaderProperty AccessControlAllowCredentials = new HeaderProperty("Access-Control-Allow-Credentials");      // 	HTTP Access Control and Server Side Access Control 	W3C Cross-Origin Resource Sharing
-        public static HeaderProperty AccessControlAllowOrigin      = new HeaderProperty("Access-Control-Allow-Origin");                // 	HTTP Access Control and Server Side Access Control 	W3C Cross-Origin Resource Sharing
-        public static HeaderProperty AccessControlAllowMethods     = new HeaderProperty("Access-Control-Allow-Methods");              // 	HTTP Access Control and Server Side Access Control 	W3C Cross-Origin Resource Sharing
-        public static HeaderProperty AccessControlAllowHeaders     = new HeaderProperty("Access-Control-Allow-Headers");              // 	HTTP Access Control and Server Side Access Control 	W3C Cross-Origin Resource Sharing
+        public static HeaderProperty AccessControlAllowOrigin      = new HeaderProperty("Access-Control-Allow-Origin");           // 	HTTP Access Control and Server Side Access Control 	W3C Cross-Origin Resource Sharing
+        public static HeaderProperty AccessControlAllowMethods     = new HeaderProperty("Access-Control-Allow-Methods");          // 	HTTP Access Control and Server Side Access Control 	W3C Cross-Origin Resource Sharing
+        public static HeaderProperty AccessControlAllowHeaders     = new HeaderProperty("Access-Control-Allow-Headers");          // 	HTTP Access Control and Server Side Access Control 	W3C Cross-Origin Resource Sharing
         public static HeaderProperty AccessControlMaxAge = new HeaderProperty("Access-Control-Max-Age");                          // 	HTTP Access Control and Server Side Access Control 	W3C Cross-Origin Resource Sharing
         public static HeaderProperty AccessControlExposeHeaders = new HeaderProperty("Access-Control-Expose-Headers");            // 	HTTP Access Control and Server Side Access Control 	W3C Cross-Origin Resource Sharing
         public static HeaderProperty AccessControlRequestMethod = new HeaderProperty("Access-Control-Request-Method");            // 	HTTP Access Control and Server Side Access Control 	W3C Cross-Origin Resource Sharing
@@ -32,7 +32,7 @@ namespace Mozi.HttpEmbedded
         public static HeaderProperty Allow = new HeaderProperty("Allow");                                                         // 			                                                
         public static HeaderProperty Alternates = new HeaderProperty("Alternates");                                               // 	HTTP Content Negotiation 	RFC 2295, §8.3
         public static HeaderProperty Authorization = new HeaderProperty("Authorization");                                         // 	包含用服务器验证用户代理的凭证 		
-        public static HeaderProperty CacheControl = new HeaderProperty("Cache-Control");                                          //  HTTP Caching FAQ 	
+        public static HeaderProperty CacheControl = new HeaderProperty("Cache-Control");                                          //    HTTP Caching FAQ 	
         public static HeaderProperty Connection = new HeaderProperty("Connection");                                               // 		
         public static HeaderProperty ContentEncoding = new HeaderProperty("Content-Encoding");
         public static HeaderProperty ContentDisposition = new HeaderProperty("Content-Disposition");
@@ -105,12 +105,12 @@ namespace Mozi.HttpEmbedded
         //    HTTP Content Negotiation & HTTP Caching FAQ 	
         public static HeaderProperty Via = new HeaderProperty("Via");// 			
         public static HeaderProperty Warning = new HeaderProperty("Warning");// 			
-        public static HeaderProperty WWWAuthenticate = new HeaderProperty("WWW-Authenticate");                                   // 			
-        public static HeaderProperty XContentDuration = new HeaderProperty("X-Content-Duration");                                // 		Configuring servers for Ogg media 	
-        public static HeaderProperty XContentSecurityPolicy = new HeaderProperty("X-Content-Security-Policy");                   // 		Using Content Security Policy 	
-        public static HeaderProperty XDNSPrefetchControl = new HeaderProperty("X-DNSPrefetch-Control");                          // 		Controlling DNS prefetching 	
-        public static HeaderProperty XFrameOptions = new HeaderProperty("X-Frame-Options");                                      // 		The XFrame-Option Response Header 	
-        public static HeaderProperty XRequestedWith = new HeaderProperty("X-Requested-With");                                    // 	
+        public static HeaderProperty WWWAuthenticate = new HeaderProperty("WWW-Authenticate");                                    // 			
+        public static HeaderProperty XContentDuration = new HeaderProperty("X-Content-Duration");                                 // 		Configuring servers for Ogg media 	
+        public static HeaderProperty XContentSecurityPolicy = new HeaderProperty("X-Content-Security-Policy");                    // 		Using Content Security Policy 	
+        public static HeaderProperty XDNSPrefetchControl = new HeaderProperty("X-DNSPrefetch-Control");                           // 		Controlling DNS prefetching 	
+        public static HeaderProperty XFrameOptions = new HeaderProperty("X-Frame-Options");                                       // 		The XFrame-Option Response Header 	
+        public static HeaderProperty XRequestedWith = new HeaderProperty("X-Requested-With");                                     // 	
 
         //通常在值为“XMLHttpRequest”时使用
         //Not standard
@@ -157,11 +157,20 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public static HeaderProperty Parse(byte[] data)
         {
+            string pv ="";
+            
             int itag = Array.IndexOf(data, ASCIICode.COLON);
-            byte[] btag = new byte[itag], bvalue = new byte[data.Length - itag - 2];
+            byte[] btag = new byte[itag];
             Array.Copy(data, btag, btag.Length);
-            Array.Copy(data, itag + 2, bvalue, 0, bvalue.Length);
-            return new HeaderProperty() { PropertyName = StringEncoder.Decode(btag), PropertyValue = StringEncoder.Decode(bvalue) };
+
+            //修正此处的BUG,须判断属性是否为空值
+            if (itag < data.Length - 1)
+            {
+                byte[] bvalue = new byte[data.Length - itag - 2];
+                Array.Copy(data, itag + 2, bvalue, 0, bvalue.Length);
+                pv = StringEncoder.Decode(bvalue);
+            }
+            return new HeaderProperty() { PropertyName = StringEncoder.Decode(btag), PropertyValue =pv  };
         }
     }
 }
