@@ -35,6 +35,7 @@ namespace Mozi.HttpEmbedded.Cookie
             Name = name;
             Value = value;
         }
+
         /// <summary>
         /// 转为Cookie格式字符串
         /// </summary>
@@ -84,8 +85,7 @@ namespace Mozi.HttpEmbedded.Cookie
                         cookie.Name = kp[0];
                         cookie.Value = kp[1];
                     }
-                }
-                else{
+                }else{
                     //secure
                     if (r.Trim().Equals("secure", StringComparison.OrdinalIgnoreCase))
                     {
