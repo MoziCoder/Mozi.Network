@@ -47,7 +47,7 @@
     <Compile Include="SSDPHeader.cs" />
     <Compile Include="SSDPHost.cs" />
     <Compile Include="SSDPService.cs" />
-    <Compile Include="SSDPCacheManager.cs" />
+    <Compile Include="SSDPCacheCollection.cs" />
     <Compile Include="SSDPType.cs" />
     <Compile Include="UDPSocket.cs" />
     <Compile Include="UDPStateObject.cs" />

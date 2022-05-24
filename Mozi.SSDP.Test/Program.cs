@@ -10,10 +10,13 @@ namespace Mozi.SSDP.Test
             SSDPHost host = SSDPHost.Instance;
             host.SetNotifyAliveReceived(SSDP_OnNotifyAliveReceived);
             host.SetNotifyByebyeReceived(SSDP_OnNotifyByebyeReceived);
-            host.SetResponseMessageReceived(SSDP_OnResponseMessageReceived);
+            host.SetSearchResponsed(SSDP_OnSearchResponsed);
             host.SetSearchReceived(SSDP_OnSearchReceived);
             host.SetNotifyUpdateReceived(SSDP_OnNotifyUpdateReceived);
             host.Activate();
+            host.Search(TargetDesc.Parse("ssdp:all"));
+            host.Search(TargetDesc.Parse("ssdp:all"));
+            host.Search(TargetDesc.Parse("ssdp:all"));
             Console.ReadLine();
         }
 
@@ -23,10 +26,11 @@ namespace Mozi.SSDP.Test
         /// <param name="sender"></param>
         /// <param name="resp"></param>
         /// <param name="host"></param>
-        protected static void SSDP_OnResponseMessageReceived(object sender, HttpResponse resp, string host)
+        protected static void SSDP_OnSearchResponsed(object sender, HttpResponse resp, string host)
         {
             Console.WriteLine("Response from {0}", host);
         }
+
         /// <summary>
         /// update通知
         /// </summary>
@@ -55,27 +59,30 @@ namespace Mozi.SSDP.Test
         /// <param name="host"></param>
         protected static void SSDP_OnSearchReceived(object sender, SearchPackage pack, string host)
         {
-            SearchResponsePackage search = new SearchResponsePackage();
             var service = (SSDPService)sender;
-            search.HOST = string.Format("{0}:{1}", service.MulticastAddress, service.MulticastPort);
-            search.CacheTimeout = 3600;
-            search.USN = service.USN;
-            search.ST = pack.ST;
-            search.Server = service.Server;
+
+            //SearchResponsePackage search = new SearchResponsePackage();
+            
+            //search.HOST = string.Format("{0}:{1}", service.MulticastAddress, service.MulticastPort);
+            //search.CacheTimeout = 3600;
+            //search.USN = service.USN;
+            //search.ST = pack.ST;
+            //search.Server = service.Server;
+
             //ssdp:all
-            if (search.ST.IsAll)
+            if (pack.ST.IsAll)
             {
                 Console.WriteLine("Search from {0},looking for ssdp:all", host);
             }
             //upnp:rootdevice
-            else if (search.ST.IsRootDevice)
+            else if (pack.ST.IsRootDevice)
             {
                 Console.WriteLine("Search from {0},looking for upnp:rootdevice", host);
             }
             //urn:schema-upnp-org:device:deviceName:version
             else
             {
-                Console.WriteLine("Search from {0},looking for {1}", host, search.ST.ToString());
+                Console.WriteLine("Search from {0},looking for {1}", host, pack.ST.ToString());
             }
             //service.EchoSearch(search);
         }

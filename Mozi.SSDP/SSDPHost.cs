@@ -73,7 +73,7 @@ namespace Mozi.SSDP
             }
         }
         /// <summary>
-        /// M-SEARCH
+        /// M-SEARCH,此处建议发3次包，避免终端没有收到信息
         /// </summary>
         /// <param name="td"></param>
         public void Search(TargetDesc td)
@@ -83,20 +83,16 @@ namespace Mozi.SSDP
                 service.Search(td);
             }
         }
-
-        public void SetMulticastAddress(string address)
+        /// <summary>
+        /// 设置广播地址
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="port"></param>
+        public void SetMulticastAddress(string address,int port)
         {
             foreach (var service in _services)
             {
                 service.MulticastAddress = address;
-            }
-        }
-
-        public void SetMulticastPort(int port)
-        {
-            foreach (var service in _services)
-            {
-                service.MulticastPort = port;
             }
         }
         /// <summary>
@@ -139,15 +135,21 @@ namespace Mozi.SSDP
                 service.StopAdvertise();
             }
         }
-
-        public void SetResponseMessageReceived(ResponseMessageReceived dlg)
+        /// <summary>
+        /// 设置事件 M-SEARCH响应
+        /// </summary>
+        /// <param name="dlg"></param>
+        public void SetSearchResponsed(SearchResponsed dlg)
         {
             foreach (var service in _services)
             {
-                service.OnResponseMessageReceived += dlg;
+                service.OnSearchResponsed += dlg;
             }
         }
-
+        /// <summary>
+        /// 设置事件 Notify upnp:update
+        /// </summary>
+        /// <param name="dlg"></param>
         public void SetNotifyUpdateReceived(NotifyUpdateReceived dlg)
         {
             foreach (var service in _services)
@@ -155,6 +157,10 @@ namespace Mozi.SSDP
                 service.OnNotifyUpdateReceived += dlg;
             }
         }
+        /// <summary>
+        /// 设置事件 Notify ssdp:alive
+        /// </summary>
+        /// <param name="dlg"></param>
         public void SetNotifyAliveReceived(NotifyAliveReceived dlg)
         {
             foreach (var service in _services)
@@ -162,6 +168,10 @@ namespace Mozi.SSDP
                 service.OnNotifyAliveReceived += dlg;
             }
         }
+        /// <summary>
+        /// 设置事件 Notify ssdp:byebye
+        /// </summary>
+        /// <param name="dlg"></param>
         public void SetNotifyByebyeReceived(NotifyByebyeReceived dlg)
         {
             foreach (var service in _services)
@@ -169,6 +179,10 @@ namespace Mozi.SSDP
                 service.OnNotifyByebyeReceived += dlg;
             }
         }
+        /// <summary>
+        /// 设置事件 M-SEARCH
+        /// </summary>
+        /// <param name="dlg"></param>
         public void SetSearchReceived(SearchReceived dlg)
         {
             foreach (var service in _services)
@@ -176,8 +190,12 @@ namespace Mozi.SSDP
                 service.OnSearchReceived += dlg;
             }
         }
-
-        public void ControlAction(SSDPService service, ControlActionPackage pk)
+        /// <summary>
+        /// 设置事件 Control
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="pk"></param>
+        internal void ControlAction(SSDPService service, ControlActionPackage pk)
         {
             service.ControlAction(pk);
         }
@@ -207,12 +225,12 @@ namespace Mozi.SSDP
              service.NotifyUpdate(pk);
         }
 
-        public void Subscribe(SSDPService service, SubscribePackage pk)
+        internal void Subscribe(SSDPService service, SubscribePackage pk)
         {
              service.Subscribe(pk);
         }
 
-        public void UnSubscribe(SSDPService service, SubscribePackage pk)
+        internal void UnSubscribe(SSDPService service, SubscribePackage pk)
         {
              service.UnSubscribe(pk);
         }

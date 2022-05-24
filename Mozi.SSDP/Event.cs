@@ -81,6 +81,10 @@ namespace Mozi.SSDP
         /// delivery path
         /// </summary>
         public Property[] PropertySet { get; set; }
+        public override TransformHeader GetHeaders()
+        {
+            throw new System.NotImplementedException();
+        }
 
         //public override TransformHeader GetHeaders()
         //{
@@ -106,6 +110,7 @@ namespace Mozi.SSDP
             doc += "</e:propertyset>";
             return doc;
         }
+
     }
 
     public class Property
