@@ -8,16 +8,44 @@ namespace Mozi.SSDP.Test
         static void Main(string[] args)
         {
             SSDPHost host = SSDPHost.Instance;
+
+            //设置组播地址和端口
+            //host.SetMulticastAddress("239.255.255.251", 1901);
+
+            //绑定事件
             host.SetNotifyAliveReceived(SSDP_OnNotifyAliveReceived);
             host.SetNotifyByebyeReceived(SSDP_OnNotifyByebyeReceived);
+            host.SetNotifyUpdateReceived(SSDP_OnNotifyUpdateReceived);
             host.SetSearchResponsed(SSDP_OnSearchResponsed);
             host.SetSearchReceived(SSDP_OnSearchReceived);
-            host.SetNotifyUpdateReceived(SSDP_OnNotifyUpdateReceived);
+            host.SetSubscribeReceived(SSDP_OnSubscribeReceived);
+            host.SetUnSubscribeReceived(SSDP_OnUnSubscribeReceived);
+            host.SetPostReceived(SSDP_OnPostReceived);
+            host.SetControlActionReceived(SSDP_OnControlActionReceived);
+
+            //启用服务
             host.Activate();
-            host.Search(TargetDesc.Parse("ssdp:all"));
-            host.Search(TargetDesc.Parse("ssdp:all"));
-            host.Search(TargetDesc.Parse("ssdp:all"));
+
+            //搜索指定的设备
+            host.Search(TargetDesc.Parse("urn:mozi.org:device:simplehost:1"));
+
+            //host.Search(TargetDesc.Parse("ssdp:all"));
             Console.ReadLine();
+        }
+
+        private static void SSDP_OnControlActionReceived(object sender, ControlActionPackage pack, string host)
+        {
+            //CONTROL ACTION 
+        }
+        /// <summary>
+        /// 所有的POST请求都会在这里触发
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="req"></param>
+        /// <param name="host"></param>
+        private static void SSDP_OnPostReceived(object sender, HttpRequest req, string host)
+        {
+            
         }
 
         /// <summary>
@@ -28,7 +56,7 @@ namespace Mozi.SSDP.Test
         /// <param name="host"></param>
         protected static void SSDP_OnSearchResponsed(object sender, HttpResponse resp, string host)
         {
-            Console.WriteLine("Response from {0}", host);
+            Console.WriteLine("Response search from {0}", host);
         }
 
         /// <summary>
@@ -61,29 +89,7 @@ namespace Mozi.SSDP.Test
         {
             var service = (SSDPService)sender;
 
-            //SearchResponsePackage search = new SearchResponsePackage();
-            
-            //search.HOST = string.Format("{0}:{1}", service.MulticastAddress, service.MulticastPort);
-            //search.CacheTimeout = 3600;
-            //search.USN = service.USN;
-            //search.ST = pack.ST;
-            //search.Server = service.Server;
-
-            //ssdp:all
-            if (pack.ST.IsAll)
-            {
-                Console.WriteLine("Search from {0},looking for ssdp:all", host);
-            }
-            //upnp:rootdevice
-            else if (pack.ST.IsRootDevice)
-            {
-                Console.WriteLine("Search from {0},looking for upnp:rootdevice", host);
-            }
-            //urn:schema-upnp-org:device:deviceName:version
-            else
-            {
-                Console.WriteLine("Search from {0},looking for {1}", host, pack.ST.ToString());
-            }
+            Console.WriteLine("Search from {0},looking for {1}", host, pack.ST.ToString());
             //service.EchoSearch(search);
         }
         /// <summary>
@@ -95,6 +101,16 @@ namespace Mozi.SSDP.Test
         protected static void SSDP_OnNotifyAliveReceived(object sender, AlivePackage pack, string host)
         {
             Console.WriteLine("Notify alive from {0}", host);
+        }
+
+        protected static void SSDP_OnUnSubscribeReceived(object sender, UnSubscribedPackage pack, string host)
+        {
+            
+        }
+
+        protected static void SSDP_OnSubscribeReceived(object sender, HttpRequest pack, string host)
+        {
+            
         }
     }
 

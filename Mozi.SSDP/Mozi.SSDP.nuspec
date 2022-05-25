@@ -15,7 +15,7 @@
 	  <dependencies>
 		  <!--<group targetFramework=".NetFramework4.0">
 		  </group>-->
-		  <dependency id="Mozi.HttpEmbedded" version="[1.3.9,]" />
+		  <dependency id="Mozi.HttpEmbedded" version="[1.4.3,]" />
 	  </dependencies>
   </metadata>
 </package>

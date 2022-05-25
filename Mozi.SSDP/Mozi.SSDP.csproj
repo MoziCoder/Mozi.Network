@@ -49,6 +49,7 @@
     <Compile Include="SSDPService.cs" />
     <Compile Include="SSDPCacheCollection.cs" />
     <Compile Include="SSDPType.cs" />
+    <Compile Include="TargetDesc.cs" />
     <Compile Include="UDPSocket.cs" />
     <Compile Include="UDPStateObject.cs" />
     <Compile Include="UUID.cs" />

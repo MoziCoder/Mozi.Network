@@ -1,14 +1,40 @@
 ﻿using Mozi.HttpEmbedded;
 using Mozi.HttpEmbedded.Generic;
+using System.Collections.Generic;
 
 namespace Mozi.SSDP
 {
     /// <summary>
+    /// 取消订阅包
+    /// </summary>
+    public class UnSubscribedPackage : AbsAdvertisePackage
+    {
+        public USNDesc SID { get; set; }
+
+        public override TransformHeader GetHeaders()
+        {
+            TransformHeader headers = new TransformHeader();
+            headers.Add("HOST", $"{HOST}");
+            headers.Add("SID", SID.ToString());
+            return headers;
+        }
+
+        public static UnSubscribedPackage Parse(HttpRequest req)
+        {
+            UnSubscribedPackage pack = new UnSubscribedPackage();
+            pack.HOST = req.Headers.GetValue("HOST");
+            pack.SID = USNDesc.Parse(req.Headers.GetValue("SID"));
+            return pack;
+        }
+
+    }
+
+    /// <summary>
     /// 订阅请求包
     /// </summary>
-    public class SubscribePackage : AbsAdvertisePackage
+    public class SubscribePackage:AbsAdvertisePackage
     {
-        public TargetDesc NT { get; set; }
+        public TargetDesc NT { get; private set; }
         public string CALLBACK { get; set; }
         public string SID { get; set; }
         public string TIMEOUT { get; set; }
@@ -80,7 +106,12 @@ namespace Mozi.SSDP
         /// <summary>
         /// delivery path
         /// </summary>
-        public Property[] PropertySet { get; set; }
+        public List<Property> PropertySet { get; set; }
+
+        public EventPackage()
+        {
+            PropertySet = new List<Property>();
+        }
         public override TransformHeader GetHeaders()
         {
             throw new System.NotImplementedException();
@@ -94,6 +125,11 @@ namespace Mozi.SSDP
         //    headers.Add("NTS", SSDPType.PropChange.ToString());
         //    headers.Add("CONTENT-TYPE","text/xml; charset=\"utf-8\"");
         //    return headers;
+        //}
+
+        //public void SetProperty(string name,string value)
+        //{
+        //     var p=PropertySet.Find(x=>x.P)
         //}
         public string CreateBody()
         {

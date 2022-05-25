@@ -250,23 +250,35 @@ namespace Mozi.SSDP
             return pack;
         }
     }
+    //NOTIFY* HTTP/1.1
+    //HOST: 239.255.255.250:1900
+    //LOCATION: URL for UPnP description for root device
+    //NT: notification type
+    //NTS: ssdp:update
+    //USN: composite identifier for the advertisement
+    //BOOTID.UPNP.ORG: BOOTID value that the device has used in its previous announcements
+    //CONFIGID.UPNP.ORG: number used for caching description information
+    //NEXTBOOTID.UPNP.ORG: new BOOTID value that the device will use in subsequent announcements
+    //SEARCHPORT.UPNP.ORG: number identifies port on which device responds to unicast M-SEARCH
     /// <summary>
     /// 更新数据包
     /// </summary>
     public class UpdatePackage : AlivePackage
     {
+        public SSDPType NTS = SSDPType.Update;
         public int NEXTBOOTID { get; set; }
 
         public override TransformHeader GetHeaders()
         {
             TransformHeader headers = new TransformHeader();
             headers.Add("HOST", HOST);
-            headers.Add("SERVER", Server);
             headers.Add("NT", NT.ToString());
             headers.Add("NTS", SSDPType.Update.ToString());
             headers.Add("USN", USN.ToString());
             headers.Add("LOCATION", Location);
-            headers.Add("CACHE-CONTROL", $"max-age = {CacheTimeout}");
+            headers.Add("BOOTID.UPNP.ORG", BOOTID.ToString());
+            headers.Add("CONFIGID.UPNP.ORG", CONFIGID.ToString());
+            headers.Add("NEXTBOOTID.UPNP.ORG", NEXTBOOTID.ToString());
             return headers;
         }
 
@@ -275,21 +287,21 @@ namespace Mozi.SSDP
             UpdatePackage pack = new UpdatePackage();
             var sHost = req.Headers.GetValue("HOST") ?? req.Headers.GetValue("Host");
             pack.HOST = sHost;
-            pack.Server = req.Headers.GetValue("SERVER");
             var sNt = req.Headers.GetValue("NT");
             pack.NT = TargetDesc.Parse(sNt);
             var sNTS = req.Headers.GetValue("NTS");
             var sUSN = req.Headers.GetValue("USN");
             pack.USN = USNDesc.Parse(sUSN);
             pack.Location = req.Headers.GetValue("LOCATION");
-            var sCacheControl = req.Headers.GetValue("CACHE-CONTROL");
-            if (!string.IsNullOrEmpty(sCacheControl))
+            try
             {
-                string[] cacheItems = sCacheControl.Split(new char[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
-                if (cacheItems.Length == 2)
-                {
-                    pack.CacheTimeout = int.Parse(cacheItems[1].Trim());
-                }
+                pack.BOOTID = int.Parse(req.Headers.GetValue("BOOTID.UPNP.ORG"));
+                pack.CONFIGID = int.Parse(req.Headers.GetValue("CONFIGID.UPNP.ORG"));
+                pack.NEXTBOOTID = int.Parse(req.Headers.GetValue("NEXTBOOTID.UPNP.ORG"));
+            }
+            catch
+            {
+
             }
             return pack;
         }

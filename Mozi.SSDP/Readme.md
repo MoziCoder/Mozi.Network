@@ -80,13 +80,6 @@ Mozi.SSDP是一个基于.Net开发的SSDP组件，目标是为.Net应用程序�
                         if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork && !ip.Address.ToString().StartsWith("169.254"))
                         {
                             SSDPService ssdp = new SSDPService();
-                            ssdp.PackDefaultSearch.ST = new TargetDesc()
-                            {
-                                Domain = ssdp.Domain,
-                                ServiceType = ServiceCategory.Device,
-                                ServiceName = "simplehost",
-                                Version = 1
-                            };
                             ssdp.MulticastAddress = "239.255.255.250";
                             ssdp.BindingAddress = ip.Address;
                             Console.WriteLine("binding start:{0},{1}", ip.Address, r.Name);
@@ -100,6 +93,18 @@ Mozi.SSDP是一个基于.Net开发的SSDP组件，目标是为.Net应用程序�
                 }
             }
         }
+        /// <summary>
+        /// 设置组播地址
+        /// </summary>
+        /// <param name="ip"></param>
+        /// <param name="port"></param>
+        public void SetMulticastAddress(string ip,int port)
+        {
+            foreach (var sd in _services)
+            {
+                sd.ApplyMulticastAddress(ip, port);
+            }
+        }
 
         //public void ApplyDevice()
         //{
@@ -108,35 +113,37 @@ Mozi.SSDP是一个基于.Net开发的SSDP组件，目标是为.Net应用程序�
         //        sd.PackDefaultAlive
         //    }
         //}
-
-        public void Search(SearchPackage sp)
+        /// <summary>
+        /// M-SEARCH,此处建议发3次包，避免终端没有收到信息
+        /// </summary>
+        /// <param name="st"></param>
+        public void Search(SearchPackage st)
         {
             foreach (var service in _services)
             {
-                service.Search(sp);
+                service.Search(st);
             }
         }
         /// <summary>
-        /// M-SEARCH
+        /// M-SEARCH,此处建议发3次包，避免终端没有收到信息
         /// </summary>
-        /// <param name="td"></param>
-        public void Search(TargetDesc td)
+        /// <param name="st"></param>
+        public void Search(TargetDesc st)
         {
             foreach (var service in _services)
             {
-                service.Search(td);
+                service.Search(st);
             }
         }
         /// <summary>
-        /// 设置广播地址
+        /// M-SEARCH,此处建议发3次包，避免终端没有收到信息
         /// </summary>
-        /// <param name="address"></param>
-        /// <param name="port"></param>
-        public void SetMulticastAddress(string address,int port)
+        /// <param name="st"></param>
+        public void Search(string st)
         {
             foreach (var service in _services)
             {
-                service.MulticastAddress = address;
+                service.Search(st);
             }
         }
         /// <summary>
@@ -177,6 +184,29 @@ Mozi.SSDP是一个基于.Net开发的SSDP组件，目标是为.Net应用程序�
             foreach (var service in _services)
             {
                 service.StopAdvertise();
+            }
+        
+        }
+        /// <summary>
+        /// 收到POST请求时触发
+        /// </summary>
+        /// <param name="dlg"></param>
+        public void SetPostReceived(PostReceived dlg)
+        {
+            foreach (var service in _services)
+            {
+                service.OnPostReceived += dlg;
+            }
+        }
+        /// <summary>
+        /// HTTP响应事件，即有HTTP/1.1 200 OK类似的HTTP响应包时触发
+        /// </summary>
+        /// <param name="dlg"></param>
+        public void SetHttpResponsed(HttpResponsed dlg)
+        {
+            foreach(var service in _services)
+            {
+                service.OnHttpResponsed += dlg;
             }
         }
         /// <summary>
@@ -235,6 +265,39 @@ Mozi.SSDP是一个基于.Net开发的SSDP组件，目标是为.Net应用程序�
             }
         }
         /// <summary>
+        /// 设置订阅事件
+        /// </summary>
+        /// <param name="dlg"></param>
+        public void SetSubscribeReceived(SubscribeReceived dlg)
+        {
+            foreach (var service in _services)
+            {
+                service.OnSubscribeReceived += dlg;
+            }
+        }
+        /// <summary>
+        /// 设置取消订阅事件
+        /// </summary>
+        /// <param name="dlg"></param>
+        public void SetUnSubscribeReceived(UnSubscribedReceived dlg)
+        {
+            foreach (var service in _services)
+            {
+                service.OnUnSubscribedReceived += dlg;
+            }
+        }
+        /// <summary>
+        /// 设置控制信息接收事件
+        /// </summary>
+        /// <param name="dlg"></param>
+        public void SetControlActionReceived(ControlActionReceived dlg)
+        {
+            foreach (var service in _services)
+            {
+                service.OnControlActionReceived += dlg;
+            }
+        }
+        /// <summary>
         /// 设置事件 Control
         /// </summary>
         /// <param name="service"></param>
@@ -249,50 +312,144 @@ Mozi.SSDP是一个基于.Net开发的SSDP组件，目标是为.Net应用程序�
         //    service.ControlAction(pk);
         //}
 
+        /// <summary>
+        /// 响应搜索
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="pk"></param>
         public void EchoSearch(SSDPService service,SearchResponsePackage pk)
         {
              service.EchoSearch(pk);
         }
-
+        /// <summary>
+        /// 在线通知
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="pk"></param>
         public void NotifyAlive(SSDPService service, AlivePackage pk)
         {
              service.NotifyAlive(pk);
         }
-
+        /// <summary>
+        /// 发送在线通知 简易方法，请参考方法原型<see cref="SSDPService.NotifyAlive(string)"/>
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="nt"></param>
+        public void NotifyAlive(SSDPService service,string nt)
+        {
+            service.NotifyAlive(nt);
+        }
+        /// <summary>
+        /// 离线通知
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="pk"></param>
         public void NotifyLeave(SSDPService service, ByebyePackage pk)
         {
              service.NotifyLeave(pk);
         }
-
+        /// <summary>
+        /// 发送在线通知 简易方法，请参考方法原型<see cref="SSDPService.NotifyLeave(string)"/>
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="nt"></param>
+        public void NotifyLeave(SSDPService service,string nt)
+        {
+            service.NotifyLeave(nt);
+        }
+        /// <summary>
+        /// 升级通知
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="pk"></param>
         public void NotifyUpdate(SSDPService service, UpdatePackage pk)
         {
              service.NotifyUpdate(pk);
         }
-
-        internal void Subscribe(SSDPService service, SubscribePackage pk)
+        /// <summary>
+        /// 升级通知 简易方法，请参考方法原型<see cref="SSDPService.NotifyUpdate(string)"/>
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="nt"></param>
+        public void NotifyUpdate(SSDPService service, string nt)
         {
-             service.Subscribe(pk);
+            service.NotifyUpdate(nt);
         }
-
-        internal void UnSubscribe(SSDPService service, SubscribePackage pk)
+        /// <summary>
+        /// Subscribe订阅 Subscribe with NT and CALLBACK 
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="publishPath"></param>
+        /// <param name="timeout"></param>
+        /// <param name="callbackurl"></param>
+        /// <param name="statevar"></param>
+        public void Subscribe(SSDPService service, string publishPath, int timeout, string callbackurl, string statevar)
+        {
+             service.Subscribe(publishPath, timeout, callbackurl, statevar);
+        }
+        /// <summary>
+        /// Subscribe订阅 Subscribe with sid
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="publishPath"></param>
+        /// <param name="timeout"></param>
+        /// <param name="sid"></param>
+        public void Subscribe(SSDPService service, string publishPath, int timeout, string sid)
+        {
+            service.Subscribe(publishPath, timeout, sid);
+        }
+        /// <summary>
+        /// 取消订阅
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="pk"></param>
+        public void UnSubscribe(SSDPService service, UnSubscribedPackage pk)
         {
              service.UnSubscribe(pk);
         }
     }
 
-    //调用用例
-    class Program
-    {
-        static void Main(string[] args)
+       static void Main(string[] args)
         {
             SSDPHost host = SSDPHost.Instance;
+
+            //设置组播地址和端口
+            //host.SetMulticastAddress("239.255.255.251", 1901);
+
+            //绑定事件
             host.SetNotifyAliveReceived(SSDP_OnNotifyAliveReceived);
             host.SetNotifyByebyeReceived(SSDP_OnNotifyByebyeReceived);
+            host.SetNotifyUpdateReceived(SSDP_OnNotifyUpdateReceived);
             host.SetSearchResponsed(SSDP_OnSearchResponsed);
             host.SetSearchReceived(SSDP_OnSearchReceived);
-            host.SetNotifyUpdateReceived(SSDP_OnNotifyUpdateReceived);
+            host.SetSubscribeReceived(SSDP_OnSubscribeReceived);
+            host.SetUnSubscribeReceived(SSDP_OnUnSubscribeReceived);
+            host.SetPostReceived(SSDP_OnPostReceived);
+            host.SetControlActionReceived(SSDP_OnControlActionReceived);
+
+            //启用服务
             host.Activate();
+
+            //搜索指定的设备
+            host.Search(TargetDesc.Parse("urn:mozi.org:device:simplehost:1"));
+
+            //host.Search(TargetDesc.Parse("ssdp:all"));
             Console.ReadLine();
+        }
+
+        private static void SSDP_OnControlActionReceived(object sender, ControlActionPackage pack, string host)
+        {
+            //CONTROL ACTION 
+        }
+        /// <summary>
+        /// 所有的POST请求都会在这里触发
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="req"></param>
+        /// <param name="host"></param>
+        private static void SSDP_OnPostReceived(object sender, HttpRequest req, string host)
+        {
+            
         }
 
         /// <summary>
@@ -303,8 +460,9 @@ Mozi.SSDP是一个基于.Net开发的SSDP组件，目标是为.Net应用程序�
         /// <param name="host"></param>
         protected static void SSDP_OnSearchResponsed(object sender, HttpResponse resp, string host)
         {
-            Console.WriteLine("Response from {0}", host);
+            Console.WriteLine("Response search from {0}", host);
         }
+
         /// <summary>
         /// update通知
         /// </summary>
@@ -335,28 +493,7 @@ Mozi.SSDP是一个基于.Net开发的SSDP组件，目标是为.Net应用程序�
         {
             var service = (SSDPService)sender;
 
-            SearchResponsePackage search = new SearchResponsePackage();
-            
-            search.HOST = string.Format("{0}:{1}", service.MulticastAddress, service.MulticastPort);
-            search.CacheTimeout = 3600;
-            search.USN = service.USN;
-            search.ST = pack.ST;
-            search.Server = service.Server;
-            //ssdp:all
-            if (search.ST.IsAll)
-            {
-                Console.WriteLine("Search from {0},looking for ssdp:all", host);
-            }
-            //upnp:rootdevice
-            else if (search.ST.IsRootDevice)
-            {
-                Console.WriteLine("Search from {0},looking for upnp:rootdevice", host);
-            }
-            //urn:schema-upnp-org:device:deviceName:version
-            else
-            {
-                Console.WriteLine("Search from {0},looking for {1}", host, search.ST.ToString());
-            }
+            Console.WriteLine("Search from {0},looking for {1}", host, pack.ST.ToString());
             //service.EchoSearch(search);
         }
         /// <summary>
@@ -369,7 +506,18 @@ Mozi.SSDP是一个基于.Net开发的SSDP组件，目标是为.Net应用程序�
         {
             Console.WriteLine("Notify alive from {0}", host);
         }
+
+        protected static void SSDP_OnUnSubscribeReceived(object sender, UnSubscribedPackage pack, string host)
+        {
+            
+        }
+
+        protected static void SSDP_OnSubscribeReceived(object sender, HttpRequest pack, string host)
+        {
+            
+        }
     }
+
 ~~~
 ## 版权说明
 

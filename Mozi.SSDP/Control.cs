@@ -28,6 +28,8 @@ namespace Mozi.SSDP
         public static ControlActionPackage Parse(HttpRequest req)
         {
             ControlActionPackage pack = new ControlActionPackage();
+            pack.Path = req.Path;
+            pack.HOST = req.Headers.GetValue("HOST");
             pack.ContentType = req.Headers.GetValue("CONTENT-TYPE");
             pack.UserAgent = req.Headers.GetValue("USER-AGENT");
             pack.SOAPAction = SOAPActionDesc.Parse(req.Headers.GetValue("SOAPACTION"));
