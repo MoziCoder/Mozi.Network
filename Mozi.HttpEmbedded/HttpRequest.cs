@@ -133,8 +133,6 @@ namespace Mozi.HttpEmbedded
             _cookies = new RequestCookie();
             _body = new byte[] { };
         }
-        /// <summary>
-        /// 解析请求数据包
         /// <code>
         ///                     
         ///  GET / HTTP/1.1\r\nHost: 127.0.0.1:9000\r\n
@@ -146,6 +144,16 @@ namespace Mozi.HttpEmbedded
         ///  Connection: keep-alive\r\n
         ///  Cache-Control: max-age=0
         ///  
+        /// </code>
+        /// <summary>
+        /// 解析请求数据包
+        /// <code>
+        ///     所有类HTTP请求都可以使用此方法进行解析，格式如下：<br/>
+        ///     {method} {path} {proto}/{version}\r\n<br/>
+        ///     {property1}: {value1}\r\n<br/>
+        ///     {property2}: {value2}\r\n<br/>
+        ///     \r\n<br/>
+        ///     {body}<br/>
         /// </code>
         /// </summary>
         /// <param name="data"></param>
