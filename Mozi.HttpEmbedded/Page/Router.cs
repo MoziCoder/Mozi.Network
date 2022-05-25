@@ -142,9 +142,13 @@ namespace Mozi.HttpEmbedded.Page
             //调用方法
             object result = method.Invoke(instance, BindingFlags.IgnoreCase, null, args, CultureInfo.CurrentCulture);
             var ctTypes = method.GetCustomAttributes(typeof(ContentTypeAttribute), false);
+            //方法自定义属性中的返回类型
             if (ctTypes.Length > 0)
             {
                 ctx.Response.SetContentType(((ContentTypeAttribute)ctTypes[0]).ContentType);
+            //数据序列化器中的返回类型
+            }else if (_dataserializer!=null&& string.IsNullOrEmpty(_dataserializer.ContentType)){
+                ctx.Response.SetContentType(_dataserializer.ContentType);
             }
 
             //对象置空
@@ -281,6 +285,9 @@ namespace Mozi.HttpEmbedded.Page
         /// 配置数据序列化组件,宿主程序需要实现一个序列化/反序列化功能，然后调用本方法注册
         /// </summary>
         /// <param name="ser"></param>
+        /// <remarks>
+        /// 设置序列化器后，返回的内容格式会跟随<see cref="ISerializer.ContentType"/>变化
+        /// </remarks>
         public void SetDataSerializer(ISerializer ser)
         {
             _dataserializer = ser;

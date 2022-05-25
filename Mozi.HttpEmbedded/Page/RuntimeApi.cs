@@ -53,7 +53,8 @@ namespace Mozi.HttpEmbedded.Page
                 info.LoadedModules.Add(new LoadedModuleInfo()
                 {
                     Name = m.Name,
-                    VersionName = m.Assembly.GetName().Version.ToString()
+                    VersionName = m.Assembly.GetName().Version.ToString(),
+                    Assembly=m.Assembly.GetName().CodeBase
                 });
             }
             return info;
@@ -367,9 +368,8 @@ namespace Mozi.HttpEmbedded.Page
         public object data { get; set; }
         public override string ToString()
         {
-            return string.Format("success:{0},code:{1},message:{2},data:{3}", success, code, message, data);
+            return $"{{success:\"{success}\",code:\"{code}\",message:\"{message}\",data:{data}}}";
         }
-
     }
     /// <summary>
     /// API信息
@@ -418,6 +418,7 @@ namespace Mozi.HttpEmbedded.Page
     public class LoadedModuleInfo
     {
         public string Name { get; set; }
+        public string Assembly { get; set; }
         public string VersionName { get; set; }
     }
 }

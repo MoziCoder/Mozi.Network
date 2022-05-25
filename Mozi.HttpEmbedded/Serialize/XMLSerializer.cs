@@ -9,6 +9,8 @@ namespace Mozi.HttpEmbedded.Serialize
     /// </summary>
     public class XMLSerializer : ISerializer
     {
+        public string ContentType => "text/xml";
+
         public DataSerializeType SerialzeType => DataSerializeType.XML;
 
         /// <summary>
