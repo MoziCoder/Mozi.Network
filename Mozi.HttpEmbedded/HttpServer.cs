@@ -441,7 +441,13 @@ namespace Mozi.HttpEmbedded
                 //判断资源类型
                 //TODO 此处应特殊处理某些类型的文件，比如.asp|.aspx|.jsp
                 bool isStatic = st.IsStatic(fileext);
-                context.Response.SetContentType(contenttype);
+
+                //TODO 仅静态文件才会设置内容格式
+
+                if (isStatic)
+                {
+                    context.Response.SetContentType(contenttype);
+                }
 
                 var pathReal = path;
                 if (pathReal == "/")
