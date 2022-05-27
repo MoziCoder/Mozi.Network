@@ -336,9 +336,11 @@ namespace Mozi.HttpEmbedded.Page
         /// <returns></returns>
         public string Soap(string action)
         {
-            if (action == "example")
+            if (action == "soap")
             {
                 WebService.SoapEnvelope envelope = new WebService.SoapEnvelope();
+                envelope.Body.Prefix = "s";
+                envelope.Body.Namespace = "http://mozicoder.org/soap/description";
                 envelope.Body.Method = "GetGoodsPrice";
                 envelope.Body.Items.Add("GoodsCode", "123456789");
                 envelope.Body.Items.Add("Price", "1");

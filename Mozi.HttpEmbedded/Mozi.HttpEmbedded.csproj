@@ -188,7 +188,9 @@
     <Content Include="RFC 7486 - HTTP Origin-Bound Authentication %28HOBA%29.htm" />
     <Content Include="RFC 7616 - HTTP Digest Access Authentication.htm" />
     <Content Include="RFC 7617 - The %27Basic%27 HTTP Authentication Scheme.htm" />
+    <Content Include="SOAP Version 1.2 Part 1 Messaging Framework.htm" />
     <Content Include="Source\mime.data" />
+    <None Include="wsdl12-bindings.pdf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

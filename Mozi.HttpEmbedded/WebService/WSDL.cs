@@ -32,7 +32,7 @@ namespace Mozi.HttpEmbedded.WebService
 
         public string Description = "Mozi.WebService服务信息";
         public string ServiceName = "MoziWS";
-        public string ServiceNamespace = "http://mozi.org";
+        public string ServiceNamespace = "http://mozicoder.org";
         public string ServiceAddress = "http://127.0.0.1/";
 
         public bool AllowHttpAccess = true;
