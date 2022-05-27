@@ -32,6 +32,6 @@
         /// <summary>
         /// SSDP组播端口
         /// </summary>
-        public new const int ProtocolPort = 3702;
+        public new const int MulticastPort = 3702;
     }
 }

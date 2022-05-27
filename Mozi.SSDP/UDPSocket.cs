@@ -13,7 +13,7 @@ namespace Mozi.SSDP
     public class UDPSocket
     {
 
-        protected int _multicastGroupPort = SSDPProtocol.ProtocolPort;
+        protected int _multicastGroupPort = SSDPProtocol.MulticastPort;
         protected string _multicastGroupAddress  = SSDPProtocol.MulticastAddress;
 
         protected Socket _sc;

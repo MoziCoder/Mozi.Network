@@ -50,7 +50,7 @@ namespace Mozi.SSDP
 
         public AbsAdvertisePackage()
         {
-            _host = string.Format("{0}:{1}", SSDPProtocol.MulticastAddress, SSDPProtocol.ProtocolPort);
+            _host = string.Format("{0}:{1}", SSDPProtocol.MulticastAddress, SSDPProtocol.MulticastPort);
             //HostIp = SSDPProtocol.MulticastAddress;
             //HostPort = SSDPProtocol.ProtocolPort;
             Path = "*";
@@ -135,8 +135,12 @@ namespace Mozi.SSDP
             headers.Add("BOOTID.UPNP.ORG", BOOTID.ToString());
             return headers;
         }
-
-        public static SearchResponsePackage Parse(HttpRequest req)
+        /// <summary>
+        /// 解析包
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns></returns>
+        public static SearchResponsePackage Parse(HttpResponse req)
         {
             SearchResponsePackage pack = new SearchResponsePackage();
 
@@ -155,7 +159,7 @@ namespace Mozi.SSDP
             pack.Location = req.Headers.GetValue("Location");
             pack.Server = req.Headers.GetValue("Server");
             pack.USN = USNDesc.Parse(req.Headers.GetValue("USN"));
-            pack.BOOTID = int.Parse(req.Headers.GetValue("BOOTID..UPNP.ORG"));
+            pack.BOOTID = int.Parse(req.Headers.Contains("BOOTID.UPNP.ORG")?req.Headers.GetValue("BOOTID.UPNP.ORG"):"0");
             return pack;
         }
 

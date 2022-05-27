@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading;
 using Mozi.HttpEmbedded;
+using Mozi.HttpEmbedded.Encode;
 
 namespace Mozi.SSDP
 {
@@ -14,16 +15,16 @@ namespace Mozi.SSDP
     public delegate void NotifyAliveReceived(object sender,AlivePackage pack,string host);
     public delegate void NotifyByebyeReceived(object sender, ByebyePackage pack, string host);
     public delegate void SearchReceived(object sender,SearchPackage pack,string host);
-    public delegate void SearchResponsed(object sender, HttpResponse resp, string host);
+    public delegate void SearchResponsed(object sender, SearchResponsePackage resp, string host);
     public delegate void PostReceived(object sender, HttpRequest req, string host);
     public delegate void HttpResponsed(object sender, HttpResponse resp, string host);
     public delegate void NotifyUpdateReceived(object sender, UpdatePackage pack, string host);
     public delegate void MessageReceived(object sender, DataTransferArgs args);
 
-    public delegate void SubscribeReceived(object sender, HttpRequest pack,string host);
-    public delegate void UnSubscribedReceived(object sender, UnSubscribedPackage pack, string host);
-    public delegate void ControlActionReceived(object sender,ControlActionPackage pack,string host);
-    internal delegate void EventMessageReceive(object sender, EventPackage pack, string host);
+    //public delegate void SubscribeReceived(object sender, HttpRequest pack,string host);
+    //public delegate void UnSubscribedReceived(object sender, UnSubscribedPackage pack, string host);
+    //public delegate void ControlActionReceived(object sender,ControlActionPackage pack,string host);
+    //internal delegate void EventMessageReceive(object sender, EventPackage pack, string host);
 
     //TODO 进一步完善SSDP协议并进行良好的封装
 
@@ -58,7 +59,7 @@ namespace Mozi.SSDP
         private IPEndPoint _remoteEP;
 
         private string _multicastGroupAddress = SSDPProtocol.MulticastAddress;
-        private int _multicastGroupPort = SSDPProtocol.ProtocolPort;
+        private int _multicastGroupPort = SSDPProtocol.MulticastPort;
         private IPAddress _bindingAddress = IPAddress.Any;
 
         private string _server = "Mozi/1.4.3 UPnP/2.0 Mozi.SSDP/1.4.3";
@@ -66,12 +67,12 @@ namespace Mozi.SSDP
         private USNDesc _uniqueServiceName = new USNDesc()
         {
             DeviceId= UUID.Generate(),
-            Domain="mozi.org",
+            Domain="mozicoder.org",
             ServiceName="simplehost",
             ServiceType=ServiceCategory.Device,
             Version=1
         };
-        private bool autoEchoSearch=true;
+        private bool autoEchoSearch=false;
 
         private SSDPCacheCollection _sc = SSDPCacheCollection.Instance;
 
@@ -127,7 +128,36 @@ namespace Mozi.SSDP
         /// 缓存时间
         /// </summary>
         public int CacheTimeout = 3600;
-
+        /// <summary>
+        /// 唯一标识符 UUID
+        /// </summary>
+        public string UniqueID
+        {
+            get => _uniqueServiceName.DeviceId; set => _uniqueServiceName.DeviceId = value;
+        }
+        /// <summary>
+        /// 本地服务唯一信息
+        /// </summary>
+        public USNDesc UniqueServiceName
+        {
+            get
+            {
+                return _uniqueServiceName;
+            }
+            set
+            {
+                _uniqueServiceName = value;
+                PackDefaultAlive.USN = value;
+                PackDefaultByebye.USN = value;
+            }
+        }
+        /// <summary>
+        /// 自动响应搜索请求
+        /// </summary>
+        public bool AutoEchoSearch
+        {
+            get => autoEchoSearch; set => autoEchoSearch = value;
+        }
         /// <summary>
         /// 是否接受回环地址消息
         /// <para>
@@ -163,7 +193,7 @@ namespace Mozi.SSDP
         /// <summary>
         /// 组播端口
         /// <para>
-        /// 标准端口为 <see cref="SSDPProtocol.ProtocolPort"/>
+        /// 标准端口为 <see cref="SSDPProtocol.MulticastPort"/>
         /// </para>
         /// </summary>
         public int MulticastPort
@@ -263,49 +293,18 @@ namespace Mozi.SSDP
         /// <para>如果内置的解析结果不能满足应用需求，可以使用该事件进行数据解析</para>
         /// </summary>
         public MessageReceived OnMessageReceived;
-        /// <summary>
-        /// 订阅消息触发
-        /// </summary>
-        public SubscribeReceived OnSubscribeReceived;
-        /// <summary>
-        /// 取消订阅触发
-        /// </summary>
-        public UnSubscribedReceived OnUnSubscribedReceived;
-        /// <summary>
-        /// 控制信息接收触发
-        /// </summary>
-        public ControlActionReceived OnControlActionReceived;
-
-        /// <summary>
-        /// 唯一标识符 UUID
-        /// </summary>
-        public string UniqueID
-        {
-            get => _uniqueServiceName.DeviceId; set => _uniqueServiceName.DeviceId = value;
-        }
-        /// <summary>
-        /// 本地服务唯一信息
-        /// </summary>
-        public USNDesc UniqueServiceName
-        {
-            get
-            {
-                return _uniqueServiceName;
-            }
-            set
-            {
-                _uniqueServiceName = value;
-                PackDefaultAlive.USN = value;
-                PackDefaultByebye.USN = value;
-            }
-        }
-        /// <summary>
-        /// 自动响应搜索请求
-        /// </summary>
-        public bool AutoEchoSearch
-        {
-            get => autoEchoSearch; set => autoEchoSearch = value;
-        }
+        ///// <summary>
+        ///// 订阅消息触发
+        ///// </summary>
+        //public SubscribeReceived OnSubscribeReceived;
+        ///// <summary>
+        ///// 取消订阅触发
+        ///// </summary>
+        //public UnSubscribedReceived OnUnSubscribedReceived;
+        ///// <summary>
+        ///// 控制信息接收触发
+        ///// </summary>
+        //public ControlActionReceived OnControlActionReceived;
         /// <summary>
         /// 构造函数
         /// <para>
@@ -316,7 +315,7 @@ namespace Mozi.SSDP
         {
             _socket = new UDPSocket();
             _socket.AfterReceiveEnd += Socket_AfterReceiveEnd;
-            _remoteEP = new IPEndPoint(IPAddress.Parse(SSDPProtocol.MulticastAddress), SSDPProtocol.ProtocolPort);
+            _remoteEP = new IPEndPoint(IPAddress.Parse(SSDPProtocol.MulticastAddress), SSDPProtocol.MulticastPort);
 
             _timer = new Timer(TimeoutCallback, null, Timeout.Infinite, Timeout.Infinite);
 
@@ -326,7 +325,11 @@ namespace Mozi.SSDP
             PackDefaultByebye.USN = UniqueServiceName;
 
         }
-
+        /// <summary>
+        /// 设置组播地址和端口号
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="port"></param>
         public void ApplyMulticastAddress(string address, int port)
         {
             _multicastGroupAddress = address;
@@ -418,7 +421,7 @@ namespace Mozi.SSDP
 
                             if (st.IsAll||(st.IsRootDevice && UniqueServiceName.IsRootDevice)|| UniqueID.Equals(st.DeviceId)|| UniqueServiceName.ToURN().Equals(st.ToString()))
                             {
-                                EchoSearch(new SearchResponsePackage()
+                                ResponseSearch(new SearchResponsePackage()
                                 {
                                     CacheTimeout = CacheTimeout,
                                     ST = pack.ST,
@@ -430,36 +433,36 @@ namespace Mozi.SSDP
                         }
                     }
                 }
-                //TODO SUBSCRIBE
-                //event SUBSCRIBE
-                else if (method == RequestMethodUPnP.SUBSCRIBE)
-                {
-                    if (OnSubscribeReceived != null)
-                    {
-                        OnSubscribeReceived(this, request, args.IP);
-                    }
-                }
-                //TODO UNSCRIBE
-                //event UNSUBSCRIBE
-                else if (method == RequestMethodUPnP.UNSUBSCRIBE)
-                {
-                    var pack = UnSubscribedPackage.Parse(request);
-                    if (pack != null && OnUnSubscribedReceived!=null)
-                    {
-                        OnUnSubscribedReceived(this, pack, args.IP);
-                    }
-                }
+                ////TODO SUBSCRIBE
+                ////event SUBSCRIBE
+                //else if (method == RequestMethodUPnP.SUBSCRIBE)
+                //{
+                //    if (OnSubscribeReceived != null)
+                //    {
+                //        OnSubscribeReceived(this, request, args.IP);
+                //    }
+                //}
+                ////TODO UNSCRIBE
+                ////event UNSUBSCRIBE
+                //else if (method == RequestMethodUPnP.UNSUBSCRIBE)
+                //{
+                //    var pack = UnSubscribedPackage.Parse(request);
+                //    if (pack != null && OnUnSubscribedReceived!=null)
+                //    {
+                //        OnUnSubscribedReceived(this, pack, args.IP);
+                //    }
+                //}
                 //Control
                 else if (method == RequestMethod.POST)
                 {
-                    if(request.Headers.Contains("SOAPACTION"))
-                    {
-                        ControlActionPackage pack = ControlActionPackage.Parse(request);
-                        if (pack != null && OnControlActionReceived != null)
-                        {
-                            OnControlActionReceived(this, pack, args.IP);
-                        }
-                    }
+                    //if(request.Headers.Contains("SOAPACTION"))
+                    //{
+                    //    ControlActionPackage pack = ControlActionPackage.Parse(request);
+                    //    if (pack != null && OnControlActionReceived != null)
+                    //    {
+                    //        OnControlActionReceived(this, pack, args.IP);
+                    //    }
+                    //}
                     if (OnPostReceived != null)
                     {
                         OnPostReceived(this, request, args.IP);
@@ -503,9 +506,10 @@ namespace Mozi.SSDP
                     }
                     if (resp.Headers.Contains(SSDPHeader.St.PropertyName))
                     {
-                        if (OnSearchResponsed != null)
+                        SearchResponsePackage sr = SearchResponsePackage.Parse(resp);
+                        if (sr!=null&&OnSearchResponsed != null)
                         {
-                            OnSearchResponsed(this, resp, args.IP);
+                            OnSearchResponsed(this, sr, args.IP);
                         }
                     }
                     //HTTP响应触发 http/1.1 200 OK
@@ -755,8 +759,14 @@ namespace Mozi.SSDP
                 Server = _server,
                 USN = UniqueServiceName
             };
-            NotifyAlive(pack);
+            NotifyUpdate(pack);
         }
+
+        internal void NotifyEvent()
+        {
+
+        }
+
         //HTTP/1.1 200 OK
         //CACHE-CONTROL: max-age = seconds until advertisement expires
         //DATE: when reponse was generated
@@ -781,16 +791,33 @@ namespace Mozi.SSDP
         /// 响应 MS-SEARCH 查找
         /// </summary>
         /// <param name="pk"></param>
+        [Obsolete("方法已过时，请使用ResponseSearch(SearchResponsePackage pk)", error:true)]
         public void EchoSearch(SearchResponsePackage pk)
         {
+            ResponseSearch(pk);
+        }
+        /// <summary>
+        /// 响应 MS-SEARCH 查找
+        /// </summary>
+        /// <param name="pk"></param>
+        public void ResponseSearch(SearchResponsePackage pk)
+        {
             HttpResponse resp = new HttpResponse();
-            resp.DontAddAutoHeader = true;
+
             resp.SetHeaders(pk.GetHeaders());
             resp.SetStatus(StatusCode.Success);
+            Response(resp);
+        }
+        /// <summary>
+        /// 响应请求，此方法用于响应POST请求
+        /// </summary>
+        /// <param name="resp"></param>
+        public void Response(HttpResponse resp)
+        {
+            resp.DontAddAutoHeader = true;
             byte[] data = resp.GetBuffer(true);
             SendMessage(data);
         }
-
         //POST path of control URL HTTP/1.1 
         //HOST: host of control URL:port of control URL
         //CONTENT-LENGTH: bytes in body
@@ -805,20 +832,20 @@ namespace Mozi.SSDP
         //          </u:actionName>
         //      </s:Body> 
         //</s:Envelope>
+
         /// <summary>
-        /// 控制信息
+        /// 控制信息 HTTP
         /// </summary>
         /// <param name="pk"></param>
-        public void ControlAction(ControlActionPackage pk)
+        public void ControlAction(string controlPath,ControlActionPackage pk,RequestComplete callback)
         {
             HttpRequest request = new HttpRequest();
             //如果POST被拒绝，则使用M-POST
-            request.SetPath(pk.Path).SetMethod(RequestMethod.POST);
-            request.SetBody(HttpEmbedded.Encode.StringEncoder.Encode(pk.Body.CreateDocument()));
-            request.SetHeader("CONTENT-LENGTH", request.ContentLength);
+            request.SetBody(StringEncoder.Encode(pk.Body.CreateDocument()));
             request.SetHeaders(pk.GetHeaders());
-            byte[] data = request.GetBuffer();
-            SendMessage(data);
+            request.SetHeader("CONTENT-LENGTH", request.Body.Length.ToString());
+            HttpClient hc = new HttpClient();
+            hc.Send(controlPath, request, callback);
         }
 
         //POST path of control URL HTTP/1.1 
@@ -867,6 +894,7 @@ namespace Mozi.SSDP
         //</e:property> 
         //  Other variable names and values(if any) go here.
         //</e:propertyset>
+
         /// <summary>
         /// Subscribe订阅  Subscribe with NT and CALLBACK
         /// </summary>
@@ -874,11 +902,13 @@ namespace Mozi.SSDP
         /// <param name="timeout"></param>
         /// <param name="callbackurl">回调地址</param>
         /// <param name="statevar">可为空</param>
-        public void Subscribe(string publishPath, int timeout, string callbackurl, string statevar)
+        /// <param name="callback"></param>
+        internal void Subscribe(string publishPath, int timeout, string callbackurl, string statevar,RequestComplete callback)
         {
             HttpRequest request = new HttpRequest();
+            UriInfo uri=UriInfo.Parse(publishPath);
             request.SetPath(publishPath).SetMethod(RequestMethodUPnP.SUBSCRIBE);
-            request.SetHeader("HOST", $"{this._multicastGroupAddress}:{_multicastGroupPort}");
+            request.SetHeader("HOST", $"{uri.Domain??uri.Host}:{(uri.Port>0?uri.Port:80)}");
             request.SetHeader("NT", SSDPType.Event.ToString());
             request.SetHeader("CALLBACK",callbackurl);
             request.SetHeader("TIMEOUT", timeout.ToString());
@@ -886,41 +916,51 @@ namespace Mozi.SSDP
             {
                 request.SetHeader("STATEVAR", statevar);
             }
-            byte[] data = request.GetBuffer();
-            SendMessage(data);
+            HttpClient hc = new HttpClient();
+            hc.Send(publishPath, request, callback);
         }
         /// <summary>
         /// Subscribe订阅  Subscribe with SID
         /// </summary>
         /// <param name="publishPath"></param>
         /// <param name="timeout"></param>
-        /// <param name="sid">对端UUID值</param>
-        public void Subscribe(string publishPath, int timeout, string sid)
+        /// <param name="sid">对端UDN值,即uuid:{uuid}</param>
+        /// <param name="callback"></param>
+        public void Subscribe(string publishPath, int timeout, string sid,RequestComplete callback)
         {
             HttpRequest request = new HttpRequest();
+            UriInfo uri = UriInfo.Parse(publishPath);
             request.SetPath(publishPath).SetMethod(RequestMethodUPnP.SUBSCRIBE);
-            request.SetHeader("HOST", $"{this._multicastGroupAddress}:{_multicastGroupPort}");
+            request.SetHeader("HOST", $"{uri.Domain ?? uri.Host}:{(uri.Port > 0 ? uri.Port : 80)}");
             request.SetHeader("SID", $"uuid:{sid}");
             request.SetHeader("TIMEOUT", timeout.ToString());
-            byte[] data = request.GetBuffer();
-            SendMessage(data);
+            HttpClient hc = new HttpClient();
+            hc.Send(publishPath, request, callback);
         }
         //UNSUBSCRIBE publisher path HTTP/1.1 
         //HOST: publisher host:publisher port
         //SID: uuid:subscription UUID
+
         /// <summary>
         /// 取消订阅
         /// </summary>
-        /// <param name="pk"></param>
-        public void UnSubscribe(UnSubscribedPackage pk)
+        /// <param name="publishPath"></param>
+        /// <param name="sid">对端UDN值,即uuid:{uuid}</param>
+        /// <param name="callback"></param>
+        public void UnSubscribe(string publishPath,string sid,RequestComplete callback)
         {
             HttpRequest request = new HttpRequest();
-            request.SetPath(pk.Path).SetMethod(RequestMethodUPnP.UNSUBSCRIBE);
-            request.SetHeaders(pk.GetHeaders());
-            byte[] data = request.GetBuffer();
-            SendMessage(data);
+            UriInfo uri = UriInfo.Parse(publishPath);
+            request.SetHeader("HOST", $"{uri.Domain ?? uri.Host}:{(uri.Port > 0 ? uri.Port : 80)}");
+            request.SetHeader("SID", $"uuid:{sid}");
+            HttpClient hc = new HttpClient();
+            hc.Send(publishPath, request, callback);
         }
 
+        /// <summary>
+        /// 发送报文消息
+        /// </summary>
+        /// <param name="data"></param>
         protected void SendMessage(byte[] data)
         {
             _socket.SocketMain.SendTo(data, _remoteEP);
@@ -960,7 +1000,7 @@ namespace Mozi.SSDP
         /// <summary>
         /// SSDP组播端口
         /// </summary>
-        public const int ProtocolPort = 1900;
+        public const int MulticastPort = 1900;
         /// <summary>
         /// 事件组播地址
         /// </summary>

@@ -9,11 +9,17 @@ namespace Mozi.SSDP
     /// </summary>
     public class ControlActionPackage:AbsAdvertisePackage
     {
+        /// <summary>
+        /// 文档格式
+        /// </summary>
         public string ContentType { get; set; }
         public int ContentLength {get;set;}
         public string UserAgent { get; set; }
         //SOAPACTION:"urn:schema-upnp-org:service:serviceType:v#actionName"
         public SOAPActionDesc SOAPAction { get; set; }
+        /// <summary>
+        /// 请求体解析，使用<see cref="HttpEmbedded.WebService.SoapEnvelope.Parse(string, SoapVersion)"/>
+        /// </summary>
         public SoapEnvelope Body { get; set; }
         public override TransformHeader GetHeaders()
         {
@@ -37,6 +43,8 @@ namespace Mozi.SSDP
             return pack;
         }
     }
+
+
     ///// <summary>
     ///// 控制响应包
     ///// </summary>
@@ -46,6 +54,11 @@ namespace Mozi.SSDP
     //    public DateTime Date { get; set; }
     //    public int ContentLength { get; set; }
     //    public string Server { get; set; }
+
+    //    public override TransformHeader GetHeaders()
+    //    {
+    //        throw new System.NotImplementedException();
+    //    }
     //}
     public class ControlQueryPackage
     {

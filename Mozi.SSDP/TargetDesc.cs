@@ -3,7 +3,7 @@
 namespace Mozi.SSDP
 {
     /// <summary>
-    /// 目标描述符号，ST|NT|URN
+    /// 目标描述符号，ST|NT|URN|UDN
     /// <list type="table">
     ///     <listheader>格式如下</listheader>
     ///     <item>--upnp:rootdevice</item>
@@ -267,6 +267,27 @@ namespace Mozi.SSDP
             desc.Version = int.Parse(items[5]);
             return desc;
         }
+    }
+    /// <summary>
+    /// UDN描述符号 uuid:{device-UUID}
+    /// </summary>
+    public class UDNDesc
+    {
+        /// <summary>
+        /// 设备UUID值
+        /// </summary>
+        public string DeviceId { get; set; }
+        public override string ToString()
+        {
+            return $"uuid:{DeviceId}";
+        }
+
+        public static UDNDesc Parse(string data)
+        {
+            UDNDesc desc = new UDNDesc();
+            desc.DeviceId = data.Replace("uuid:", "");
+            return desc;
+        } 
     }
     /// <summary>
     /// 设备还是服务

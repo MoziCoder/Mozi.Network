@@ -38,6 +38,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Control.cs" />
+    <Compile Include="Description\DeviceDescription.cs" />
     <Compile Include="Discovery.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="ISSDPService.cs" />
@@ -63,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="License.md" />
@@ -75,6 +77,7 @@
   <ItemGroup>
     <Content Include="Description\DeviceDescription.xml" />
     <Content Include="Description\ServiceDescription.xml" />
+    <Content Include="draft-cai-ssdp-v1-03.htm" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

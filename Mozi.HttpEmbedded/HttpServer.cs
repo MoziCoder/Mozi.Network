@@ -983,8 +983,10 @@ namespace Mozi.HttpEmbedded
         {
             if (peer.Connected)
             {
-                UnsignedIntegerOptionValue ui = new UnsignedIntegerOptionValue();
-                ui.Value = data.Length;
+                UnsignedIntegerOptionValue ui = new UnsignedIntegerOptionValue
+                {
+                    Value = data.Length
+                };
                 string len=Hex.To(ui.Pack);
                 peer.Send(StringEncoder.Encode(len));
                 peer.Send(new byte[] { ASCIICode.CR, ASCIICode.LF });

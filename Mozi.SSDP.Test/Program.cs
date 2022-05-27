@@ -1,5 +1,5 @@
-﻿using Mozi.HttpEmbedded;
-using System;
+﻿using System;
+using Mozi.HttpEmbedded;
 
 namespace Mozi.SSDP.Test
 {
@@ -7,6 +7,7 @@ namespace Mozi.SSDP.Test
     {
         static void Main(string[] args)
         {
+            //默认组播地址为 239.255.255.250:1900
             SSDPHost host = SSDPHost.Instance;
 
             //设置组播地址和端口
@@ -18,25 +19,18 @@ namespace Mozi.SSDP.Test
             host.SetNotifyUpdateReceived(SSDP_OnNotifyUpdateReceived);
             host.SetSearchResponsed(SSDP_OnSearchResponsed);
             host.SetSearchReceived(SSDP_OnSearchReceived);
-            host.SetSubscribeReceived(SSDP_OnSubscribeReceived);
-            host.SetUnSubscribeReceived(SSDP_OnUnSubscribeReceived);
-            host.SetPostReceived(SSDP_OnPostReceived);
-            host.SetControlActionReceived(SSDP_OnControlActionReceived);
 
+            host.SetPostReceived(SSDP_OnPostReceived);
             //启用服务
             host.Activate();
 
             //搜索指定的设备
-            host.Search(TargetDesc.Parse("urn:mozi.org:device:simplehost:1"));
+            host.Search(TargetDesc.Parse("urn:mozicoder.org:device:simplehost:1"));
 
             //host.Search(TargetDesc.Parse("ssdp:all"));
             Console.ReadLine();
         }
 
-        private static void SSDP_OnControlActionReceived(object sender, ControlActionPackage pack, string host)
-        {
-            //CONTROL ACTION 
-        }
         /// <summary>
         /// 所有的POST请求都会在这里触发
         /// </summary>
@@ -54,7 +48,7 @@ namespace Mozi.SSDP.Test
         /// <param name="sender"></param>
         /// <param name="resp"></param>
         /// <param name="host"></param>
-        protected static void SSDP_OnSearchResponsed(object sender, HttpResponse resp, string host)
+        protected static void SSDP_OnSearchResponsed(object sender, SearchResponsePackage resp, string host)
         {
             Console.WriteLine("Response search from {0}", host);
         }
@@ -88,7 +82,6 @@ namespace Mozi.SSDP.Test
         protected static void SSDP_OnSearchReceived(object sender, SearchPackage pack, string host)
         {
             var service = (SSDPService)sender;
-
             Console.WriteLine("Search from {0},looking for {1}", host, pack.ST.ToString());
             //service.EchoSearch(search);
         }
@@ -103,15 +96,6 @@ namespace Mozi.SSDP.Test
             Console.WriteLine("Notify alive from {0}", host);
         }
 
-        protected static void SSDP_OnUnSubscribeReceived(object sender, UnSubscribedPackage pack, string host)
-        {
-            
-        }
-
-        protected static void SSDP_OnSubscribeReceived(object sender, HttpRequest pack, string host)
-        {
-            
-        }
     }
 
 }
