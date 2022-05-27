@@ -10,6 +10,8 @@ namespace Mozi.HttpEmbedded.Serialize
     {
         public DataSerializeType SerialzeType => throw new NotImplementedException();
 
+        public string ContentType => "application/json";
+
         public T Decode<T>(string data)
         {
             throw new NotImplementedException();

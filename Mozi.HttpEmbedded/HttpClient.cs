@@ -54,7 +54,7 @@ namespace Mozi.HttpEmbedded
 
         //TODO 此处应考虑Gzip解码
         /// <summary>
-        /// 发送HTTP请求
+        /// 发送HTTP请求,原型为<see cref="Send(string, HttpRequest, RequestComplete)"/>
         /// </summary>
         /// <param name="url">url地址，格式http://{host|domain}[:{port}]/[{path}[?query]]</param>
         /// <param name="method">请求方法</param>
@@ -74,29 +74,40 @@ namespace Mozi.HttpEmbedded
         /// <param name="callback">回调方法</param>
         public void Send(string url, RequestMethod method,Dictionary<HeaderProperty,string> headers,byte[] body,RequestComplete callback)
         {
+            HttpRequest req = new HttpRequest();
+            req.SetMethod(method);
+            req.SetHeader(HeaderProperty.UserAgent, UserAgent);
+            req.SetHeader(HeaderProperty.Accept, Accept);
+            req.SetHeader(HeaderProperty.AcceptEncoding, AcceptEncoding);
+            req.SetBody(body);
+
+            if (headers != null)
+            {
+                foreach (KeyValuePair<HeaderProperty, string> h in headers)
+                {
+                    req.SetHeader(h.Key, h.Value);
+                }
+            }
+            Send(url, req, callback);
+        }
+        /// <summary>
+        /// 发送HTTP请求
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="req"></param>
+        /// <param name="callback"></param>
+        public void Send(string url,HttpRequest req,RequestComplete callback)
+        {
             SocketClient sc = new SocketClient();
             sc.ConnectTimeout = ConnectTimeout;
-            HttpRequest req = new HttpRequest();
-            //分析URL路径
+           
+            //分析URL路径，DNS解析
             UriInfo uri = UriInfo.Parse(url);
 
             if (!string.IsNullOrEmpty(uri.Url))
             {
                 req.SetUri(uri);
-                req.SetMethod(method);
-                req.SetPath(uri.Path + (String.IsNullOrEmpty(uri.Query) ? "" : "&" + uri.Query));
-                req.SetHeader(HeaderProperty.UserAgent, UserAgent);
-                req.SetHeader(HeaderProperty.Accept, Accept);
-                req.SetHeader(HeaderProperty.AcceptEncoding, AcceptEncoding);
-                req.SetBody(body);
-
-                if (headers != null)
-                {
-                    foreach (KeyValuePair<HeaderProperty, string> h in headers)
-                    {
-                        req.SetHeader(h.Key, h.Value);
-                    }
-                }
+                req.SetPath(uri.Path + (string.IsNullOrEmpty(uri.Query) ? "" : "&" + uri.Query));
 
                 HttpContext ctx = new HttpContext
                 {
@@ -127,15 +138,15 @@ namespace Mozi.HttpEmbedded
                 }
                 else
                 {
-                    throw new Exception("超时时间已到，无法访问指定的服务器:"+(string.IsNullOrEmpty(uri.Domain)?uri.Host:uri.Domain)+(uri.Port==0?":80":(":"+uri.Port)));
+                    throw new Exception("超时时间已到，无法访问指定的服务器:" + (string.IsNullOrEmpty(uri.Domain) ? uri.Host : uri.Domain) + (uri.Port == 0 ? ":80" : (":" + uri.Port)));
                 }
             }
             else
             {
                 throw new Exception($"分析指定的地址:{url}时出错，请检查地址是否合法");
             }
-
         }
+
         /// <summary>
         /// HttpGet方法
         /// </summary>

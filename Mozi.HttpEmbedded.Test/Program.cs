@@ -5,7 +5,6 @@ using System.Reflection;
 using Mozi.HttpEmbedded.Page;
 using Mozi.HttpEmbedded.Common;
 using Mozi.StateService;
-using Mozi.HttpEmbedded.Auth;
 
 namespace Mozi.HttpEmbedded.Test
 {
@@ -33,7 +32,7 @@ namespace Mozi.HttpEmbedded.Test
             hs.SetPort(9090).Start();
 
             //开启认证
-            hs.UseAuth(AuthorizationType.Digest).SetUser("admin", "admin");
+            //hs.UseAuth(AuthorizationType.Basic).SetUser("admin", "admin");
 
             //设置默认首页 可选 不设置首页为空，打开首页返回默认页面
             hs.SetIndexPage("index.html,index.htm");
@@ -112,8 +111,6 @@ namespace Mozi.HttpEmbedded.Test
             //      http://{ip}:{port}/{controller}/{action}
 
             //内置API 请参看Runtime.cs文件
-
-
 
         }
 

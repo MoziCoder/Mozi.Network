@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading;
 using Mozi.HttpEmbedded;
+using Mozi.HttpEmbedded.Encode;
 
 namespace Mozi.SSDP
 {
@@ -14,14 +15,16 @@ namespace Mozi.SSDP
     public delegate void NotifyAliveReceived(object sender,AlivePackage pack,string host);
     public delegate void NotifyByebyeReceived(object sender, ByebyePackage pack, string host);
     public delegate void SearchReceived(object sender,SearchPackage pack,string host);
+    public delegate void SearchResponsed(object sender, SearchResponsePackage resp, string host);
+    public delegate void PostReceived(object sender, HttpRequest req, string host);
+    public delegate void HttpResponsed(object sender, HttpResponse resp, string host);
     public delegate void NotifyUpdateReceived(object sender, UpdatePackage pack, string host);
-    public delegate void ResponseMessageReceived(object sender, HttpResponse resp, string host);
     public delegate void MessageReceived(object sender, DataTransferArgs args);
 
-    internal delegate void SubscribeReceived(object sender,SubscribePackage pack,string host);
-    internal delegate void UnSubscribedReceived(object sender,SubscribePackage pack, string host);
-    internal delegate void ControlActionReceived(object sender,ControlActionPackage pack,string host);
-    internal delegate void EventMessageReceive(object sender, EventPackage pack, string host);
+    //public delegate void SubscribeReceived(object sender, HttpRequest pack,string host);
+    //public delegate void UnSubscribedReceived(object sender, UnSubscribedPackage pack, string host);
+    //public delegate void ControlActionReceived(object sender,ControlActionPackage pack,string host);
+    //internal delegate void EventMessageReceive(object sender, EventPackage pack, string host);
 
     //TODO 进一步完善SSDP协议并进行良好的封装
 
@@ -47,7 +50,7 @@ namespace Mozi.SSDP
     ///     --UnSubscribe
     /// </para>
     /// </summary>
-    public class SSDPService:ISSDPService
+    public class SSDPService : ISSDPService
     {
         private bool _initialized = false;
 
@@ -56,10 +59,22 @@ namespace Mozi.SSDP
         private IPEndPoint _remoteEP;
 
         private string _multicastGroupAddress = SSDPProtocol.MulticastAddress;
-        private int _multicastGroupPort = SSDPProtocol.ProtocolPort;
+        private int _multicastGroupPort = SSDPProtocol.MulticastPort;
         private IPAddress _bindingAddress = IPAddress.Any;
 
-        private string _server = "Mozi/1.3.7 UPnP/2.0 Mozi.SSDP/1.3.7";
+        private string _server = "Mozi/1.4.3 UPnP/2.0 Mozi.SSDP/1.4.3";
+        //本地服务唯一信息
+        private USNDesc _uniqueServiceName = new USNDesc()
+        {
+            DeviceId= UUID.Generate(),
+            Domain="mozicoder.org",
+            ServiceName="simplehost",
+            ServiceType=ServiceCategory.Device,
+            Version=1
+        };
+        private bool autoEchoSearch=false;
+
+        private SSDPCacheCollection _sc = SSDPCacheCollection.Instance;
 
         /// <summary>
         /// 设备描述文档地址
@@ -71,27 +86,34 @@ namespace Mozi.SSDP
         /// 服务器描述值
         /// </summary>
         public string Server { get { return _server; } set { _server = value; } }
-        ///// <summary>
-        ///// 设备描述信息地址
-        ///// </summary>
-        //public string Location { get; set; }
+        /// <summary>
+        /// 缓存的设备信息
+        /// </summary>
+        public SSDPCacheCollection Cache
+        {
+            get
+            {
+                return _sc;
+            }
+        }
+        /// <summary>
+        /// 设备描述信息地址
+        /// </summary>
+        public string DescriptionLocation { get { return _deviceDescPath; } set { _deviceDescPath = value; } }
         /// <summary>
         /// 程序默认的域信息，用于绑定NT,ST,USN，以及设备/服务描述文档中的相关信息
         /// </summary>
-        public string Domain = "mozi.org";
-        /// <summary>
-        /// 本地服务基本信息
-        /// </summary>
-        public USNDesc USN = new USNDesc()
+        public string Domain
         {
-            DeviceId = UUID.Generate(),
-            Domain = "mozi.org",
-            ServiceType = ServiceCategory.Device,
-            ServiceName = "simplehost",
-            IsRootDevice = false,
-            Version = 1,
-        };
-
+            get
+            {
+                return _uniqueServiceName.Domain;
+            }
+            set
+            {
+                _uniqueServiceName.Domain = value;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -106,7 +128,36 @@ namespace Mozi.SSDP
         /// 缓存时间
         /// </summary>
         public int CacheTimeout = 3600;
-
+        /// <summary>
+        /// 唯一标识符 UUID
+        /// </summary>
+        public string UniqueID
+        {
+            get => _uniqueServiceName.DeviceId; set => _uniqueServiceName.DeviceId = value;
+        }
+        /// <summary>
+        /// 本地服务唯一信息
+        /// </summary>
+        public USNDesc UniqueServiceName
+        {
+            get
+            {
+                return _uniqueServiceName;
+            }
+            set
+            {
+                _uniqueServiceName = value;
+                PackDefaultAlive.USN = value;
+                PackDefaultByebye.USN = value;
+            }
+        }
+        /// <summary>
+        /// 自动响应搜索请求
+        /// </summary>
+        public bool AutoEchoSearch
+        {
+            get => autoEchoSearch; set => autoEchoSearch = value;
+        }
         /// <summary>
         /// 是否接受回环地址消息
         /// <para>
@@ -142,7 +193,7 @@ namespace Mozi.SSDP
         /// <summary>
         /// 组播端口
         /// <para>
-        /// 标准端口为 <see cref="SSDPProtocol.ProtocolPort"/>
+        /// 标准端口为 <see cref="SSDPProtocol.MulticastPort"/>
         /// </para>
         /// </summary>
         public int MulticastPort
@@ -171,14 +222,6 @@ namespace Mozi.SSDP
                 _bindingAddress = value;
             }
         }
-        /// <summary>
-        /// 默认查询包
-        /// </summary>
-        public SearchPackage PackDefaultSearch = new SearchPackage()
-        {
-            MX = 3,
-            ST = TargetDesc.All,
-        };
         /// <summary>
         /// 默认在线消息包
         /// </summary>
@@ -233,24 +276,35 @@ namespace Mozi.SSDP
         /// </summary>
         public NotifyUpdateReceived OnNotifyUpdateReceived;
         /// <summary>
-        /// 收到HTTP/1.1 200 OK时触发
+        /// 收到HTTP/1.1 200 OK,且头属性中带有"ST"字段 时触发
         /// </summary>
-        public ResponseMessageReceived OnResponseMessageReceived;
+        public SearchResponsed OnSearchResponsed;
+        /// <summary>
+        /// 收到HTTP/1.2 {status} {statusname} 触发
+        /// </summary>
+        public HttpResponsed OnHttpResponsed;
+        /// <summary>
+        /// 收到所有POST请求都会触发
+        /// </summary>
+        public PostReceived OnPostReceived;
+
         /// <summary>
         /// 原始数据包解析
         /// <para>如果内置的解析结果不能满足应用需求，可以使用该事件进行数据解析</para>
         /// </summary>
         public MessageReceived OnMessageReceived;
-
-        private string _uuid= UUID.Generate();
-
-        /// <summary>
-        /// 唯一标识符
-        /// </summary>
-        public string UniqueID
-        {
-            get => _uuid; set => _uuid = value;
-        }
+        ///// <summary>
+        ///// 订阅消息触发
+        ///// </summary>
+        //public SubscribeReceived OnSubscribeReceived;
+        ///// <summary>
+        ///// 取消订阅触发
+        ///// </summary>
+        //public UnSubscribedReceived OnUnSubscribedReceived;
+        ///// <summary>
+        ///// 控制信息接收触发
+        ///// </summary>
+        //public ControlActionReceived OnControlActionReceived;
         /// <summary>
         /// 构造函数
         /// <para>
@@ -261,28 +315,29 @@ namespace Mozi.SSDP
         {
             _socket = new UDPSocket();
             _socket.AfterReceiveEnd += Socket_AfterReceiveEnd;
-            _remoteEP = new IPEndPoint(IPAddress.Parse(SSDPProtocol.MulticastAddress), SSDPProtocol.ProtocolPort);
+            _remoteEP = new IPEndPoint(IPAddress.Parse(SSDPProtocol.MulticastAddress), SSDPProtocol.MulticastPort);
 
             _timer = new Timer(TimeoutCallback, null, Timeout.Infinite, Timeout.Infinite);
 
             //初始化数据包
-            PackDefaultAlive.USN = new USNDesc() { IsRootDevice = true, DeviceId = _uuid, Domain = "mozi.org" };
+            PackDefaultAlive.USN = UniqueServiceName;
             PackDefaultAlive.Server = _server;
+            PackDefaultByebye.USN = UniqueServiceName;
 
-            PackDefaultByebye.USN = new USNDesc() { IsRootDevice = true, DeviceId = _uuid, Domain = "mozi.org" };
-
-            DeviceDefault.Domain = Domain;
-            DeviceDefault.ServiceType = ServiceCategory.Device;
-            DeviceDefault.Version = 1;
         }
-
-        private void ApplyMulticastAddress(string address, int port)
+        /// <summary>
+        /// 设置组播地址和端口号
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="port"></param>
+        public void ApplyMulticastAddress(string address, int port)
         {
+            _multicastGroupAddress = address;
+            _multicastGroupPort = port;
             _remoteEP = new IPEndPoint(IPAddress.Parse(address), port);
             var host = string.Format("{0}:{1}", address, port);
             PackDefaultAlive.HOST = host;
             PackDefaultByebye.HOST = host;
-            PackDefaultSearch.HOST = host;
         }
         /// <summary>
         /// 数据接收时间
@@ -293,7 +348,7 @@ namespace Mozi.SSDP
         {
             //DONE 如何进行多包分割？
 
-            ParsePackage(args);
+            HandleMessage(args);
             if (OnMessageReceived != null)
             {
                 OnMessageReceived(this, args);
@@ -306,7 +361,7 @@ namespace Mozi.SSDP
         /// <summary>
         /// 包解析
         /// </summary>
-        private void ParsePackage(DataTransferArgs args)
+        private void HandleMessage(DataTransferArgs args)
         {
             try
             {
@@ -336,7 +391,7 @@ namespace Mozi.SSDP
                         {
                             OnNotifyByebyeReceived(this, pack, args.IP);
                         }
-                        //upnp:update
+                    //upnp:update
                     }
                     else if (nts == SSDPType.Update.ToString())
                     {
@@ -346,7 +401,11 @@ namespace Mozi.SSDP
                         {
                             OnNotifyUpdateReceived(this, pack, args.IP);
                         }
+                    //ST: upnp:event NTS: upnp:propchange
                     }
+                    //else if (nts == SSDPType.PropChange.ToString()){
+                    //    var 
+                    //}
                 }
                 //MS-SEARCH
                 else if (method == RequestMethodUPnP.MSEARCH)
@@ -355,28 +414,61 @@ namespace Mozi.SSDP
                     if (pack != null && OnSearchReceived != null)
                     {
                         OnSearchReceived(this, pack, args.IP);
+                        //TODO 按UPNP规范自动响应搜索请求
+                        if (autoEchoSearch)
+                        {
+                            var st = pack.ST;
+
+                            if (st.IsAll||(st.IsRootDevice && UniqueServiceName.IsRootDevice)|| UniqueID.Equals(st.DeviceId)|| UniqueServiceName.ToURN().Equals(st.ToString()))
+                            {
+                                ResponseSearch(new SearchResponsePackage()
+                                {
+                                    CacheTimeout = CacheTimeout,
+                                    ST = pack.ST,
+                                    Location = _deviceDescPath,
+                                    Server = _server,
+                                    USN=UniqueServiceName
+                                });
+                            }
+                        }
                     }
                 }
-                //event SUBSCRIBE
-                else if (method == RequestMethodUPnP.SUBSCRIBE)
-                {
-                    //var pack = SubscribePackage.Parse(request);
-                    //if (pack != null && OnSubscribeReceived)
-                    //{
-                    //    OnSubscribeReceived(this, pack, args.IP);
-                    //}
-                }
-                //event UNSUBSCRIBE
-                else if (method == RequestMethodUPnP.UNSUBSCRIBE)
-                {
-                    //var pack = UnSubscribedPackage.Parse(request);
-                    //if (pack != null && OnUnSubscribedReceived)
-                    //{
-                    //    OnUnSubscribedReceived(this, pack, args.IP);
-                    //}
-                }
+                ////TODO SUBSCRIBE
+                ////event SUBSCRIBE
+                //else if (method == RequestMethodUPnP.SUBSCRIBE)
+                //{
+                //    if (OnSubscribeReceived != null)
+                //    {
+                //        OnSubscribeReceived(this, request, args.IP);
+                //    }
+                //}
+                ////TODO UNSCRIBE
+                ////event UNSUBSCRIBE
+                //else if (method == RequestMethodUPnP.UNSUBSCRIBE)
+                //{
+                //    var pack = UnSubscribedPackage.Parse(request);
+                //    if (pack != null && OnUnSubscribedReceived!=null)
+                //    {
+                //        OnUnSubscribedReceived(this, pack, args.IP);
+                //    }
+                //}
                 //Control
                 else if (method == RequestMethod.POST)
+                {
+                    //if(request.Headers.Contains("SOAPACTION"))
+                    //{
+                    //    ControlActionPackage pack = ControlActionPackage.Parse(request);
+                    //    if (pack != null && OnControlActionReceived != null)
+                    //    {
+                    //        OnControlActionReceived(this, pack, args.IP);
+                    //    }
+                    //}
+                    if (OnPostReceived != null)
+                    {
+                        OnPostReceived(this, request, args.IP);
+                    }
+                }
+                else
                 {
 
                 }
@@ -386,25 +478,49 @@ namespace Mozi.SSDP
                 try
                 {
                     HttpResponse resp = HttpResponse.Parse(args.Data);
-                    if (OnResponseMessageReceived != null)
-                    {
-                        OnResponseMessageReceived(this, resp, args.IP);
-                    }
                     //成功
                     if (resp.Status == StatusCode.Success)
                     {
                         //判断包类型
                         //M-SEARCH response
-                        var st = resp.Headers.GetValue("ST");
+                        var usn=resp.Headers.GetValue("USN");
+                        if (usn != null)
+                        {
+                            var usndesc = USNDesc.Parse(usn);
+                            var cachecontrol = resp.Headers.GetValue("CACHE-CONTROL");
+                            var cc = cachecontrol.Split(new char[] { '=' });
+                            _sc.Add(new SSDPCache
+                            {
+                                Host = $"{args.IP}:{_multicastGroupPort}",
+                                USN = usndesc,
+                                AddTime = DateTime.Now.ToUniversalTime(),
+                                Server = resp.Headers.GetValue("SERVER"),
+                                Location = resp.Headers.GetValue("LOCATION"),
+                                Expiration = cc.Length > 1 ? int.Parse(cc[1]) : -1
+                            });
+                        }
                     }
                     else
                     {
 
                     }
+                    if (resp.Headers.Contains(SSDPHeader.St.PropertyName))
+                    {
+                        SearchResponsePackage sr = SearchResponsePackage.Parse(resp);
+                        if (sr!=null&&OnSearchResponsed != null)
+                        {
+                            OnSearchResponsed(this, sr, args.IP);
+                        }
+                    }
+                    //HTTP响应触发 http/1.1 200 OK
+                    if (OnHttpResponsed != null)
+                    {
+                        OnHttpResponsed(this, resp, args.IP);
+                    }
                 }
                 catch (Exception ex2)
                 {
-
+                    int a = 1;
                 }
             }
         }
@@ -477,7 +593,7 @@ namespace Mozi.SSDP
             SendMessage(data);
         }
         /// <summary>
-        /// 查找设备简化方法，原型参看<see cref="Search(SearchPackage)"/>
+        /// 查找设备简化方法，原型参看<see cref="Search(SearchPackage)"/>,此处建议发3次包，避免终端没有收到信息
         /// </summary>
         /// <param name="desc"></param>
         public void Search(TargetDesc desc)
@@ -492,6 +608,39 @@ namespace Mozi.SSDP
             request.SetHeaders(pk.GetHeaders());
             byte[] data = request.GetBuffer();
             SendMessage(data);
+        }
+        /// <summary>
+        /// 发送查询消息,参见<see cref="TargetDesc"/>
+        /// <list type="table">
+        /// <listheader>查询目标字符串格式约定如下</listheader>
+        ///     -ssdp:all 搜索所有设备和服务
+        ///      -upnp:rootdevice 仅搜索网络中的根设备
+        ///      -uuid:device-UUID 查询UUID标识的设备
+        ///      -urn:schemas-upnp-org:device:device-Type:version 查询device-Type字段指定的设备类型，设备类型和版本由UPNP组织定义。
+        ///      -urn:schemas-upnp-org:service:service-Type:version 查询service-Type字段指定的服务类型，服务类型和版本由UPNP组织定义。
+        ///</list>
+        /// </summary>
+        /// <param name="st"></param>
+        public void Search(string st)
+        {
+            TargetDesc desc = null;
+            try
+            {
+                desc = TargetDesc.Parse(st);
+            }
+            catch
+            {
+
+            }
+
+            if (desc != null)
+            {
+                Search(desc);
+            }
+            else
+            {
+                throw new Exception($"ST:{st},查询目标字符串不符合定义规范，请查看本方法的注释以了解命名规范");
+            }
         }
         //NOTIFY * HTTP/1.1     
         //HOST: 239.255.255.250:1900    
@@ -526,6 +675,25 @@ namespace Mozi.SSDP
             byte[] data = request.GetBuffer();
             SendMessage(data);
         }
+        /// <summary>
+        /// 发送在线通知，简易方法
+        /// </summary>
+        /// <param name="nt">
+        /// 字符串格式，请符合<see cref="TargetDesc"/>的字符串格式规范
+        /// </param>
+        public void NotifyAlive(string nt)
+        {
+            AlivePackage pack = new AlivePackage()
+            {
+                HOST = $"{_multicastGroupAddress}:{_multicastGroupPort}",
+                CacheTimeout = CacheTimeout,
+                Location = _deviceDescPath,
+                NT = TargetDesc.Parse(nt),
+                Server = _server,
+                USN = UniqueServiceName
+            };
+            NotifyAlive(pack);
+        }
 
         //NOTIFY * HTTP/1.1     
         //HOST:    239.255.255.250:1900
@@ -551,6 +719,20 @@ namespace Mozi.SSDP
             SendMessage(data);
         }
         /// <summary>
+        /// 离线通知 简易方法
+        /// </summary>
+        /// <param name="nt">字符串格式，请符合<see cref="TargetDesc"/>的字符串格式规范</param>
+        public void NotifyLeave(string nt)
+        {
+            ByebyePackage pack = new ByebyePackage()
+            {
+                HOST = $"{_multicastGroupAddress}:{_multicastGroupPort}",
+                NT = TargetDesc.Parse(nt),
+                USN = UniqueServiceName
+            };
+            NotifyLeave(pack);
+        }
+        /// <summary>
         /// update信息
         /// </summary>
         /// <param name="pk"></param>
@@ -562,6 +744,29 @@ namespace Mozi.SSDP
             byte[] data = request.GetBuffer();
             SendMessage(data);
         }
+        /// <summary>
+        /// 离线通知 简易方法
+        /// </summary>
+        /// <param name="nt">字符串格式，请符合<see cref="TargetDesc"/>的字符串格式规范</param>
+        public void NotifyUpdate(string nt)
+        {
+            UpdatePackage pack = new UpdatePackage()
+            {
+                HOST = $"{_multicastGroupAddress}:{_multicastGroupPort}",
+                CacheTimeout = CacheTimeout,
+                Location = _deviceDescPath,
+                NT = TargetDesc.Parse(nt),
+                Server = _server,
+                USN = UniqueServiceName
+            };
+            NotifyUpdate(pack);
+        }
+
+        internal void NotifyEvent()
+        {
+
+        }
+
         //HTTP/1.1 200 OK
         //CACHE-CONTROL: max-age = seconds until advertisement expires
         //DATE: when reponse was generated
@@ -586,16 +791,33 @@ namespace Mozi.SSDP
         /// 响应 MS-SEARCH 查找
         /// </summary>
         /// <param name="pk"></param>
+        [Obsolete("方法已过时，请使用ResponseSearch(SearchResponsePackage pk)", error:true)]
         public void EchoSearch(SearchResponsePackage pk)
         {
+            ResponseSearch(pk);
+        }
+        /// <summary>
+        /// 响应 MS-SEARCH 查找
+        /// </summary>
+        /// <param name="pk"></param>
+        public void ResponseSearch(SearchResponsePackage pk)
+        {
             HttpResponse resp = new HttpResponse();
-            resp.DontAddAutoHeader = true;
+
             resp.SetHeaders(pk.GetHeaders());
             resp.SetStatus(StatusCode.Success);
+            Response(resp);
+        }
+        /// <summary>
+        /// 响应请求，此方法用于响应POST请求
+        /// </summary>
+        /// <param name="resp"></param>
+        public void Response(HttpResponse resp)
+        {
+            resp.DontAddAutoHeader = true;
             byte[] data = resp.GetBuffer(true);
             SendMessage(data);
         }
-
         //POST path of control URL HTTP/1.1 
         //HOST: host of control URL:port of control URL
         //CONTENT-LENGTH: bytes in body
@@ -610,20 +832,20 @@ namespace Mozi.SSDP
         //          </u:actionName>
         //      </s:Body> 
         //</s:Envelope>
+
         /// <summary>
-        /// 控制信息
+        /// 控制信息 HTTP
         /// </summary>
         /// <param name="pk"></param>
-        public void ControlAction(ControlActionPackage pk)
+        public void ControlAction(string controlPath,ControlActionPackage pk,RequestComplete callback)
         {
             HttpRequest request = new HttpRequest();
             //如果POST被拒绝，则使用M-POST
-            request.SetPath(pk.Path).SetMethod(RequestMethod.POST);
-            request.SetBody(HttpEmbedded.Encode.StringEncoder.Encode(pk.Body.CreateDocument()));
-            request.SetHeader("CONTENT-LENGTH", request.ContentLength);
+            request.SetBody(StringEncoder.Encode(pk.Body.CreateDocument()));
             request.SetHeaders(pk.GetHeaders());
-            byte[] data = request.GetBuffer();
-            SendMessage(data);
+            request.SetHeader("CONTENT-LENGTH", request.Body.Length.ToString());
+            HttpClient hc = new HttpClient();
+            hc.Send(controlPath, request, callback);
         }
 
         //POST path of control URL HTTP/1.1 
@@ -672,35 +894,73 @@ namespace Mozi.SSDP
         //</e:property> 
         //  Other variable names and values(if any) go here.
         //</e:propertyset>
+
         /// <summary>
-        /// 订阅
+        /// Subscribe订阅  Subscribe with NT and CALLBACK
         /// </summary>
-        /// <param name="pk"></param>
-        public void Subscribe(SubscribePackage pk)
+        /// <param name="publishPath"></param>
+        /// <param name="timeout"></param>
+        /// <param name="callbackurl">回调地址</param>
+        /// <param name="statevar">可为空</param>
+        /// <param name="callback"></param>
+        internal void Subscribe(string publishPath, int timeout, string callbackurl, string statevar,RequestComplete callback)
         {
             HttpRequest request = new HttpRequest();
-            request.SetPath(pk.Path).SetMethod(RequestMethodUPnP.SUBSCRIBE);
-            request.SetHeaders(pk.GetHeaders());
-            byte[] data = request.GetBuffer();
-            SendMessage(data);
+            UriInfo uri=UriInfo.Parse(publishPath);
+            request.SetPath(publishPath).SetMethod(RequestMethodUPnP.SUBSCRIBE);
+            request.SetHeader("HOST", $"{uri.Domain??uri.Host}:{(uri.Port>0?uri.Port:80)}");
+            request.SetHeader("NT", SSDPType.Event.ToString());
+            request.SetHeader("CALLBACK",callbackurl);
+            request.SetHeader("TIMEOUT", timeout.ToString());
+            if (string.IsNullOrEmpty(statevar))
+            {
+                request.SetHeader("STATEVAR", statevar);
+            }
+            HttpClient hc = new HttpClient();
+            hc.Send(publishPath, request, callback);
         }
-
+        /// <summary>
+        /// Subscribe订阅  Subscribe with SID
+        /// </summary>
+        /// <param name="publishPath"></param>
+        /// <param name="timeout"></param>
+        /// <param name="sid">对端UDN值,即uuid:{uuid}</param>
+        /// <param name="callback"></param>
+        public void Subscribe(string publishPath, int timeout, string sid,RequestComplete callback)
+        {
+            HttpRequest request = new HttpRequest();
+            UriInfo uri = UriInfo.Parse(publishPath);
+            request.SetPath(publishPath).SetMethod(RequestMethodUPnP.SUBSCRIBE);
+            request.SetHeader("HOST", $"{uri.Domain ?? uri.Host}:{(uri.Port > 0 ? uri.Port : 80)}");
+            request.SetHeader("SID", $"uuid:{sid}");
+            request.SetHeader("TIMEOUT", timeout.ToString());
+            HttpClient hc = new HttpClient();
+            hc.Send(publishPath, request, callback);
+        }
         //UNSUBSCRIBE publisher path HTTP/1.1 
         //HOST: publisher host:publisher port
         //SID: uuid:subscription UUID
+
         /// <summary>
         /// 取消订阅
         /// </summary>
-        /// <param name="pk"></param>
-        public void UnSubscribe(SubscribePackage pk)
+        /// <param name="publishPath"></param>
+        /// <param name="sid">对端UDN值,即uuid:{uuid}</param>
+        /// <param name="callback"></param>
+        public void UnSubscribe(string publishPath,string sid,RequestComplete callback)
         {
             HttpRequest request = new HttpRequest();
-            request.SetPath(pk.Path).SetMethod(RequestMethodUPnP.UNSUBSCRIBE);
-            request.SetHeaders(pk.GetHeaders());
-            byte[] data = request.GetBuffer();
-            SendMessage(data);
+            UriInfo uri = UriInfo.Parse(publishPath);
+            request.SetHeader("HOST", $"{uri.Domain ?? uri.Host}:{(uri.Port > 0 ? uri.Port : 80)}");
+            request.SetHeader("SID", $"uuid:{sid}");
+            HttpClient hc = new HttpClient();
+            hc.Send(publishPath, request, callback);
         }
 
+        /// <summary>
+        /// 发送报文消息
+        /// </summary>
+        /// <param name="data"></param>
         protected void SendMessage(byte[] data)
         {
             _socket.SocketMain.SendTo(data, _remoteEP);
@@ -740,7 +1000,7 @@ namespace Mozi.SSDP
         /// <summary>
         /// SSDP组播端口
         /// </summary>
-        public const int ProtocolPort = 1900;
+        public const int MulticastPort = 1900;
         /// <summary>
         /// 事件组播地址
         /// </summary>
@@ -750,216 +1010,5 @@ namespace Mozi.SSDP
         /// </summary>
         public const int EventMulticastPort = 7900;
 
-    }
-
-
-    /// <summary>
-    /// 目标描述符号
-    /// <list type="table">
-    ///     <item>--upnp:rootdevice</item>
-    //      <item>--uuid:device-UUID</item>
-    //      <item>--urn:schemas-upnp-org:device:deviceType:v</item>
-    //      <item>--urn:schemas-upnp-org:service:serviceType:v</item>
-    //      <item>--urn:domain-name:device:deviceType:v</item>
-    //      <item>--urn:domain-name:service:serviceType:v</item>
-    /// </list>
-    /// </summary>
-    public class TargetDesc:USNDesc
-    {
-        /// <summary>
-        /// 此值代表ssdp:all
-        /// </summary>
-        public bool IsAll = false;
-        /// <summary>
-        /// 此值代表upnp:rootdevice
-        /// </summary>
-        public static TargetDesc RootDevice = new TargetDesc { IsRootDevice = true };
-        public static TargetDesc All = new TargetDesc { IsAll = true};
-
-        public new string ToString()
-        {
-            if (IsAll)
-            {
-                return SSDPType.All.ToString();
-            }
-            string result;
-            if (IsRootDevice)
-            {
-                result =SSDPType.RootDevice.ToString();
-            }
-            else
-            {
-                if (string.IsNullOrEmpty(DeviceId))
-                {
-
-                    result = string.Format("urn:{0}:{1}:{2}:{3}", Domain, ServiceType == ServiceCategory.Device ? "device" : "service", ServiceName, Version);
-                }
-                else
-                {
-                    result = "uuid:" + DeviceId;
-                }
-            }
-            return result;
-        }
-
-        public static new TargetDesc Parse(string data)
-        {
-            //uuid:device-UUID::urn:domain-name:service:serviceType:v
-            TargetDesc desc = new TargetDesc()
-            {
-                Domain = "",
-                IsRootDevice = false,
-                DeviceId = "",
-                ServiceName = "",
-                Version = 0,
-            };
-            string[] items = data.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-            try
-            {
-                //ssdp:all
-                if (data == SSDPType.All.ToString())
-                {
-                    desc.IsAll = true;
-                }
-                else
-                {
-                    //upnp:rootdevice
-                    if (data == SSDPType.RootDevice.ToString())
-                    {
-                        desc.IsRootDevice = true;
-                        desc.DeviceId = items[1];
-                    }
-                    //specific device
-                    else if (items[0] == "uuid")
-                    {
-                        desc.DeviceId = items[1];
-                    }
-                    else
-                    {
-                        desc.Domain = items[1];
-                        var serviceType = items[2];
-                        desc.ServiceType = serviceType == "device" ? ServiceCategory.Device : ServiceCategory.Service;
-                        desc.ServiceName = items[3];
-                        desc.Version = int.Parse(items[4]);
-                    }
-                }
-            }
-            finally
-            {
-
-            }
-            return desc;
-        }
-    }
-
-    /// <summary>
-    /// Unique Service Name
-    /// <list type="table">
-    /// <description>承载的描述符号如下</description>
-    /// <item>--uuid:device-UUID</item>
-    /// <item>--uuid:device-UUID::upnp:rootdevice</item>
-    /// <item>--uuid:device-UUID::urn:schemas-upnp-org:device:deviceType:v</item>
-    /// <item>--uuid:device-UUID::urn:schemas-upnp-org:service:serviceType:v</item>
-    /// <item>--uuid:device-UUID::urn:domain-name:device:deviceType:v</item>
-    /// <item>--uuid:device-UUID::urn:domain-name:service:serviceType:v</item>
-    /// </list>
-    /// </summary>
-    public class USNDesc
-    {
-        /// <summary>
-        /// 域名，关联URN字段
-        /// </summary>
-        public string Domain = "schemas-upnp-org";
-        /// <summary>
-        /// 是否根设备
-        /// </summary>
-        public bool IsRootDevice = false;
-        /// <summary>
-        /// 指示是服务还是设备
-        /// </summary>
-        public ServiceCategory ServiceType = ServiceCategory.Service;
-        /// <summary>
-        /// 设备UUID
-        /// </summary>
-        public string DeviceId = "";
-        /// <summary>
-        /// 如果<see cref="ServiceType"/>是<see cref="ServiceCategory.Service"/>,指示的是服务类型；如果<see cref="ServiceType"/>是<see cref="ServiceCategory.Device"/>，指示的是设备类型。
-        /// </summary>
-        public string ServiceName = "simplehost";
-        /// <summary>
-        /// 服务或设备的版本
-        /// </summary>
-        public int Version = 1;
-        /// <summary>
-        /// 转为USN格式字符串
-        /// <list type="number">
-        /// <item>--uuid:device-UUID::upnp:rootdevice</item> 
-        /// <item>--uuid:device-UUID::upnp:rootdevice </item>
-        /// <item>--uuid:device-UUID::urn:schemas-upnp-org:device:deviceType:v</item>
-        /// <item>--uuid:device-UUID::urn:schemas-upnp-org:service:serviceType:v</item>
-        /// <item>--uuid:device-UUID::urn:domain-name:device:deviceType:v</item>
-        /// <item>--uuid:device-UUID::urn:domain-name:service:serviceType:v</item>
-        /// </list>
-        /// </summary>
-        /// <returns></returns>
-        public new string ToString()
-        {
-            var result = "uuid:" + DeviceId;
-            if (IsRootDevice)
-            {
-                result += "::"+ SSDPType.RootDevice.ToString();
-            }
-            else
-            {
-                result += string.Format(":urn:{0}:{1}:{2}:{3}", Domain, ServiceType == ServiceCategory.Device ? "device" : "service", ServiceName, Version);
-            }
-            return result;
-        }
-        /// <summary>
-        /// 包解析
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public static USNDesc Parse(string data)
-        {
-            //uuid:device-UUID::urn:domain-name:service:serviceType:v
-            USNDesc desc = new USNDesc()
-            {
-                Domain = "",
-                IsRootDevice = false,
-                DeviceId = "",
-                ServiceName="",
-                Version=0,
-            };            
-            string[] items = data.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-            try
-            {
-                if (data.Contains(SSDPType.RootDevice.ToString()))
-                {
-                    desc.IsRootDevice = true;
-                    desc.DeviceId = items[1];
-                }
-                else
-                {
-                    desc.DeviceId = items[1];
-                    desc.Domain = items[3];
-                    var serviceType = items[4];
-                    desc.ServiceType = serviceType == "device" ? ServiceCategory.Device : ServiceCategory.Service;
-                    desc.ServiceName = items[5];
-                    desc.Version = int.Parse(items[6]);
-                }
-            }
-            finally
-            {
-
-            }
-            return desc;
-        }
-    }
-
-    public enum ServiceCategory
-    {
-        Device=1,
-        Service=2
     }
 }

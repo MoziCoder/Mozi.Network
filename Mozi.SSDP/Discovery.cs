@@ -50,16 +50,13 @@ namespace Mozi.SSDP
 
         public AbsAdvertisePackage()
         {
-            _host = string.Format("{0}:{1}", SSDPProtocol.MulticastAddress, SSDPProtocol.ProtocolPort);
+            _host = string.Format("{0}:{1}", SSDPProtocol.MulticastAddress, SSDPProtocol.MulticastPort);
             //HostIp = SSDPProtocol.MulticastAddress;
             //HostPort = SSDPProtocol.ProtocolPort;
             Path = "*";
         }
 
-        public virtual TransformHeader GetHeaders()
-        {
-            throw new NotImplementedException();
-        }
+        public abstract TransformHeader GetHeaders();
     }
     /// <summary>
     /// 在线数据包
@@ -113,41 +110,56 @@ namespace Mozi.SSDP
     /// <summary>
     /// 搜索数据包
     /// </summary>
-    public class SearchResponsePackage : SearchPackage
+    public class SearchResponsePackage 
     {
         public int CacheTimeout { get; set; }
-        public DateTime Date { get; set; }
+        //public DateTime Date { get; set; }
         public string Ext { get; set; }
-        public string Server { get; set; }
-        public USNDesc USN { get; set; }
         public string Location { get; set; }
-
-        public override TransformHeader GetHeaders()
+        public string Server { get; set; }
+        public TargetDesc ST { get; set; }
+        public USNDesc USN { get; set; }
+              
+        //BOOTID.UPNP.ORG
+        public int BOOTID { get;set; }
+        public TransformHeader GetHeaders()
         {
             TransformHeader headers = new TransformHeader();
-            headers.Add("HOST", HOST);
-            headers.Add("MAN", "\"" + SSDPType.Discover.ToString() + "\"");
-            headers.Add("ST", ST.ToString());
-            headers.Add("CACHE-CONTROL", $"max-age = {CacheTimeout}");
-            headers.Add("DATE", DateTime.UtcNow.ToString("r"));
+            headers.Add("CACHE-CONTROL", $"max-age={CacheTimeout}");
+            //headers.Add("DATE", DateTime.UtcNow.ToString("r"));
             headers.Add("EXT", "");
             headers.Add("LOCATION", Location);
             headers.Add("SERVER", Server);
+            headers.Add("ST", ST.ToString());
             headers.Add("USN", USN.ToString());
+            headers.Add("BOOTID.UPNP.ORG", BOOTID.ToString());
             return headers;
         }
-
-        public new static SearchResponsePackage Parse(HttpRequest req)
+        /// <summary>
+        /// 解析包
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns></returns>
+        public static SearchResponsePackage Parse(HttpResponse req)
         {
             SearchResponsePackage pack = new SearchResponsePackage();
-            var sHost = req.Headers.GetValue("HOST");
-            pack.HOST = sHost;
-            pack.MAN = req.Headers.GetValue("MAN");
-            pack.MX = int.Parse(req.Headers.GetValue("MX"));
-            var st = req.Headers.GetValue("ST");
-            pack.ST = TargetDesc.Parse(st);
-            var sNTS = req.Headers.GetValue("NTS");
-            var sUSN = req.Headers.GetValue("USN");
+
+            var sCacheControl = req.Headers.GetValue("CACHE-CONTROL");
+            if (!string.IsNullOrEmpty(sCacheControl))
+            {
+                string[] cacheItems = sCacheControl.Split(new char[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
+                if (cacheItems.Length == 2)
+                {
+                    pack.CacheTimeout = int.Parse(cacheItems[1].Trim());
+                }
+            }
+
+            pack.ST = TargetDesc.Parse(req.Headers.GetValue("ST"));
+            pack.Ext = req.Headers.GetValue("EXT");
+            pack.Location = req.Headers.GetValue("Location");
+            pack.Server = req.Headers.GetValue("Server");
+            pack.USN = USNDesc.Parse(req.Headers.GetValue("USN"));
+            pack.BOOTID = int.Parse(req.Headers.Contains("BOOTID.UPNP.ORG")?req.Headers.GetValue("BOOTID.UPNP.ORG"):"0");
             return pack;
         }
 
@@ -242,23 +254,35 @@ namespace Mozi.SSDP
             return pack;
         }
     }
+    //NOTIFY* HTTP/1.1
+    //HOST: 239.255.255.250:1900
+    //LOCATION: URL for UPnP description for root device
+    //NT: notification type
+    //NTS: ssdp:update
+    //USN: composite identifier for the advertisement
+    //BOOTID.UPNP.ORG: BOOTID value that the device has used in its previous announcements
+    //CONFIGID.UPNP.ORG: number used for caching description information
+    //NEXTBOOTID.UPNP.ORG: new BOOTID value that the device will use in subsequent announcements
+    //SEARCHPORT.UPNP.ORG: number identifies port on which device responds to unicast M-SEARCH
     /// <summary>
     /// 更新数据包
     /// </summary>
     public class UpdatePackage : AlivePackage
     {
+        public SSDPType NTS = SSDPType.Update;
         public int NEXTBOOTID { get; set; }
 
         public override TransformHeader GetHeaders()
         {
             TransformHeader headers = new TransformHeader();
             headers.Add("HOST", HOST);
-            headers.Add("SERVER", Server);
             headers.Add("NT", NT.ToString());
             headers.Add("NTS", SSDPType.Update.ToString());
             headers.Add("USN", USN.ToString());
             headers.Add("LOCATION", Location);
-            headers.Add("CACHE-CONTROL", $"max-age = {CacheTimeout}");
+            headers.Add("BOOTID.UPNP.ORG", BOOTID.ToString());
+            headers.Add("CONFIGID.UPNP.ORG", CONFIGID.ToString());
+            headers.Add("NEXTBOOTID.UPNP.ORG", NEXTBOOTID.ToString());
             return headers;
         }
 
@@ -267,21 +291,21 @@ namespace Mozi.SSDP
             UpdatePackage pack = new UpdatePackage();
             var sHost = req.Headers.GetValue("HOST") ?? req.Headers.GetValue("Host");
             pack.HOST = sHost;
-            pack.Server = req.Headers.GetValue("SERVER");
             var sNt = req.Headers.GetValue("NT");
             pack.NT = TargetDesc.Parse(sNt);
             var sNTS = req.Headers.GetValue("NTS");
             var sUSN = req.Headers.GetValue("USN");
             pack.USN = USNDesc.Parse(sUSN);
             pack.Location = req.Headers.GetValue("LOCATION");
-            var sCacheControl = req.Headers.GetValue("CACHE-CONTROL");
-            if (!string.IsNullOrEmpty(sCacheControl))
+            try
             {
-                string[] cacheItems = sCacheControl.Split(new char[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
-                if (cacheItems.Length == 2)
-                {
-                    pack.CacheTimeout = int.Parse(cacheItems[1].Trim());
-                }
+                pack.BOOTID = int.Parse(req.Headers.GetValue("BOOTID.UPNP.ORG"));
+                pack.CONFIGID = int.Parse(req.Headers.GetValue("CONFIGID.UPNP.ORG"));
+                pack.NEXTBOOTID = int.Parse(req.Headers.GetValue("NEXTBOOTID.UPNP.ORG"));
+            }
+            catch
+            {
+
             }
             return pack;
         }

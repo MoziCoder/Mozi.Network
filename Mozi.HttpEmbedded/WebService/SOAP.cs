@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Xml;
+﻿using System.Xml;
+using System.Collections.Generic;
 using Mozi.HttpEmbedded.Generic;
 
 namespace Mozi.HttpEmbedded.WebService
@@ -24,79 +24,31 @@ namespace Mozi.HttpEmbedded.WebService
         /// SOAP版本
         /// </summary>
         public SoapVersion Version = SoapVersion.Ver11;
-
+        /// <summary>
+        /// SOAP头
+        /// </summary>
         public SoapHeader Header { get; set; }
+        /// <summary>
+        /// SOAP内容
+        /// </summary>
         public SoapBody Body { get; set; }
 
         public string Prefix = "m";
 
-        public string Namespace = "http://mozi.org/soap";
+        public string Namespace = "http://mozicoder.org/soap";
 
         public SoapEnvelope()
         {
             Body = new SoapBody();
         }
-        ///// <summary>
-        ///// 构造xml文档
-        ///// </summary>
-        ///// <param name="envelope"></param>
-        ///// <returns></returns>
-        //public static string CreateDocument2(SOAPEnvelope envelope)
-        //{
-        //    MemoryStream ms = new MemoryStream();
-        //    XmlTextWriter writer = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
-        //    writer.WriteStartDocument(true);
-        //    writer.WriteStartElement(envelope.Version.Prefix, "Envelope", envelope.Version.Namespace);
-        //    writer.WriteAttributeString(envelope.Version.Prefix, "encodingStyle",null,envelope.NS_EncodingStyle);
-        //    writer.WriteAttributeString("xmlns", "xsi",null,envelope.NS_XSI);
-        //    writer.WriteAttributeString("xmlns", "xsd", null,envelope.NS_XSD);
-        //    //header
-        //    if (envelope.Header != null)
-        //    {
-        //        writer.WriteStartElement(envelope.Version.Prefix, "Header", "");
-        //        if (envelope.Header.Childs != null && envelope.Header.Childs.Length > 0)
-        //        {
-
-        //        }
-        //        writer.WriteEndElement();
-        //    }
-
-        //    //body
-        //    writer.WriteStartElement(envelope.Version.Prefix, "Body", envelope.ElementPrefix);
-        //    //bodyelements
-        //    writer.WriteStartElement(envelope.ElementPrefix, envelope.Body.Method,"");
-        //    if (!string.IsNullOrEmpty(envelope.Body.Namespace))
-        //    {
-        //        writer.WriteAttributeString("xmlns", "", null, envelope.Body.Namespace);
-        //    }
-        //    foreach (var r in envelope.Body.Items)
-        //    {
-        //        writer.WriteElementString(envelope.ElementPrefix, r.Key,null, r.Value);
-        //    }
-        //    //fault
-        //    writer.WriteEndElement();
-        //    writer.WriteEndElement();
-        //    writer.WriteEndElement();
-        //    writer.WriteEndDocument();
-        //    writer.Flush();
-        //    writer.Close();
-        //    string text = System.Text.Encoding.UTF8.GetString(ms.ToArray());
-        //    ms.Close();
-        //    return text;429004198712031889
-        //}
-
-        //DONE 这种写法有问题，暂时无法生成完整的XML文档，后期再想办法解决
         /// <summary>
-        /// 构造xml文档
-        /// <para>
-        /// 父元素增加类命名空间定义<see href="XmlDocument.CreateElement(prefix,localName, namespaceUri)"后，创建子元素时命名空间地址会被隐去，此时可以随意添加前缀
-        /// </para>
+        /// 构造xml文档 父元素增加类命名空间定义<see href="XmlDocument.CreateElement(prefix,localName, namespaceUri)"后，创建子元素时命名空间地址会被隐去，此时可以随意添加前缀
         /// </summary>
-        /// <param name="envelope"></param>
-        /// <returns></returns>
+        ///<returns></returns>
         public string CreateDocument()
         {
             SoapEnvelope envelope = this;
+
             XmlDocument doc = new XmlDocument();
 
             //declaration
@@ -104,18 +56,18 @@ namespace Mozi.HttpEmbedded.WebService
             doc.AppendChild(declare);
 
             //envelope
-            var nodeEnvelope = doc.CreateElement( envelope.Version.Prefix,"Envelope", envelope.Version.Namespace);
+            var nodeEnvelope = doc.CreateElement(envelope.Prefix,"Envelope", envelope.Version.Namespace);
             foreach (var ns in envelope.Namespaces)
             {
                 nodeEnvelope.SetAttribute("xmlns:"+ns.Prefix, ns.Uri);
             }
-            nodeEnvelope.SetAttribute("xmlns:" + envelope.Version.Prefix, envelope.Version.Namespace);
+            nodeEnvelope.SetAttribute("xmlns:" + envelope.Prefix, envelope.Version.Namespace);
             nodeEnvelope.SetAttribute("encodingStyle",envelope.Version.Namespace,envelope.NS_EncodingStyle);
             
             //header
             if (envelope.Header != null)
             {
-                var nodeHeader = doc.CreateElement(envelope.Version.Prefix,"Header", envelope.Version.Namespace);
+                var nodeHeader = doc.CreateElement(envelope.Prefix,"Header", envelope.Version.Namespace);
                 if (envelope.Header.Childs != null && envelope.Header.Childs.Length > 0)
                 {
 
@@ -124,12 +76,12 @@ namespace Mozi.HttpEmbedded.WebService
             }
 
             //body
-            var nodeBody = doc.CreateElement(envelope.Version.Prefix,"Body", envelope.Version.Namespace);
+            var nodeBody = doc.CreateElement(envelope.Prefix,"Body", envelope.Version.Namespace);
 
             //fault
             if (envelope.Body.Fault != null)
             {
-                var fault=doc.CreateElement(envelope.Version.Prefix, "Fault", envelope.Version.Namespace);
+                var fault=doc.CreateElement(envelope.Prefix, "Fault", envelope.Version.Namespace);
                 fault.SetAttribute("xmlns", envelope.Namespace);
 
                 var faultCode = doc.CreateElement(envelope.Prefix, "faultcode", envelope.Namespace);
@@ -149,15 +101,16 @@ namespace Mozi.HttpEmbedded.WebService
             }
 
             //bodyelements
-            var nodeBodyMethod = doc.CreateElement(envelope.Prefix,envelope.Body.Method, envelope.Namespace);
+            var nodeBodyMethod = doc.CreateElement(envelope.Body.Prefix,envelope.Body.Method, envelope.Body.Namespace);
             if (!string.IsNullOrEmpty(envelope.Namespace))
             {
                 nodeBodyMethod.SetAttribute("xmlns", envelope.Namespace);
             }
+
             //methodparams
             foreach (var r in envelope.Body.Items)
             {
-                var nodeItem = doc.CreateElement(envelope.Prefix,r.Key, envelope.Namespace);
+                var nodeItem = doc.CreateElement(envelope.Body.Prefix,r.Key, envelope.Body.Namespace);
                 nodeItem.InnerText = r.Value;
                 nodeBodyMethod.AppendChild(nodeItem);
             }
@@ -169,6 +122,7 @@ namespace Mozi.HttpEmbedded.WebService
             return doc.OuterXml;
 
         }
+
         /// <summary>
         /// 解析SOAP文件
         /// </summary>
@@ -177,19 +131,44 @@ namespace Mozi.HttpEmbedded.WebService
         public static SoapEnvelope Parse(string content,SoapVersion version)
         {
             SoapEnvelope envelope = new SoapEnvelope();
+
             XmlDocument doc = new XmlDocument();
             XmlNamespaceManager xm = new XmlNamespaceManager(doc.NameTable);
+
             xm.AddNamespace(version.Prefix, version.Namespace);
             doc.LoadXml(content);
-            var body = doc.SelectSingleNode(string.Format("/{0}:Envelope/{0}:Body",version.Prefix),xm);
-            var action = body.FirstChild;
-            if (action.LocalName == "Fault")
+
+            var nodeEnv = doc.SelectSingleNode(string.Format("/{0}:Envelope", version.Prefix), xm);
+
+            envelope.Prefix = nodeEnv.Prefix;
+            envelope.Namespace = nodeEnv.NamespaceURI;
+            envelope.NS_EncodingStyle = nodeEnv.Attributes.GetNamedItem($"{envelope.Prefix}:encodingStyle").Value;
+
+            //判断版本
+            if (envelope.Namespace == SoapVersion.Ver11.Namespace)
             {
-                XmlNode fault = action;
-                action = action.NextSibling;
+                envelope.Version = SoapVersion.Ver11;
             }
-            envelope.Body.Method = action.LocalName;
-            var childs = action.ChildNodes;
+            else if(envelope.Namespace==SoapVersion.Ver12.Namespace)
+            {
+                envelope.Version = SoapVersion.Ver12;
+            }else if (envelope.Namespace == SoapVersion.Ver12Dotnet.Namespace)
+            {
+                envelope.Version = SoapVersion.Ver12Dotnet;
+            }
+
+            var nodeBody = doc.SelectSingleNode(string.Format("/{0}:Envelope/{0}:Body",version.Prefix),xm);
+            var nodeAction = nodeBody.FirstChild;
+            if (nodeAction.LocalName == "Fault")
+            {
+                XmlNode fault = nodeAction;
+                nodeAction = nodeAction.NextSibling;
+            }
+            envelope.Body.Method = nodeAction.LocalName;
+            envelope.Body.Prefix = nodeBody.Prefix;
+            envelope.Body.Namespace = nodeBody.NamespaceURI;
+
+            var childs = nodeAction.ChildNodes;
             for(var i = 0; i < childs.Count; i++)
             {
                 var child = childs[i];
@@ -223,7 +202,8 @@ namespace Mozi.HttpEmbedded.WebService
     public class SoapBody
     {
         public SoapFault Fault { get; set; }
-
+        public string Prefix { get; set; }
+        public string Namespace { get; set; }
         public string Method = "";
         public Dictionary<string, string> Items = new Dictionary<string, string>();
     }
@@ -266,9 +246,9 @@ namespace Mozi.HttpEmbedded.WebService
         private string _namespace = "";
         private string _prefix = "";
 
-        public SoapVersion(string verValue,string prefix,string nameSpace)
+        public SoapVersion(string ver,string prefix,string nameSpace)
         {
-            _vervalue = verValue;
+            _vervalue = ver;
             _prefix = prefix;
             _namespace = nameSpace;
         }

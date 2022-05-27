@@ -2,7 +2,6 @@ using System.IO;
 using System.Security.Principal;
 using Mozi.HttpEmbedded.Source;
 using Mozi.HttpEmbedded.WebDav.Exceptions;
-using Mozi.HttpEmbedded.WebDav.Utilities;
 
 namespace Mozi.HttpEmbedded.WebDav.Storage.Disk
 {
@@ -32,7 +31,7 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.Disk
         {
             get
             {
-                return Md5Util.Md5Hash4Utf8String(ItemPath + ModifyDate + Hidden + Size);
+                return Encode.Encrypt.MD5Encrypt(ItemPath + ModifyDate + Hidden + Size);
             }
         }
 
@@ -40,7 +39,7 @@ namespace Mozi.HttpEmbedded.WebDav.Storage.Disk
 
         public Stream OpenRead()
         {
-            Stream stream = null;
+            Stream stream;
             try
             {
                 WindowsImpersonationContext wic = Identity.Impersonate();

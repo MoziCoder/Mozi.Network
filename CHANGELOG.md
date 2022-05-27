@@ -1,6 +1,16 @@
 # 更新历史
 [2022/05/05]
 [新增]
+验证了项目在Linux下运行的可行性
+[变更]
+HttpClient增加了PUT,DELETE方法和超时时间
+HttpRequest中增加Content-Encoding，Content-Type的解析
+HttpEmbedded中增加了Digest摘要认证，提高安全性
+SSDPHost中改变事件的实现方式
+IoT.CoAP中命令调用超时，使用SemaphoreSlim(信号量)代替Action.BegionInvoke
+
+[2022/05/05]
+[新增]
 HttpEmbedded中新增断点续传
 HttpEmbedded中增加API简易注册接口， 无需继承BaseApi即可实现接口
 HttpEmbedded中增加Transfer-Encoding:chunked,分块传输

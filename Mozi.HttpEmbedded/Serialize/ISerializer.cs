@@ -7,6 +7,13 @@ namespace Mozi.HttpEmbedded.Serialize
     /// </summary>
     public interface ISerializer
     {
+        /// <summary>
+        /// 内容格式
+        /// </summary>
+        string ContentType { get; }
+        /// <summary>
+        /// 序列化类型
+        /// </summary>
         DataSerializeType SerialzeType { get; }
         /// <summary>
         /// 序列化

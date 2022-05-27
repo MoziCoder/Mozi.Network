@@ -1,0 +1,3505 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="en"><head><META http-equiv="Content-Type" content="text/html; charset=utf-8"><title>SOAP Version 1.2 Part 1: Messaging Framework</title><style type="text/css">
+code           { font-family: monospace; }
+
+div.constraint,
+div.issue,
+div.note,
+div.notice     { margin-left: 2em; }
+
+
+
+.diff-chg	{ background-color: orange; }
+.diff-del	{ background-color: red; text-decoration: line-through;}
+.diff-add	{ background-color: lime; }
+
+table          { empty-cells: show; }
+
+
+div.exampleInner pre { margin-left: 1em;
+                       margin-top: 0em; margin-bottom: 0em}
+div.exampleOuter {border: 4px double gray;
+                  margin: 0em; padding: 0em}
+div.exampleInner { background-color: #d5dee3;
+                   border-top-width: 4px;
+                   border-top-style: double;
+                   border-top-color: #d3d3d3;
+                   border-bottom-width: 4px;
+                   border-bottom-style: double;
+                   border-bottom-color: #d3d3d3;
+                   padding: 4px; margin: 0em }
+div.exampleWrapper { margin: 4px }
+div.exampleHeader { font-weight: bold;
+                    margin: 4px}
+</style><link type="text/css" rel="stylesheet" href="http://www.w3.org/StyleSheets/TR/W3C-PR.css"></head><body>
+  <div class="head"><p><a href="http://www.w3.org/"><img width="72" height="48" alt="W3C" src="http://www.w3.org/Icons/w3c_home"></a></p>
+<h1>SOAP Version 1.2 Part 1: Messaging Framework</h1>
+<h2>W3C Proposed Recommendation 07 May 2003</h2><dl><dt>This version:</dt><dd><a href="http://www.w3.org/TR/2003/PR-soap12-part1-20030507/">http://www.w3.org/TR/2003/PR-soap12-part1-20030507/</a></dd><dt>Latest version:</dt><dd><a href="http://www.w3.org/TR/soap12-part1/">http://www.w3.org/TR/soap12-part1/</a></dd><dt>Previous versions:</dt><dd><a href="http://www.w3.org/TR/2002/CR-soap12-part1-20021219/">http://www.w3.org/TR/2002/CR-soap12-part1-20021219/</a></dd><dt>Editors:</dt>
+      <dd>Martin Gudgin, Microsoft</dd>
+      <dd>Marc Hadley, Sun Microsystems</dd>
+      <dd>Noah Mendelsohn, IBM</dd>
+      <dd>Jean-Jacques Moreau, Canon</dd>
+      <dd>Henrik Frystyk Nielsen, Microsoft</dd>
+    </dl><p class="copyright"><a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> &copy;2003 <a href="http://www.w3.org/"><acronym title="World Wide Web Consortium">W3C</acronym></a><sup>&reg;</sup>(<a href="http://www.lcs.mit.edu/"><acronym title="Massachusetts Institute of Technology">MIT</acronym></a>, <a href="http://www.ercim.org/"><acronym title="European Research Consortium for Informatics and Mathematics">ERCIM</acronym></a>, <a href="http://www.keio.ac.jp/">Keio</a>), All Rights Reserved. W3C <a href="http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">viability</a>, <a href="http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a>, <a href="http://www.w3.org/Consortium/Legal/copyright-documents">document use</a> and <a href="http://www.w3.org/Consortium/Legal/copyright-software">software licensing</a> rules apply.</p></div><hr><div>
+<h2><a name="abstract">Abstract</a></h2>
+      <p>SOAP Version 1.2 is a lightweight protocol intended for
+      exchanging structured information in a decentralized, distributed
+      environment. "Part 1: Messaging Framework" defines, using XML technologies,
+      an extensible messaging framework containing a message
+      construct that can be exchanged over a
+      variety of underlying protocols.</p>
+    </div><div>
+<h2><a name="status">Status of this Document</a></h2>
+
+      <p><em>This section describes the status of this document
+          at the time of its publication. Other documents may
+          supersede this document. The latest status of this document
+          series is maintained at the W3C.</em></p>
+      
+      <p>This document is a 
+             <a href="http://www.w3.org/Consortium/Process-20010719/tr.html#RecsPR">
+          Proposed Recommendation</a> of the W3C. This document has been
+          produced by the <a href="http://www.w3.org/2000/xp/Group/">XML Protocol
+          Working Group</a> (WG), which is part of the <a href="http://www.w3.org/2002/ws/Activity">
+          Web Services Activity</a>.</p>
+
+
+<p>W3C Advisory Committee Representatives are invited to send formal review 
+comments by following the instructions in the Call for Review. Through an
+form available from the Call for Review, Advisory Committee representatives 
+should send comments to the Team-only list 
+<a href="mailto:xml-protocol-review@w3.org">xml-protocol-review@w3.org</a> 
+until 07 June 2003.
+Through the form, Advisory Committee representatives may also make their 
+comments visible to the Membership (on 
+<a href="mailto:w3c-ac-forum@w3.org">w3c-ac-forum@w3.org</a> for discussion
+or <a href="mailto:w3c-archive@w3.org">w3c-archive@w3.org</a>).
+</p>
+
+<p>In addition to submitting them through the online review form,
+Advisory Committee representatives should send technical issues
+to the appropriate public mailing list for the XMLP Working Group: 
+<a href="mailto:xmlp-comments@w3.org">xmlp-comments@w3.org</a>. Discussion of 
+these issues will take place on the public mailing list
+<a href="mailto:xml-dist-app@w3.org">xml-dist-app@w3.org</a>
+<a href="#DiscussionArchive">[XMLP Dist-App]</a>. Alternatively, Advisory Committee 
+representatives also have the option (through the online review 
+form) of asking the XMLP Working Group Team Contacts to forward 
+their technical issues without attribution to the appropriate 
+Working Group mailing list.</p>
+
+<p>
+The public is invited to send comments about this document directly
+to <a href="mailto:xmlp-comments@w3.org">xmlp-comments@w3.org</a>
+(public archive <a href="#CommentArchive">[XMLP Comments]</a>). 
+It is inappropriate to send discussion email to this 
+address. Discussion of this document takes place on the 
+public <a href="mailto:xml-dist-app@w3.org">xml-dist-app@w3.org</a> 
+mailing list <a href="#DiscussionArchive">[XMLP Dist-App]</a>.</p>
+
+
+<p>This document is based on the <a href="http://www.w3.org/2000/xp/Group/xmlp-cr-issues.html">feedback from the implementers</a> and feedback on the
+SOAP 1.2 Candidate Recommendation (CR) documents dated 19 December 2002. An
+implementation and interoperability report is provided at
+<a href="http://www.w3.org/2000/xp/Group/2/03/soap1.2implementation.html">http://www.w3.org/2000/xp/Group/2/03/soap1.2implementation.html</a>. 
+Two or more interoperable implementations are documented for 48 of the 50 features listed in that report. Only one implementation is documented for the features concerning nodeType [<a href="http://www.w3.org/2000/xp/Group/2/03/soap1.2implementation.html#f79">79</a>] and DuplicateID [<a href="http://www.w3.org/2000/xp/Group/2/03/soap1.2implementation.html#f82">82</a>], although interoperable implementations of these features are expected in the near future. Feedback
+received during CR resulted in clarifications but no major changes. The XML
+Protocol Working Group believes that this specification addresses all Last
+Call and CR issues.</p>
+
+      <p>Patent disclosures relevant to this specification may be
+	found on the Working Group's <a href="http://www.w3.org/2000/xp/Group/2/10/16-IPR-statements.html">patent
+	disclosure page</a>.</p>
+
+     <p>
+        Publication of this document does not imply endorsement by the 
+        W3C Membership. This is a draft document and may be updated,
+        replaced or obsoleted by other documents at any time. It is 
+        inappropriate to cite a W3C Proposed Recommendation as anything
+        other than a "work in progress". A list of current <a href="http://www.w3.org/TR/">W3C technical
+        reports</a> can be found at http://www.w3.org/TR .</p>
+
+    </div>
+  <hr><div class="toc">
+<h2><a name="shortcontents">Short Table of Contents</a></h2><p class="toc">1. <a href="#intro">Introduction</a><br>2. <a href="#msgexchngmdl">SOAP Processing Model</a><br>3. <a href="#extensibility">SOAP Extensibility Model</a><br>4. <a href="#transpbindframew">SOAP Protocol Binding Framework</a><br>5. <a href="#soapenv">SOAP Message Construct</a><br>6. <a href="#useofuris">Use of URIs in SOAP</a><br>7. <a href="#secconsiderations">Security Considerations</a><br>8. <a href="#refs">References</a><br>A. <a href="#version">Version Transition From SOAP/1.1 to SOAP Version 1.2</a><br>B. <a href="#acks">Acknowledgements</a> (Non-Normative)<br></p></div><hr><div class="toc">
+<h2><a name="contents">Table of Contents</a></h2><p class="toc">1. <a href="#intro">Introduction</a><br>&nbsp;&nbsp;&nbsp;&nbsp;1.1 <a href="#notation">Notational Conventions</a><br>&nbsp;&nbsp;&nbsp;&nbsp;1.2 <a href="#conformance">Conformance</a><br>&nbsp;&nbsp;&nbsp;&nbsp;1.3 <a href="#reltoxml">Relation to Other Specifications</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.3.1 <a href="#processingreq">Processing Requirements</a><br>&nbsp;&nbsp;&nbsp;&nbsp;1.4 <a href="#firstexample">Example SOAP Message</a><br>&nbsp;&nbsp;&nbsp;&nbsp;1.5 <a href="#terminology">SOAP Terminology</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.5.1 <a href="#concepts">Protocol Concepts</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.5.2 <a href="#encapsulation">Data Encapsulation Concepts</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.5.3 <a href="#senderreceiverconcepts">Message Sender and Receiver Concepts</a><br>2. <a href="#msgexchngmdl">SOAP Processing Model</a><br>&nbsp;&nbsp;&nbsp;&nbsp;2.1 <a href="#soapnodes">SOAP Nodes</a><br>&nbsp;&nbsp;&nbsp;&nbsp;2.2 <a href="#soaproles">SOAP Roles and SOAP Nodes</a><br>&nbsp;&nbsp;&nbsp;&nbsp;2.3 <a href="#targettingblocks">Targeting SOAP Header Blocks</a><br>&nbsp;&nbsp;&nbsp;&nbsp;2.4 <a href="#muprocessing">Understanding SOAP Header Blocks</a><br>&nbsp;&nbsp;&nbsp;&nbsp;2.5 <a href="#structinterpbodies">Structure and Interpretation of SOAP Bodies</a><br>&nbsp;&nbsp;&nbsp;&nbsp;2.6 <a href="#procsoapmsgs">Processing SOAP Messages</a><br>&nbsp;&nbsp;&nbsp;&nbsp;2.7 <a href="#relaysoapmsg">Relaying SOAP Messages</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.7.1 <a href="#relayable">Relaying SOAP Header Blocks</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.7.2 <a href="#forwardinter">SOAP Forwarding Intermediaries</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.7.2.1 <a href="#soapinterminfoset">Relayed Infoset</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.7.3 <a href="#activeinter">SOAP Active Intermediaries</a><br>&nbsp;&nbsp;&nbsp;&nbsp;2.8 <a href="#envvermodel">SOAP Versioning Model</a><br>3. <a href="#extensibility">SOAP Extensibility Model</a><br>&nbsp;&nbsp;&nbsp;&nbsp;3.1 <a href="#soapfeature">SOAP Features</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.1.1 <a href="#featurereq">Requirements on Features</a><br>&nbsp;&nbsp;&nbsp;&nbsp;3.2 <a href="#soapmep">SOAP Message Exchange Patterns (MEPs)</a><br>&nbsp;&nbsp;&nbsp;&nbsp;3.3 <a href="#soapmodules">SOAP Modules</a><br>4. <a href="#transpbindframew">SOAP Protocol Binding Framework</a><br>&nbsp;&nbsp;&nbsp;&nbsp;4.1 <a href="#bindfwgoals">Goals of the Binding Framework</a><br>&nbsp;&nbsp;&nbsp;&nbsp;4.2 <a href="#bindfw">Binding Framework</a><br>5. <a href="#soapenv">SOAP Message Construct</a><br>&nbsp;&nbsp;&nbsp;&nbsp;5.1 <a href="#soapenvelope">SOAP Envelope</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.1.1 <a href="#soapencattr">SOAP encodingStyle Attribute</a><br>&nbsp;&nbsp;&nbsp;&nbsp;5.2 <a href="#soaphead">SOAP Header</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.2.1 <a href="#soapheadblock">SOAP header block</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.2.2 <a href="#soaprole">SOAP role Attribute</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.2.3 <a href="#soapmu">SOAP mustUnderstand Attribute</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.2.4 <a href="#soaprelay">SOAP relay Attribute</a><br>&nbsp;&nbsp;&nbsp;&nbsp;5.3 <a href="#soapbody">SOAP Body</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.3.1 <a href="#soapbodyel">SOAP Body child Element</a><br>&nbsp;&nbsp;&nbsp;&nbsp;5.4 <a href="#soapfault">SOAP Fault</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.4.1 <a href="#faultcodeelement">SOAP Code Element</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.4.1.1 <a href="#faultvalueelement">SOAP Value element (with Code parent)</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.4.1.2 <a href="#faultsubcodeelement">SOAP Subcode element</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.4.1.3 <a href="#faultsubvalueelem">SOAP Value element (with Subcode parent)</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.4.2 <a href="#faultstringelement">SOAP Reason Element</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.4.2.1 <a href="#reasontextelement">SOAP Text Element</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.4.3 <a href="#faultactorelement">SOAP Node Element</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.4.4 <a href="#faultroleelement">SOAP Role Element</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.4.5 <a href="#faultdetailelement">SOAP Detail Element</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.4.5.1 <a href="#faultdetailentry">SOAP detail entry</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.4.6 <a href="#faultcodes">SOAP Fault Codes</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.4.7 <a href="#vmfault">VersionMismatch Faults</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.4.7.1 <a href="#soapupgrade">SOAP Upgrade Header Block</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.4.7.2 <a href="#soapsupportedenv">SOAP SupportedEnvelope Element</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.4.7.3 <a href="#soapqnamesu">SOAP QName Attribute</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.4.7.4 <a href="#versionmisex">VersionMismatch Example</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.4.8 <a href="#mufault">SOAP mustUnderstand Faults</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.4.8.1 <a href="#soapnotunderstood">SOAP NotUnderstood Element</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.4.8.2 <a href="#soapqnamenu">SOAP QName Attribute</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.4.8.3 <a href="#soapnotunderstoodex">NotUnderstood Example</a><br>6. <a href="#useofuris">Use of URIs in SOAP</a><br>7. <a href="#secconsiderations">Security Considerations</a><br>&nbsp;&nbsp;&nbsp;&nbsp;7.1 <a href="#secsoapnodes">SOAP Nodes</a><br>&nbsp;&nbsp;&nbsp;&nbsp;7.2 <a href="#secsoapinter">SOAP Intermediaries</a><br>&nbsp;&nbsp;&nbsp;&nbsp;7.3 <a href="#secundprotbind">Underlying Protocol Bindings</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7.3.1 <a href="#secbindappspecprot">Binding to Application-Specific Protocols</a><br>8. <a href="#refs">References</a><br>&nbsp;&nbsp;&nbsp;&nbsp;8.1 <a href="#normrefs">Normative References</a><br>&nbsp;&nbsp;&nbsp;&nbsp;8.2 <a href="#nonnormrefs">Informative References</a><br></p>
+<h3><a id="appendix" name="appendix">Appendices</a></h3><p class="toc">A. <a href="#version">Version Transition From SOAP/1.1 to SOAP Version 1.2</a><br>B. <a href="#acks">Acknowledgements</a> (Non-Normative)<br></p></div><hr><div class="body">
+
+
+    <div class="div1">
+      
+<h2><a name="intro"></a>1. Introduction</h2>
+
+      <p>SOAP Version 1.2 (SOAP) is a lightweight protocol intended for
+      exchanging structured information in a decentralized, distributed
+      environment. It uses XML technologies to define an extensible
+      messaging framework providing a message construct that can be
+      exchanged over a variety of underlying protocols. The framework
+      has been designed to be independent of any particular programming
+      model and other implementation specific semantics.</p>
+
+      <p>Two major design goals for SOAP are simplicity and
+      extensibility (see XMLP Requirements <a href="#xmlp-reqs">[XMLP Requirements]</a>).
+      SOAP attempts to meet these goals by omitting, from the messaging
+      framework, features that are often found in distributed systems.
+      Such features include but are not limited to "reliability",
+      "security", "correlation", "routing", and "Message Exchange
+      Patterns" (MEPs). While it is anticipated that many features
+      will be defined, this specification provides specifics only for
+      two MEPs. Other features are left to be defined as extensions by
+      other specifications.</p>
+ 
+
+      <p>The SOAP Version 1.2 specification consists of
+      three parts. Part 1 of the SOAP Version 1.2 specification (this
+      document) defines the SOAP messaging framework consisting
+      of:</p>
+      
+      <ol>
+	<li>
+	  <p>The SOAP processing model defining the rules for
+	    processing a SOAP message (see <a href="#msgexchngmdl"><b>2. SOAP Processing Model</b></a>).</p>
+	</li>
+
+	<li>
+	  <p>The SOAP Extensibility model defining the concepts of SOAP
+	    features and SOAP modules (see <a href="#extensibility"><b>3. SOAP Extensibility Model</b></a>).</p>
+	</li>
+
+	<li>
+	  <p>The SOAP underlying protocol binding framework describing
+	    the rules for defining a binding to an underlying protocol
+	    that can be used for exchanging SOAP messages between SOAP
+	    nodes (see <a href="#transpbindframew"><b>4. SOAP Protocol Binding Framework</b></a>).</p>
+	</li>
+
+	<li>
+	  <p>The SOAP message construct defining the structure of a
+	    SOAP message (see <a href="#soapenv"><b>5. SOAP Message Construct</b></a>).</p>
+	</li>
+
+      </ol>
+      
+      <p>The SOAP 1.2 Primer <a href="#SOAP-PART0">[SOAP Part 0]</a>
+      is a non-normative document intended to provide an
+      easily understandable tutorial on the features of the SOAP Version
+      1.2 specifications.</p>
+
+      <p>SOAP 1.2 Part 2 <a href="#SOAP-PART2">[SOAP Part 2]</a> describes a set of adjuncts
+      that can be used in connection with the SOAP messaging framework.</p>
+      
+      <div class="note"><p class="prefix"><b>Note:</b></p><p>In previous versions of this specification the SOAP
+	  name was an acronym. This is no longer the case.</p></div>
+
+      <div class="div2">
+	
+<h3><a name="notation"></a>1.1 Notational Conventions</h3>
+
+        <p>The keywords "MUST", "MUST NOT", "REQUIRED", "SHALL",
+	  "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY",
+	  and "OPTIONAL" in this document are to be interpreted as
+	  described in RFC 2119 <a href="#RFC2119">[RFC 2119]</a>.</p>
+
+        <p>This specification uses a number of namespace prefixes throughout;
+          they are listed in <a href="#tabnsprefixes"><b>Table 1</b></a>.
+          Note that the choice of any namespace prefix is arbitrary
+          and not semantically significant (see XML Infoset <a href="#XMLInfoSet">[XML InfoSet]</a>).</p>
+        
+        <a name="tabnsprefixes"></a><table border="1">
+          <caption>Table 1: Prefixes and Namespaces used in this specification.</caption>
+          <tbody>
+          <tr>
+            <th rowspan="1" colspan="1">Prefix</th>
+            <th rowspan="1" colspan="1">Namespace</th>
+            <th rowspan="1" colspan="1">Notes</th>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1">env</td>
+            <td rowspan="1" colspan="1">"http://www.w3.org/2003/05/soap-envelope"</td>
+            <td rowspan="1" colspan="1">A normative XML Schema <a href="#XMLSchemaP1">[XML Schema Part 1]</a>,
+            <a href="#XMLSchemaP2">[XML Schema Part 2]</a> document for the
+            "http://www.w3.org/2003/05/soap-envelope"
+            namespace can be found at <a href="http://www.w3.org/2003/05/soap-envelope">http://www.w3.org/2003/05/soap-envelope</a>.</td>
+          </tr>
+		  <tr>
+		    <td rowspan="1" colspan="1">xs</td>
+			<td rowspan="1" colspan="1">"http://www.w3.org/2001/XMLSchema"</td>
+			<td rowspan="1" colspan="1">The namespace of the XML Schema <a href="#XMLSchemaP1">[XML Schema Part 1]</a>, <a href="#XMLSchemaP2">[XML Schema Part 2]</a> specification</td>
+		  </tr>
+          </tbody>
+        </table>
+
+        <p>Namespace names of the general form "http://example.org/..."
+          and "http://example.com/..." represent
+          application or context-dependent URIs (see RFC 2396 <a href="#RFC2396">[RFC 2396]</a>).</p>
+
+	<p>All parts of this specification
+	  are normative, with the exception of examples and sections explicitly
+	  marked as "Non-Normative".</p>
+
+      </div>
+      
+      <div class="div2">
+	
+<h3><a name="conformance"></a>1.2 Conformance</h3>
+
+	<p>This specification describes data formats, and the rules
+	  for generating, exchanging, and processing messages using
+	  those formats. This specification does not mandate the scope
+	  of any particular implementation, although it requires that
+	  no implementation violates any mandatory requirement.</p>
+	
+	<p>For an implementation to claim conformance with the SOAP
+	  Version 1.2 specification, it MUST correctly implement all
+	  mandatory ("MUST") requirements expressed in Part 1 of the
+	  SOAP Version 1.2 specification (this document) that pertain to
+	  the activity being performed. Note that an implementation is
+	  not mandated to implement all the mandatory requirements. For
+	  example, a special purpose implementation that
+	  never sends a SOAP header block can claim conformance provided
+	  that it correctly implements the mandatory requirements that
+	  pertain to the messages it does send.</p>
+	
+	<p>An implementation MAY implement any number of the Adjuncts
+	  specified in SOAP 1.2 Part 2 <a href="#SOAP-PART2">[SOAP Part 2]</a>. Note that no
+	  conformance is associated with the convention for describing
+	  features and bindings (see <a href="#extensibility"><b>3. SOAP Extensibility Model</b></a>
+	  and <a href="#transpbindframew"><b>4. SOAP Protocol Binding Framework</b></a>). The implementation
+	  of an Adjunct MUST implement all the pertinent mandatory
+	  requirements expressed in the specification of the Adjunct
+	  to claim conformance with the Adjunct.</p>
+
+	<p>SOAP Version 1.2 can be used as the basis for other
+	  technologies that provide richer or more specialized
+	  services. To claim conformance with the SOAP Version 1.2
+	  specification, the specifications and implementations of
+	  such technologies must be consistent with the pertinent
+	  mandatory requirements expressed in Part 1 of the SOAP
+	  Version 1.2 specification (this document). Rules for
+	  conformance with such new specifications are beyond the
+	  scope of the SOAP Version 1.2 specification; it is
+	  recommended that specifications for such technologies
+	  provide the appropriate conformance rules.</p>
+
+	<p>SOAP Version 1.2 is designed to enable at least the usage
+	  scenarios described in SOAP 1.2 Usage Scenarios <a href="#SOAP12-Scenarios">[SOAP Usage Scenarios]</a>, and
+	  possibly other scenarios.  Informal descriptions showing XML
+	  representations of concrete SOAP messages used in some
+	  common scenarios are provided in SOAP 1.2 Part 0 <a href="#SOAP-PART0">[SOAP Part 0]</a>.</p>
+
+      </div>
+      
+     <div class="div2">
+      
+<h3><a name="reltoxml"></a>1.3 Relation to Other Specifications</h3>
+
+	<p>A SOAP message is specified as an XML Information Set <a href="#XMLInfoSet">[XML InfoSet]</a>. While all SOAP message examples in this document
+	are shown using XML 1.0 <a href="#XML">[XML 1.0]</a> syntax, other
+	representations MAY be used to transmit SOAP messages between nodes
+	(see <a href="#transpbindframew"><b>4. SOAP Protocol Binding Framework</b></a>).</p>
+	  
+	<p>Some of the <em>information items</em> defined by this
+	document (see <a href="#soapenv"><b>5. SOAP Message Construct</b></a>) are identified using 
+	namespace qualified names <a href="#XMLNS">[Namespaces in XML]</a>. See <a href="#tabnsprefixes"><b>Table 1</b></a> for a list of the namespace names defined in
+	this document.</p>
+	
+	<div class="note"><p class="prefix"><b>Note:</b></p><p>This specification uses the term <em>XML Expanded Name</em> to refer to
+	the value space pair {absolute uri reference,local-name} for a value of type xsd:QName. 
+	Similar terminology is under consideration for
+	inclusion in future versions of Namespace in XML <a href="#XMLNS">[Namespaces in XML]</a>. 
+	Should future versions of namespace in XML <a href="#XMLNS">[Namespaces in XML]</a> adopt alternative
+	terminology, we anticipate that corresponding changes will be made to
+	this recommendation in the form of an erratum, or in conjunction
+	with some other future revision.</p></div>
+
+ 	<p> SOAP does not require that XML Schema processing (assessment or
+	validation) be performed to establish the correctness or 'schema implied'
+	values of <em>element</em> and <em>attribute information items</em> defined by Parts 1 and 2
+	of this specification. The values associated with <em>element</em> and <em>attribute
+	information items</em> defined in this specification MUST be carried explicitly
+	in the transmitted SOAP message except where stated otherwise (see <a href="#soapenv"><b>5. SOAP Message Construct</b></a>).</p>
+ 
+    <p>SOAP <em>attribute
+      information items</em> have types described by
+      XML Schema <a href="#XMLSchemaP2">[XML Schema Part 2]</a>. Unless
+      otherwise stated, all lexical forms are supported for each such
+      attribute, and lexical forms representing the same value in the
+      XML Schema value space are considered equivalent for purposes of
+      SOAP processing, e.g. the boolean lexical forms
+      "1" and "true" are
+      interchangeable. For brevity, text in this specification refers
+      only to one lexical form for each value, e.g. "if the value
+      of the <code>mustUnderstand</code>  <em>attribute information
+      item</em> is 'true'".</p>
+
+ 	<p>Specifications for the processing of application-defined
+ 	  data carried in a SOAP message but not defined by this
+ 	  specification MAY call for additional
+ 	  validation of the SOAP message in conjunction with
+ 	  application-level processing. In such cases, the choice of
+ 	  schema language and/or validation technology is at the
+ 	  discretion of the application.</p>
+
+	<p>SOAP uses XML Base <a href="#XMLBase">[XML Base]</a> for determining a
+	  base URI for relative URI references used as values in
+	  <em>information items</em> defined by this specification
+	  (see <a href="#useofuris"><b>6. Use of URIs in SOAP</b></a>).</p>
+	  
+	<p>The media type "application/soap+xml" SHOULD be used for
+	  XML 1.0 serializations of the SOAP message infoset (see
+	  SOAP 1.2 Part 2 <a href="#SOAP-PART2">[SOAP Part 2]</a>, <a href="http://www.w3.org/TR/2003/PR-soap12-part2-20030507/#ietf-draft">The "application/soap+xml"
+	  Media Type</a>).</p>
+      
+    <div class="div3">
+      
+<h4><a name="processingreq"></a>1.3.1 Processing Requirements</h4>
+      
+      <p>The ability to use SOAP in a particular environment will vary
+      depending on the actual constraints, choice of tools, processing model,
+      or nature of the messages being exchanged. SOAP has been
+      designed to have a relatively small number of dependencies on
+      other XML specifications, none of which are perceived as having
+      prohibitive processing requirements. Also, limiting use of SOAP
+      to small messages instead of arbitrarily-sized messages and
+      supporting only a few specific message types instead of
+      implementing generalized processing could significantly lower
+      processing requirements.</p>
+    </div>
+      
+  </div>
+    
+      <div class="div2">
+	
+<h3><a name="firstexample"></a>1.4 Example SOAP Message</h3>
+
+        <p>The following example shows a sample notification message
+          expressed in SOAP. The message contains two pieces of
+          application-defined data not defined by this specification:
+          a SOAP header block with a local name of <code>alertcontrol</code> 
+          and a body element with a local name of <code>alert</code> . In
+          general, SOAP header blocks contain information which might be of
+          use to SOAP intermediaries as well as the ultimate destination of
+          the message. In this example an intermediary might prioritize
+          the delivery of the message based on the priority and expiration
+          information in the SOAP header block. The body contains the
+          actual message payload, in this case the alert message.</p>
+
+            <div class="exampleOuter">
+	      
+<div class="exampleHead">Example 1: SOAP message containing a SOAP header block and a SOAP body</div>
+              <div class="exampleInner"><pre>&lt;env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope"&gt;
+ &lt;env:Header&gt;
+  &lt;n:alertcontrol xmlns:n="http://example.org/alertcontrol"&gt;
+   &lt;n:priority&gt;1&lt;/n:priority&gt;
+   &lt;n:expires&gt;2001-06-22T14:00:00-05:00&lt;/n:expires&gt;
+  &lt;/n:alertcontrol&gt;
+ &lt;/env:Header&gt;
+ &lt;env:Body&gt;
+  &lt;m:alert xmlns:m="http://example.org/alert"&gt;
+   &lt;m:msg&gt;Pick up Mary at school at 2pm&lt;/m:msg&gt;
+  &lt;/m:alert&gt;
+ &lt;/env:Body&gt;
+&lt;/env:Envelope&gt;</pre></div></div>
+
+      </div>
+
+      <div class="div2">
+	
+<h3><a name="terminology"></a>1.5 SOAP Terminology</h3>
+
+	<p>This section describes the terms and concepts introduced in
+	Part 1 of the SOAP Version 1.2 specification (this document).</p>
+
+	<div class="div3">
+	  
+<h4><a name="concepts"></a>1.5.1 Protocol Concepts</h4>
+	  <dl>
+
+	    
+	      <dt class="label">SOAP</dt> <dd><p>The formal set of
+	      conventions governing the format and processing rules of
+	      a SOAP message. These conventions include the interactions among
+	      SOAP nodes generating and accepting SOAP messages for
+	      the purpose of exchanging information along a SOAP
+	      message path.</p>
+	      </dd>
+	    
+
+	    
+	      <dt class="label">SOAP node</dt> <dd><p>The embodiment of
+	      the processing logic necessary to transmit, receive,
+	      process and/or relay a SOAP message, according
+	      to the set of conventions defined by this recommendation.
+	      A SOAP node is responsible for
+	      enforcing the rules that govern the exchange of SOAP
+	      messages (see <a href="#msgexchngmdl"><b>2. SOAP Processing Model</b></a>). It accesses the services
+	      provided by the underlying protocols through one or more SOAP
+	      bindings.</p>
+	      </dd>
+	    
+
+	    
+	      <dt class="label">SOAP role</dt> <dd><p>A SOAP receiver's expected function in
+	      processing a message. A SOAP receiver can act in multiple roles.</p>
+	      </dd>
+	    
+
+	    
+	      <dt class="label">SOAP binding</dt> <dd><p>The formal set of
+	      rules for carrying a SOAP message within or on top of
+	      another protocol (underlying protocol) for the purpose
+	      of exchange (see <a href="#transpbindframew"><b>4. SOAP Protocol Binding Framework</b></a>). Examples of SOAP bindings include carrying
+	      a SOAP message within an HTTP entity-body, or over a
+	      TCP stream.</p>
+	      </dd>
+	    
+
+	    
+	      <dt class="label">SOAP feature</dt>
+	      <dd>
+		  <p>An extension of the SOAP messaging
+		  framework (see <a href="#extensibility"><b>3. SOAP Extensibility Model</b></a>).
+		  Examples of features
+		  include "reliability", "security", "correlation",
+		  "routing", and "Message Exchange Patterns" (MEPs).</p>
+	      </dd>
+	    
+
+        
+          <dt class="label">SOAP module</dt>
+          <dd>
+          <p>A SOAP Module is a specification that contains the combined
+          syntax and semantics of SOAP header blocks specified
+          according to the rules in <a href="#soapmodules"><b>3.3 SOAP Modules</b></a>. A SOAP module
+          realizes zero or more SOAP features.
+          </p>
+          </dd>
+        
+        
+	    
+	      <dt class="label">SOAP message exchange pattern (MEP)</dt>
+	      <dd>
+		<p>A template for the exchange of SOAP messages
+		between SOAP nodes enabled by one or more underlying
+		SOAP protocol bindings (see <a href="#transpbindframew"><b>4. SOAP Protocol Binding Framework</b></a>). A SOAP
+		MEP is an example of a SOAP feature (see <a href="#soapmep"><b>3.2 SOAP Message Exchange Patterns (MEPs)</b></a>).</p>
+	      </dd>
+	    
+
+	    
+	      <dt class="label">SOAP application</dt>
+	      <dd>
+		<p>An entity, typically software, that produces, consumes or
+		  otherwise acts upon SOAP messages in a manner
+		  conforming to the SOAP processing model (see
+		  <a href="#msgexchngmdl"><b>2. SOAP Processing Model</b></a>).</p>
+	      </dd>
+	    
+
+	  </dl>
+
+	</div>
+
+	<div class="div3">
+	  
+<h4><a name="encapsulation"></a>1.5.2 Data Encapsulation Concepts</h4>
+	  
+	  <dl>
+
+	    
+	      <dt class="label">SOAP message</dt> <dd><p>
+	      The basic unit of communication between SOAP
+	      nodes.</p>
+	      </dd>
+	    
+
+	    
+	      <dt class="label">SOAP envelope</dt> <dd><p>The outermost
+	      <em>element information item</em> of a SOAP message.</p></dd>
+	    
+
+	    
+	      <dt class="label">SOAP header</dt> <dd><p>A collection of zero
+	      or more SOAP header blocks each of which might be targeted
+              at any SOAP
+	      receiver within the SOAP message path.</p>
+	      </dd>
+	    
+
+	    
+	      <dt class="label">SOAP header block</dt> <dd><p>An
+	      <em>element information item</em> used to delimit
+	      data that logically constitutes a single computational
+	      unit within the SOAP header. The type of a SOAP header block is
+	      identified by the XML expanded name of the header block
+	      <em>element information item</em>.</p>
+	      </dd>
+	    
+
+	    
+	      <dt class="label">SOAP body</dt> <dd><p>A collection of zero or
+	      more <em>element information items</em> targeted at an
+	      ultimate SOAP receiver in the SOAP message path (see
+	      <a href="#soapbody"><b>5.3 SOAP Body</b></a>).</p> 
+	      </dd>
+	    
+
+	    
+              <dt class="label">SOAP fault</dt> <dd><p>A SOAP
+              <em>element information item</em>
+	      which contains fault information generated by a SOAP
+	      node.</p>
+	      </dd>
+	    
+
+	  </dl>
+
+	</div>
+
+	<div class="div3">
+	  
+<h4><a name="senderreceiverconcepts"></a>1.5.3 Message Sender and Receiver Concepts</h4>
+
+	  <dl>
+
+	    
+	      <dt class="label">SOAP sender</dt> <dd><p>A
+	      SOAP node that transmits a SOAP message.</p>
+	      </dd>
+	    
+
+	    
+	      <dt class="label">SOAP receiver</dt> <dd><p>A
+	      SOAP node that accepts a SOAP message.</p>
+	      </dd>
+	    
+
+	    
+	      <dt class="label">SOAP message path</dt> <dd><p>The set of SOAP
+	      nodes through which a single SOAP
+	      message passes. This includes the initial SOAP sender,
+	      zero or more SOAP intermediaries, and an ultimate SOAP
+	      receiver.</p>
+	      </dd>
+	    
+
+	    
+	      <dt class="label">Initial SOAP sender</dt> <dd><p>The SOAP
+	      sender that originates a SOAP message at the starting
+	      point of a SOAP message path.</p>
+	      </dd>
+	    
+
+	    
+	      <dt class="label">SOAP intermediary</dt> <dd><p>A SOAP intermediary
+	      is both a SOAP receiver and a SOAP sender and is targetable
+	      from within a SOAP message. It processes the SOAP header
+	      blocks targeted at it and acts to forward a SOAP message
+	      towards an ultimate SOAP receiver.</p></dd>
+	    
+
+	    
+	      <dt class="label">Ultimate SOAP receiver</dt> <dd><p> The SOAP
+              receiver that is a final destination of a SOAP message. It is responsible for
+              processing the contents of the SOAP body and any SOAP
+              header blocks targeted at it. In some circumstances, a
+              SOAP message might not reach an ultimate SOAP receiver, for
+              example because of a problem at a
+              SOAP intermediary. An
+              ultimate SOAP receiver cannot also be a SOAP
+              intermediary for the same SOAP message (see <a href="#msgexchngmdl"><b>2. SOAP Processing Model</b></a>).</p>
+	      </dd>
+	    
+
+	  </dl>
+
+	</div>
+
+      </div>
+    </div>
+    
+    <div class="div1">
+      
+<h2><a name="msgexchngmdl"></a>2. SOAP Processing Model</h2>
+
+      <p>SOAP provides a distributed processing model that assumes a
+      SOAP message originates at an initial SOAP sender and is sent to
+      an ultimate SOAP receiver via zero or more SOAP intermediaries.
+      Note that the SOAP distributed processing model can support many
+      MEPs including but not limited to one-way messages,
+      request/response interactions, and peer-to-peer conversations (see
+      <a href="#soapmep"><b>3.2 SOAP Message Exchange Patterns (MEPs)</b></a> for a description of the relationship
+      between SOAP message exchange patterns and the SOAP extensibility
+      model).</p>
+	
+	  <p>This section defines the SOAP distributed processing
+	model. The SOAP processing model specifies how a SOAP receiver
+	processes a SOAP message.  It applies to a single message only,
+	in isolation from any other SOAP message. The SOAP processing
+	model itself does not maintain any state or perform any correlation
+	or coordination between messages, even, for example, when used
+	in combination with a SOAP feature which involves sending multiple
+	SOAP messages in sequence, each subsequent message depending on
+	the response to the previous message. It is the responsibility of
+	each such features to define any combined processing.</p>
+
+      <p>Section <a href="#extensibility"><b>3. SOAP Extensibility Model</b></a> describes how SOAP can
+	be extended and how SOAP extensions might interact with the
+	SOAP processing model and the SOAP protocol binding
+	framework. Section <a href="#transpbindframew"><b>4. SOAP Protocol Binding Framework</b></a> defines a
+	framework for describing the rules for how SOAP messages can
+	be exchanged over a variety of underlying protocols.</p>
+
+      <div class="div2">
+	
+<h3><a name="soapnodes"></a>2.1 SOAP Nodes</h3>
+
+        <p>A SOAP node can be the initial SOAP sender, an ultimate
+          SOAP receiver, or a SOAP intermediary. 
+	  A SOAP node receiving a SOAP message MUST perform
+          processing according to the SOAP processing model as
+        described in this section and in
+          the remainder of this specification.
+	  A SOAP node is identified by a URI, see
+		  <a href="#faultactorelement"><b>5.4.3 SOAP Node Element</b></a></p>
+        
+      </div>
+
+      <div class="div2">
+	
+<h3><a name="soaproles"></a>2.2 SOAP Roles and SOAP Nodes</h3>
+
+        <p>In processing a SOAP message, a SOAP node is said to act in
+          one or more SOAP roles, each of which is
+          identified by a URI known as the SOAP role name. The roles
+          assumed by a node MUST be
+          invariant during the processing of an individual SOAP
+          message. This specification deals only with the
+          processing of individual SOAP messages. No statement is made
+          regarding the possibility that a given SOAP node 
+          might or might not act in varying roles when processing more
+          than one SOAP message.</p>
+
+   <p><a href="#tabpredefroles"><b>Table 2</b></a> defines three role names 
+	which have special significance in a SOAP message 
+	(see <a href="#procsoapmsgs"><b>2.6 Processing SOAP Messages</b></a>).</p>
+
+<a name="tabpredefroles"></a><table border="1">
+  <caption>Table 2: SOAP Roles defined by this specification</caption>
+  <tbody>
+  <tr>
+    <th rowspan="1" colspan="1">Short-name</th>
+    <th rowspan="1" colspan="1">Name</th>
+    <th rowspan="1" colspan="1">Description</th>
+  </tr>
+  <tr>
+    <td rowspan="1" colspan="1"><code>next</code> </td>
+    <td rowspan="1" colspan="1">"http://www.w3.org/2003/05/soap-envelope/role/next"</td>
+    <td rowspan="1" colspan="1"><p>Each SOAP intermediary and the ultimate SOAP receiver MUST act in
+           this role.</p></td>
+  </tr>
+  <tr>
+    <td rowspan="1" colspan="1"><code>none</code> </td>
+    <td rowspan="1" colspan="1">"http://www.w3.org/2003/05/soap-envelope/role/none"</td>
+    <td rowspan="1" colspan="1"><p>SOAP nodes MUST NOT act in this role.</p></td>
+  </tr>
+  <tr>
+    <td rowspan="1" colspan="1"><code>ultimateReceiver</code> </td>
+    <td rowspan="1" colspan="1">"http://www.w3.org/2003/05/soap-envelope/role/ultimateReceiver"</td>
+    <td rowspan="1" colspan="1"><p>The ultimate receiver MUST act in this role.</p></td>
+  </tr>
+  </tbody>
+</table>
+
+        
+        <p>In addition to the SOAP role names defined in
+        <a href="#tabpredefroles"><b>Table 2</b></a>, other role names MAY
+        be used as necessary to meet the needs of SOAP applications.</p>
+        
+        <p>While the purpose of a SOAP role name is to identify a
+          SOAP node or nodes, there are no routing or message exchange
+          semantics associated with the SOAP role name. For example,
+          SOAP roles MAY be named with a URI useable to route SOAP
+          messages to an appropriate SOAP node. Conversely, it is
+          also appropriate to use SOAP roles with names that are
+          related more indirectly to message routing
+          (e.g.
+          "http://example.org/banking/anyAccountMgr") 
+		  or which
+          are unrelated to routing (e.g. a URI meant to identify "all
+          cache management software". For example, a SOAP header block
+		  targeted at such a role might be used to carry an indication
+		  to any concerned software that the containing SOAP message
+		  is idempotent, and can safely be cached and replayed).</p> 
+
+        <p>With the exception of the three SOAP role names defined
+        in <a href="#tabpredefroles"><b>Table 2</b></a>,
+        this specification does not prescribe the criteria by which
+        a given node determines the set of roles in
+        which it acts on a given message. For example,
+        implementations can base this determination on factors
+        including, but not limited to: hard coded choices in the
+        implementation, information provided by the underlying protocol
+        binding (e.g. the URI to which the message was physically
+        delivered), or configuration information provided by users during
+        system installation.
+      </p>
+
+      </div>
+
+      <div class="div2">
+	
+<h3><a name="targettingblocks"></a>2.3 Targeting SOAP Header Blocks</h3>
+
+        <p>A SOAP header block MAY carry a <code>role</code> 
+        <em>attribute information item</em> (see <a href="#soaprole"><b>5.2.2 SOAP role Attribute</b></a>) that is used to target the header block at
+        SOAP nodes operating in the specified role. This specification refers to the value
+        of the SOAP <code>role</code>  <em>attribute information item</em> as the SOAP role for the
+        corresponding SOAP header block.</p>
+
+        <p>A SOAP header block is said to be targeted at a SOAP node if the
+          SOAP role for the header block 
+          is the name of a role in which the SOAP node operates.
+		SOAP header blocks targeted at the special role
+		"http://www.w3.org/2003/05/soap-envelope/role/none"
+		are never formally processed. Such SOAP header blocks MAY
+		carry data that is required for processing of other SOAP
+		header blocks. Unless removed by the action of an intermediary
+		(see <a href="#relaysoapmsg"><b>2.7 Relaying SOAP Messages</b></a>) , such blocks are relayed
+		with the message to the ultimate receiver (see also <a href="#soapmodules"><b>3.3 SOAP Modules</b></a>).
+		</p>
+
+      </div>
+
+      <div class="div2">
+	
+<h3><a name="muprocessing"></a>2.4 Understanding SOAP Header Blocks</h3>
+
+        <p>It is likely that specifications for a wide variety of header
+          functions (i.e. SOAP modules) will be developed over time
+          (see <a href="#soapmodules"><b>3.3 SOAP Modules</b></a>), and that some SOAP
+          nodes might include the software necessary to implement one or
+          more such extensions. A SOAP header block is said to be
+          understood by a SOAP node if the software at that SOAP node
+          has been written to fully conform to and implement the
+          semantics specified for the XML expanded name of the outer-most
+          <em>element information item</em> of that header block.</p>
+
+          <p>A SOAP header block MAY carry
+          a <code>mustUnderstand</code>  <em>attribute
+          information item</em> (see
+          <a href="#soapmu"><b>5.2.3 SOAP mustUnderstand Attribute</b></a>). When the value of such an
+          <em>attribute information item</em> is 
+          "true",
+          the SOAP header block is said to be mandatory.</p>
+            
+          <p>Mandatory SOAP header blocks are presumed to somehow modify
+          the semantics of other SOAP header blocks or SOAP body elements. Therefore,
+          for every mandatory SOAP header block targeted to a node, that
+          node MUST either process the header block or not process the
+          SOAP message at all, and instead generate a fault (see
+          <a href="#procsoapmsgs"><b>2.6 Processing SOAP Messages</b></a> and <a href="#soapfault"><b>5.4 SOAP Fault</b></a>).
+          Tagging SOAP header blocks as mandatory thus assures that such
+          modifications will not be silently (and, presumably,
+          erroneously) ignored by a SOAP node to which the header block
+          is targeted.</p>
+           
+          <p>The <code>mustUnderstand</code>  <em>attribute information
+          item</em> is not intended as a mechanism for detecting
+          errors in routing, misidentification of nodes, failure of a
+          node to serve in its intended role(s), etc. Any of these conditions
+          can result in a failure to even attempt processing of a
+          given SOAP header block from a SOAP envelope. This
+          specification therefore does not require any fault to be
+          generated based on the presence or value of
+          the <code>mustUnderstand</code>  <em>attribute information item</em>
+          on a SOAP header block not targeted at the current
+          processing node. In
+          particular, it is not an error for an ultimate SOAP
+          receiver to receive a message containing a mandatory SOAP header
+          block that is targeted at a role other than the ones assumed
+          by the ultimate SOAP receiver. This is the case, for example,
+          when a SOAP header block has survived erroneously due to a routing or
+          targeting error at a preceding intermediary.</p>
+
+      </div>
+      
+      <div class="div2">
+        
+<h3><a name="structinterpbodies"></a>2.5 Structure and Interpretation of SOAP Bodies</h3>
+        
+        <p>An ultimate SOAP receiver MUST correctly process the immediate
+        children of the SOAP body (see <a href="#soapbody"><b>5.3 SOAP Body</b></a>). However, with the
+        exception of SOAP faults (see <a href="#soapfault"><b>5.4 SOAP Fault</b></a>), Part 1 of
+        this specification (this document) mandates no particular
+        structure or interpretation of these elements, and provides no
+        standard means for specifying the processing to be done.</p>
+
+      </div>
+
+      <div class="div2">
+	
+<h3><a name="procsoapmsgs"></a>2.6 Processing SOAP Messages</h3>
+
+        <p>This section sets out the rules by which SOAP messages are
+         processed. Nothing in this specification prevents the use of
+    optimistic concurrency, roll back, or other techniques that might
+    provide increased flexibility in processing order. Unless otherwise
+    stated, processing of all generated SOAP messages, SOAP faults and
+    application-level side effects MUST be semantically equivalent to
+    performing the following steps separately, and in the order given.</p>
+         
+        <ol>
+	  <li>
+            <p>Determine the set of roles in which the node is to act.
+            The contents of the SOAP envelope, including any SOAP header blocks and
+            the SOAP body, MAY be inspected in making such determination.</p>
+	  </li>
+          <li>
+            <p>Identify all header blocks targeted at the node that
+            are mandatory.</p>
+          </li>
+	  <li>
+             <p>If one or more of the SOAP header blocks identified in the
+             preceding step are not understood by the node then
+             generate a single SOAP fault with the <code>Value</code>  of
+             <code>Code</code>  set to "env:MustUnderstand"
+              (see <a href="#mufault"><b>5.4.8 SOAP mustUnderstand Faults</b></a>). If
+             such a fault is generated, any further processing MUST
+             NOT be done. Faults relating to the contents of the SOAP body
+             MUST NOT be generated in this step.</p>
+
+	    <div class="note"><p class="prefix"><b>Note:</b></p>
+	      <p>Throughout this document, the term "<code>Value</code>  of
+		<code>Code</code> " is used as a shorthand for "value of
+		the <code>Value</code>  child <em>element information
+		item</em> of the <code>Code</code>  <em>element
+		information item</em>" (see <a href="#faultcodeelement"><b>5.4.1 SOAP Code Element</b></a>).</p>
+	    </div>
+
+	  </li>
+	  <li>
+			<p>Process all mandatory SOAP header blocks targeted at the node and, in
+			the case of an ultimate SOAP receiver, the SOAP body.
+			A SOAP node MAY also choose to process non-mandatory
+			SOAP header blocks targeted at it.</p>
+
+
+
+
+          </li>
+          <li>
+            <p>In the case of a SOAP intermediary, and where the SOAP
+	      message exchange pattern and results of processing
+	      (e.g. no fault generated) require that the SOAP message
+	      be sent further along the SOAP message path, relay the
+	      message as described in section <a href="#relaysoapmsg"><b>2.7 Relaying SOAP Messages</b></a>.</p>
+          </li>
+        </ol>
+
+	<p>In all cases where a SOAP header block is
+	  processed, the SOAP node MUST understand the SOAP header
+	  block and MUST do such processing in a manner fully
+	  conformant with the specification for that header block. The
+	  successful processing of one header block does not guarantee
+	  successful processing of another block with the same XML
+	  expanded name within the same message: the specification
+	  for the header block determines the circumstances in which
+	  such processing would result in a fault. An ultimate SOAP
+	  receiver MUST process the SOAP body, in a manner consistent
+	  with <a href="#structinterpbodies"><b>2.5 Structure and Interpretation of SOAP Bodies</b></a>.</p>
+
+	    <p>Failure is indicated by the generation of a fault (see
+	    <a href="#soapfault"><b>5.4 SOAP Fault</b></a>). SOAP message processing MAY result
+	    in the generation of at most one fault.</p>
+               
+        <p>A message may contain or result in multiple errors during
+        processing. Except where the order of detection is specifically
+        indicated (as in <a href="#muprocessing"><b>2.4 Understanding SOAP Header Blocks</b></a>), a SOAP node is
+        at liberty to reflect any  single fault from the set of possible
+        faults prescribed for the errors encountered. The selection of a
+        fault need not be predicated on the application of the "MUST",
+        "SHOULD" or "MAY" keywords to the generation of the fault, with
+        the exception that if one or more of the prescribed faults is
+        qualified with the "MUST" keyword, then any one fault from the
+        set of possible faults MUST be generated.</p>
+
+              <p>SOAP nodes MAY make reference to any information in the
+               SOAP envelope when processing a SOAP body or SOAP header
+               block. For example,
+               a caching function can cache the entire SOAP message,
+               if desired.</p>
+               
+               <p>The processing of one or more SOAP header blocks MAY
+               control or determine the order of processing for other
+               SOAP header blocks and/or the SOAP body. For example, one
+               could create a SOAP header block to force processing of
+               other SOAP header blocks in lexical order. In the absence
+               of such a controlling SOAP header block, the order of
+               header and body processing is at the discretion of the
+               SOAP node. Header blocks MAY be processed in arbitrary
+               order. Header block processing MAY precede, MAY be
+               interleaved with, or MAY follow processing of the SOAP body.
+               For example, processing of a "begin transaction" header
+               block would typically precede body processing,  a
+               "logging" function might run concurrently with body
+               processing and a "commit transaction" header block might be
+               honored following completion of all other work.</p>
+
+        
+          
+        <div class="note"><p class="prefix"><b>Note:</b></p> <p>The above rules apply to processing at a single
+        node. SOAP extensions can be designed to ensure that
+        SOAP header blocks are processed in an appropriate
+        order, as the message moves along the message path towards the
+        ultimate SOAP receiver. Specifically, such extensions might
+        specify that a fault with a <code>Value</code>  of <code>Code</code> 
+        set to "env:Sender" is
+        generated if some SOAP header blocks have inadvertently
+        survived past some intended point in the message path. Such
+        extensions might depend on the presence or value of the
+        <code>mustUnderstand</code>  <em>attribute information
+        item</em> in the surviving SOAP header blocks when determining whether
+        an error has occurred.</p> </div>
+
+      </div>
+
+      <div class="div2">
+	
+<h3><a name="relaysoapmsg"></a>2.7 Relaying SOAP Messages</h3>
+
+	<p>As mentioned earlier in this section, it is assumed that a SOAP
+	  message originates at an initial SOAP sender and is sent to
+	  an ultimate SOAP receiver via zero or more SOAP
+	  intermediaries. While SOAP does not itself define any
+	  routing or forwarding semantics, it is anticipated that such
+	  functionality can be described as one or more SOAP features 
+          (see <a href="#extensibility"><b>3. SOAP Extensibility Model</b></a>). The purpose of this
+	  section is to describe how message forwarding interacts with
+	  the SOAP distributed processing model.</p>
+	  
+      <p>SOAP defines two different types of intermediaries:
+        forwarding intermediaries and active intermediaries. These
+        two types of intermediary are described in this section.</p>
+
+    <div class="div3">
+     
+<h4><a name="relayable"></a>2.7.1 Relaying SOAP Header Blocks</h4>
+     
+	  <p>The relaying of SOAP header blocks targeted at an
+	    intermediary SOAP node depends on whether the SOAP header
+	    blocks are processed or not by that node. A SOAP header
+	    block is said to be reinserted if the processing of that
+	    header block determines that the header block is to be
+	    reinserted in the forwarded message. The specification for
+	    a SOAP header block may call for the header block to be
+	    relayed in the forwarded message if the header block is
+	    targeted at a role played by the SOAP intermediary, but
+	    not otherwise processed by the intermediary.  Such header
+	    blocks are said to be relayable.</p>
+
+    <p>A SOAP header block MAY carry a <code>relay</code>  <em>attribute information
+    item</em> (see <a href="#soaprelay"><b>5.2.4 SOAP relay Attribute</b></a>). When the value of
+    such an <em>attribute information item</em> is "true", the header
+    block is said to be relayable. The forwarding of relayable
+    header blocks is described in section <a href="#forwardinter"><b>2.7.2 SOAP Forwarding Intermediaries</b></a>.</p>
+
+    <p>The <code>relay</code>  <em>attribute information item</em> has no effect on SOAP
+    header blocks targeted at a role other than one assumed by
+    a SOAP intermediary.</p>
+
+   <p>The <code>relay</code>  <em>attribute information item</em> has no effect
+   on the SOAP processing model when
+   the header block also carries a <code>mustUnderstand</code>  <em>attribute
+   information item</em> with a value of "true".</p>
+
+   <p>The <code>relay</code>  <em>attribute information item</em> has no effect
+   on the processing of SOAP messages by the SOAP ultimate receiver.</p>
+   
+   <p><a href="#tabforwarding"><b>Table 3</b></a> summarizes the forwarding behavior
+   of a SOAP node.</p>
+
+<a name="tabforwarding"></a><table border="1">
+  <caption>Table 3: SOAP Nodes Forwarding behavior</caption>
+  <tbody>
+  <tr>
+    <th colspan="2" rowspan="1">Role</th>
+    <th colspan="2" rowspan="1">Header block</th>
+  </tr>
+  <tr>
+    <th rowspan="1" colspan="1">Short-name</th>
+    <th rowspan="1" colspan="1">Assumed</th>
+    <th rowspan="1" colspan="1">Understood &amp; Processed</th>
+    <th rowspan="1" colspan="1">Forwarded</th>
+  </tr>
+  <tr>
+    <td rowspan="2" colspan="1"><code>next</code> </td>
+    <td rowspan="2" colspan="1">Yes</td>
+    <td rowspan="1" colspan="1">Yes</td>
+    <td rowspan="1" colspan="1">No, unless reinserted</td>
+  </tr>
+  <tr>
+    <td rowspan="1" colspan="1">No</td>
+    <td rowspan="1" colspan="1">No, unless <code>relay</code> ="true"</td>
+  </tr>
+  <tr>
+    <td rowspan="3" colspan="1">user-defined</td>
+    <td rowspan="2" colspan="1">Yes</td>
+    <td rowspan="1" colspan="1">Yes</td>
+    <td rowspan="1" colspan="1">No, unless reinserted</td>
+  </tr>
+  <tr>
+    <td rowspan="1" colspan="1">No</td>
+    <td rowspan="1" colspan="1">No, unless <code>relay</code> ="true"</td>
+  </tr>
+  <tr>
+    <td rowspan="1" colspan="1">No</td>
+    <td rowspan="1" colspan="1">n/a</td>
+    <td rowspan="1" colspan="1">Yes</td>
+  </tr>
+  <tr>
+    <td rowspan="2" colspan="1"><code>ultimateReceiver</code> </td>
+    <td rowspan="2" colspan="1">Yes</td>
+    <td rowspan="1" colspan="1">Yes</td>
+    <td rowspan="1" colspan="1">n/a</td>
+  </tr>
+  <tr>
+    <td rowspan="1" colspan="1">No</td>
+    <td rowspan="1" colspan="1">n/a</td>
+  </tr>
+  <tr>
+    <td rowspan="1" colspan="1"><code>none</code> </td>
+    <td rowspan="1" colspan="1">No</td>
+    <td rowspan="1" colspan="1">n/a</td>
+    <td rowspan="1" colspan="1">Yes</td>
+  </tr>
+  </tbody>
+</table>
+         
+    </div>
+
+	<div class="div3">
+	  
+<h4><a name="forwardinter"></a>2.7.2 SOAP Forwarding Intermediaries</h4>
+	  
+	  <p>The semantics of one or more SOAP header blocks in a SOAP
+	    message, or the SOAP MEP used MAY
+	    require that the SOAP message be forwarded to another SOAP
+	    node on behalf of the initiator of the inbound SOAP
+	    message. In this case, the processing SOAP node acts in
+	    the role of a SOAP forwarding intermediary.</p>
+
+	    <p>Forwarding SOAP intermediaries MUST process the message according
+	    to the SOAP processing model defined in
+	    <a href="#procsoapmsgs"><b>2.6 Processing SOAP Messages</b></a>. In addition, when generating a
+	    SOAP message for the purpose of forwarding, they MUST:</p>
+	    
+	  <ol>
+	    <li><p>Remove all processed SOAP header blocks.</p></li>
+	    
+	    <li><p>Remove all non-relayable SOAP header blocks that were
+	    targeted at the forwarding node but ignored during
+	    processing.</p></li>
+	    
+	    <li><p>Retain all relayable SOAP header blocks that were targeted
+	    at the forwarding node but ignored during processing.</p></li>
+	  </ol>
+
+      <p>Forwarding SOAP intermediaries MUST also obey the
+        specification for the SOAP forwarding features being used.
+        The specification for each such a feature MUST describe the required semantics, including
+        the rules describing how the forwarded message is
+        constructed. Such rules MAY describe placement of inserted
+        or reinserted SOAP header blocks. Inserted SOAP header blocks might be
+        indistinguishable from one or more of the header blocks
+        removed by the intermediary.  Processing is defined here
+        in terms of re-inserting header blocks (rather than leaving them in place)
+        to emphasize the need to process them at each SOAP node
+        along the SOAP message path.</p>
+
+	<div class="div4">
+<h5><a name="soapinterminfoset"></a>2.7.2.1 Relayed Infoset</h5>
+<p>This section describes the behavior of SOAP forwarding intermediaries
+with respect to preservation of the XML infoset properties of a relayed SOAP
+message.</p>
+ 
+<p>Unless overridden by the processing of SOAP features at an
+intermediary (see <a href="#forwardinter"><b>2.7.2 SOAP Forwarding Intermediaries</b></a>), the following rules
+apply:</p>
+ 
+<ol>
+<li><p>All XML infoset properties of a message MUST be preserved,
+except as specified in rules 2 through 22. </p></li>
+<li><p>The <em>element information item</em> for a header block targeted at an
+    intermediary MAY be removed, by that intermediary,
+    from the [children] property of the
+    SOAP <code>Header</code>  <em>element information item</em> as detailed in
+    <a href="#forwardinter"><b>2.7.2 SOAP Forwarding Intermediaries</b></a>.</p></li>
+ 
+<li><p><em>Element information items</em> for additional header blocks MAY be
+    added to the [children] property of the SOAP <code>Header</code>  <em>element
+    information item</em> as detailed in <a href="#forwardinter"><b>2.7.2 SOAP Forwarding Intermediaries</b></a>.</p></li>
+ 
+<li><p><em>White space character information items</em> MAY be removed from the
+    [children] property of the SOAP <code>Envelope</code>  <em>element information item</em>.</p></li>
+ 
+<li><p><em>White space character information items</em> MAY be added to the
+    [children] property of the SOAP <code>Envelope</code>  <em>element information item</em>.</p></li>
+ 
+<li><p><em>White space character information items</em> MAY be removed from the
+    [children] property of the SOAP <code>Header</code>  <em>element information item</em>.</p></li>
+ 
+<li><p><em>White space character information items</em> MAY be added to the
+    [children] property of the SOAP <code>Header</code>  <em>element information item</em>.</p></li>
+ 
+<li><p><em>Comment information items</em> MAY be added to the [children] property
+    of the SOAP <code>Envelope</code>  <em>element information item</em>.</p></li>
+ 
+<li><p><em>Comment information items</em> MAY be removed from the [children] property
+    of the SOAP <code>Envelope</code>  <em>element information item</em>.</p></li>
+ 
+<li><p><em>Comment information items</em> MAY be added to the [children] property
+    of the SOAP <code>Header</code>  <em>element information item</em>.</p></li>
+ 
+<li><p><em>Comment information items</em> MAY be removed from the [children] property
+    of the SOAP <code>Header</code>  <em>element information item</em>.</p></li>
+ 
+<li><p><em>Attribute information items</em> MAY be added to the [attributes]
+    property of the SOAP <code>Envelope</code>  <em>element information item</em>.</p></li>
+ 
+<li><p><em>Attribute information items</em> MAY be added to the [attributes]
+    property of the SOAP <code>Header</code>  <em>element information item</em>.</p></li>
+ 
+<li><p><em>Attribute information items</em> MAY be added to the [namespace attributes]
+    property of the SOAP <code>Envelope</code>  <em>element information item</em>.</p></li>
+ 
+<li><p><em>Attribute information items</em> MAY be added to the [namespace attributes]
+    property of the SOAP <code>Header</code>  <em>element information item</em>.</p></li>
+ 
+<li><p>SOAP <code>role</code>  <em>attribute information items</em> that are
+present in the [attributes] property of SOAP header block <em>element
+information items</em> may be transformed as described in <a href="#soaprole"><b>5.2.2 SOAP role Attribute</b></a>.</p></li>
+
+<li><p>SOAP <code>mustUnderstand</code>  <em>attribute information items</em> that
+are present in the [attributes] property of SOAP header block <em>element
+information items</em> may be transformed as described in <a href="#soapmu"><b>5.2.3 SOAP mustUnderstand Attribute</b></a>.</p></li>
+
+<li><p>SOAP <code>relay</code>  <em>attribute information items</em> that are
+present in the [attributes] property of SOAP header block <em>element
+information items</em> may be transformed as described in <a href="#soaprelay"><b>5.2.4 SOAP relay Attribute</b></a>.</p></li>
+
+<li><p>The [base URI] property of the <em>document information item</em> need not
+    be maintained.</p></li>
+ 
+<li><p>The [base URI] property of <em>element information items</em> MAY be changed or removed.</p></li>
+ 
+<li><p>The [character encoding scheme] property of the <em>document
+    information item</em> MAY be changed or removed.</p></li>
+ 
+
+<li><p>All <em>namespace information items</em> in the [in-scope namespaces]
+of <em>element information items</em> MUST be preserved. Additional <em>namespace information items</em> MAY be added.</p></li>
+    
+</ol>
+ 
+	  <div class="note"><p class="prefix"><b>Note:</b></p>
+	    <p>The rules above allow for signing of SOAP header
+	      blocks, the SOAP body, and combinations of SOAP header
+	      blocks and the SOAP body.</p>
+
+	    <p>In the absence of a canonicalization algorithm to
+	      normalize the infoset transformations and if the
+	      "http://www.w3.org/TR/2001/REC-xml-c14n-20010315"
+	      canonicalization algorithm is used then items 1-6 and
+	      11-14 are incompatible with signing the SOAP envelope
+	      and items 1, 2, 5, 6, 12 and 14 are incompatible with
+	      signing the SOAP header.</p>
+
+	    <p>Similarly, if the
+	      "http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments"
+	      canonicalization algorithm is used then items 7 and 8
+	      are incompatible with signing the SOAP envelope and
+	      items 9 and 10 are incompatible with signing the SOAP
+	      header.</p>
+	  </div>
+ 
+<div class="note"><p class="prefix"><b>Note:</b></p><p><em>White space character information items</em> are those whose
+[character code] property has a value of #x20,
+ #x9, #xD or #xA.</p></div>
+ 
+	</div>
+
+
+	</div>
+
+	<div class="div3">
+	  
+<h4><a name="activeinter"></a>2.7.3 SOAP Active Intermediaries</h4>
+
+	  <p>In addition to the processing performed by forwarding
+	    SOAP intermediaries, active SOAP intermediaries undertake additional
+	    processing that can modify the outbound SOAP message in ways
+	    <em>not</em> described in the inbound SOAP message. That is,
+	    they can undertake processing not described by SOAP header
+	    blocks in the incoming SOAP message. The potential set of
+	    services provided by an active SOAP intermediary includes, but
+	    is not limited to: security services, annotation services, and
+	    content manipulation services.</p>
+
+	  <p>The results of such active processing
+	  could impact the interpretation of SOAP messages by downstream SOAP nodes. For
+	  example, as part of generating an outbound SOAP message, an active SOAP
+	  intermediary might have removed and encrypted some or all of the
+	  SOAP header blocks found in the inbound SOAP message. It is strongly
+	  recommended that SOAP features provided by active SOAP intermediaries be
+	  described in a manner that allows such modifications to be
+	  detected by affected SOAP nodes in the message path.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+      </div>
+
+      <div class="div2">
+	
+<h3><a name="envvermodel"></a>2.8 SOAP Versioning Model</h3>
+
+    <p>The version of a SOAP message is identified by the XML expanded name
+    of the child <em>element information item</em> of the <em>document
+    information item</em>. A SOAP Version 1.2 message has a
+    child <em>element information item</em> of the <em>document
+    information item</em> with a [local name] of
+    <code>Envelope</code>  and a [namespace name] of
+    "http://www.w3.org/2003/05/soap-envelope" (see
+    <a href="#soapenvelope"><b>5.1 SOAP Envelope</b></a>).</p>
+    
+    <p>A SOAP node determines whether it
+    supports the version of a SOAP message on a per message basis. In
+    this context "support" means understanding the semantics of that
+    version of a SOAP envelope. The versioning model is directed only
+    at the SOAP <code>Envelope</code>  <em>element information item</em>. It
+    does not address versioning of SOAP header blocks, encodings, protocol bindings,
+    or anything else.</p>
+
+	<p>A SOAP node MAY support multiple envelope versions.
+	  However, when processing a message, a SOAP node MUST use the
+	  semantics defined by the version of that message.</p>
+
+	<p>If a SOAP node receives a message whose version is not supported
+	it MUST generate a fault (see <a href="#soapfault"><b>5.4 SOAP Fault</b></a>) with a
+	<code>Value</code>  of <code>Code</code>  set to
+	"env:VersionMismatch". Any other malformation of the
+	message construct MUST result in the generation of a fault with a
+	<code>Value</code>  of <code>Code</code>  set to "env:Sender".</p>
+
+	<p>Appendix <a href="#version"><b>A. Version Transition From SOAP/1.1 to SOAP Version 1.2</b></a> defines a mechanism for
+	  transitioning from SOAP/1.1 to SOAP Version 1.2 using the
+	  <code>Upgrade</code>  <em>element information item</em> (see
+	  <a href="#vmfault"><b>5.4.7 VersionMismatch Faults</b></a>).</p>
+      </div>
+    </div>
+
+    <div class="div1">
+      
+<h2><a name="extensibility"></a>3. SOAP Extensibility Model</h2>
+          
+      <p>SOAP provides a simple messaging framework whose
+      core functionality is concerned with providing extensibility. The
+      extensibility mechanisms described below can be used to add
+      capabilities found in richer messaging environments.</p>	
+	
+	<div class="div2">
+<h3><a name="soapfeature"></a>3.1 SOAP Features</h3>
+	
+	  
+	  <p>
+	  A SOAP feature is an extension of the SOAP messaging framework.
+	  Although SOAP poses no constraints on the potential scope of
+	  such features, example features may include "reliability",
+	  "security", "correlation", "routing", and message exchange
+	  patterns (MEPs) such as request/response, one-way, and
+	  peer-to-peer conversations.
+	  </p>
+
+      <p>The SOAP extensibility model provides two mechanisms through
+	which features can be expressed: the SOAP Processing Model and
+	the SOAP Protocol Binding Framework (see <a href="#msgexchngmdl"><b>2. SOAP Processing Model</b></a> and <a href="#transpbindframew"><b>4. SOAP Protocol Binding Framework</b></a>). The former describes the behavior
+	of a single SOAP node with respect to the processing of an
+	individual message. The latter mediates the act of sending and
+	receiving SOAP messages by a SOAP node via an underlying
+	protocol.</p>
+
+      <p>The SOAP Processing Model enables SOAP nodes that include the
+	mechanisms necessary to implement one or more features to
+	express such features within the SOAP envelope as SOAP header
+	blocks (see <a href="#muprocessing"><b>2.4 Understanding SOAP Header Blocks</b></a>). Such header blocks
+	can be intended for any SOAP node or nodes along a SOAP
+	message path (see <a href="#targettingblocks"><b>2.3 Targeting SOAP Header Blocks</b></a>).
+	The combined syntax and semantics of SOAP header blocks are
+	known as a SOAP module, and are specified according to the
+	rules in <a href="#soapmodules"><b>3.3 SOAP Modules</b></a>.
+	</p>
+
+
+      <p>In contrast, a SOAP protocol binding operates between two
+	adjacent SOAP nodes along a SOAP message path. There is no
+	requirement that the same underlying protocol is used for all
+	hops along a SOAP message path. In some cases, underlying
+	protocols are equipped, either directly or through extension,
+	with mechanisms for providing certain features. The SOAP
+	Protocol Binding Framework provides a scheme for describing
+	these features and how they relate to SOAP nodes through a
+	binding specification (see <a href="#transpbindframew"><b>4. SOAP Protocol Binding Framework</b></a>).</p>
+      
+
+
+      <p>Certain features might require end-to-end as opposed to
+      hop-by-hop processing semantics. Although the SOAP Protocol
+      Binding Framework allows end-to-end features to be expressed
+      outside the SOAP envelope, no standard mechanism is provided for
+      the processing by intermediaries of the resulting messages. A
+      binding specification that expresses such features external to
+      the SOAP envelope needs to define its own processing rules for
+      those externally expressed features.  A SOAP node is expected to
+      conform to these processing rules (for example, describing what
+      information is passed along with the SOAP message as it leaves
+      the intermediary). The processing of SOAP envelopes in
+      accordance with the SOAP Processing Model (see <a href="#msgexchngmdl"><b>2. SOAP Processing Model</b></a>) MUST NOT be overridden by binding
+      specifications.</p> 
+      
+      <p>It is recommended that, where practical, end-to-end
+      features be expressed as SOAP header blocks, so that the rules
+      defined by the SOAP Processing Model can be employed.</p>
+
+
+    <div class="div3">
+<h4><a name="featurereq"></a>3.1.1 Requirements on Features</h4>
+      <p>The specification of a feature MUST include the
+	following:</p>
+      
+      <ol>
+      <li><p>A URI used to name the feature. This enables the feature to be unambiguously referenced in description languages or during negotiation.</p></li>
+
+
+	<li>
+	  <p>The information (state) required at each node
+	    to implement the feature.</p>
+	</li>
+           
+	<li>
+	  <p>The processing required at each node in order to fulfill the
+	  obligations of the feature including any handling of communication
+	  failures that might occur in the underlying protocol (see also
+	  <a href="#bindfw"><b>4.2 Binding Framework</b></a>).</p>
+	</li>
+           
+	<li>
+	  <p>The information to be transmitted from node to node.</p>
+	</li>
+
+      </ol>
+      
+      <p>See <a href="#soapmep"><b>3.2 SOAP Message Exchange Patterns (MEPs)</b></a> for additional requirements on MEP features.</p>
+     
+	</div>
+	
+	
+	</div>
+	
+	
+	
+	<div class="div2">
+	  
+<h3><a name="soapmep"></a>3.2 SOAP Message Exchange Patterns (MEPs)</h3>
+
+      <p>A Message Exchange Pattern (MEP) is a 
+      template that establishes a pattern for the exchange
+      of messages between SOAP nodes. MEPs are a type of feature, and unless
+      otherwise stated, references in this specification to the
+      term "feature" apply also to MEPs. The request-response MEP
+      specified in SOAP 1.2 Part 2 <a href="#SOAP-PART2">[SOAP Part 2]</a> illustrates the specification of a
+      MEP feature.</p>
+
+      <p>The specification of a
+      message exchange pattern MUST:</p>
+        
+        <ul>
+           <li><p>As mandated by <a href="#featurereq"><b>3.1.1 Requirements on Features</b></a>, provide a URI to name the MEP.</p></li>
+      
+           <li><p>Describe the life cycle of a message
+           exchange conforming to the pattern.</p></li>
+           
+           <li><p>Describe the temporal/causal relationships, if any,  of 
+           multiple messages exchanged in conformance with the pattern (e.g. responses follow
+	   requests and are sent to the originator of the request.)</p></li>
+           
+           <li><p>Describe the normal and abnormal termination of a
+           message exchange conforming to the pattern.</p></li>
+           
+        </ul>
+
+       <p>Underlying protocol binding specifications can declare their support
+       for one or more named MEPs.</p>
+	
+  	  <p>MEPs are SOAP features, so an MEP specification MUST
+	  conform to the requirements for SOAP feature specifications
+	  (see <a href="#featurereq"><b>3.1.1 Requirements on Features</b></a>).  
+	  An MEP specification MUST 
+	  also include:</p>
+	  
+	  <ol>
+	       <li><p>Any requirements to generate
+	    additional messages (such as responses to requests in a
+	    request/response MEP).</p></li>
+	       <li><p>Rules for the delivery or other
+	    disposition of SOAP faults generated during the operation
+	    of the MEP.</p></li>
+	  </ol>
+	  
+    </div>
+
+	
+	<div class="div2">
+	  
+<h3><a name="soapmodules"></a>3.3 SOAP Modules</h3>
+
+	  <p>The term "SOAP module" refers to the specification of the
+	  syntax and semantics of one or more SOAP header blocks. A
+	  SOAP module realizes zero or more SOAP features. A module
+	  specification adheres to the following rules. It:</p>
+      
+      <ol>
+         <li><p>MUST identify itself with a URI. This enables the
+         module to be unambiguously referenced in description languages
+         or during negotiation.</p></li>
+
+		 <li><p>MUST declare the features provided by a module
+		 (see <a href="#soapfeature"><b>3.1 SOAP Features</b></a>).</p></li>
+
+
+         <li><p>MUST clearly and completely specify the content
+         and semantics of the SOAP header blocks used to implement
+         the behavior in question, including if appropriate
+         any modifications to the SOAP processing model.
+         The SOAP extensibility model does not limit the extent to
+         which SOAP can be extended. Nor does it prevent extensions
+         from modifying the SOAP processing model from that described
+         in <a href="#msgexchngmdl"><b>2. SOAP Processing Model</b></a></p></li>
+
+         <li><p>MAY utilize the property conventions defined
+         in SOAP 1.2 Part 2 <a href="#SOAP-PART2">[SOAP Part 2]</a>,
+         section <a href="http://www.w3.org/TR/2003/PR-soap12-part2-20030507/#soapfeatspec">A Convention for
+         Describing Features and Bindings</a>,
+         in describing the functionality
+         that the module provides. If these conventions
+         are followed, the module specification MUST clearly describe
+         the relationship between the abstract properties
+         and their representations in the SOAP envelope. Note that
+         it is possible to write a feature specification purely
+         in terms of abstract properties, and then write a separate
+         module specification which implements that feature,
+         mapping the properties defined in the feature specification
+         to SOAP header blocks in the SOAP module.</p></li>
+
+         <li><p>MUST clearly specify any known interactions with or
+         changes to the interpretation of the SOAP body. Furthermore, it
+         MUST clearly specify any known interactions with or changes to
+         the interpretation of other SOAP features and SOAP modules. 
+         For example, we can imagine a
+         module which encrypts and removes the SOAP body, inserting instead
+         a SOAP header block containing
+         a checksum and an indication of the encryption mechanism used.
+         The specification for such a module would indicate that the
+         decryption algorithm on the receiving side is to be run
+         <em>prior</em> to any other modules which rely on the
+         contents of the SOAP body.</p></li>
+         
+      </ol>
+      
+	</div>
+    
+    </div>
+
+    <div class="div1">
+      
+<h2><a name="transpbindframew"></a>4. SOAP Protocol Binding Framework</h2>
+
+      <p>SOAP enables exchange of SOAP messages using a
+      variety of underlying protocols. The formal set of rules for
+      carrying a SOAP message within or on top of another protocol
+      (underlying protocol) for the purpose of exchange is called a
+      binding. The SOAP Protocol Binding Framework provides general
+      rules for the specification of protocol bindings; the framework
+      also describes the relationship between bindings and SOAP nodes
+      that implement those bindings. The HTTP binding in
+      SOAP 1.2 Part 2 <a href="#SOAP-PART2">[SOAP Part 2]</a> illustrates the specification of a
+      binding. Additional bindings can be created by specifications that
+      conform to the binding framework introduced in this chapter.</p>
+
+      <p>A SOAP binding specification:</p>
+      <ul>
+        <li><p>Declares the features provided by
+        a binding.</p></li>
+        
+        <li><p>Describes how the services of the underlying protocol
+        are used to transmit SOAP message infosets.</p></li>
+
+        <li><p>Describes how the services of the underlying
+        protocol are used to honor the contract formed by the
+        features supported by that binding.</p></li>
+        
+        <li><p>Describes the handling of all potential failures that can be
+        anticipated within the binding.</p></li>
+        
+        <li><p>Defines the requirements for building a conformant
+        implementation of the binding being specified.</p></li>
+      </ul>
+
+      <p>A binding does not provide a separate processing model and
+	does not constitute a SOAP node by itself. Rather a SOAP
+	binding is an integral part of a SOAP node (see <a href="#msgexchngmdl"><b>2. SOAP Processing Model</b></a>). </p>
+
+  <div class="div2">
+<h3><a name="bindfwgoals"></a>4.1 Goals of the Binding Framework</h3>
+      
+      <p>The goals of the binding framework are:</p>
+
+      <ol>
+         <li><p>To set out the requirements and concepts that are
+         common to all binding specifications.</p></li>
+         
+         <li><p>To facilitate homogeneous description in situations where multiple bindings
+         support common features, promoting reuse across bindings.</p></li>
+         
+         <li><p>To facilitate consistency in the specification of optional features.</p></li>
+         
+      </ol>
+      
+      <p>Two or more bindings can offer a given optional feature,
+      such as reliable delivery, using different means.
+      One binding might exploit an underlying
+      protocol that directly facilitates the feature (e.g., the protocol
+      is reliable), and the other binding might provide the necessary logic
+      itself (e.g., reliability is achieved via logging and retransmission).
+      In such cases, the feature can be made available
+      to applications in a consistent manner, regardless of which
+      binding is used.</p>
+
+  </div>
+  
+  <div class="div2">
+<h3><a name="bindfw"></a>4.2 Binding Framework</h3>
+  
+      <p>The creation, transmission, and processing of a SOAP message,
+      possibly through one or more intermediaries, is specified in
+      terms of a distributed state machine. The state consists of
+      information known to a SOAP node at a given point in time,
+      including but not limited to the contents of messages being
+      assembled for transmission or received for processing. The state
+      at each node can be updated either by local processing, or by
+      information received from an adjacent node.</p>
+      
+      <p>Section <a href="#msgexchngmdl"><b>2. SOAP Processing Model</b></a> of this specification
+      describes the processing that is common to all SOAP nodes when
+      receiving a message. The purpose of a binding specification
+      is to augment those core SOAP rules with additional
+      processing that is particular to the binding, and to specify
+      the manner in which the underlying protocol is used to transmit
+      information between adjacent nodes in the message path.</p>
+      
+      <p>The distributed state machine that manages the
+      transmission of a given SOAP message through its message path
+      is the combination of the core SOAP processing
+      (see <a href="#msgexchngmdl"><b>2. SOAP Processing Model</b></a>) operating at each node, in
+      conjunction with the binding specifications connecting each pair
+      of nodes. A binding specification MUST enable one or more MEPs.</p>
+      
+      <p>In cases where multiple features are supported by a binding
+      specification, the specifications for those features MUST provide
+      any information necessary for their successful use in
+      combination. Similarly, any dependencies of one feature on another
+      (i.e. if successful use of one feature depends on use or non-use
+      of another) MUST be specified.   
+      This binding framework does not provide any explicit mechanism
+      for controlling the use of such interdependent features.</p>
+      
+      <p>The binding framework provides no fixed means of naming or
+      typing the information comprising the state at a given node.
+      Individual feature and binding specifications are free to adopt
+      their own conventions for specifying state. Note, however, that
+      consistency across bindings and features is likely to be
+      enhanced in situations where multiple feature specifications
+      adopt consistent conventions for representing state. For example,
+      multiple features might benefit from a consistent specification
+      for an authentication credential, a transaction ID, etc. The
+      HTTP binding in SOAP 1.2 Part 2 <a href="#SOAP-PART2">[SOAP Part 2]</a>
+      illustrates one such convention.</p>
+
+      <p>As described in <a href="#soapenv"><b>5. SOAP Message Construct</b></a>, each SOAP message
+      is specified as an XML infoset that consists of a <em>document
+      information
+      item</em> with exactly one child: the SOAP <code>Envelope</code>  <em>element
+      information item</em>.
+      Therefore, the minimum responsibility of a binding in transmitting
+      a message is to specify the means by which the SOAP message infoset
+      is transferred to and reconstituted by the binding at the
+      receiving SOAP node and to specify the manner in which the
+      transmission of the envelope is effected using the facilities
+      of the underlying protocol.</p>
+
+      <p>The binding framework does not
+      require that every binding use the XML 1.0 <a href="#XML">[XML 1.0]</a>
+      serialization as
+      the "on the wire" representation of the XML infoset; compressed,
+      encrypted, fragmented representations and so on can be used
+      if appropriate. A binding, if using XML 1.0
+      serialization of the XML infoset, MAY mandate that a particular
+      character encoding or set of encodings be used.</p>
+
+      <p>Bindings MAY provide for streaming when
+      processing messages. That is, SOAP nodes MAY begin
+      processing a received SOAP message as soon as the
+      necessary information is available. SOAP processing
+      is specified in terms of SOAP message infosets (see
+      <a href="#soapenv"><b>5. SOAP Message Construct</b></a>). Although streaming
+      SOAP receivers will acquire such XML infosets incrementally,
+      SOAP processing MUST yield results identical to
+      those that would have been achieved if the entire
+      SOAP envelope were available prior to the start of
+      processing. For example, as provided in <a href="#procsoapmsgs"><b>2.6 Processing SOAP Messages</b></a>, identification of targeted
+      SOAP header blocks, and checking of all <code>mustUnderstand</code> 
+      attributes is to be done before successful processing
+      can proceed. Depending on the representation used
+      for the XML infoset, and the order in which it is
+      transmitted, this rule might limit the degree to which
+      streaming can be achieved.</p>
+      
+      <p>Bindings MAY depend on state that is modeled as being outside
+      of the SOAP message infoset (e.g. retry counts), and MAY transmit
+      such information to adjacent nodes. For example, some bindings
+      take a message delivery address (typically a URI) that is not
+      within the envelope.</p>
+      
+  </div>
+
+  </div>
+    
+    <div class="div1">
+      
+<h2><a name="soapenv"></a>5. SOAP Message Construct</h2>
+
+      <p>A SOAP message is specified as an XML infoset that consists of a
+        <em>document information item</em> with exactly one member
+        in its [children] property,
+        which MUST be the SOAP <code>Envelope</code>  <em>element information
+	  item</em> (see <a href="#soapenvelope"><b>5.1 SOAP Envelope</b></a>). This <em>element
+        information item</em> is also the value of the [document
+        element] property. The [notations] and [unparsed entities]
+        properties are both empty. The [base URI],
+        [character encoding scheme] and [version] properties can have
+        any legal value. The [standalone] property either has a value
+        of "yes" or has no value.</p>
+      
+      <p>The XML infoset of a SOAP message MUST NOT contain a
+        <em>document type declaration information item</em>.</p>
+      
+	  <p>SOAP messages sent by initial SOAP senders MUST NOT
+	  contain <em>processing instruction information items</em>.
+	  SOAP intermediaries MUST NOT insert <em>processing instruction
+	  information items</em> in SOAP messages they relay. SOAP
+	  receivers receiving a SOAP message containing a <em>processing
+	  instruction information item</em> SHOULD generate a SOAP fault
+	  with the <code>Value</code>  of <code>Code</code>  set to
+	  "env:Sender".  However, in the case where
+	  performance considerations make it impractical for an intermediary
+	  to detect <em>processing instruction information items</em> in
+	  a message to be relayed, the intermediary MAY leave such
+	  <em>processing instruction information items</em> unchanged in
+	  the relayed message.</p>
+
+	<p><em>Element information items</em> defined by this
+	specification that only have <em>element
+	information items</em> defined as allowable members of their
+	[children] property can also have zero or more <em>character information item</em>
+	children whose character code is amongst the white space characters
+	as defined by XML 1.0 <a href="#XML">[XML 1.0]</a>. Unless otherwise indicated, such <em>character
+	information items</em> are considered insignificant.</p>
+	<p><em>Comment information items</em> MAY appear
+	as children and/or descendants of the [document element] <em>element
+	information item</em> but not	before or after that <em>element
+	information item</em> . There are some restrictions in the
+	processing model with respect to when <em>comment information
+	items</em> can be added and/or removed (see <a href="#soapinterminfoset"><b>2.7.2.1 Relayed Infoset</b></a>).</p> 
+	
+    <div class="div2">
+      
+<h3><a name="soapenvelope"></a>5.1 SOAP Envelope</h3>
+
+      <p>The SOAP <code>Envelope</code>  <em>element information item</em> has:</p>
+
+      <ul>
+
+	<li><p>A [local name] of <code>Envelope</code> .</p></li>
+
+	<li><p>A [namespace name] of
+	"http://www.w3.org/2003/05/soap-envelope".
+	</p></li>
+
+	<li><p>Zero or more namespace qualified <em>attribute
+	information items</em> amongst its [attributes] property.</p></li>
+
+	<li><p>One or two <em>element information item</em>s in its
+	[children] property in order as follows:</p>
+	
+	  <ol>
+
+ 	  <li><p>An optional <code>Header</code>  <em>element information
+	  item</em> (see <a href="#soaphead"><b>5.2 SOAP Header</b></a>).</p></li>
+
+	  <li><p>A mandatory <code>Body</code>  <em>element information
+	  item</em> (see <a href="#soapbody"><b>5.3 SOAP Body</b></a>).</p></li>
+          
+      </ol>
+      
+    </li>
+	
+    </ul>
+
+        <div class="div3">
+          
+<h4><a name="soapencattr"></a>5.1.1 SOAP encodingStyle Attribute</h4>
+
+         <p>The <code>encodingStyle</code>  <em>attribute
+          information item</em> indicates the
+          encoding rules used to serialize parts of a SOAP message.</p>
+
+          <p>The <code>encodingStyle</code>  <em>attribute information
+          item</em> has:</p>
+
+          <ul>
+
+            <li><p>A [local name] of <code>encodingStyle</code> .</p></li>
+
+            <li><p>A [namespace name] of
+            "http://www.w3.org/2003/05/soap-envelope".</p></li>
+
+          </ul>
+
+          <p>The <code>encodingStyle</code>  <em>attribute information
+          item</em> is of type <em>xs:anyURI</em>. Its value identifies a
+          set of serialization rules that can be used to
+          deserialize the SOAP message.</p>
+
+          <p>The <code>encodingStyle</code>  <em>attribute information
+          item</em> MAY appear on the following:</p>
+          
+          <ol>
+          
+            <li><p>A SOAP header block (see <a href="#soapheadblock"><b>5.2.1 SOAP header block</b></a>).</p></li>
+
+            <li><p>A child <em>element information item</em> of
+            the SOAP <code>Body</code>  <em>element information item</em> (see <a href="#soapbodyel"><b>5.3.1 SOAP Body child Element</b></a>)
+            if that child is not a SOAP Fault <em>element information
+            item</em> (see <a href="#soapfault"><b>5.4 SOAP Fault</b></a>).</p></li>
+            
+            <li><p>A child <em>element information item</em> of
+            the SOAP <code>Detail</code>  <em>element information item</em> (see <a href="#faultdetailentry"><b>5.4.5.1 SOAP detail entry</b></a>).</p></li>
+            
+            <li><p>Any descendent of 1, 2, and 3 above.</p></li>
+
+          </ol>
+
+          <p>The <code>encodingStyle</code>  <em>attribute information
+          item</em> MUST NOT appear on any element other than above in a
+          SOAP message infoset.</p>
+          
+          <p>The
+          scope of the <code>encodingStyle</code>  <em>attribute information
+          item</em> is that of its owner <em>element information
+          item</em> and that <em>element information item's</em>
+          descendants, unless a descendant itself carries such an
+          <em>attribute information item</em>. If no
+          <code>encodingStyle</code>  <em>attribute information
+          item</em> is in scope for a particular <em>element
+          information item</em> or the value of such an
+          <em>attribute information item</em> is "http://www.w3.org/2003/05/soap-envelope/encoding/none" then no claims are made regarding the encoding style of
+          that <em>element information item</em> and its
+          descendants.</p>
+
+	  <div class="exampleOuter">
+	    
+<div class="exampleHead">Example 2: Values for the <code>encodingStyle</code>  <em>attribute information item</em>.</div>
+	    <div class="exampleInner"><pre>"http://www.w3.org/2003/05/soap-encoding"
+"http://example.org/encoding/"
+"http://www.w3.org/2003/05/soap-envelope/encoding/none"</pre></div></div>
+
+        </div>
+
+      </div>
+
+      <div class="div2">
+<h3><a name="soaphead"></a>5.2 SOAP Header</h3>
+          
+      <p>The SOAP <code>Header</code>  <em>element information item</em>
+      provides a mechanism for extending a SOAP message in a
+      decentralized and modular way (see <a href="#extensibility"><b>3. SOAP Extensibility Model</b></a>
+      and <a href="#muprocessing"><b>2.4 Understanding SOAP Header Blocks</b></a>).</p>
+
+      <p>The <code>Header</code>  <em>element information item</em> has:</p>
+
+	<ul>
+
+	  <li><p>A [local name] of <code>Header</code> .</p></li>
+
+	  <li><p>A [namespace name] of
+            "http://www.w3.org/2003/05/soap-envelope".</p></li>
+
+	  <li><p>Zero or more namespace qualified <em>attribute
+	    information items</em> in its [attributes] property.</p></li>
+
+	  <li><p>Zero or more namespace qualified <em>element
+	    information item</em>s in its [children] property.</p></li>
+
+	</ul>
+
+        <p>Each child <em>element information item</em> of
+        the SOAP Header is called a SOAP header block.</p>
+        
+        
+        <div class="div3">
+<h4><a name="soapheadblock"></a>5.2.1 SOAP header block</h4>
+
+        <p>Each SOAP header block <em>element information item</em>:</p>
+
+        <ul>
+
+          <li><p>MUST have a [namespace name] property which has a
+          value, that is the name of the element MUST be namespace qualified.</p></li>
+          
+   		  <li><p>MAY have any number of <em>character information
+   		  item</em> children. Child <em>character information
+   		  items</em> whose character code is amongst the white space
+   		  characters as defined by XML 1.0 <a href="#XML">[XML 1.0]</a> are
+   		  considered significant.</p></li>
+
+		  <li><p>MAY have any number of <em>element
+		  information item</em> children. Such <em>element
+		  information items</em> MAY be namespace qualified.</p></li>
+   		  
+   		  <li><p>MAY have zero or more <em>attribute information
+   		  items</em> in its [attributes] property.  Among these MAY
+   		  be any or all of the following, which have special
+   		  significance for SOAP processing:</p>
+  
+            <ul>
+
+            <li><p><code>encodingStyle</code>  <em>attribute
+            information item</em> (see <a href="#soapencattr"><b>5.1.1 SOAP encodingStyle Attribute</b></a>).</p></li>
+
+            <li><p><code>role</code>  <em>attribute information
+            item</em> (see <a href="#soaprole"><b>5.2.2 SOAP role Attribute</b></a>).</p></li>
+
+            <li><p><code>mustUnderstand</code>  <em>attribute
+            information item</em> (see <a href="#soapmu"><b>5.2.3 SOAP mustUnderstand Attribute</b></a>).</p></li>
+
+            <li><p><code>relay</code>  <em>attribute
+            information item</em> (see <a href="#soaprelay"><b>5.2.4 SOAP relay Attribute</b></a>).</p></li>
+
+            </ul>
+
+          </li>
+
+        </ul>
+
+	  <div class="exampleOuter">
+	    
+<div class="exampleHead">Example 3: SOAP Header with a single SOAP header block</div>
+	    <div class="exampleInner"><pre>&lt;env:Header xmlns:env="http://www.w3.org/2003/05/soap-envelope" &gt;
+ &lt;t:Transaction xmlns:t="http://example.org/2001/06/tx" 
+                env:mustUnderstand="true" &gt;
+   5
+ &lt;/t:Transaction&gt;
+&lt;/env:Header&gt;</pre></div>
+	  </div>
+
+        </div>
+
+        <div class="div3">
+<h4><a name="soaprole"></a>5.2.2 SOAP role Attribute</h4>
+          
+          <p>A SOAP role is used to indicate the SOAP node to which a
+          particular SOAP header block is targeted
+          (see <a href="#soaproles"><b>2.2 SOAP Roles and SOAP Nodes</b></a>).</p>
+
+          <p>The <code>role</code>  <em>attribute information
+          item</em> has the following XML infoset properties:</p>
+
+	  <ul>
+
+            <li><p>A [local name] of <code>role</code> .</p></li>
+
+            <li><p>A [namespace name] of
+            "http://www.w3.org/2003/05/soap-envelope".</p></li>
+
+            <li><p>A [specified] property with a value of "true".</p></li>
+
+          </ul> 
+
+          <p>The type of the <code>role</code>  <em>attribute
+          information item</em> is <em>xs:anyURI</em>.
+          The value of the <code>role</code>  <em>attribute
+          information item</em> is a URI that names a role that a
+          SOAP node can assume.</p>
+          
+          <p>Omitting the SOAP <code>role</code>  <em>attribute information
+          item</em> is equivalent to 
+          supplying that attribute with a value of
+          "http://www.w3.org/2003/05/soap-envelope/role/ultimateReceiver".</p>
+          
+          <p>SOAP senders SHOULD NOT generate, but SOAP receivers MUST
+          accept the SOAP <code>role</code>  <em>attribute information
+          item</em> with a value of
+          "http://www.w3.org/2003/05/soap-envelope/role/ultimateReceiver".</p>
+
+	  <p>If relaying the message, a SOAP intermediary MAY omit a
+	    SOAP <code>role</code>  <em>attribute information
+	    item</em> if its value is
+	    "http://www.w3.org/2003/05/soap-envelope/role/ultimateReceiver"
+	    (see <a href="#relaysoapmsg"><b>2.7 Relaying SOAP Messages</b></a>).</p>
+          
+          <p>A SOAP sender generating a SOAP message SHOULD use the
+          <code>role</code>  <em>attribute information item</em> only
+          on SOAP header blocks. A SOAP receiver MUST ignore this
+          <em>attribute information item</em> if it appears on
+          descendants of a SOAP header block or on a SOAP body child
+          <em>element information item</em> (or its
+          descendents).</p>
+
+        </div>
+
+        <div class="div3">
+<h4><a name="soapmu"></a>5.2.3 SOAP mustUnderstand Attribute</h4>
+          
+          <p>The SOAP <code>mustUnderstand</code>  <em>attribute information
+          item</em> is used to indicate whether the processing of a
+          SOAP header block is mandatory or optional (see <a href="#muprocessing"><b>2.4 Understanding SOAP Header Blocks</b></a>)</p>
+
+          <p>The <code>mustUnderstand</code>  <em>attribute information
+          item</em> has the following XML infoset properties:</p>
+
+	  <ul>
+
+            <li><p>A [local name] of <code>mustUnderstand</code> .</p></li>
+
+            <li><p>A [namespace name] of
+            "http://www.w3.org/2003/05/soap-envelope".</p></li>
+
+            <li><p>A [specified] property with a value of
+            "true".</p></li> 
+
+          </ul> 
+
+          <p>The type of the <code>mustUnderstand</code>  <em>attribute
+          information item</em> is <em>xs:boolean</em>.</p>
+          
+          <p>Omitting this <em>attribute information item</em> is
+          defined as being semantically equivalent to including it
+          with a value of "false".</p>
+
+          <p>SOAP senders SHOULD NOT generate, but SOAP receivers MUST
+          accept the SOAP <code>mustUnderstand</code>  <em>attribute information
+          item</em> with a value of "false" or
+          "0".</p>
+
+          <p>If generating a SOAP
+          <code>mustUnderstand</code>  <em>attribute information item</em>, a
+          SOAP sender SHOULD use the canonical representation
+          "true" of the attribute value (see XML Schema <a href="#XMLSchemaP2">[XML Schema Part 2]</a>). A SOAP receiver MUST accept any valid
+          lexical representation of the attribute value.</p>
+
+          <p>If relaying the message, a SOAP intermediary MAY substitute
+          "true" for the value "1", or
+          "false" for "0".
+		  In addition, a SOAP intermediary MAY omit a SOAP
+		  <code>mustUnderstand</code>  <em>attribute information
+		  item</em> if its value is "false"
+                  (see <a href="#relaysoapmsg"><b>2.7 Relaying SOAP Messages</b></a>).</p>
+          
+          <p>A SOAP sender generating a SOAP message SHOULD use the
+          <code>mustUnderstand</code>  <em>attribute information
+          item</em> only on SOAP header blocks. A SOAP receiver MUST
+          ignore this <em>attribute information item</em> if it
+          appears on descendants of a SOAP header block or on a SOAP
+          body child <em>element information item</em> (or its
+          descendents).</p>
+
+
+
+       </div> 
+       
+       <div class="div3">
+         
+<h4><a name="soaprelay"></a>5.2.4 SOAP relay Attribute</h4>
+         
+         <p>The SOAP <code>relay</code>  <em>attribute information item</em> is used to
+         indicate whether a SOAP header block targeted at a SOAP
+         receiver must be relayed if not processed
+         (see <a href="#relayable"><b>2.7.1 Relaying SOAP Header Blocks</b></a>).</p>
+         
+         <p>The <code>relay</code>  <em>attribute information item</em> has
+         the following XML infoset properties:</p>
+         
+         <ul>
+           <li><p>A [local name] of <code>relay</code> .</p></li>
+           
+           <li><p>A [namespace name] of
+           "http://www.w3.org/2003/05/soap-envelope".</p></li>
+           
+           <li><p>A [specified] property with a value of
+           "true".</p></li>
+           
+         </ul>
+         
+         <p>The type of the relay <em>attribute information item</em> is
+         <em>xs:boolean</em>.</p>
+         
+         <p>Omitting this <em>attribute information item</em> is defined as
+         being semantically equivalent to including it with a value
+         of "false".</p>
+         
+         <p>SOAP senders SHOULD NOT generate, but SOAP receivers MUST
+         accept the SOAP <code>relay</code>  <em>attribute information item</em> with a
+         value of "false" or "0".</p>
+         
+         <p>If generating a SOAP <code>relay</code>  <em>attribute information
+         item</em>, a SOAP sender SHOULD use the canonical representation
+         "true" of the attribute value (see XML Schema <a href="#XMLSchemaP2">[XML Schema Part 2]</a>). A SOAP receiver MUST accept any valid lexical
+         representation of the attribute value.</p>
+         
+         <p>If relaying the message, a SOAP intermediary MAY
+         substitute "true" for the value "1",
+         or "false" for "0".
+         In addition, a SOAP intermediary MAY omit a SOAP <code>relay</code> 
+         <em>attribute information item</em> if its value is "false"
+	 (see <a href="#relaysoapmsg"><b>2.7 Relaying SOAP Messages</b></a>).</p>
+         
+         <p>A SOAP sender generating a SOAP message SHOULD use the
+         <code>relay</code>  <em>attribute information item</em> only on SOAP header
+         blocks. A SOAP receiver MUST ignore this <em>attribute
+         information item</em> if it appears on descendants of a SOAP
+         header block or on a SOAP body child <em>element information
+         item</em> (or its descendents).</p>
+         
+       </div>
+       
+      </div>
+
+      <div class="div2">
+<h3><a name="soapbody"></a>5.3 SOAP Body</h3>
+
+        <p>A SOAP body provides a mechanism for transmitting information
+        to an ultimate SOAP receiver (see <a href="#structinterpbodies"><b>2.5 Structure and Interpretation of SOAP Bodies</b></a>).</p>
+
+        <p>The <code>Body</code>  <em>element information item</em> has:</p>
+
+	<ul>
+
+	  <li><p>A [local name] of <code>Body</code> .</p></li>
+
+	  <li><p>A [namespace name] of
+            "http://www.w3.org/2003/05/soap-envelope".
+            </p></li>
+
+	  <li><p>Zero or more namespace qualified <em>attribute
+	    information items</em> in its [attributes] property.</p></li>
+
+	  <li><p>Zero or more namespace qualified <em>element
+	    information item</em>s in its [children] property.</p></li>
+
+	</ul>
+	
+    <p>The <code>Body</code>  <em>element information item</em> MAY have
+    any number of <em>character information item</em> children whose
+    character code is amongst the white space characters as defined by
+    XML 1.0 <a href="#XML">[XML 1.0]</a>. These are considered significant.</p>
+
+
+      <div class="div3">
+<h4><a name="soapbodyel"></a>5.3.1 SOAP Body child Element</h4>
+
+        <p>All child <em>element information items</em> of the
+        SOAP <code>Body</code>  <em>element information item</em>:</p>
+
+        <ul>
+
+          <li><p>SHOULD have a [namespace name] property which has a
+          value, that is the name of the element SHOULD be namespace
+          qualified.</p>
+
+		  <div class="note"><p class="prefix"><b>Note:</b></p><p>Namespace qualified elements tend to produce
+		  messages whose interpretation is less ambiguous than those
+		  with unqualified elements. The use of unqualified elements is therefore discouraged.
+		  </p></div>
+		  </li>
+
+          <li><p>MAY have any number of <em>character information
+          item</em> children. Child <em>character information
+          items</em> whose character code is amongst the white space
+          characters as defined by XML 1.0 <a href="#XML">[XML 1.0]</a> are considered
+          significant.</p></li>
+
+		  <li><p>MAY have any number of <em>element
+		  information item</em> children. Such <em>element
+		  information items</em> MAY be namespace qualified.</p></li>
+          
+          <li><p>MAY have zero or more <em>attribute information
+          items</em> in its [attributes] property.  Among these MAY be
+          the following, which has special significance for SOAP
+          processing:</p>
+  
+            <ul>
+
+            <li><p><code>encodingStyle</code>  <em>attribute
+            information item</em> (see <a href="#soapencattr"><b>5.1.1 SOAP encodingStyle Attribute</b></a>).</p></li>
+
+            </ul>
+
+          </li>
+
+        </ul>
+
+        <p>SOAP defines one particular direct child of the SOAP body,
+        the SOAP fault, which is used for reporting errors (see
+        <a href="#soapfault"><b>5.4 SOAP Fault</b></a>).</p>
+       
+       </div>
+
+      </div>
+      
+      <div class="div2">
+<h3><a name="soapfault"></a>5.4 SOAP Fault</h3>
+        
+        <p>A SOAP fault is used to carry error information within a SOAP
+        message.</p>
+
+        <p>The <code>Fault</code>  <em>element information item</em> has:</p>
+
+        <ul>
+
+          <li><p>A [local name] of <code>Fault</code> .</p></li>
+
+          <li><p>A [namespace name] of
+          "http://www.w3.org/2003/05/soap-envelope".</p></li>
+
+          <li><p>Two or more child <em>element
+          information item</em>s in its [children] property in order
+          as follows:</p> 
+
+          <ol>
+
+            <li><p>A mandatory <code>Code</code>  <em>element
+            information item</em> (see <a href="#faultcodeelement"><b>5.4.1 SOAP Code Element</b></a>).</p></li>
+
+            <li><p>A mandatory <code>Reason</code>  <em>element
+            information item</em> (see <a href="#faultstringelement"><b>5.4.2 SOAP Reason Element</b></a>).</p></li>
+
+            <li><p>An optional <code>Node</code>  <em>element
+            information item</em> (see <a href="#faultactorelement"><b>5.4.3 SOAP Node Element</b></a>).</p></li>
+
+            <li><p>An optional <code>Role</code>  <em>element
+            information item</em> (see <a href="#faultroleelement"><b>5.4.4 SOAP Role Element</b></a>).</p></li>
+
+            <li><p>An optional <code>Detail</code>  <em>element
+            information item</em> (see <a href="#faultdetailelement"><b>5.4.5 SOAP Detail Element</b></a>).</p></li>
+
+          </ol>
+          </li>
+
+        </ul>
+        
+        <p>To be recognized as carrying SOAP error information, a SOAP
+        message MUST contain a single SOAP <code>Fault</code>  <em>element
+        information item</em> as the only child <em>element information item</em> of the SOAP <code>Body</code> .</p>
+        
+        <p>When generating a fault, SOAP senders MUST NOT include
+        additional <em>element information items</em> in the SOAP
+        <code>Body</code> . A message whose <code>Body</code>  contains a
+        <code>Fault</code>  plus additional <em>element information
+        items</em> has no SOAP-defined semantics.</p>
+        
+        <p>A SOAP <code>Fault</code>  <em>element information item</em>
+        MAY appear within a SOAP header block, or as a descendant of a
+        child <em>element information item</em> of the SOAP
+        <code>Body</code> ; in such cases, the element has no
+        SOAP-defined semantics.</p>
+
+        <div class="div3">
+<h4><a name="faultcodeelement"></a>5.4.1 SOAP Code Element</h4>
+
+        <p>The <code>Code</code>  <em>element information item</em>
+        has:</p>
+
+        <ul>
+          <li><p>A [local name] of <code>Code</code> .</p></li>
+          <li><p>A [namespace name] of <code>http://www.w3.org/2003/05/soap-envelope</code> .</p></li>
+          <li><p>One or two child <em>element information
+          item</em>s in its [children] property, in order, as follows:</p>
+          <ol>
+            <li><p>A mandatory <code>Value</code>  <em>element
+            information item</em> as described below (see <a href="#faultvalueelement"><b>5.4.1.1 SOAP Value element (with Code parent)</b></a>) </p></li>
+	    <li><p>An optional
+            <code>Subcode</code>  <em>element information
+            item</em> as described below (see <a href="#faultsubcodeelement"><b>5.4.1.2 SOAP Subcode element</b></a>).</p></li>
+          </ol>
+          </li>
+        </ul>
+
+		<div class="div4">
+		  
+<h5><a name="faultvalueelement"></a>5.4.1.1 SOAP Value element (with Code parent)</h5>
+		  <p>The <code>Value</code>  <em>element information item</em>
+		  has:</p>
+		  
+		  <ul>
+          <li><p>A [local name] of <code>Value</code> .</p></li>
+          <li><p>A [namespace name] of <code>http://www.w3.org/2003/05/soap-envelope</code> .</p></li>
+		  </ul>
+
+		  <p>
+		  The type of the <code>Value</code>  <em>element information
+		  item</em> is <em>env:faultCodeEnum</em>. SOAP defines a small set of SOAP fault codes
+		  covering high level SOAP faults (see <a href="#faultcodes"><b>5.4.6 SOAP Fault Codes</b></a>).
+		  </p>
+		</div>
+
+        <div class="div4">
+<h5><a name="faultsubcodeelement"></a>5.4.1.2 SOAP Subcode element</h5>
+        
+        <p>The <code>Subcode</code>  <em>element information item</em>
+        has:</p>
+
+        <ul>
+          <li><p>A [local name] of <code>Subcode</code> .</p></li>
+          <li><p>A [namespace name] of <code>http://www.w3.org/2003/05/soap-envelope</code> .</p></li>
+          <li><p>One or two child <em>element information
+          item</em>s in its [children] property, in order, as follows:</p>
+          <ol>
+            <li><p>A mandatory <code>Value</code>  <em>element
+            information item</em> as described below (see <a href="#faultsubvalueelem"><b>5.4.1.3 SOAP Value element (with Subcode parent)</b></a>). </p></li>
+
+            <li><p>An optional
+            <code>Subcode</code>  <em>element information
+            item</em> (see <a href="#faultsubcodeelement"><b>5.4.1.2 SOAP Subcode element</b></a>).</p></li>
+          </ol>
+          </li>
+        </ul>
+
+
+        
+        </div>
+
+		<div class="div4">
+          
+<h5><a name="faultsubvalueelem"></a>5.4.1.3 SOAP Value element (with Subcode parent)</h5>
+
+        <p>The <code>Value</code>  <em>element information item</em>
+        has:</p>
+
+        <ul>
+          <li><p>A [local name] of <code>Value</code> .</p></li>
+          <li><p>A [namespace name] of <code>http://www.w3.org/2003/05/soap-envelope</code> .</p></li>
+		</ul>
+
+		<p>
+		  The type of the <code>Value</code>  <em>element information
+		  item</em> is <em>xs:QName</em>. The value of this element is an application
+            defined subcategory of the value of the <code>Value</code> 
+            child <em>element information item</em> of the
+            <code>Subcode</code>  <em>element information item's</em> parent <em>element information
+            item</em> (see <a href="#faultcodes"><b>5.4.6 SOAP Fault Codes</b></a>).</p>
+	    </div>
+        
+
+        </div>
+
+        <div class="div3">
+<h4><a name="faultstringelement"></a>5.4.2 SOAP Reason Element</h4>
+
+        <p>The <code>Reason</code>  <em>element information item</em>
+        is intended to provide a human readable explanation of the fault.</p>
+        
+        <p>The <code>Reason</code>  <em>element information item</em>
+        has:</p>
+
+        <ul>
+          <li><p>A [local name] of <code>Reason</code> .</p></li>
+          <li><p>A [namespace name] of
+          <code>http://www.w3.org/2003/05/soap-envelope</code> .</p></li>
+
+		  <li><p>One or more <code>Text</code>  <em>element
+		  information item</em> children (see <a href="#reasontextelement"><b>5.4.2.1 SOAP Text Element</b></a>). Each child <code>Text</code> 
+		  <em>element information item</em> SHOULD have a different
+		  value for its <code>xml:lang</code>  <em>attribute information
+		  item</em>.</p></li>
+        </ul>
+        
+        <p>The type of the <code>Reason</code>  <em>element
+        information item</em> is <em>env:faultReason</em>.</p>
+
+
+        <div class="div4">
+<h5><a name="reasontextelement"></a>5.4.2.1 SOAP Text Element</h5>
+
+        <p>The <code>Text</code>  <em>element information item</em>
+        is intended to carry the text of a human readable explanation of the fault.</p>
+        
+        <p>The <code>Text</code>  <em>element information item</em>
+        has:</p>
+
+        <ul>
+          <li><p>A [local name] of <code>Text</code> .</p></li>
+          <li><p>A [namespace name] of <code>http://www.w3.org/2003/05/soap-envelope</code> .</p></li>
+          <li><p>A mandatory <em>attribute information item</em>
+          with a [local name] of <code>lang</code>  and
+          [namespace name] of "http://www.w3.org/XML/1998/namespace". 
+
+		  Note that the definition in of the <code>lang</code> 
+		  <em>attribute information item</em> requires
+		  that the [prefix] is "xml" or any capitalization
+		  thereof (see XML 1.0 <a href="#XML">[XML 1.0]</a>, <a href="http://www.w3.org/TR/REC-xml.html#sec-lang-tag">Language
+		  Identification</a>).</p>
+
+</li>
+          <li><p>Any number of <em>character information
+		  item</em> children. Child <em>character information items</em> whose
+        character code is amongst the white space characters as defined
+        by XML 1.0 <a href="#XML">[XML 1.0]</a> are considered significant.</p></li>
+
+        </ul>
+
+        <p>The type of the <code>Text</code>  <em>element
+        information item</em> is <em>env:reasontext</em></p>
+        
+        <p>This <em>element information item</em> is similar to the
+        'Reason-Phrase' defined by HTTP <a href="#RFC2616">[RFC 2616]</a> and
+        SHOULD provide information explaining the nature
+        of the fault. It is not intended for algorithmic processing.</p>
+
+        </div>
+
+
+
+        </div>
+
+
+        <div class="div3">
+<h4><a name="faultactorelement"></a>5.4.3 SOAP Node Element</h4>
+	
+        <p>The <code>Node</code>  <em>element information item</em>
+	is intended to provide information about which SOAP node on the
+	SOAP message path caused the fault to happen (see <a href="#msgexchngmdl"><b>2. SOAP Processing Model</b></a>).</p>
+
+        <p>The <code>Node</code>  <em>element information item</em>
+        has:</p>
+
+        <ul>
+          <li><p>A [local name] of <code>Node</code> .</p></li>
+          <li><p>A [namespace name] of <code>http://www.w3.org/2003/05/soap-envelope</code> .</p></li>
+        </ul>
+
+	<p>The type of the <code>Node</code>  <em>element
+	information item</em> is <em>xs:anyURI</em>.</p>
+	
+	<p>As described in section <a href="#soapnodes"><b>2.1 SOAP Nodes</b></a>,
+	each SOAP node is identified by a URI.
+	The value of the <code>Node</code> 
+	<em>element information item</em> is the URI that
+	identifies the SOAP node that generated the fault.
+	SOAP nodes that do not act as the
+	ultimate SOAP receiver MUST include this <em>element
+	information item</em>. An ultimate SOAP receiver MAY include
+	this <em>element information item</em> to indicate
+	explicitly that it generated the fault.</p>
+
+        </div>
+
+        <div class="div3">
+<h4><a name="faultroleelement"></a>5.4.4 SOAP Role Element</h4>
+	
+        <p>The <code>Role</code>  <em>element information item</em>
+        identifies the role the node was operating in at the point the
+        fault occurred.</p>
+
+        <p>The <code>Role</code>  <em>element information item</em>
+        has:</p>
+
+        <ul>
+          <li><p>A [local name] of <code>Role</code> .</p></li>
+          <li><p>A [namespace name] of <code>http://www.w3.org/2003/05/soap-envelope</code> .</p></li>
+        </ul>
+
+	<p>The type of the <code>Role</code>  <em>element
+	information item</em> is <em>xs:anyURI</em>.</p>
+	
+	<p>The value of the <code>Role</code>  <em>element information
+	item</em> MUST be one of the roles assumed by the node
+	during processing of the message (see <a href="#soaproles"><b>2.2 SOAP Roles and SOAP Nodes</b></a>).</p>
+
+        </div>
+
+        <div class="div3">
+<h4><a name="faultdetailelement"></a>5.4.5 SOAP Detail Element</h4>
+
+        <p>The <code>Detail</code>  <em>element information item</em>
+        is intended for carrying application specific error
+        information related to the SOAP <code>Body</code> .</p>
+
+        <p>The <code>Detail</code>  <em>element information item</em>
+        has:</p>
+
+        <ul>
+          <li><p>A [local name] of <code>Detail</code> .</p></li>
+          <li><p>A [namespace name] of <code>http://www.w3.org/2003/05/soap-envelope</code> .</p></li>
+          <li><p>Zero or more <em>attribute information
+            item</em>s in its [attributes] property.</p></li>
+          <li><p>Zero or more child <em>element information
+            item</em>s in its [children] property.</p></li>
+        </ul>
+
+	  <p>The <code>Detail</code>  <em>element information item</em>
+	    MAY have any number of <em>character information
+	    item</em> children whose character code is amongst the
+	    white space characters as defined by XML 1.0 <a href="#XML">[XML 1.0]</a>. These are considered significant.</p>
+        
+ 		<p>The <code>Detail</code>  <em>element information
+		item</em> MAY be present in a SOAP fault in which case it
+		carries additional information relative to the SOAP fault
+		codes describing the fault (see <a href="#faultcodes"><b>5.4.6 SOAP Fault Codes</b></a>). For example, the <code>Detail</code> 
+		<em>element information item</em> might contain
+		information about a message not containing the proper
+		credentials, a timeout, etc. The presence of the
+		<code>Detail</code>  <em>element information item</em> has no
+		significance as to which parts of the faulty SOAP message were
+		processed.</p> 
+
+        <p>All child <em>element information items</em> of
+        the <code>Detail</code>  <em>element information item</em> are
+        called detail entries (see <a href="#faultdetailentry"><b>5.4.5.1 SOAP detail entry</b></a>).</p>
+        
+        
+        <div class="div4">
+<h5><a name="faultdetailentry"></a>5.4.5.1 SOAP detail entry</h5>
+
+        <p>Each detail entry:</p>
+
+        <ul>
+
+	      <li>
+		<p>MAY have a [namespace name] property which has a
+		  value, that is the name of the element MAY be namespace
+		  qualified.</p>
+	      </li>
+
+		  <li><p>MAY have any number of <em>element information
+		  item</em> children.</p></li>
+		  <li><p>MAY have any number of <em>character information
+		  item</em> children. Child <em>character information items</em> whose
+        character code is amongst the white space characters as defined
+        by XML 1.0 <a href="#XML">[XML 1.0]</a> are considered significant.</p></li>
+
+          <li><p>MAY have zero or more <em>attribute information
+          items</em> in its [attributes] property.  Among these MAY be
+          the following, which has special significance for SOAP
+          processing:</p>
+  
+            <ul>
+
+            <li><p><code>encodingStyle</code>  <em>attribute
+            information item</em> (see <a href="#soapencattr"><b>5.1.1 SOAP encodingStyle Attribute</b></a>).</p></li>
+
+            </ul>
+
+          </li>
+
+        </ul>
+
+        <p>If present, the SOAP <code>encodingStyle</code>  <em>attribute information
+        item</em> indicates the encoding style used for
+        the detail entry (see <a href="#soapencattr"><b>5.1.1 SOAP encodingStyle Attribute</b></a>).</p>
+        
+        </div>
+        
+
+        </div>
+
+        <div class="div3">
+<h4><a name="faultcodes"></a>5.4.6 SOAP Fault Codes</h4>
+
+	  <p>SOAP fault codes are XML expanded names, and
+	    are intended to provide a means by which faults are
+	    classified. A hierarchical list of SOAP codes and
+	    associated supporting information is included in every
+	    SOAP fault message, with each such code identifying the
+	    fault category at an increasing level of detail.</p>
+
+	  <p>The values of the <code>Value</code>  child
+	    <em>element information item</em> of the <code>Code</code> 
+	    <em>element information item</em> are restricted to
+	    those defined by the <code>env:faultCodeEnum</code>  type (see
+	    <a href="#tabsoapfaultcodes"><b>Table 4</b></a>). Additional fault
+	    subcodes MAY be created for use by applications or
+	    features. Such subcodes are carried in the <code>Value</code> 
+	    child <em>element information item</em> of the
+	    <code>Subcode</code>  <em>element information
+	    item</em>.</p>
+
+	  <p>SOAP fault codes are to be interpreted as
+	    modifiers of the contents of the <code>Detail</code> 
+	    <em>element information item</em> in the sense that
+	    they provide the context for the <code>Detail</code> 
+	    <em>element information item</em>. A SOAP node MUST
+	    understand all SOAP fault codes in a SOAP fault message in
+	    order to be able to interpret the <code>Detail</code> 
+	    <em>element information item</em> in a SOAP fault.</p>
+
+	  <div class="exampleOuter">
+
+	    
+<div class="exampleHead">Example 4: Sample SOAP fault where the <code>Detail</code> 
+	      <em>element information item</em> is to be
+	      interpreted in the context of the
+	      "env:Sender" and
+	      "m:MessageTimeout" fault codes.</div>
+<div class="exampleInner"><pre>&lt;env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope"
+              xmlns:m="http://www.example.org/timeouts"
+              xmlns:xml="http://www.w3.org/XML/1998/namespace"&gt;
+ &lt;env:Body&gt;
+  &lt;env:Fault&gt;
+   &lt;env:Code&gt;
+     &lt;env:Value&gt;env:Sender&lt;/env:Value&gt;
+     &lt;env:Subcode&gt;
+      &lt;env:Value&gt;m:MessageTimeout&lt;/env:Value&gt;
+     &lt;/env:Subcode&gt;
+   &lt;/env:Code&gt;
+   &lt;env:Reason&gt;
+     &lt;env:Text xml:lang="en"&gt;Sender Timeout&lt;/env:Text&gt;
+   &lt;/env:Reason&gt;
+   &lt;env:Detail&gt;
+     &lt;m:MaxTime&gt;P5M&lt;/m:MaxTime&gt;
+   &lt;/env:Detail&gt;    
+  &lt;/env:Fault&gt;
+ &lt;/env:Body&gt;
+&lt;/env:Envelope&gt;</pre></div></div>
+
+	  <p>This specification does not define a limit for
+	    how many <code>Subcode</code>  <em>element information
+	    items</em> a SOAP fault might contain. However, while
+	    not a requirement of this specification, it is anticipated
+	    that most practical examples can be supported by
+	    relatively few <code>Subcode</code>  <em>element information
+	    items</em>.</p>
+
+	  <a name="tabsoapfaultcodes"></a><table border="1">
+	    <caption>Table 4: SOAP Fault Codes</caption>
+	    <tbody>
+              <tr>
+                <th rowspan="1" colspan="1">Local Name</th>
+                <th rowspan="1" colspan="1">Meaning</th>
+              </tr>
+              <tr>
+                <td rowspan="1" colspan="1">VersionMismatch</td>
+
+                <td rowspan="1" colspan="1">The faulting node found an invalid
+                <em>element information item</em> instead of the
+                expected <code>Envelope</code>  <em>element information
+                item</em>. The namespace, local name or both did not
+                match the <code>Envelope</code>  <em>element
+                information item</em> required by this recommendation (see <a href="#envvermodel"><b>2.8 SOAP Versioning Model</b></a> and <a href="#vmfault"><b>5.4.7 VersionMismatch Faults</b></a>)</td>
+              </tr>
+              <tr>
+                <td rowspan="1" colspan="1">MustUnderstand</td>
+                
+                <td rowspan="1" colspan="1">An immediate child <em>element information
+                item</em> of the SOAP <code>Header</code>  <em>element
+                information item</em> targeted at
+                the faulting node that was not understood
+                by the faulting node contained a SOAP
+                <code>mustUnderstand</code>  <em>attribute information
+                item</em> with a value of "true" (see
+                <a href="#soapmu"><b>5.2.3 SOAP mustUnderstand Attribute</b></a> and <a href="#mufault"><b>5.4.8 SOAP mustUnderstand Faults</b></a>)</td>
+              </tr>
+	      <tr>
+		<td rowspan="1" colspan="1">DataEncodingUnknown</td>
+
+                <td rowspan="1" colspan="1">A SOAP header block
+                or SOAP body child <em>element information item</em> targeted at the faulting
+                SOAP node is scoped (see <a href="#soapencattr"><b>5.1.1 SOAP encodingStyle Attribute</b></a>) with a data encoding that the
+                faulting node does not support.</td>
+	      </tr>
+              <tr>
+                <td rowspan="1" colspan="1">Sender</td>
+
+                <td rowspan="1" colspan="1">The message was
+                incorrectly formed or did not contain the appropriate
+                information in order to succeed. For example, the
+                message could lack the proper authentication or
+                payment information. It is generally an indication
+                that the message is not to be resent without change
+                (see also <a href="#soapfault"><b>5.4 SOAP Fault</b></a> for a description
+                of the SOAP fault <code>detail</code>  sub-element).
+                </td>
+              </tr>
+              <tr>
+                <td rowspan="1" colspan="1">Receiver</td>
+
+                <td rowspan="1" colspan="1">The message could
+                not be processed for reasons attributable to
+                the processing of the message rather than
+                to the contents of the message itself. For example, processing
+                could include communicating with an upstream SOAP
+                node, which did not respond. The message could succeed if resent
+                at a later point in time (see also <a href="#soapfault"><b>5.4 SOAP Fault</b></a> for a description of the SOAP fault
+                <code>detail</code>  sub-element).</td>
+              </tr>
+	    </tbody>
+	  </table>
+
+        </div>
+
+	<div class="div3">
+	  
+<h4><a name="vmfault"></a>5.4.7 VersionMismatch Faults</h4>
+
+          <p>When a SOAP node generates a fault with a
+          <code>Value</code>  of <code>Code</code>  set to
+          "env:VersionMismatch", it SHOULD provide an
+          <code>Upgrade</code>  SOAP header block in the generated fault message.
+          The <code>Upgrade</code>  SOAP header block, as described below, 
+          details the XML qualified names (per
+          XML Schema <a href="#XMLSchemaP2">[XML Schema Part 2]</a>) of the supported SOAP envelopes
+          that the SOAP node supports (see <a href="#envvermodel"><b>2.8 SOAP Versioning Model</b></a>).</p>
+	  
+	  <div class="div4">
+<h5><a name="soapupgrade"></a>5.4.7.1 SOAP Upgrade Header Block</h5>
+	  
+	  <p>The <code>Upgrade</code>  SOAP header block consists of an
+	    <code>Upgrade</code>  <em>element information item</em>
+	    containing an ordered list of XML qualified names of SOAP
+	    envelopes that the SOAP node supports in the order most to
+	    least preferred.</p>
+
+	  <p>The <code>Upgrade</code>  <em>element information
+	      item</em> has:</p>
+
+	  <ul>
+	    <li>
+	      <p>A [local name] of <code>Upgrade</code> .</p>
+	    </li>
+	    <li>
+	      <p>A [namespace name] of
+		"http://www.w3.org/2003/05/soap-envelope".</p>
+	    </li>
+	    <li>
+	      <p>One or more <code>SupportedEnvelope</code>  <em>element
+		  information item</em>s in its [children] property in
+		  <a href="#soapsupportedenv"><b>5.4.7.2 SOAP SupportedEnvelope Element</b></a>.</p>
+	    </li>
+	  </ul>
+	  
+	  <p>The <code>Upgrade</code>  <em>element information
+	  item</em> MUST NOT have an <code>encodingStyle</code> 
+	  <em>attribute information item</em>.</p>
+
+      </div>
+      
+      <div class="div4">
+<h5><a name="soapsupportedenv"></a>5.4.7.2 SOAP SupportedEnvelope Element</h5>
+      
+	  <p>The <code>SupportedEnvelope</code>  <em>element information
+	      item</em> has:</p>
+
+	  <ul>
+	    <li>
+	      <p>A [local name] of <code>SupportedEnvelope</code> .</p>
+	    </li>
+	    <li>
+	      <p>A [namespace name] of
+		"http://www.w3.org/2003/05/soap-envelope".</p>
+	    </li>
+	    <li>
+	      <p>A <code>qname</code>  <em>attribute information item</em> in its [attributes]
+	      property as described in <a href="#soapqnamesu"><b>5.4.7.3 SOAP QName Attribute</b></a>.</p>
+	    </li>
+	  </ul>
+	  
+	  </div>
+          
+          <div class="div4">
+<h5><a name="soapqnamesu"></a>5.4.7.3 SOAP QName Attribute</h5>
+          
+          <p>The <code>qname</code>  <em>attribute information item</em>
+          has the following XML infoset properties:</p>
+
+          <ul>
+            <li><p>A [local name] of <code>qname</code> .</p></li>
+            <li><p>A [namespace name] which has no value.</p></li>
+            <li><p>A [specified] property with a value of "true".</p></li>
+          </ul>
+
+          <p>The type of the <code>qname</code>  <em>attribute
+          information item</em> is <em>xs:QName</em>. Its
+          value is the XML qualified name of a SOAP <code>Envelope</code> 
+          <em>element information item</em> that the faulting node
+          can understand.</p>
+
+          <div class="note"><p class="prefix"><b>Note:</b></p><p>When serializing the <code>qname</code>  <em>attribute
+          information item</em> there needs to be an in-scope
+          namespace declaration for the namespace name of the SOAP
+          <code>Envelope</code>  <em>element information item</em> that
+          the faulting node can understand. The value of the
+          <em>attribute information item</em> uses the prefix of
+          such a namespace declaration.</p></div>
+          
+      </div>
+
+      <div class="div4">
+<h5><a name="versionmisex"></a>5.4.7.4 VersionMismatch Example</h5>
+      
+	  <p>The following example illustrates the case of a SOAP node that supports both
+	  SOAP Version 1.2 and SOAP/1.1 but which prefers SOAP Version
+	  1.2 (see appendix <a href="#version"><b>A. Version Transition From SOAP/1.1 to SOAP Version 1.2</b></a> for a mechanism
+	  for transitioning from SOAP/1.1 to SOAP Version 1.2). This
+	  is indicated by including an <code>Upgrade</code>  SOAP header block
+	  with two <code>SupportedEnvelope</code>  <em>element information
+	  items</em>, the first containing the local name and
+	  namespace name of the SOAP Version 1.2 <code>Envelope</code> 
+	  <em>element information item</em>, the latter the local
+	  name and namespace name of the SOAP/1.1 <code>Envelope</code> 
+	  element.</p>
+
+      <p>&nbsp;</p>
+      
+	  <div class="exampleOuter">
+	    
+<div class="exampleHead">Example 5: Version mismatch fault generated by a SOAP node. The
+	      message includes a SOAP <code>Upgrade</code>  header block
+	      indicating support for both SOAP Version 1.2 and
+	      SOAP/1.1 but with a preference for SOAP Version
+	      1.2.</div>
+	    <div class="exampleInner"><pre>&lt;?xml version="1.0" ?&gt;
+&lt;env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope"
+              xmlns:xml="http://www.w3.org/XML/1998/namespace"&gt;
+ &lt;env:Header&gt;
+  &lt;env:Upgrade&gt;
+   &lt;env:SupportedEnvelope qname="ns1:Envelope" 
+             xmlns:ns1="http://www.w3.org/2003/05/soap-envelope"/&gt;
+   &lt;env:SupportedEnvelope qname="ns2:Envelope" 
+             xmlns:ns2="http://schemas.xmlsoap.org/soap/envelope/"/&gt;
+  &lt;/env:Upgrade&gt;
+ &lt;/env:Header&gt;
+ &lt;env:Body&gt;
+  &lt;env:Fault&gt;
+   &lt;env:Code&gt;&lt;env:Value&gt;env:VersionMismatch&lt;/env:Value&gt;&lt;/env:Code&gt;
+    &lt;env:Reason&gt;
+      &lt;env:Text xml:lang="en"&gt;Version Mismatch&lt;/env:Text&gt;
+    &lt;/env:Reason&gt;
+   &lt;/env:Fault&gt;
+ &lt;/env:Body&gt;
+&lt;/env:Envelope&gt;</pre></div>
+	  </div>
+	  
+	  </div>
+
+</div>
+
+        <div class="div3">
+<h4><a name="mufault"></a>5.4.8 SOAP mustUnderstand Faults</h4>
+
+          <p>When a SOAP node generates a fault with a <code>Value</code>  of
+          <code>Code</code>  set to
+          "env:MustUnderstand",
+          it SHOULD provide <code>NotUnderstood</code>  SOAP header blocks in the generated fault message.
+          The <code>NotUnderstood</code>  SOAP header blocks, as described below,
+          detail the XML qualified names (per
+          XML Schema <a href="#XMLSchemaP2">[XML Schema Part 2]</a>) of the particular SOAP header block(s)
+          which were not understood.</p>
+	  
+	  <p>A SOAP node MAY generate a SOAP fault for any one or more
+	  SOAP header blocks that were not understood in a SOAP message.
+	  It is not a requirement that the fault contain the
+	  XML qualified names of all such SOAP header blocks.</p>
+
+          <div class="div4">
+<h5><a name="soapnotunderstood"></a>5.4.8.1 SOAP NotUnderstood Element</h5>
+          
+          <p>Each <code>NotUnderstood</code>  header block <em>element information
+          item</em> has:</p>
+
+          <ul>
+            <li><p>A [local name] of <code>NotUnderstood</code> .</p></li>
+
+            <li><p>A [namespace name] of
+            "http://www.w3.org/2003/05/soap-envelope".</p></li>
+
+            <li><p>A <code>qname</code>  <em>attribute information
+            item</em> in its [attributes] property as described in
+            <a href="#soapqnamenu"><b>5.4.8.2 SOAP QName Attribute</b></a>.</p></li>
+
+          </ul>
+
+	  <p>The <code>NotUnderstood</code>  <em>element information
+	  item</em> MUST NOT have an <code>encodingStyle</code> 
+	  <em>attribute information item</em>.</p>
+
+          </div>
+          
+          <div class="div4">
+<h5><a name="soapqnamenu"></a>5.4.8.2 SOAP QName Attribute</h5>
+          
+          <p>The <code>qname</code>  <em>attribute information item</em>
+          has the following XML infoset properties:</p>
+
+          <ul>
+            <li><p>A [local name] of <code>qname</code> .</p></li>
+            <li><p>A [namespace name] which has no value.</p></li>
+            <li><p>A [specified] property with a value of "true".</p></li>
+          </ul>
+
+          <p>The type of the <code>qname</code>  <em>attribute information
+          item</em> is <em>xs:QName</em>. Its
+          value is the XML qualified name of a SOAP header block which the faulting node
+          failed to understand.</p>
+
+          <div class="note"><p class="prefix"><b>Note:</b></p><p>When serializing the <code>qname</code>  <em>attribute
+          information item</em> there needs to be an in-scope namespace
+          declaration for the namespace name of the 
+          SOAP header block that was not understood and the value of the <em>attribute information
+          item</em> uses the prefix of such a namespace
+          declaration. The prefix used need not be the same as the
+          one used in the SOAP message that was not understood.</p></div>
+          
+          </div>
+          
+          <div class="div4">
+<h5><a name="soapnotunderstoodex"></a>5.4.8.3 NotUnderstood Example</h5>
+
+          <p>Consider the following example message:</p>
+
+	  <div class="exampleOuter">
+	    
+<div class="exampleHead">Example 6: SOAP envelope that will cause a fault if
+            <code>Extension1</code>  or <code>Extension2</code>  are not understood</div>
+<div class="exampleInner"><pre>&lt;?xml version="1.0" ?&gt;
+&lt;env:Envelope xmlns:env='http://www.w3.org/2003/05/soap-envelope'&gt;
+  &lt;env:Header&gt;
+    &lt;abc:Extension1 xmlns:abc='http://example.org/2001/06/ext'
+       env:mustUnderstand='true'/&gt;
+    &lt;def:Extension2 xmlns:def='http://example.com/stuff'
+       env:mustUnderstand='true' /&gt;
+  &lt;/env:Header&gt;
+  &lt;env:Body&gt;
+    . . .
+  &lt;/env:Body&gt;
+&lt;/env:Envelope&gt;</pre></div>
+	  </div>
+
+          <p>&nbsp;</p>
+          
+          <p>The message in the above example
+          will result in the fault message shown
+          in the example below if the ultimate receiver of the SOAP message does not
+          understand the two SOAP header blocks <code>abc:Extension1</code> 
+          and <code>def:Extension2</code> .</p>
+
+          <div class="exampleOuter">
+	    
+<div class="exampleHead">Example 7: SOAP fault generated as a result of not
+            understanding <code>Extension1</code>  and
+            <code>Extension2</code> </div>
+            <div class="exampleInner"><pre>&lt;?xml version="1.0" ?&gt;
+&lt;env:Envelope xmlns:env='http://www.w3.org/2003/05/soap-envelope'
+              xmlns:xml='http://www.w3.org/XML/1998/namespace'&gt;
+ &lt;env:Header&gt;
+  &lt;env:NotUnderstood qname='abc:Extension1'
+                   xmlns:abc='http://example.org/2001/06/ext' /&gt;
+  &lt;env:NotUnderstood qname='def:Extension2'
+                   xmlns:def='http://example.com/stuff' /&gt;
+ &lt;/env:Header&gt;
+ &lt;env:Body&gt;
+  &lt;env:Fault&gt;
+   &lt;env:Code&gt;&lt;env:Value&gt;env:MustUnderstand&lt;/env:Value&gt;&lt;/env:Code&gt;
+   &lt;env:Reason&gt;
+     &lt;env:Text xml:lang='en'&gt;One or more mandatory 
+       SOAP header blocks not understood
+     &lt;/env:Text&gt;
+   &lt;/env:Reason&gt;
+  &lt;/env:Fault&gt;
+ &lt;/env:Body&gt;
+&lt;/env:Envelope&gt;</pre></div>
+          </div>
+
+        </div>
+        
+        
+        </div>
+      </div>
+    </div>
+
+  <div class="div1">
+    
+<h2><a name="useofuris"></a>6. Use of URIs in SOAP</h2>
+    
+    <p>SOAP uses URIs for some identifiers including, but not
+    limited to, values of the <code>encodingStyle</code> 
+    (see <a href="#soapencattr"><b>5.1.1 SOAP encodingStyle Attribute</b></a>) and <code>role</code> 
+    (see <a href="#soaprole"><b>5.2.2 SOAP role Attribute</b></a>) <em>attribute information items</em>.
+    To SOAP, a URI is simply a formatted string that identifies a web
+    resource via its name, location, or any other characteristics.</p>
+
+    <p>Although this section only applies to URIs directly used by
+    <em>information items</em> defined by this specification, it
+    is RECOMMENDED that application-defined data
+    carried within a SOAP envelope use the same mechanisms and
+    guidelines defined here for handling URIs.</p>
+
+    <p>URIs used as values in <em>information items</em> identified by the
+    "http://www.w3.org/2003/05/soap-envelope" and
+    "http://www.w3.org/2003/05/soap-encoding" XML
+    namespaces can be either relative or absolute.</p>
+
+    <p>SOAP does not define a base URI but relies on the mechanisms
+    defined in XML Base <a href="#XMLBase">[XML Base]</a> and RFC 2396 <a href="#RFC2396">[RFC 2396]</a>
+    for establishing a base URI
+    against which relative URIs can be made absolute.</p>
+
+    <p>The underlying protocol binding MAY define a base URI which
+    can act as the base URI for the SOAP envelope
+    (see <a href="#transpbindframew"><b>4. SOAP Protocol Binding Framework</b></a> and
+    SOAP 1.2 Part 2 <a href="#SOAP-PART2">[SOAP Part 2]</a>, section <a href="http://www.w3.org/TR/2003/PR-soap12-part2-20030507/#soapinhttp">HTTP
+    binding</a>).</p>
+
+    <p>SOAP does not define any equivalence rules for URIs in general
+    as these are defined by the individual URI schemes and by RFC 2396 <a href="#RFC2396">[RFC 2396]</a>.
+    However, because of inconsistencies with respect to URI equivalence
+    rules in many current URI parsers, it is RECOMMENDED that SOAP senders
+    do not rely on any special equivalence rules in SOAP receivers in order
+    to determine equivalence between URI values used in a SOAP message.</p>
+    
+    <p>The use of IP addresses in URIs SHOULD be avoided whenever
+    possible (see RFC 1900 <a href="#RFC1900">[RFC 1900]</a>). However, when
+    used, the literal format for
+    IPv6 addresses in URIs as described by RFC 2732 <a href="#RFC2732">[RFC 2732]</a> SHOULD be supported.</p>
+    
+    <p>SOAP does not place any a priori limit on the length of a URI.
+    Any SOAP node MUST be able to handle the length of any URI that it
+    publishes and both SOAP senders and SOAP receivers SHOULD be able to
+    deal with URIs of at least 2048 characters in length.</p>
+    
+  </div>
+
+    <div class="div1">
+      
+<h2><a name="secconsiderations"></a>7. Security Considerations</h2>
+ 	    
+      <p>The SOAP Messaging Framework does not directly
+      provide any mechanisms for dealing with access control,
+      confidentiality, integrity and non-repudiation. Such mechanisms
+      can be provided as SOAP extensions using the SOAP
+      extensibility model (see <a href="#extensibility"><b>3. SOAP Extensibility Model</b></a>). This section describes
+      the security considerations that designers and implementors need
+      to take into consideration when designing and using such
+      mechanisms.</p>
+
+      <p>SOAP implementors need to anticipate rogue SOAP
+      applications sending intentionally malicious data to a SOAP node
+      (see <a href="#msgexchngmdl"><b>2. SOAP Processing Model</b></a>). It is strongly
+      recommended that a SOAP node receiving a SOAP message is capable
+      of evaluating to what level it can trust the sender of that SOAP
+      message and its contents.</p>
+      
+      <div class="div2">
+<h3><a name="secsoapnodes"></a>7.1 SOAP Nodes</h3>
+
+	<p>SOAP can carry application-defined data as SOAP header
+	  blocks or as SOAP body contents. Processing a SOAP header
+	  block might include dealing with side effects such as state
+	  changes, logging of information, or the generation of
+	  additional messages. It is strongly recommended that, for any deployment scenario, only
+	  carefully specified SOAP header blocks with well understood security implications
+	  of any side effects be processed by a SOAP node.</p>
+
+	<p>Similarly, processing the SOAP body might imply the
+	occurrence of side effects that could, if not properly understood,
+	have severe consequences for the receiving SOAP node. It is strongly
+	recommended that only well-defined body contents with known security
+	implications be processed.</p>
+	
+	<p>Security considerations, however, are not just limited
+	to recognizing the immediate child elements of a SOAP header block and
+	the SOAP body. Implementors need to pay special attention to the
+	security implications of all data carried within a SOAP message that
+	can cause the remote execution of any actions in the receiver's
+	environment. This includes not only data expressed as XML infoset
+	properties but data that might be encoded as property values including binary data or parameters, for example URI query strings. Before accepting data of
+	any type, an application ought to be aware of the particular security
+	implications associated with that data within the context it is
+	being used.</p>
+
+	<p>SOAP implementors need to be careful to ensure that if
+	processing of the various parts of a SOAP message is provided
+	through modular software architecture, that each module is aware of
+	the overall security context. For example, the SOAP body ought
+	not to be processed without knowing the context in which it was
+	received.</p></div>
+      
+      <div class="div2">
+<h3><a name="secsoapinter"></a>7.2 SOAP Intermediaries</h3>
+
+	<p>SOAP inherently provides a distributed processing model
+	  that might involve a SOAP message passing through multiple SOAP nodes
+	  (see <a href="#msgexchngmdl"><b>2. SOAP Processing Model</b></a>). SOAP intermediaries are by
+	  definition men-in-the-middle, and represent an opportunity for
+	  man-in-the-middle attacks. Security breaches on systems that run SOAP
+	  intermediaries can result in serious security and privacy problems. A
+	  compromised SOAP intermediary, or an intermediary implemented or
+	  configured without regard to security and privacy considerations,
+	  might be used in the commission of a wide range of potential
+	  attacks.</p>
+	
+	<p>In analyzing the security implications of potential SOAP related
+	  security problems, it is important to realize that the scope of
+	  security mechanisms provided by the underlying protocol might not be the
+	  same scope as the whole message path of the SOAP message. There is no
+	  requirement in SOAP that all hops between participating SOAP nodes use
+	  the same underlying protocol and even if this were the case, the very
+	  use of SOAP intermediaries is likely to reach beyond the scope of
+	  transport-level security.</p></div>
+	  
+	<div class="div2">
+<h3><a name="secundprotbind"></a>7.3 Underlying Protocol Bindings</h3>
+	
+	<p>The effects on security of not implementing a MUST or
+	  SHOULD, or doing something the specification says MUST NOT or SHOULD
+	  NOT be done can be very subtle. Binding specification authors ought to
+	  describe, in detail, the security implications of not following
+	  recommendations or requirements as most implementors will not have
+	  had the benefit of the experience and discussion that produced the
+	  specification (see <a href="#transpbindframew"><b>4. SOAP Protocol Binding Framework</b></a>).</p>
+	
+	<p>In addition, a binding specification might not address or provide
+	  countermeasures for all aspects of the inherent security risks.
+	  The binding specification authors ought to identify any such risks
+	  as might remain and indicate where further countermeasures would
+	  be needed above and beyond those provided for in the binding
+	  specification.</p>
+
+	<p>Authors of binding specifications need to be aware that SOAP extension modules
+	  expressed as SOAP header blocks could affect the underlying protocol
+	  in unforeseen ways.
+	  A SOAP message carried over a particular protocol binding might
+	  result in seemingly conflicting features.
+	  An example of this is a SOAP message carried over HTTP,
+	  using the HTTP basic authentication mechanism in combination with a SOAP
+	  based authentication mechanism. It is strongly recommended that a binding
+	  specification describes any such interactions between the
+	  extensions and the underlying protocols.</p>
+	
+	<div class="div3">
+<h4><a name="secbindappspecprot"></a>7.3.1 Binding to Application-Specific Protocols</h4>
+
+	  <p>Some underlying protocols could be designed for a particular purpose
+	    or application profile. SOAP bindings to such protocols MAY use the
+	    same endpoint identification (e.g., TCP port number) as the
+	    underlying protocol, in order to reuse the existing infrastructure
+	    associated with that protocol.</p>
+
+	  <p>However, the use of well-known ports by SOAP might incur additional,
+	    unintended handling by intermediaries and underlying
+	    implementations. For example, HTTP is commonly thought of as a "Web
+	    browsing" protocol, and network administrators might place certain
+	    restrictions upon its use, or could interpose services such as
+	    filtering, content modification, routing, etc. Often, these
+	    services are interposed using port number as a heuristic.</p>
+
+	  <p>As a result, binding definitions for underlying protocols
+	    with well-known default ports or application profiles
+	    SHOULD document potential interactions with
+	    commonly deployed infrastructure at those default ports or
+	    in conformance with default application profiles. Binding
+	    definitions SHOULD also illustrate the use of the binding
+	    on a non-default port as a means of avoiding unintended
+	    interaction with such services.</p>
+	  
+	  </div>
+      </div>
+    </div>
+  
+  <div class="div1">
+      
+<h2><a name="refs"></a>8. References</h2>
+
+      <div class="div2">
+	
+<h3><a name="normrefs"></a>8.1 Normative References</h3>
+
+        <dl>
+
+    	<dt class="label"><a name="SOAP-PART2"></a>[SOAP Part 2] </dt><dd>W3C Proposed Recommendation
+    	"SOAP Version 1.2 Part 2:
+	  Adjuncts", Martin Gudgin, Marc Hadley, Noah Mendelsohn, Jean-Jacques Moreau,
+	  Henrik Frystyk Nielsen, 07 May 2003  (See <a href="http://www.w3.org/TR/2003/PR-soap12-part2-20030507">http://www.w3.org/TR/2003/PR-soap12-part2-20030507</a>.)</dd>
+
+	<dt class="label"><a name="RFC2616"></a>[RFC 2616] </dt><dd>IETF "RFC 2616:
+ 	  Hypertext Transfer Protocol -- HTTP/1.1", R. Fielding,
+ 	  J. Gettys, J. C. Mogul, H. Frystyk Nielsen, T. Berners-Lee, January
+ 	  1997.  (See <a href="http://www.ietf.org/rfc/rfc2616.txt">http://www.ietf.org/rfc/rfc2616.txt</a>.)</dd>
+
+	<dt class="label"><a name="RFC2119"></a>[RFC 2119] </dt><dd>IETF "RFC 2119:
+	  Keywords for use in RFCs to Indicate Requirement Levels",
+	  S. Bradner, March 1997.  (See <a href="http://www.ietf.org/rfc/rfc2119.txt">http://www.ietf.org/rfc/rfc2119.txt</a>.)</dd>
+
+	<dt class="label"><a name="XMLSchemaP1"></a>[XML Schema Part 1] </dt><dd>W3C
+          Recommendation "XML Schema Part 1: Structures", Henry
+          S. Thompson, David Beech, Murray Maloney, Noah Mendelsohn, 2
+          May 2001.  (See <a href="http://www.w3.org/TR/2001/REC-xmlschema-1-20010502/">http://www.w3.org/TR/2001/REC-xmlschema-1-20010502/</a>.)</dd>
+
+	<dt class="label"><a name="XMLSchemaP2"></a>[XML Schema Part 2] </dt><dd>W3C
+	  Recommendation "XML Schema Part 2: Datatypes", Paul
+	  V. Biron, Ashok Malhotra, 2 May 2001.  (See <a href="http://www.w3.org/TR/2001/REC-xmlschema-2-20010502/">http://www.w3.org/TR/2001/REC-xmlschema-2-20010502/</a>.)</dd>
+
+	<dt class="label"><a name="RFC2396"></a>[RFC 2396] </dt><dd>IETF "RFC 2396:
+	  Uniform Resource Identifiers (URI): Generic Syntax",
+	  T. Berners-Lee, R. Fielding, L. Masinter, August
+	  1998.  (See <a href="http://www.ietf.org/rfc/rfc2396.txt">http://www.ietf.org/rfc/rfc2396.txt</a>.)</dd>
+
+	<dt class="label"><a name="XMLNS"></a>[Namespaces in XML] </dt><dd>W3C Recommendation "Namespaces in XML", Tim Bray,
+ 	  Dave Hollander, Andrew Layman, 14 January 1999.  (See <a href="http://www.w3.org/TR/1999/REC-xml-names-19990114/">http://www.w3.org/TR/1999/REC-xml-names-19990114/</a>.)</dd>
+
+	<dt class="label"><a name="XML"></a>[XML 1.0] </dt><dd>W3C Recommendation "Extensible Markup Language
+	  (XML) 1.0 (Second Edition)", Tim Bray, Jean Paoli,
+	  C. M. Sperberg-McQueen, Eve Maler, 6 October 2000.  (See <a href="http://www.w3.org/TR/2000/REC-xml-20001006">http://www.w3.org/TR/2000/REC-xml-20001006</a>.)</dd>
+
+ 	<dt class="label"><a name="XMLInfoSet"></a>[XML InfoSet] </dt><dd>W3C
+	    Recommendation "XML Information Set", John
+	    Cowan, Richard Tobin, 24 October 2001.  (See <a href="http://www.w3.org/TR/2001/REC-xml-infoset-20011024/">http://www.w3.org/TR/2001/REC-xml-infoset-20011024/</a>.)</dd>
+
+ 	<dt class="label"><a name="XMLBase"></a>[XML Base] </dt><dd>W3C
+	    Recommendation "XML Base", Jonathan Marsh, 27 June 2001.  (See <a href="http://www.w3.org/TR/2001/REC-xmlbase-20010627/">http://www.w3.org/TR/2001/REC-xmlbase-20010627/</a>.)</dd>
+
+	<dt class="label"><a name="RFC2732"></a>[RFC 2732] </dt><dd>IETF "RFC 2732:
+	  Format for Literal IPv6 Addresses in URL's",
+	  R. Hinden, B. Carpenter, L. Masinter, December 1999.  (See <a href="http://www.ietf.org/rfc/rfc2732.txt">http://www.ietf.org/rfc/rfc2732.txt</a>.)</dd>
+	  
+        </dl>
+
+      </div>
+
+      <div class="div2">
+	
+<h3><a name="nonnormrefs"></a>8.2 Informative References</h3>
+
+	<dl>
+
+    	<dt class="label"><a name="SOAP-PART0"></a>[SOAP Part 0] </dt><dd>W3C Proposed Recommendation "SOAP Version 1.2 Part 0:
+    	Primer", Nilo Mitra, 07 May
+    	2003  (See <a href="http://www.w3.org/TR/2003/PR-soap12-part0-20030507">http://www.w3.org/TR/2003/PR-soap12-part0-20030507</a>.)</dd>
+
+      <dt class="label"><a name="CommentArchive"></a>[XMLP Comments] </dt><dd>XML Protocol Comments Archive  (See <a href="http://lists.w3.org/Archives/Public/xmlp-comments/">http://lists.w3.org/Archives/Public/xmlp-comments/</a>.)</dd>
+
+	  <dt class="label"><a name="DiscussionArchive"></a>[XMLP Dist-App] </dt><dd>XML Protocol Discussion
+	    Archive  (See <a href="http://lists.w3.org/Archives/Public/xml-dist-app/">http://lists.w3.org/Archives/Public/xml-dist-app/</a>.)</dd>
+
+	  <dt class="label"><a name="XMLPCharter"></a>[XMLP Charter] </dt><dd>XML Protocol Charter  (See <a href="http://www.w3.org/2000/09/XML-Protocol-Charter">http://www.w3.org/2000/09/XML-Protocol-Charter</a>.)</dd>
+
+	  <dt class="label"><a name="xmlp-reqs"></a>[XMLP Requirements] </dt><dd>W3C Working Draft "XML Protocol
+	    (XMLP) Requirements", Vidur Apparao, Alex Ceponkus, Paul Cotton, David
+	    Ezell, David Fallside, Martin Gudgin, Oisin Hurley, John Ibbotson,
+	    R. Alexander Milowski, Kevin Mitchell, Jean-Jacques Moreau, Eric
+	    Newcomer, Henrik Frystyk Nielsen, Mark Nottingham, Waqar Sadiq, Stuart
+	    Williams, Amr Yassin, 07 May 2003. <em>This
+	      is work in progress.</em>  (See <a href="http://www.w3.org/TR/2002/WD-xmlp-reqs-20020626">http://www.w3.org/TR/2002/WD-xmlp-reqs-20020626</a>.)</dd>
+
+	  <dt class="label"><a name="SOAP12-Scenarios"></a>[SOAP Usage Scenarios] </dt><dd>W3C Working Draft "SOAP Version
+	    1.2 Usage Scenarios", John Ibbotson 
+	    07 May 2003.
+	    <em>This is work in progress.</em>  (See <a href="http://www.w3.org/TR/2002/WD-xmlp-scenarios-20020626/">http://www.w3.org/TR/2002/WD-xmlp-scenarios-20020626/</a>.)</dd>
+
+          <dt class="label"><a name="soap11"></a>[SOAP 1.1] </dt><dd>W3C Note "Simple Object
+	  Access Protocol (SOAP) 1.1", Don Box, David Ehnebuske, Gopal
+	  Kakivaya, Andrew Layman, Noah Mendelsohn, Henrik Nielsen,
+	  Satish Thatte, Dave Winer, 8 May 2000.  (See <a href="http://www.w3.org/TR/SOAP/">http://www.w3.org/TR/SOAP/</a>.)</dd>
+
+	<dt class="label"><a name="RFC1900"></a>[RFC 1900] </dt><dd>IETF "RFC 1900:
+	  Renumbering Needs Work",
+	  B. Carpenter, Y. Rekhter, February 1996.  (See <a href="http://www.ietf.org/rfc/rfc1900.txt">http://www.ietf.org/rfc/rfc1900.txt</a>.)</dd>
+
+	</dl>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="back">
+    <div class="div1">
+      
+<h2><a name="version"></a>A. Version Transition From SOAP/1.1 to SOAP Version 1.2</h2>
+
+      <p>This appendix describes the version management rules for a
+	SOAP node. If a SOAP node supports versioning from SOAP 1.1 to
+	SOAP 1.2, then the SOAP node MUST implement the rules
+	described in this appendix.</p>
+
+      <p>The rules for dealing with the possible SOAP/1.1 and SOAP
+	Version 1.2 interactions are as follows:</p>
+
+       <ol>
+         <li>
+	  <p>A SOAP/1.1 node receiving a SOAP Version 1.2 message will
+	    according to SOAP/1.1 generate a version mismatch SOAP
+	    fault based on a SOAP/1.1 message construct. That is, the
+	    envelope will have a [local name] of <code>Envelope</code>  and a
+	    [namespace name] of
+	    "http://schemas.xmlsoap.org/soap/envelope/".</p>
+	</li>
+	<li>
+	  <p>A SOAP Version 1.2 node receiving a SOAP/1.1 message
+	    either:</p>
+	  <ul>
+	    <li>
+	      <p>MAY process the message as a SOAP/1.1 message (if
+		supported), or</p>
+	    </li>
+	    <li>
+	      <p>MUST generate a version mismatch SOAP
+		fault based on a SOAP/1.1 message construct following
+		SOAP/1.1 semantics using a SOAP/1.1 binding to the
+		underlying protocol (see SOAP 1.1 <a href="#soap11">[SOAP 1.1]</a>). The
+		SOAP fault SHOULD include an <code>Upgrade</code>  SOAP
+		header block as defined in this specification (see
+		<a href="#vmfault"><b>5.4.7 VersionMismatch Faults</b></a>) indicating support for SOAP
+		Version 1.2. This allows a receiving SOAP/1.1 node to
+		correctly interpret the SOAP fault generated by the
+		SOAP Version 1.2 node.</p>
+	    </li>
+	  </ul>
+	</li>
+       </ol>
+
+      <p>The example below shows a version mismatch SOAP fault generated
+	by a SOAP Version 1.2 node as a result of receiving a SOAP/1.1
+	message. The fault message is a SOAP/1.1 message with an
+	<code>Upgrade</code>  SOAP header block indicating support for SOAP
+	Version 1.2.</p>
+	  
+      <div class="exampleOuter">
+	
+<div class="exampleHead">Example 8: SOAP Version 1.2 node generating a SOAP/1.1
+	  version mismatch fault message including an <code>Upgrade</code> 
+	  SOAP header block indicating support for SOAP Version 1.2.</div>
+	<div class="exampleInner"><pre>&lt;?xml version="1.0" ?&gt;
+&lt;env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"&gt;
+ &lt;env:Header&gt;
+  &lt;env:Upgrade&gt;
+   &lt;env:SupportedEnvelope qname="ns1:Envelope" 
+             xmlns:ns1="http://www.w3.org/2003/05/soap-envelope"/&gt;
+   &lt;/env:Upgrade&gt;
+  &lt;/env:Header&gt;
+  &lt;env:Body&gt;
+   &lt;env:Fault&gt;
+    &lt;faultcode&gt;env:VersionMismatch&lt;/faultcode&gt;
+    &lt;faultstring&gt;Version Mismatch&lt;/faultstring&gt;
+   &lt;/env:Fault&gt;
+ &lt;/env:Body&gt;
+&lt;/env:Envelope&gt;</pre></div>
+      </div>
+
+      <div class="note"><p class="prefix"><b>Note:</b></p>
+	<p>SOAP nodes wishing to support both SOAP/1.1 and
+	  SOAP Version 1.2 are required to use a protocol binding
+	  associated with the appropriate version of SOAP.</p>
+      </div>
+
+      <div class="note"><p class="prefix"><b>Note:</b></p>
+	<p>An existing SOAP/1.1 node generating a version
+	  mismatch SOAP fault is not likely to indicate which versions
+	  it supports using the <code>Upgrade</code>  <em>element information
+	  item</em> (see <a href="#vmfault"><b>5.4.7 VersionMismatch Faults</b></a>). If nothing is indicated
+	  then this means that SOAP/1.1 is the only supported
+	  version. Note, however that incompatibilities between
+	  underlying protocol bindings might prevent a SOAP/1.1 node
+	  from generating a version mismatch SOAP fault when receiving
+	  a SOAP Version 1.2 message. For instance, a SOAP/1.1 node
+	  supporting the SOAP/1.1 HTTP binding (see SOAP 1.1 <a href="#soap11">[SOAP 1.1]</a>) receiving a SOAP Version 1.2 message using
+	  the SOAP 1.2 HTTP protocol binding (see SOAP 1.2 Part 2 <a href="#SOAP-PART2">[SOAP Part 2]</a>, <a href="http://www.w3.org/TR/2003/PR-soap12-part2-20030507/#soapinhttp">SOAP HTTP
+	  Binding</a>) might not understand the difference
+	  between the two bindings and generate an HTTP specific
+	  response as a result.</p>
+      </div>
+
+    </div>
+
+    <div class="div1">
+      
+<h2><a name="acks"></a>B. Acknowledgements (Non-Normative)</h2>
+
+      <p>This specification is the work of the W3C XML Protocol Working Group.</p>
+
+      <p>Participants in the Working Group are (at the time of writing, and by
+      alphabetical order): 
+Carine Bournez (W3C),
+Michael Champion (Software AG),
+David Chappell (Sonic Software),
+Glen Daniels (Macromedia, formerly of Allaire),
+Colleen Evans (Sonic Software),
+David Fallside (IBM),
+Dietmar Gaertner (Software AG),
+Tony Graham (Sun Microsystems),
+Martin Gudgin (Microsoft Corporation, formerly of DevelopMentor),
+Marc Hadley (Sun Microsystems),
+Gerd Hoelzing (SAP AG),
+Oisin Hurley (IONA Technologies),
+John Ibbotson (IBM),
+Ryuji Inoue (Matsushita Electric),
+Kazunori Iwasa (Fujitsu Limited),
+Mario Jeckle (DaimlerChrysler R. &amp; Tech),
+Mark Jones (AT&amp;T),
+Anish Karmarkar (Oracle),
+Jacek Kopecky (Systinet/Idoox),
+Yves Lafon (W3C),
+Michah Lerner (AT&amp;T),
+Noah Mendelsohn (IBM, formerly of Lotus Development),
+Jeff Mischkinsky (Oracle),
+Nilo Mitra (Ericsson),
+Jean-Jacques Moreau (Canon),
+Don Mullen (Tibco),
+Masahiko Narita (Fujitsu Limited),
+Eric Newcomer (IONA Technologies),
+Mark Nottingham (BEA Systems, formerly of Akamai Technologies),
+David Orchard (BEA Systems, formerly of Jamcracker),
+Andreas Riegg (DaimlerChrysler R. &amp; Tech),
+Herv&eacute; Ruellan (Canon),
+Jeff Schlimmer (Microsoft Corporation),
+Miroslav Simek (Systinet/Idoox),
+Nick Smilonich (Unisys),
+Lynne Thompson (Unisys),
+Pete Wenzel (SeeBeyond),
+Volker Wiechers (SAP AG).
+</p>
+
+      <p>Previous participants were: Yasser alSafadi (Philips Research),
+Bill Anderson (Xerox),
+Vidur Apparao (Netscape),
+Camilo Arbelaez (WebMethods),
+Mark Baker (Idokorro Mobile (Planetfred), formerly of Sun Microsystems),
+Philippe Bedu (EDF (Electricit&eacute; de France)),
+Olivier Boudeville (EDF (Electricit&eacute; de France)),
+Don Box (Microsoft Corporation, formerly of DevelopMentor),
+Tom Breuel (Xerox),
+Dick Brooks (Group 8760),
+Winston Bumpus (Novell),
+David Burdett (Commerce One),
+Charles Campbell (Informix Software),
+Alex Ceponkus (Bowstreet),
+Miles Chaston (Epicentric),
+David Clay (Oracle),
+David Cleary (Progress Software),
+Conleth O'Connell (Vignette),
+Ugo Corda (Xerox),
+Paul Cotton (Microsoft Corporation),
+Fransisco Cubera (IBM),
+Jim d'Augustine (eXcelon),
+Ron Daniel (Interwoven),
+Dug Davis (IBM),
+Ray Denenberg (Library of Congress),
+Paul Denning (MITRE),
+Frank DeRose (Tibco),
+Mike Dierken (DataChannel),
+Andrew Eisenberg (Progress Software),
+Brian Eisenberg (DataChannel),
+John Evdemon (XMLSolutions),
+David Ezell (Hewlett-Packard),
+Eric Fedok (Active Data Exchange),
+Chris Ferris (Sun Microsystems),
+Daniela Florescu (Propel),
+Dan Frantz (BEA Systems),
+Michael Freeman (Engenia Software),
+Scott Golubock (Epicentric),
+Rich Greenfield (Library of Congress),
+Hugo Haas (W3C),
+Mark Hale (Interwoven),
+Randy Hall (Intel),
+Bjoern Heckel (Epicentric),
+Erin Hoffman (Tradia),
+Steve Hole (MessagingDirect Ltd.),
+Mary Holstege (Calico Commerce),
+Jim Hughes (Fujitsu Software Corporation),
+Yin-Leng Husband (Hewlett-Packard, formerly of Compaq),
+Scott Isaacson (Novell),
+Murali Janakiraman (Rogue Wave),
+Eric Jenkins (Engenia Software),
+Jay Kasi (Commerce One),
+Jeffrey Kay (Engenia Software),
+Richard Koo (Vitria Technology Inc.),
+Alan Kropp (Epicentric),
+Julian Kumar (Epicentric),
+Peter Lecuyer (Progress Software),
+Tony Lee (Vitria Technology Inc.),
+Amy Lewis (TIBCO),
+Bob Lojek (Intalio),
+Henry Lowe (OMG),
+Brad Lund (Intel),
+Matthew MacKenzie (XMLGlobal Technologies),
+Murray Maloney (Commerce One),
+Richard Martin (Active Data Exchange),
+Highland Mary Mountain (Intel),
+Alex Milowski (Lexica),
+Kevin Mitchell (XMLSolutions),
+Ed Mooney (Sun Microsystems),
+Dean Moses (Epicentric),
+Rekha Nagarajan (Calico Commerce),
+Raj Nair (Cisco),
+Mark Needleman (Data Research Associates),
+Art Nevarez (Novell),
+Henrik Nielsen (Microsoft Corporation),
+Kevin Perkins (Compaq),
+Jags Ramnaryan (BEA Systems),
+Vilhelm Rosenqvist (NCR),
+Marwan Sabbouh (MITRE),
+Waqar Sadiq (Vitria Technology Inc.),
+Rich Salz (Zolera),
+Krishna Sankar (Cisco),
+George Scott (Tradia),
+Shane Sesta (Active Data Exchange),
+Lew Shannon (NCR),
+John-Paul Sicotte (MessagingDirect Ltd.),
+Simeon Simeonov (Allaire),
+Simeon Simeonov (Macromedia),
+Aaron Skonnard (DevelopMentor),
+Soumitro Tagore (Informix Software),
+James Tauber (Bowstreet),
+Patrick Thompson (Rogue Wave),
+Jim Trezzo (Oracle),
+Asir Vedamuthu (WebMethods),
+Randy Waldrop (WebMethods),
+Fred Waskiewicz (OMG),
+David Webber (XMLGlobal Technologies),
+Ray Whitmer (Netscape),
+Stuart Williams (Hewlett-Packard),
+Yan Xu (DataChannel),
+Amr Yassin (Philips Research),
+Susan Yee (Active Data Exchange),
+Jin Yu (Martsoft).</p>
+
+<p>The people who have contributed to discussions on
+<a href="mailto:xml-dist-app@w3.org">xml-dist-app@w3.org</a>
+are also gratefully acknowledged.</p>
+
+    </div>
+    
+  </div>
+<script src="https://www.w3.org/scripts/TR/fixup.js"></script></body></html>

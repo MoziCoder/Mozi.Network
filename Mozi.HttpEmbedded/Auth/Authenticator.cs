@@ -7,7 +7,7 @@ using Mozi.HttpEmbedded.Generic;
 namespace Mozi.HttpEmbedded.Auth
 {
     //TODO 认证应区分目录
-    //TODO Basic认证过于简单，不能起到很好的安全效果
+    //DONE Basic认证过于简单，不能起到很好的安全效果
 
     /// <summary>
     /// 认证器
