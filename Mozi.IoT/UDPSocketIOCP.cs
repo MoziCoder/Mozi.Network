@@ -85,6 +85,8 @@ namespace Mozi.IoT
                 //允许端口复用
                 _sc.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                 _sc.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.IpTimeToLive, 32);
+                _sc.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveBuffer, 4096 * 4);
+                _sc.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendBuffer, 4096 * 4);
                 _sc.Bind(endpoint);
                 receiveSocketArgs = new SocketAsyncEventArgs();
                 receiveSocketArgs.Completed += IO_Completed;
