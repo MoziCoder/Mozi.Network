@@ -42,8 +42,13 @@
     <Compile Include="RTMPService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RTP\RTPPackage.cs" />
-    <Compile Include="RTP\RTSPServer.cs" />
     <Compile Include="RTP\RTPServer.cs" />
+    <Compile Include="RTP\RTSPHeaderProperty.cs" />
+    <Compile Include="RTP\RTSPMethod.cs" />
+    <Compile Include="RTP\RTSPStatus.cs" />
+    <Compile Include="RTP\RTSPVersion.cs" />
+    <Compile Include="RTSPClient.cs" />
+    <Compile Include="RTP\RTSPProtocol.cs" />
     <Compile Include="RTSPServer.cs" />
   </ItemGroup>
   <ItemGroup>
