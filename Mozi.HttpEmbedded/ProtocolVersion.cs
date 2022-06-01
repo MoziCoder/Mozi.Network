@@ -4,17 +4,17 @@ using Mozi.HttpEmbedded.Generic;
 namespace Mozi.HttpEmbedded
 {
     /// <summary>
-    /// HTTP协议版本
+    /// HTTP协议版本,其它类HTTP协议也可以照此进行封装
     /// </summary>
-    public class HttpVersion : AbsClassEnum
+    public class ProtocolVersion : AbsClassEnum
     {
         /// <summary>
         /// HTTP/0.9 仅支持GET方法 响应只支持HTML内容
         /// </summary>
         [Obsolete("实现HTTP/0.9没有意义")]
-        public static readonly HttpVersion Version09 = new HttpVersion("0.9");
-        public static readonly HttpVersion Version10 = new HttpVersion("1.0");
-        public static readonly HttpVersion Version11 = new HttpVersion("1.1");
+        public static readonly ProtocolVersion Version09 = new ProtocolVersion("HTTP", "0.9");
+        public static readonly ProtocolVersion Version10 = new ProtocolVersion("HTTP", "1.0");
+        public static readonly ProtocolVersion Version11 = new ProtocolVersion("HTTP", "1.1");
 
         /// <summary>
         /// 1. 二进制协议
@@ -32,23 +32,27 @@ namespace Mozi.HttpEmbedded
         ///     HTTP/2 允许服务器未经请求，主动向客户端发送资源；
         ///     通过推送那些服务器任务客户端将会需要的内容到客户端的缓存中，避免往返的延迟
         /// </summary>
-        public static readonly HttpVersion Version20 = new HttpVersion("2.0");
+        public static readonly ProtocolVersion Version20 = new ProtocolVersion("HTTP", "2.0");
         /// <summary>
         /// Http3.0在Http2.0的基础上使用QUIC控制协议，UDP协议
         /// </summary>
-        public static readonly HttpVersion Version30 = new HttpVersion("3.0");
+        public static readonly ProtocolVersion Version30 = new ProtocolVersion("HTTP", "3.0");
         /// <summary>
         /// 版本号
         /// </summary>
         public string Version { get { return _vervalue; } }
+        /// <summary>
+        /// 协议类型
+        /// </summary>
+        public string Name { get { return _protoName; } }
+        protected override string Tag { get { return _protoName.ToUpper()+"/"+_vervalue; } }
 
-        protected override string Tag { get { return _vervalue; } }
+        private string _vervalue = "", _protoName = "";
 
-        private string _vervalue = "";
-
-        private HttpVersion(string vervalue)
+        public ProtocolVersion(string protoName, string vervalue)
         {
             _vervalue = vervalue;
+            _protoName = protoName;
         }
         /// <summary>
         /// 重写ToString方法
@@ -56,7 +60,7 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public override string ToString()
         {
-            return string.Format("HTTP/{0}", _vervalue);
+            return $"{_protoName}/{_vervalue}";
         }
     }
 }

@@ -41,7 +41,8 @@
   <ItemGroup>
     <Compile Include="RTMPService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RTP\RTCPServer.cs" />
+    <Compile Include="RTP\RTPPackage.cs" />
+    <Compile Include="RTP\RTSPServer.cs" />
     <Compile Include="RTP\RTPServer.cs" />
     <Compile Include="RTSPServer.cs" />
   </ItemGroup>

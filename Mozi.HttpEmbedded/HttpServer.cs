@@ -104,7 +104,7 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 服务器HTTP协议版本
         /// </summary>
-        public HttpVersion ProtocolVersion { get; set; }
+        public ProtocolVersion ProtocolVersion { get; set; }
         /// <summary>
         /// 是否使用访问认证
         /// </summary>
@@ -274,7 +274,6 @@ namespace Mozi.HttpEmbedded
                     }
                     context.Request = HttpRequest.Parse(args.Data);
                     context.Request.ClientAddress = args.IP;
-
 
 
                     //TODO HTTP/1.1 通过Connection控制连接 服务器同时对连接进行监测 保证服务器效率

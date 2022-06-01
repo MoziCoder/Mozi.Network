@@ -3,7 +3,12 @@ using Mozi.HttpEmbedded.Generic;
 
 namespace Mozi.Live.RTP
 {
-    class RTCPServer
+    class RTSPServer : HttpServer
+    {
+
+    }
+
+    public class RTSPClient
     {
 
     }
@@ -43,16 +48,16 @@ namespace Mozi.Live.RTP
     /// </summary>
     public class RTSPMethod
     {
-        public static RequestMethod DESCRIBE = new RequestMethod("DESCRIBE");
-        public static RequestMethod GET_PARAMETER = new RequestMethod("GET_PARAMETER");
-        public static RequestMethod OPTIONS = new RequestMethod("OPTIONS");
-        public static RequestMethod PAUSE = new RequestMethod("PAUSE");
-        public static RequestMethod PLAY = new RequestMethod("PLAY");
-        public static RequestMethod PLAY_NOTIFY = new RequestMethod("PLAY_NOTIFY");
-        public static RequestMethod REDIRECT = new RequestMethod("REDIRECT");
-        public static RequestMethod SETUP = new RequestMethod("SETUP");
-        public static RequestMethod SET_PARAMETER = new RequestMethod("SET_PARAMETER");
-        public static RequestMethod TEARDOWN = new RequestMethod("TEARDOWN");
+        public static RequestMethod DESCRIBE        = new RequestMethod("DESCRIBE");
+        public static RequestMethod GET_PARAMETER   = new RequestMethod("GET_PARAMETER");
+        public static RequestMethod OPTIONS         = new RequestMethod("OPTIONS");
+        public static RequestMethod PAUSE           = new RequestMethod("PAUSE");
+        public static RequestMethod PLAY            = new RequestMethod("PLAY");
+        public static RequestMethod PLAY_NOTIFY     = new RequestMethod("PLAY_NOTIFY");
+        public static RequestMethod REDIRECT        = new RequestMethod("REDIRECT");
+        public static RequestMethod SETUP           = new RequestMethod("SETUP");
+        public static RequestMethod SET_PARAMETER   = new RequestMethod("SET_PARAMETER");
+        public static RequestMethod TEARDOWN        = new RequestMethod("TEARDOWN");
     }
 
     public class RTSPVersion : AbsClassEnum

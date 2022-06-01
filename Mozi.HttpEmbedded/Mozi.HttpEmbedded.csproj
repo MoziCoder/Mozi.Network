@@ -115,7 +115,7 @@
     <Compile Include="HeaderProperty.cs" />
     <Compile Include="HttpContext.cs" />
     <Compile Include="HttpServer.cs" />
-    <Compile Include="HttpVersion.cs" />
+    <Compile Include="ProtocolVersion.cs" />
     <Compile Include="Common\Log.cs" />
     <Compile Include="Page\BaseApi.cs" />
     <Compile Include="Page\BasePage.cs" />
@@ -125,7 +125,6 @@
     <Compile Include="Page\Router.cs" />
     <Compile Include="Page\RuntimeApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ProtocolType.cs" />
     <Compile Include="HttpRequest.cs" />
     <Compile Include="RequestMethod.cs" />
     <Compile Include="HttpResponse.cs" />
