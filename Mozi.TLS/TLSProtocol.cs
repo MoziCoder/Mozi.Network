@@ -520,6 +520,7 @@ namespace Mozi.TLS
     {
         public byte Method { get; set; }
     }
+
     internal class ExtensionInfo
     {
         //2字节
