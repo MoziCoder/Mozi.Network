@@ -108,7 +108,7 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 客户机IP地址
         /// </summary>
-        public string ClientAddress { get; internal set; }
+        public string ClientAddress { get; set; }
         /// <summary>
         /// 客户机是否已通过认证
         /// </summary>
@@ -116,11 +116,11 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 客户机接受的语言选项
         /// </summary>
-        public LanguagePriority[] AcceptLanguage { get; private set; }
+        public LanguagePriority[] AcceptLanguage { get; protected set; }
         /// <summary>
         /// 请求的来源地址
         /// </summary>
-        public string Referer { get; private set; }
+        public string Referer { get; protected set; }
         /// <summary>
         /// 构造函数
         /// </summary>

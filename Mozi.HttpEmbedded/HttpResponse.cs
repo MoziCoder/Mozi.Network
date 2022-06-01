@@ -197,7 +197,7 @@ namespace Mozi.HttpEmbedded
         /// 写入压缩的数据
         /// </summary>
         /// <param name="body"></param>
-        internal void CompressBody(byte[] body)
+        public void WriteCompressBody(byte[] body)
         {
             _body = body;
             ContentEncoded = true;

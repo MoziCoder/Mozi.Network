@@ -21,13 +21,18 @@ namespace Mozi.HttpEmbedded
         public DateTime StartTime { get; set; }
         public DateTime StopTime { get; set; }
     }
-
+    /// <summary>
+    /// 服务端连接事件参数
+    /// </summary>
     public class ClientConnectArgs : EventArgs
     {
         /// <summary>
         /// 会话标识符
         /// </summary>
         public string Id { get; set; }
+        /// <summary>
+        /// 远端IP地址
+        /// </summary>
         public string IP { get; set; }
         /// <summary>
         /// 远端端口

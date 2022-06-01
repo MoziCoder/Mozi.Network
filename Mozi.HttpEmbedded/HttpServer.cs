@@ -31,6 +31,7 @@ namespace Mozi.HttpEmbedded
     //TODO 2021/11/22 实现简易的API处理能力,OnRequest("{action}/{id}",Func<T,T>{});
 
     //TODO 2022/02/16 尝试使用ArraySegement来处理数据
+    //TODO 2022/05/31 进一步丰富服务器事件
 
     //Transfer-Encoding: chunked 主要是为解决服务端无法预测Content-Length的问题
 
@@ -54,7 +55,8 @@ namespace Mozi.HttpEmbedded
 
         private WebDav.WebDAVServer _davserver;
 
-        private int _port = 80;
+        private  int _port = 80;
+
         private int _iporthttps = 443;
 
         //最大文件大小
@@ -84,16 +86,16 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 允许的方法
         /// </summary>
-        private readonly RequestMethod[] MethodAllow = new RequestMethod[] { RequestMethod.OPTIONS, RequestMethod.TRACE, RequestMethod.GET, RequestMethod.HEAD, RequestMethod.POST, RequestMethod.COPY, RequestMethod.PROPFIND, RequestMethod.LOCK, RequestMethod.UNLOCK };
+        protected  RequestMethod[] MethodAllow = new RequestMethod[] { RequestMethod.OPTIONS, RequestMethod.TRACE, RequestMethod.GET, RequestMethod.HEAD, RequestMethod.POST, RequestMethod.COPY, RequestMethod.PROPFIND, RequestMethod.LOCK, RequestMethod.UNLOCK };
         /// <summary>
         /// 公开的方法
         /// </summary>
-        private readonly RequestMethod[] MethodPublic = new RequestMethod[] { RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.HEAD, RequestMethod.PROPFIND, RequestMethod.PROPPATCH, RequestMethod.MKCOL, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.COPY, RequestMethod.MOVE, RequestMethod.LOCK, RequestMethod.UNLOCK };
+        protected  RequestMethod[] MethodPublic = new RequestMethod[] { RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.HEAD, RequestMethod.PROPFIND, RequestMethod.PROPPATCH, RequestMethod.MKCOL, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.COPY, RequestMethod.MOVE, RequestMethod.LOCK, RequestMethod.UNLOCK };
 
         //证书管理器
         private CertManager _certMg;
         //HTTPS开启标识
-        private bool _httpsEnabled = false;
+        protected bool _httpsEnabled = false;
 
         private MemoryCache _cache = new MemoryCache();
 
@@ -136,10 +138,10 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 服务端口
         /// </summary>
-        public int Port
+        public virtual int Port
         {
             get { return _port; }
-            private set { _port = value; }
+            protected set { _port = value; }
         }
         /// <summary>
         /// HTTPS服务端口
@@ -199,8 +201,11 @@ namespace Mozi.HttpEmbedded
         /// 服务端收到完整请求包时触发
         /// </summary>
         public Request Request;
-
+        /// <summary>
+        /// 默认路由管理器
+        /// </summary>
         public Router Router = Router.Default;
+
         public HttpServer()
         {
             StartTime = DateTime.MinValue;
@@ -362,7 +367,7 @@ namespace Mozi.HttpEmbedded
                     if (body.Length > ZipOption.MinContentLength)
                     {
                         body = GZip.Compress(body);
-                        context.Response.CompressBody(body);
+                        context.Response.WriteCompressBody(body);
                         context.Response.AddHeader(HeaderProperty.ContentEncoding, "gzip");
                     }
                 }
@@ -420,7 +425,7 @@ namespace Mozi.HttpEmbedded
         /// 处理请求
         /// </summary>
         /// <param name="context"></param>
-        private StatusCode HandleRequest(ref HttpContext context)
+        protected virtual StatusCode HandleRequest(ref HttpContext context)
         {
             RequestMethod method = context.Request.Method;
             if (method == RequestMethod.OPTIONS)
@@ -710,7 +715,7 @@ namespace Mozi.HttpEmbedded
             }
         }
         /// <summary>
-        /// 处理METHOD-OPTIONS请求
+        /// 处理OPTIONS请求
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
@@ -762,7 +767,7 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public HttpServer SetPort(int port)
         {
-            _port = port;
+            Port = port;
             return this;
         }
         /// <summary>
@@ -910,7 +915,7 @@ namespace Mozi.HttpEmbedded
         public void Start()
         {
             StartTime = DateTime.Now;
-            _sc.Start(_port);
+            _sc.Start(Port);
             Running = true;
         }
         /// <summary>
@@ -934,7 +939,7 @@ namespace Mozi.HttpEmbedded
         /// 检查访问黑名单
         /// </summary>
         /// <param name="ipAddress"></param>
-        private bool CheckIfAccessBlocked(string ipAddress)
+        protected bool CheckIfAccessBlocked(string ipAddress)
         {
             return AccessManager.Instance.CheckBlackList(ipAddress);
         }
