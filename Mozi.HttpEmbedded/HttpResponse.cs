@@ -149,6 +149,7 @@ namespace Mozi.HttpEmbedded
         /// 增加头部信息
         /// </summary>
         /// <param name="head"></param>
+        /// <param name="value"></param>
         /// <returns></returns>
         public HttpResponse AddHeader(HeaderProperty head, string value)
         {

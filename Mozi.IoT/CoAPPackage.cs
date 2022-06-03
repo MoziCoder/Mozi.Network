@@ -456,7 +456,7 @@ namespace Mozi.IoT
         ///     <item><term><see cref="CoAPOptionDefine.UriHost"/></term>如果URL中的主机地址为域名，则注入此Option</item>
         ///     <item><term><see cref="CoAPOptionDefine.UriPort"/></term></item>
         ///     <item><term><see cref="CoAPOptionDefine.UriPath"/></term>以'/'分割Option</item>
-        ///     <item><term><see cref="CoAPOptionDefine.UriQuery"/></term>以'&'分割Option</item>
+        ///     <item><term><see cref="CoAPOptionDefine.UriQuery"/></term>以 \x26分割Option</item>
         /// </list>
         /// </summary>
         /// <param name="uri"></param>

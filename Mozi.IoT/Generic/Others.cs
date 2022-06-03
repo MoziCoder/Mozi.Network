@@ -2,6 +2,9 @@
 
 namespace Mozi.IoT.Generic
 {
+    /// <summary>
+    /// 公共静态扩展方法
+    /// </summary>
     public static class Others
     {
         /// <summary>

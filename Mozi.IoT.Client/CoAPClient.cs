@@ -93,6 +93,8 @@ namespace Mozi.IoT
         /// 3,MessageId由拥塞管理器生成
         /// 参见<see cref="CoAPPeer.SendMessage(string, int, CoAPPackage)"/>
         /// </summary>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
         /// <param name="pack"></param>
         /// <returns>MessageId</returns>
         public override ushort SendMessage(string host, int port, CoAPPackage pack)

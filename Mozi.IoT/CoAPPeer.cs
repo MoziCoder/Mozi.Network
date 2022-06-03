@@ -173,6 +173,8 @@ namespace Mozi.IoT
         /// <summary>
         /// 发送请求消息,此方法为高级方法。
         /// </summary>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
         /// <param name="pack"></param>
         /// <returns>MessageId</returns>
         /// <remarks>

@@ -58,6 +58,7 @@ namespace Mozi.HttpEmbedded
         /// 调用
         /// </summary>
         /// <param name="name"></param>
+        /// <param name="ctx"></param>
         /// <param name="args"></param>
         /// <returns></returns>
         internal bool Invoke(string name, HttpContext ctx)

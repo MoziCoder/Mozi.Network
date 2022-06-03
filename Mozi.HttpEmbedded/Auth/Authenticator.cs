@@ -254,6 +254,8 @@ namespace Mozi.HttpEmbedded.Auth
         /// <summary>
         ///  验证认证信息
         /// </summary>
+        /// <param name="username"></param>
+        /// <param name="pwd"></param>
         /// <param name="statement"></param>
         /// <param name="reqMethod"></param>
         /// <returns></returns>
@@ -325,6 +327,8 @@ namespace Mozi.HttpEmbedded.Auth
         /// <summary>
         /// 验证认证信息
         /// </summary>
+        /// <param name="username"></param>
+        /// <param name="pwd"></param>
         /// <param name="statement"></param>
         /// <param name="reqMethod"></param>
         /// <returns></returns>

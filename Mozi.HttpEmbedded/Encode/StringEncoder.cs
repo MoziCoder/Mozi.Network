@@ -29,6 +29,8 @@ namespace Mozi.HttpEmbedded.Encode
         /// ½âÂë
         /// </summary>
         /// <param name="data"></param>
+        /// <param name="index"></param>
+        /// <param name="count"></param>
         /// <returns></returns>
         public static string Decode(byte[] data, int index, int count)
         {

@@ -133,6 +133,7 @@ namespace Mozi.SSDP
         /// <summary>
         /// 启动服务器
         /// </summary>
+        /// <param name="multicastGroupAddress"></param>
         /// <param name="multicastGroupPort"></param>
         public void Start(string multicastGroupAddress,int multicastGroupPort)
         {

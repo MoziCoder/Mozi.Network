@@ -68,6 +68,7 @@ namespace Mozi.HttpEmbedded
         /// 增加头部信息
         /// </summary>
         /// <param name="header"></param>
+        /// <param name="value"></param>
         /// <returns></returns>
         public TransformHeader Add(HeaderProperty header, string value)
         {

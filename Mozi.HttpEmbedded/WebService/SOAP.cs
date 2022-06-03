@@ -127,6 +127,7 @@ namespace Mozi.HttpEmbedded.WebService
         /// 解析SOAP文件
         /// </summary>
         /// <param name="content"></param>
+        /// <param name="version"></param>
         /// <returns></returns>
         public static SoapEnvelope Parse(string content,SoapVersion version)
         {

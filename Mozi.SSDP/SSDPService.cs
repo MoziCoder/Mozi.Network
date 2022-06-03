@@ -836,7 +836,9 @@ namespace Mozi.SSDP
         /// <summary>
         /// 控制信息 HTTP
         /// </summary>
+        /// <param name="controlPath"></param>
         /// <param name="pk"></param>
+        /// <param name="callback"></param>
         public void ControlAction(string controlPath,ControlActionPackage pk,RequestComplete callback)
         {
             HttpRequest request = new HttpRequest();
