@@ -57,7 +57,7 @@ namespace Mozi.HttpEmbedded
 
         private  int _port = 80;
 
-        private int _iporthttps = 443;
+        private int _portTLS = 443;
 
         //最大文件大小
         private long _maxFileSize = 10 * 1024 * 1024;
@@ -104,9 +104,9 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         public DateTime StartTime { get; set; }
         /// <summary>
-        /// 服务器HTTP协议版本
+        /// 服务器协议版本
         /// </summary>
-        public ProtocolVersion ProtocolVersion { get; set; }
+        public ProtocolVersion Version { get; set; }
         /// <summary>
         /// 是否使用访问认证
         /// </summary>
@@ -132,9 +132,9 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         public long MaxFileSize { get { return _maxFileSize; } private set { _maxFileSize = value; } }
         /// <summary>
-        /// 最大请求长度
+        /// 最大请求体长度
         /// </summary>
-        public long MaxRequestSize { get { return _maxRequestSize; } private set { _maxRequestSize = value; } }
+        public long MaxRequestBodySize { get { return _maxRequestSize; } private set { _maxRequestSize = value; } }
         /// <summary>
         /// 服务端口
         /// </summary>
@@ -148,8 +148,8 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         internal int PortHTTPS
         {
-            get { return _iporthttps; }
-            private set { _iporthttps = value; }
+            get { return _portTLS; }
+            private set { _portTLS = value; }
         }
         /// <summary>
         /// 时区
@@ -209,6 +209,7 @@ namespace Mozi.HttpEmbedded
         public HttpServer()
         {
             StartTime = DateTime.MinValue;
+            Version = ProtocolVersion.Version11;
             Timezone = string.Format("UTC{0:+00;-00;}:00", TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).Hours);
             //配置默认服务器名
             _serverName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name + "/" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();

@@ -26,7 +26,7 @@ namespace Mozi.HttpEmbedded.Generic
                     if (((T)oc).Tag.Equals(name, StringComparison.OrdinalIgnoreCase))
                     {
                         return (T)oc;
-                    };
+                    }
                 }
             }
             return null;

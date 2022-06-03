@@ -8,6 +8,7 @@ namespace Mozi.RTSP.Test
         static void Main(string[] args)
         {
             RTSPServer _server = new RTSPServer();
+            //_server.SetPort(554);
             _server.Start();
             Console.ReadLine();
         }

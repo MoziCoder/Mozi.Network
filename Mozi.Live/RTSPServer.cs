@@ -3,7 +3,7 @@ using Mozi.Live.RTP;
 
 namespace Mozi.Live
 {
-    public class RTSPServer:HttpEmbedded.HttpServer
+    public class RTSPServer: HttpServer
     {
         private int _port = RTSPProtocol.RTSPPort;
 
@@ -11,13 +11,14 @@ namespace Mozi.Live
 
         public RTSPServer()
         {
+            Version = RTSPVersion.Version20;
             //定义允许的方法
             MethodPublic = new RequestMethod[] { RTSPMethod.OPTIONS, RTSPMethod.DESCRIBE, RTSPMethod.PLAY, RTSPMethod.PAUSE, RTSPMethod.SETUP, RTSPMethod.TEARDOWN, RTSPMethod.SET_PARAMETER, RTSPMethod.GET_PARAMETER };
         }
 
         protected override StatusCode HandleRequest(ref HttpContext context)
         {
-            context.Response.Version = RTP.RTSPVersion.Version20;
+            context.Response.Version = RTSPVersion.Version20;
             ////不添加默认的头信息
             //context.Response.DontAddAutoHeader = true;
             RequestMethod method = context.Request.Method;
@@ -29,6 +30,7 @@ namespace Mozi.Live
             context.Response.AddHeader(RTSPHeaderProperty.CSeq, context.Request.Headers.GetValue(RTSPHeaderProperty.CSeq));
             return StatusCode.NotAcceptable;
         }
+
         /// <summary>
         /// 
         /// </summary>

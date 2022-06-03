@@ -47,6 +47,7 @@
     <Compile Include="RTP\RTSPMethod.cs" />
     <Compile Include="RTP\RTSPStatus.cs" />
     <Compile Include="RTP\RTSPVersion.cs" />
+    <Compile Include="RTP\SDPPackage.cs" />
     <Compile Include="RTSPClient.cs" />
     <Compile Include="RTP\RTSPProtocol.cs" />
     <Compile Include="RTSPServer.cs" />
@@ -59,18 +60,28 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="RFC 2326 - Real Time Streaming Protocol %28RTSP%29.htm" />
+    <Content Include="RFC 2327 SDP Session Description Protocol.html" />
+    <Content Include="RFC 2543 SIP Session Initiation Protocol.htm" />
+    <Content Include="RFC 3264 An Offer_Answer Model with Session Description Protocol %28SDP%29.htm" />
     <Content Include="RFC 3550 - RTP A Transport Protocol for Real-Time Applications.htm" />
+    <Content Include="RFC 4566 SDP Session Description Protocol.htm" />
     <Content Include="RFC 5506 - Support for Reduced-Size Real-Time Transport Control Protocol %28RTCP%29 Opportunities and Consequences.htm" />
     <Content Include="RFC 5761 - Multiplexing RTP Data and Control Packets on a Single Port.htm" />
+    <Content Include="RFC 5888 The Session Description Protocol %28SDP%29 Grouping Framework.htm" />
     <Content Include="RFC 6051 - Rapid Synchronisation of RTP Flows.htm" />
+    <Content Include="RFC 6157 IPv6 Transition in the Session Initiation Protocol %28SIP%29.htm" />
     <Content Include="RFC 6222 - Guidelines for Choosing RTP Control Protocol %28RTCP%29 Canonical Names %28CNAMEs%29.htm" />
     <Content Include="RFC 7022 - Guidelines for Choosing RTP Control Protocol %28RTCP%29 Canonical Names %28CNAMEs%29.htm" />
     <Content Include="RFC 7160 - Support for Multiple Clock Rates in an RTP Session.htm" />
     <Content Include="RFC 7164 - RTP and Leap Seconds.htm" />
     <Content Include="RFC 7826 - Real-Time Streaming Protocol Version 2.0.htm" />
+    <Content Include="RFC 7941 RTP Header Extension for the RTP Control Protocol %28RTCP%29 Source Description Items.htm" />
     <Content Include="RFC 8083 - Multimedia Congestion Control Circuit Breakers for Unicast RTP Sessions.htm" />
     <Content Include="RFC 8108 - Sending Multiple RTP Streams in a Single RTP Session.htm" />
+    <Content Include="RFC 8843 Negotiating Media Multiplexing Using the Session Description Protocol %28SDP%29.htm" />
     <Content Include="RFC 8860 - Sending Multiple Types of Media in a Single RTP Session.htm" />
+    <Content Include="RFC 8866 SDP Session Description Protocol.htm" />
+    <Content Include="RFC 9143 Negotiating Media Multiplexing Using the Session Description Protocol %28SDP%29.htm" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Readme.md" />
