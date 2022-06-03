@@ -54,13 +54,14 @@
   <ItemGroup>
     <None Include="coap.runtimeconfig.json" />
     <None Include="CoAP调试工具 Mozi.IoT.CoAP.doc" />
-    <None Include="CoAP调试工具 Mozi.IoT.CoAP应用详解.doc" />
+    <Content Include="CoAP调试工具 Mozi.IoT.CoAP应用详解.doc" />
+    <Content Include="License.md" />
     <None Include="Mozi.IoT.CoAP.nuspec" />
-    <None Include="Readme.md" />
+    <Content Include="Readme.md" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="coap_202203100001.png" />
-    <Content Include="coap_202203100002.png" />
+    <None Include="coap_202203100001.png" />
+    <None Include="coap_202203100002.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

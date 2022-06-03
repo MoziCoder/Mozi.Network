@@ -179,24 +179,24 @@
     <None Include="Howto.md" />
     <None Include="Mozi.HttpEmbedded.svg" />
     <EmbeddedResource Include="Document\WebService.html" />
-    <Content Include="draft-ietf-httpauth-mutual-11.htm" />
-    <Content Include="RFC 3986 Uniform Resource Identifier %28URI%29 Generic Syntax.html" />
-    <Content Include="RFC 5987 Character Set and Language Encoding for Hypertext Transfer Protocol %28HTTP%29 Header Field Parameters.html" />
-    <Content Include="RFC 6750 - The OAuth 2.0 Authorization Framework Bearer Token Usage.htm" />
-    <Content Include="RFC 7230 - Hypertext Transfer Protocol %28HTTP_1.1%29 Message Syntax and Routing.htm" />
-    <Content Include="RFC 7486 - HTTP Origin-Bound Authentication %28HOBA%29.htm" />
-    <Content Include="RFC 7616 - HTTP Digest Access Authentication.htm" />
-    <Content Include="RFC 7617 - The %27Basic%27 HTTP Authentication Scheme.htm" />
-    <Content Include="SOAP Version 1.2 Part 1 Messaging Framework.htm" />
+    <None Include="draft-ietf-httpauth-mutual-11.htm" />
+    <None Include="RFC 3986 Uniform Resource Identifier %28URI%29 Generic Syntax.html" />
+    <None Include="RFC 5987 Character Set and Language Encoding for Hypertext Transfer Protocol %28HTTP%29 Header Field Parameters.html" />
+    <None Include="RFC 6750 - The OAuth 2.0 Authorization Framework Bearer Token Usage.htm" />
+    <None Include="RFC 7230 - Hypertext Transfer Protocol %28HTTP_1.1%29 Message Syntax and Routing.htm" />
+    <None Include="RFC 7486 - HTTP Origin-Bound Authentication %28HOBA%29.htm" />
+    <None Include="RFC 7616 - HTTP Digest Access Authentication.htm" />
+    <None Include="RFC 7617 - The %27Basic%27 HTTP Authentication Scheme.htm" />
+    <None Include="SOAP Version 1.2 Part 1 Messaging Framework.htm" />
     <Content Include="Source\mime.data" />
     <None Include="wsdl12-bindings.pdf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="Changes.md" />
-    <None Include="License.md" />
+    <Content Include="License.md" />
     <None Include="Mozi.HttpEmbedded.nuspec" />
-    <None Include="Readme.md" />
+    <Content Include="Readme.md" />
     <None Include="WebDav\README.md" />
   </ItemGroup>
   <ItemGroup>

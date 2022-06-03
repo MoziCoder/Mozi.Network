@@ -67,9 +67,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="License.md" />
+    <Content Include="License.md" />
     <None Include="Mozi.SSDP.nuspec" />
-    <None Include="Readme.md" />
+    <Content Include="Readme.md" />
     <None Include="UPnP-arch-DeviceArchitecture-v1.0.pdf" />
     <None Include="UPnP-arch-DeviceArchitecture-v2.0-20200417.pdf" />
     <None Include="wsdd-discovery-1.1-spec.pdf" />

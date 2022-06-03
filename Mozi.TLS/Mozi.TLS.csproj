@@ -52,12 +52,12 @@
     <None Include="Readme.md" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="RFC 5246 The Transport Layer Security %28TLS%29 Protocol Version 1.2.html" />
-    <Content Include="RFC 6347 Datagram Transport Layer Security Version 1.2.html" />
-    <Content Include="RFC 7507 TLS Fallback Signaling Cipher Suite Value %28SCSV%29 for Preventing Protocol Downgrade Attacks.htm" />
-    <Content Include="RFC 7905 ChaCha20-Poly1305 Cipher Suites for Transport Layer Security %28TLS%29.htm" />
-    <Content Include="RFC 8446 The Transport Layer Security %28TLS%29 Protocol Version 1.3.html" />
-    <Content Include="RFC 8996 Deprecating TLS 1.0 and TLS 1.1.htm" />
+    <None Include="RFC 5246 The Transport Layer Security %28TLS%29 Protocol Version 1.2.html" />
+    <None Include="RFC 6347 Datagram Transport Layer Security Version 1.2.html" />
+    <None Include="RFC 7507 TLS Fallback Signaling Cipher Suite Value %28SCSV%29 for Preventing Protocol Downgrade Attacks.htm" />
+    <None Include="RFC 7905 ChaCha20-Poly1305 Cipher Suites for Transport Layer Security %28TLS%29.htm" />
+    <None Include="RFC 8446 The Transport Layer Security %28TLS%29 Protocol Version 1.3.html" />
+    <None Include="RFC 8996 Deprecating TLS 1.0 and TLS 1.1.htm" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

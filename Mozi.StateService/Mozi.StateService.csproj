@@ -51,9 +51,9 @@
     <Compile Include="UDPStateObject.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="License.md" />
+    <Content Include="License.md" />
     <None Include="Mozi.StateService.nuspec" />
-    <None Include="Readme.md" />
+    <Content Include="Readme.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

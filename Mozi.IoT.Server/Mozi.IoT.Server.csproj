@@ -51,8 +51,9 @@
     <Compile Include="ResourceManager.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="License.md" />
     <None Include="Mozi.IoT.Server.nuspec" />
-    <None Include="Readme.md" />
+    <Content Include="Readme.md" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mozi.IoT\Mozi.IoT.csproj">

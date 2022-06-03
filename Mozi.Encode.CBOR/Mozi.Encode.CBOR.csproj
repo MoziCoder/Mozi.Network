@@ -58,8 +58,9 @@
     <Compile Include="UrlEncoder.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="License.md" />
     <None Include="Mozi.Encode.CBOR.nuspec" />
-    <None Include="Readme.md" />
+    <Content Include="Readme.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
