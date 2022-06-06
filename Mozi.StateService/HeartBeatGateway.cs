@@ -76,6 +76,9 @@ namespace Mozi.StateService
         /// 服务端端口
         /// </summary>
         public ushort Port { get { return _port; } }
+        /// <summary>
+        /// 启动时间
+        /// </summary>
         public DateTime StartTime { get; private set; }
         /// <summary>
         /// 终端加入事件
@@ -124,6 +127,9 @@ namespace Mozi.StateService
         /// 统计
         /// </summary>
         public ClientStateStatistics Statistics = new ClientStateStatistics();
+        /// <summary>
+        /// 
+        /// </summary>
         public HeartBeatGateway()
         {
             _socket = new UDPSocket();
