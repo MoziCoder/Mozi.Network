@@ -500,15 +500,41 @@ namespace Mozi.StateService
         /// </summary>
         public class ClientStateSummary
         {
+            /// <summary>
+            /// 终端名
+            /// </summary>
             public string DeviceName { get; set; }
+            /// <summary>
+            /// 终端ID
+            /// </summary>
             public string DeviceId { get; set; }
+            /// <summary>
+            /// 累计繁忙时间
+            /// </summary>
             public long BusyTimeTotoal { get; set; }
+            /// <summary>
+            /// 进入繁忙状态的次数
+            /// </summary>
             public int BusyCount { get; set; }
+            /// <summary>
+            /// 用户计数
+            /// </summary>
             public int UserCount { get; set; }
+            /// <summary>
+            /// 累计在线时间
+            /// </summary>
             public long OnlineTimeTotal { get; set; }
+            /// <summary>
+            /// 最后进入繁忙的时刻
+            /// </summary>
             public DateTime OnBusyTime { get; set; }
+            /// <summary>
+            /// 最后进入在线状态的时间
+            /// </summary>
             public DateTime OnlineTime { get; set; }
-
+            /// <summary>
+            /// 
+            /// </summary>
             public ClientStateSummary()
             {
                 OnBusyTime = DateTime.MinValue;

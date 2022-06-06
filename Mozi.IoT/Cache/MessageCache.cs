@@ -58,6 +58,9 @@ namespace Mozi.IoT.Cache
         /// </summary>
         public bool Completed { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public MessageCache()
         {
             Request = new List<CoAPPackage>();
@@ -75,7 +78,10 @@ namespace Mozi.IoT.Cache
         private List<MessageCache> _cm = new List<MessageCache>();
         
         private ushort _indStart = 0;
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="peer"></param>
         public MessageCacheManager(CoAPPeer peer)
         {
 
@@ -112,6 +118,12 @@ namespace Mozi.IoT.Cache
 
         }
         //TODO 消息缓存的标识是MessageId?Token?
+        /// <summary>
+        /// 缓存请求对象
+        /// </summary>
+        /// <param name="host"></param>
+        /// <param name="req"></param>
+        /// <returns></returns>
         public ushort Request(string host,CoAPPackage req)
         {
             MessageCache cache = _cm.Find(x => x.Host.Equals(host) && x.MessageId == req.MesssageId);

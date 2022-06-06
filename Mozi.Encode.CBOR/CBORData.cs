@@ -108,38 +108,67 @@ namespace Mozi.Encode.CBOR
                 return (Data != null) && (PackSize != 0) && (Data.Length > PackSize);
             }
         }
+        /// <summary>
+        /// 构造CBOR数据实例
+        /// </summary>
+        /// <param name="dataType"></param>
+        /// <param name="value"></param>
         public CBORData(CBORDataType dataType, object value)
         {
             DataType = dataType;
             Value = value;
         }
+        /// <summary>
+        /// 
+        /// </summary>
         public CBORData()
         {
 
         }
-
+        /// <summary>
+        /// 实例化Uint32类型
+        /// </summary>
+        /// <param name="value"></param>
         public CBORData(byte value):this(CBORDataType.UnsignedInteger, value)
         {
             
         }
-
+        /// <summary>
+        /// 实例化Uint32类型
+        /// </summary>
+        /// <param name="value"></param>
         public CBORData(ushort value) : this(CBORDataType.UnsignedInteger, value)
         {
 
         }
+        /// <summary>
+        /// 实例化Uint32类型 
+        /// </summary>
+        /// <param name="value"></param>
         public CBORData(uint value) : this(CBORDataType.UnsignedInteger, value)
         {
 
         }
+        /// <summary>
+        /// 实例化Uint32类型
+        /// </summary>
+        /// <param name="value"></param>
         public CBORData(ulong value) : this(CBORDataType.UnsignedInteger, value)
         {
 
         }
-
+        /// <summary>
+        /// 实例化-Uint32类型
+        /// </summary>
+        /// <param name="value"></param>
         public CBORData(sbyte value) : this(CBORDataType.NegativeInteger, value)
         {
 
         }
+        /// <summary>
+        /// 数据转为字符串表示法，带标识头
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return DataType.Serializer.ToString(this);

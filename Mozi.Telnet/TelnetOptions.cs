@@ -7,25 +7,25 @@ namespace Mozi.Telnet
     public enum TelnetCommand
     {
         EOF = 0xEC,        // 文件结束符
-        SUSP = 0xED,	     // 挂起当前进程（作业控制）
-        ABORT = 0xEE,	 // 异常中止进程
-        EOR = 0xEF,       // 记录结束符
-        SE = 0xF0,	     // 自选项结束
-        NOP = 0xF1,	     // 无操作
-        DM	= 0xF2,	     // 数据标记
-        BRK	= 0xF3,	     // 中断
-        IP	= 0xF4,	     // 中断进程
-        AO	= 0xF5,	     // 异常中止输出
-        AYT	= 0xF6,	     // 对方是否还在运行？
-        EC	= 0xF7,	     // 转义字符
-        EL	= 0xF8,	     // 删除行
-        GA	= 0xF9,	     // 继续进行
-        SB = 0xFA,        // (FA)	子选项开始
-        WILL = 0xFB,      // (FB)	同意启动（enable）选项
-        WONT = 0xFC,      // (FC)	拒绝启动选项
-        DO = 0xFD,        // (FD)	认可选项请求
-        DONT = 0xFE,      // (FE)	拒绝选项请求
-        IAC=0xFF          // (IAC)  指令开始位
+        SUSP = 0xED,	   // 挂起当前进程（作业控制）
+        ABORT = 0xEE,	   // 异常中止进程
+        EOR = 0xEF,        // 记录结束符
+        SE = 0xF0,	       // 自选项结束
+        NOP = 0xF1,	       // 无操作
+        DM	= 0xF2,	       // 数据标记
+        BRK	= 0xF3,	       // 中断
+        IP	= 0xF4,	       // 中断进程
+        AO	= 0xF5,	       // 异常中止输出
+        AYT	= 0xF6,	       // 对方是否还在运行？
+        EC	= 0xF7,	       // 转义字符
+        EL	= 0xF8,	       // 删除行
+        GA	= 0xF9,	       // 继续进行
+        SB = 0xFA,         // (FA)	子选项开始
+        WILL = 0xFB,       // (FB)	同意启动（enable）选项
+        WONT = 0xFC,       // (FC)	拒绝启动选项
+        DO = 0xFD,         // (FD)	认可选项请求
+        DONT = 0xFE,       // (FE)	拒绝选项请求
+        IAC=0xFF           // (IAC)  指令开始位
     }
 
     public enum TelnetSubOptions
@@ -92,7 +92,8 @@ namespace Mozi.Telnet
         NAME = 0x03,
     }
     //Auth commands
-    public enum AuthCommand {       
+    public enum AuthCommand 
+    {       
         IS = 0x00,
         SEND = 0x01,
         REPLY = 0x02,

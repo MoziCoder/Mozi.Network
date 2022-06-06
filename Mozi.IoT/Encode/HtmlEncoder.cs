@@ -2,6 +2,9 @@
 
 namespace Mozi.IoT.Encode
 {
+    /// <summary>
+    /// HTML字符串转义
+    /// </summary>
     public class HtmlEncoder
     {
         /// <summary>

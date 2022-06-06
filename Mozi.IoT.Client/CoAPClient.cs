@@ -50,7 +50,9 @@ namespace Mozi.IoT
         /// 统一通信Token
         /// </summary>
         public byte[] Token { get => _token; set => _token = value; }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public CoAPClient()
         {
             _cacheManager = new MessageCacheManager(this);

@@ -612,12 +612,26 @@ namespace Mozi.IoT
     {
         private string _name = "";
         private byte _typeValue;
-
+        /// <summary>
+        /// 消息类型Confirmable
+        /// </summary>
         public static CoAPMessageType Confirmable       = new CoAPMessageType("Confirmable", 0);
+        /// <summary>
+        /// 消息类型NonConfirmable
+        /// </summary>
         public static CoAPMessageType NonConfirmable    = new CoAPMessageType("NonConfirmable", 1);
+        /// <summary>
+        /// 消息类型Acknowledgement
+        /// </summary>
         public static CoAPMessageType Acknowledgement   = new CoAPMessageType("Acknowledgement", 2);
+        /// <summary>
+        /// 消息类型Reset
+        /// </summary>
         public static CoAPMessageType Reset             = new CoAPMessageType("Reset", 3);
 
+        /// <summary>
+        /// 消息类型值
+        /// </summary>
         public byte Value
         {
             get
@@ -625,11 +639,16 @@ namespace Mozi.IoT
                 return _typeValue;
             }
         }
-
+        /// <summary>
+        /// 消息类型名
+        /// </summary>
         public string Name
         {
             get { return _name; }
         }
+        /// <summary>
+        /// 唯一标识符号
+        /// </summary>
         protected override string Tag
         {
             get
@@ -654,7 +673,13 @@ namespace Mozi.IoT
     /// </summary>
     public enum CoAPPackageType
     {
+        /// <summary>
+        /// 请求
+        /// </summary>
         Request,
+        /// <summary>
+        /// 响应
+        /// </summary>
         Response
     }
 }

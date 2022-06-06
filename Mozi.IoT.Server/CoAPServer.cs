@@ -66,7 +66,9 @@ namespace Mozi.IoT
         /// 服务器根目录
         /// </summary>
         public string Root = AppDomain.CurrentDomain.BaseDirectory;
-
+        /// <summary>
+        /// 
+        /// </summary>
         public CoAPServer()
         {
             _cm = new Cache.MessageCacheManager(this);

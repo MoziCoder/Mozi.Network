@@ -56,7 +56,9 @@ namespace Mozi.IoT
         private string _name = "", _description;
 
         private byte _category = 0, _detail = 0;
-
+        /// <summary>
+        /// 消息代码 Empty Message
+        /// </summary>
         public static CoAPCode Empty = new CoAPCode("Empty", "Empty Message", 0, 0);
 
         /// <summary>

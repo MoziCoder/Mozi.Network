@@ -175,22 +175,48 @@ namespace Mozi.HttpEmbedded.Cache
     /// </summary>
     public class CacheInfo
     {
+        /// <summary>
+        /// 缓存名
+        /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// 缓存参数
+        /// </summary>
         public string Param { get; set; }
+        /// <summary>
+        /// 数据
+        /// </summary>
         public string Data { get; set; }
+        /// <summary>
+        /// 大小
+        /// </summary>
         public int Size { get; set; }
+        /// <summary>
+        /// 入堆时间
+        /// </summary>
         public DateTime CacheTime { get; set; }
+        /// <summary>
+        /// 过期时间，ms
+        /// </summary>
         public long Expire { get; set; }
+        /// <summary>
+        /// 拥有者
+        /// </summary>
         public string Owner { get; set; }
         /// <summary>
         /// 是否公域缓存
         /// </summary>
         public byte IsPrivate { get; set; }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public CacheInfo()
         {
             CacheTime = DateTime.UtcNow;
         }
+        /// <summary>
+        /// 设为已过期
+        /// </summary>
         public void SetExpired()
         {
             Expire = -1;

@@ -26,6 +26,5 @@ namespace Mozi.HttpEmbedded.Encode
         {
             return StringEncoder.Decode(Convert.FromBase64String(data));
         }
-
     }
 }

@@ -3,19 +3,30 @@ using Mozi.Live.RTP;
 
 namespace Mozi.Live
 {
+    /// <summary>
+    /// RTSP服务器
+    /// </summary>
     public class RTSPServer: HttpServer
     {
         private int _port = RTSPProtocol.RTSPPort;
-
+        /// <summary>
+        /// 工作端口，默认为<see cref="RTSPProtocol.RTSPPort"/>
+        /// </summary>
         public override int Port { get => _port; protected set => _port = value; }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public RTSPServer()
         {
             Version = RTSPVersion.Version20;
             //定义允许的方法
             MethodPublic = new RequestMethod[] { RTSPMethod.OPTIONS, RTSPMethod.DESCRIBE, RTSPMethod.PLAY, RTSPMethod.PAUSE, RTSPMethod.SETUP, RTSPMethod.TEARDOWN, RTSPMethod.SET_PARAMETER, RTSPMethod.GET_PARAMETER };
         }
-
+        /// <summary>
+        /// 响应请求
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         protected override StatusCode HandleRequest(ref HttpContext context)
         {
             context.Response.Version = RTSPVersion.Version20;

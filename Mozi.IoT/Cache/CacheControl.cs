@@ -13,6 +13,9 @@ namespace Mozi.IoT.Cache
 
         private static CacheControl _control;
 
+        /// <summary>
+        /// 缓冲管理单实例
+        /// </summary>
         public CacheControl Instance
         {
             get { return _control ?? (_control = new CacheControl()); }

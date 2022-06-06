@@ -171,7 +171,7 @@ namespace Mozi.IoT.Encode
                                 break;
                             default:
                                 {
-                                    link.Extensions.Add(new LinkAttribute() { AttributeName = key, AttributeValue = v });
+                                    link.Extensions.Add(new LinkAttribute() { Name = key, Value = v });
                                 }
                                 break;
                         }
@@ -257,8 +257,8 @@ namespace Mozi.IoT.Encode
 
                 foreach (var att in link.Extensions)
                 {
-                    var key = att.AttributeName;
-                    var v = att.AttributeValue;
+                    var key = att.Name;
+                    var v = att.Value;
                     if (v != null)
                     {
                         item += ";key=";
@@ -296,6 +296,9 @@ namespace Mozi.IoT.Encode
     /// </summary>
     public class LinkInfo
     {
+        /// <summary>
+        /// 路径
+        /// </summary>
         public string Href { get; set; }
         /// <summary>
         /// 资源类型 rt
@@ -355,14 +358,25 @@ namespace Mozi.IoT.Encode
     /// </summary>
     public class LinkAttribute
     {
-        public string AttributeName { get; set; }
-        public object AttributeValue { get; set; }
+        /// <summary>
+        /// 属性名
+        /// </summary>
+        public string Name { get; set; }
+        /// <summary>
+        /// 属性值
+        /// </summary>
+        public object Value { get; set; }
     }
     /// <summary>
     /// Link-Format查询过滤
     /// </summary>
     public interface ILinkInfoFilter
     {
+        /// <summary>
+        /// 查找匹配的属性
+        /// </summary>
+        /// <param name="pattern"></param>
+        /// <returns></returns>
         List<LinkInfo> Find(string pattern);
     }
 
@@ -384,7 +398,10 @@ namespace Mozi.IoT.Encode
         /// 集合计数
         /// </summary>
         public int Count { get { return _items.Count; } }
-
+        /// <summary>
+        /// 返回枚举器
+        /// </summary>
+        /// <returns></returns>
         public IEnumerator GetEnumerator()
         {
             return new LinkInfoCollectionEnumerator(_items);
@@ -628,15 +645,15 @@ namespace Mozi.IoT.Encode
                             {
                                 if (v == "*")
                                 {
-                                    return _items.FindAll(x => x.Extensions.Any(b => b.AttributeName == key));
+                                    return _items.FindAll(x => x.Extensions.Any(b => b.Name == key));
                                 }
                                 else if (v.EndsWith("*"))
                                 {
-                                    return _items.FindAll(x => x.Extensions.Any(b => b.AttributeName == key&&(b.AttributeValue is string)&& string.IsNullOrEmpty(b.AttributeValue.ToString())&&b.AttributeValue.ToString().StartsWith(v.TrimEnd(new char[] { '*' }))));
+                                    return _items.FindAll(x => x.Extensions.Any(b => b.Name == key&&(b.Value is string)&& string.IsNullOrEmpty(b.Value.ToString())&&b.Value.ToString().StartsWith(v.TrimEnd(new char[] { '*' }))));
                                 }
                                 else
                                 {
-                                return _items.FindAll(x => x.Extensions.Any(b => b.AttributeName == key && (b.AttributeValue is string) && string.IsNullOrEmpty(b.AttributeValue.ToString()) && b.AttributeValue.ToString()==v));
+                                return _items.FindAll(x => x.Extensions.Any(b => b.Name == key && (b.Value is string) && string.IsNullOrEmpty(b.Value.ToString()) && b.Value.ToString()==v));
                             }
                             }
                     }

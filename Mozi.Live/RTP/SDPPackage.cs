@@ -9,7 +9,10 @@ namespace Mozi.Live.RTP
     /// </summary>
     public class SDPPackage
     {
-        public int ProtocolVersion { get; set; }
+        /// <summary>
+        /// 版本号
+        /// </summary>
+        public int Version { get; set; }
         public SDPOrigin Origin { get; set; }
         public string SessionName { get; set; }
         public string SessionInformation { get; set; }
@@ -31,7 +34,7 @@ namespace Mozi.Live.RTP
         {
             List<string> sb = new List<string>();
 
-            sb.Add($"v={ProtocolVersion}");
+            sb.Add($"v={Version}");
             sb.Add($"o={Origin}");
             sb.Add($"s={SessionName}");
             sb.Add($"i={SessionInformation}");
