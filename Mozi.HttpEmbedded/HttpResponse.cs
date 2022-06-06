@@ -27,7 +27,7 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// HTTP协议版本
         /// </summary>
-        public HttpVersion Version { get; set; }
+        public ProtocolVersion Version { get; set; }
         /// <summary>
         /// 状态码
         /// </summary>
@@ -85,14 +85,14 @@ namespace Mozi.HttpEmbedded
         public HttpResponse()
         {
             _headers = new TransformHeader();
-            Version = HttpVersion.Version11;
+            Version = ProtocolVersion.Version11;
             _cookies = new ResponseCookie();
         }
         /// <summary>
         /// 设置协议版本
         /// </summary>
         /// <param name="version"></param>
-        public void SetVersion(HttpVersion version)
+        public void SetVersion(ProtocolVersion version)
         {
             Version = version;
         }
@@ -149,6 +149,7 @@ namespace Mozi.HttpEmbedded
         /// 增加头部信息
         /// </summary>
         /// <param name="head"></param>
+        /// <param name="value"></param>
         /// <returns></returns>
         public HttpResponse AddHeader(HeaderProperty head, string value)
         {
@@ -197,7 +198,7 @@ namespace Mozi.HttpEmbedded
         /// 写入压缩的数据
         /// </summary>
         /// <param name="body"></param>
-        internal void CompressBody(byte[] body)
+        public void WriteCompressBody(byte[] body)
         {
             _body = body;
             ContentEncoded = true;
@@ -279,7 +280,7 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public byte[] GetStatusLine()
         {
-            return StringEncoder.Encode(string.Format("HTTP/{0} {1} {2}", Version.Version, Status.Code, Status.Text));
+            return StringEncoder.Encode(string.Format("{3}/{0} {1} {2}", Version.Version, Status.Code, Status.Text,Version.Name));
         }
         /// <summary>
         /// 重定向302
@@ -367,8 +368,11 @@ namespace Mozi.HttpEmbedded
             string sProtoVersion = sProtocol.Substring(sProtocol.IndexOf((char)ASCIICode.DIVIDE) + 1);
 
             resp.Status = AbsClassEnum.Get<StatusCode>(sStatusCode);
-            resp.Version = AbsClassEnum.Get<HttpVersion>(sProtoVersion);
-
+            resp.Version = AbsClassEnum.Get<ProtocolVersion>(sProtocol);
+            if (Equals(resp.Version, null))
+            {
+                resp.Version = new ProtocolVersion(sProtoType, sProtoVersion);
+            }
         }
         /// <summary>
         /// 解析头属性

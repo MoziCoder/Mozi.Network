@@ -21,14 +21,14 @@ namespace Mozi.HttpEmbedded
         private FileCollection _files;
         private RequestCookie _cookies;
 
-        /// <summary>
-        /// 协议类型,参看<see cref="ProtocolType"/>所列出的值
-        /// </summary>
-        public ProtocolType Protocol { get; protected set; }
+        ///// <summary>
+        ///// 协议类型,参看<see cref="ProtocolType"/>所列出的值
+        ///// </summary>
+        //public ProtocolType Protocol { get; protected set; }
         /// <summary>
         /// 协议版本
         /// </summary>
-        public HttpVersion Version { get; protected set; }
+        public ProtocolVersion Version { get; protected set; }
         /// <summary>
         /// 请求路径
         /// </summary>
@@ -108,7 +108,7 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 客户机IP地址
         /// </summary>
-        public string ClientAddress { get; internal set; }
+        public string ClientAddress { get; set; }
         /// <summary>
         /// 客户机是否已通过认证
         /// </summary>
@@ -116,18 +116,18 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 客户机接受的语言选项
         /// </summary>
-        public LanguagePriority[] AcceptLanguage { get; private set; }
+        public LanguagePriority[] AcceptLanguage { get; protected set; }
         /// <summary>
         /// 请求的来源地址
         /// </summary>
-        public string Referer { get; private set; }
+        public string Referer { get; protected set; }
         /// <summary>
         /// 构造函数
         /// </summary>
         public HttpRequest()
         {
             //默认HTTP/1.1
-            Version = HttpVersion.Version11;
+            Version = ProtocolVersion.Version11;
             _headers = new TransformHeader();
             _files = new FileCollection();
             _cookies = new RequestCookie();
@@ -346,13 +346,13 @@ namespace Mozi.HttpEmbedded
                         string fieldName = string.Empty;
                         string fileName = string.Empty;
 
-                        ///<example>
-                        ///-----------------------------97671069125495\r\n
-                        ///Content-Disposition: form-data; name=\"mailaddress\"\r\n
-                        ///\r\n
-                        ///abcdefg
-                        ///\r\n
-                        ///</example>
+                        //<example>
+                        //-----------------------------97671069125495\r\n
+                        //Content-Disposition: form-data; name=\"mailaddress\"\r\n
+                        //\r\n
+                        //abcdefg
+                        //\r\n
+                        //</example>
 
                         //提取字段头属性
                         while ((posCR = Array.IndexOf(fragment, ASCIICode.CR, posCR + 1)) > 0)
@@ -629,9 +629,16 @@ namespace Mozi.HttpEmbedded
             string sProtoType = sProtocol.Substring(0, sProtocol.IndexOf((char)ASCIICode.DIVIDE));
             string sProtoVersion = sProtocol.Substring(sProtocol.IndexOf((char)ASCIICode.DIVIDE) + 1);
 
-            req.Protocol = AbsClassEnum.Get<ProtocolType>(sProtoType);
-            req.Version = AbsClassEnum.Get<HttpVersion>(sProtoVersion);
-
+            //req.Protocol = AbsClassEnum.Get<ProtocolType>(sProtoType);
+            //if (Equals(req.Protocol, null))
+            //{
+            //    req.Protocol = new ProtocolType(sProtoType) ;
+            //}
+            req.Version = AbsClassEnum.Get<ProtocolVersion>(sProtocol);
+            if (Equals(req.Version, null))
+            {
+                req.Version = new ProtocolVersion(sProtoType, sProtoVersion);
+            }
         }
         //TODO 此功能需要重试以进行验证
         /// <summary>
@@ -723,7 +730,7 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         /// <param name="version"></param>
         /// <returns></returns>
-        public HttpRequest SetProtocol(HttpVersion version)
+        public HttpRequest SetProtocol(ProtocolVersion version)
         {
             Version = version;
             return this;
@@ -749,7 +756,7 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public byte[] GetRequestLine()
         {
-            return StringEncoder.Encode(string.Format("{0} {1} HTTP/{2}", Method.Name, Path, Version.Version));
+            return StringEncoder.Encode($"{Method.Name} {Path} {Version.Name}/{Version.Version}");
         }
         /// <summary>
         /// 设置URI信息，分别注入到<see cref="HeaderProperty.Host"/>和<see cref="HeaderProperty.Referer"/>两个头属性中

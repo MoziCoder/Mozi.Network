@@ -21,6 +21,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Mozi.IoT.xml</DocumentationFile>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -73,7 +75,7 @@
   <ItemGroup>
     <None Include="Changelog.md" />
     <None Include="Howto.md" />
-    <None Include="License.md" />
+    <Content Include="License.md" />
     <None Include="Lightweight_Machine_to_Machine-v1_1-OMASpecworks.pdf" />
     <None Include="Mozi.IoT.nuspec" />
     <None Include="OMA-ERELD-LightweightM2M-V1_2-20201110-A.pdf" />
@@ -83,18 +85,18 @@
     </None>
     <None Include="OMA-TS-LightweightM2M_Core-V1_2-20201110-A.pdf" />
     <None Include="OMA-TS-LightweightM2M_Transport-V1_2-20201110-A.pdf" />
-    <None Include="Readme.md" />
+    <Content Include="Readme.md" />
     <None Include="rfc8974.pdf" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="RFC 6690 Constrained RESTful Environments %28CoRE%29 Link Format.html" />
-    <Content Include="RFC 7049 Concise Binary Object Representation %28CBOR%29.html" />
-    <Content Include="RFC 7228 Terminology for Constrained-Node Networks.html" />
-    <Content Include="RFC 7252 The Constrained Application Protocol %28CoAP%29.html" />
-    <Content Include="RFC 7959 Block-Wise Transfers in the Constrained Application Protocol %28CoAP%29.htm" />
-    <Content Include="RFC 8323 CoAP %28Constrained Application Protocol%29 over TCP, TLS, and WebSockets.htm" />
-    <Content Include="RFC 8613 Object Security for Constrained RESTful Environments %28OSCORE%29.htm" />
-    <Content Include="RFC 8949 Concise Binary Object Representation %28CBOR%29.htm" />
+    <None Include="RFC 6690 Constrained RESTful Environments %28CoRE%29 Link Format.html" />
+    <None Include="RFC 7049 Concise Binary Object Representation %28CBOR%29.html" />
+    <None Include="RFC 7228 Terminology for Constrained-Node Networks.html" />
+    <None Include="RFC 7252 The Constrained Application Protocol %28CoAP%29.html" />
+    <None Include="RFC 7959 Block-Wise Transfers in the Constrained Application Protocol %28CoAP%29.htm" />
+    <None Include="RFC 8323 CoAP %28Constrained Application Protocol%29 over TCP, TLS, and WebSockets.htm" />
+    <None Include="RFC 8613 Object Security for Constrained RESTful Environments %28OSCORE%29.htm" />
+    <None Include="RFC 8949 Concise Binary Object Representation %28CBOR%29.htm" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

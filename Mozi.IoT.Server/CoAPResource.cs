@@ -53,6 +53,10 @@ namespace Mozi.IoT
         /// </summary>
         public bool Online { get; set; }
 
+        /// <summary>
+        /// 转为字符串 {Namespace}/{Name}
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return (string.IsNullOrEmpty(Namespace) ? "" : ("/" + Namespace)) + "/" + Name;
@@ -78,7 +82,7 @@ namespace Mozi.IoT
         /// <summary>
         /// GET方法
         /// </summary>
-        /// <param name="request"></param>
+        /// <param name="ctx"></param>
         /// <returns></returns>
         public virtual CoAPPackage OnGet(CoAPContext ctx)
         {
@@ -88,7 +92,7 @@ namespace Mozi.IoT
         /// <summary>
         /// Post方法
         /// </summary>
-        /// <param name="request"></param>
+        /// <param name="ctx"></param>
         /// <returns></returns>
         public virtual CoAPPackage OnPost(CoAPContext ctx)
         {
@@ -98,7 +102,7 @@ namespace Mozi.IoT
         /// <summary>
         /// PUT方法
         /// </summary>
-        /// <param name="request"></param>
+        /// <param name="ctx"></param>
         /// <returns></returns>
         public virtual CoAPPackage OnPut(CoAPContext ctx)
         {
@@ -108,7 +112,7 @@ namespace Mozi.IoT
         /// <summary>
         /// Delete方法
         /// </summary>
-        /// <param name="request"></param>
+        /// <param name="ctx"></param>
         /// <returns></returns>
         public virtual CoAPPackage OnDelete(CoAPContext ctx)
         {
@@ -172,8 +176,16 @@ namespace Mozi.IoT
     [ResourceDescription(Namespace = "core", Name = "time",Description ="isotime")]
     public class TimeResource : CoAPResource
     {
+        /// <summary>
+        /// 资源大小
+        /// </summary>
         public override uint ResourceSize { get => 0; }
 
+        /// <summary>
+        /// 响应Get请求
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
         public override CoAPPackage OnGet(CoAPContext ctx)
         {
             CoAPPackage pack = base.OnGet(ctx);
@@ -190,8 +202,15 @@ namespace Mozi.IoT
     [ResourceDescription(Namespace = "core", Name = "link",Description ="discovery")]
     public class LinkResource : CoAPResource
     {
+        /// <summary>
+        /// 资源大小
+        /// </summary>
         public override uint ResourceSize => 0;
-
+        /// <summary>
+        /// 响应Get请求
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
         public override CoAPPackage OnGet(CoAPContext ctx)
         {
             

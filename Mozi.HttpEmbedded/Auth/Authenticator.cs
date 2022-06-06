@@ -8,13 +8,13 @@ namespace Mozi.HttpEmbedded.Auth
 {
     //TODO 认证应区分目录
     //DONE Basic认证过于简单，不能起到很好的安全效果
-
     /// <summary>
     /// 认证器
     /// </summary>
     public class Authenticator
     {
         private readonly List<User> _users = new List<User>();
+
         /// <summary>
         /// 认证类型
         /// </summary>
@@ -60,8 +60,13 @@ namespace Mozi.HttpEmbedded.Auth
             //比对请求认证类型是否正确
             if (authType != null&&authHead.Equals(authType.Name,StringComparison.CurrentCultureIgnoreCase))
             {
-                //验证
-                return _scheme.Check(authBody,reqMethod);
+                User user = FindUser(_scheme.ParseUsername(authBody));
+                if (user != null)
+                {
+                    //验证
+                    return _scheme.Check(user.UserName,user.Password,authBody, reqMethod);
+                }
+                return false;
             }
             return false;
         }
@@ -85,11 +90,11 @@ namespace Mozi.HttpEmbedded.Auth
             AuthType = tp;
             if(tp==AuthorizationType.Basic)
             {
-                 _scheme = new BasicAuth(this);
+                 _scheme = new BasicAuth();
             }
             else if (tp == AuthorizationType.Digest)
             {
-                  _scheme = new DigestAuth(this);
+                  _scheme = new DigestAuth();
             }
             else if (tp == AuthorizationType.None)
             {
@@ -180,23 +185,39 @@ namespace Mozi.HttpEmbedded.Auth
     /// </summary>
     public abstract class AuthScheme
     {
+        /// <summary>
+        /// 认证域，在浏览器场景中会以明文的形式提供给前端
+        /// </summary>
         protected string _realm = "";
 
         public virtual string Realm { get => _realm; set => _realm = value; }
         //public readonly Dictionary<string, object> Challenge = new Dictionary<string, object>();
 
         //public Dictionary<string, object> Response = new Dictionary<string, object>();
-
-        protected Authenticator _auth;
-        
+        /// <summary>
+        /// 认证类型
+        /// </summary>
         public abstract AuthorizationType AuthType { get; }
-
-        public AuthScheme(Authenticator auth)
-        {
-            _auth = auth;
-        }
-        public abstract bool Check(string statement,string reqMethod);
-
+        /// <summary>
+        /// 检查客户端提交的认证信息是否合法
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="pwd"></param>
+        /// <param name="statement"></param>
+        /// <param name="reqMethod"></param>
+        /// <returns></returns>
+        public abstract bool Check(string username,string pwd,string statement,string reqMethod);
+        /// <summary>
+        /// 获取认证信息中的用户名
+        /// </summary>
+        /// <param name="statement"></param>
+        /// <returns></returns>
+        public abstract string ParseUsername(string statement);
+        /// <summary>
+        /// 解析认证键值对
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public virtual Dictionary<string, string> Parse(string data)
         {
             Dictionary<string, string> dic = new Dictionary<string, string>();
@@ -241,27 +262,52 @@ namespace Mozi.HttpEmbedded.Auth
     /// </summary>
     public class BasicAuth : AuthScheme
     {
+        /// <summary>
+        /// 认证类型
+        /// </summary>
         public override AuthorizationType AuthType => AuthorizationType.Basic;
-
-        public BasicAuth(Authenticator auth) : base(auth)
-        {
-
-        }
-
-        public override bool Check(string statement,string reqMethod)
+        /// <summary>
+        /// 解析用户名
+        /// </summary>
+        /// <param name="statement"></param>
+        /// <returns></returns>
+        public override string ParseUsername(string statement)
         {
             string userinfo = Base64.From(statement);
             var indBnd = userinfo.IndexOf((char)ASCIICode.COLON);
             string username = userinfo.Substring(0, indBnd);
-            string password = userinfo.Substring(indBnd + 1);
-            return _auth.IsValidUser(username, password);
+            return username;
         }
-
+        /// <summary>
+        ///  验证认证信息
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="pwd"></param>
+        /// <param name="statement"></param>
+        /// <param name="reqMethod"></param>
+        /// <returns></returns>
+        public override bool Check(string username,string pwd,string statement,string reqMethod)
+        {
+            string userinfo = Base64.From(statement);
+            var indBnd = userinfo.IndexOf((char)ASCIICode.COLON);
+            string uname = userinfo.Substring(0, indBnd);
+            string cipher = userinfo.Substring(indBnd + 1);
+            return uname.Equals(username) && cipher.Equals(pwd);
+        }
+        /// <summary>
+        /// 生成质询信息
+        /// </summary>
+        /// <returns></returns>
         public override string GetChallenge()
         {
             return $"realm={Realm}";
         }
-
+        /// <summary>
+        /// 生成认证信息，HttpClient调用时使用
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="pwd"></param>
+        /// <returns></returns>
         public override string GenerateAuthorization(string username, string pwd)
         {
             return AuthType.Name+" "+Base64.To($"{username}:{pwd}");
@@ -291,12 +337,10 @@ namespace Mozi.HttpEmbedded.Auth
     /// </summary>
     public class DigestAuth : AuthScheme
     {
+        /// <summary>
+        /// 认证类型
+        /// </summary>
         public override AuthorizationType AuthType =>AuthorizationType.Digest;
-
-        public DigestAuth(Authenticator auth) : base(auth)
-        {
-
-        }
 
         /// <summary>
         /// 取得返回字符串
@@ -307,14 +351,31 @@ namespace Mozi.HttpEmbedded.Auth
             string sReturn = "";
             return sReturn;
         }
+        /// <summary>
+        /// 解析用户名
+        /// </summary>
+        /// <param name="statement"></param>
+        /// <returns></returns>
+        public override string ParseUsername(string statement)
+        {
+            Dictionary<string, string> arrData = Parse(statement);
+            string username = arrData["username"];
+            return username;
+        }
 
-        public override bool Check(string statement,string reqMethod)
+        /// <summary>
+        /// 验证认证信息
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="pwd"></param>
+        /// <param name="statement"></param>
+        /// <param name="reqMethod"></param>
+        /// <returns></returns>
+        public override bool Check(string username,string pwd,string statement,string reqMethod)
         {
             try
             {
-                Dictionary<string, string> arrData = Parse(statement);
-                string username = arrData["username"];
-                User user = _auth.FindUser(username);
+                Dictionary<string, string> arrData = Parse(statement);     
                 string realm = arrData["realm"];
                 string nonce = arrData["nonce"];
                 string nc = arrData["nc"];
@@ -327,7 +388,7 @@ namespace Mozi.HttpEmbedded.Auth
                 //response=MD5(MD5(username: realm:password):nonce:nc:cnonce:qop:MD5(< request - method >:url))
                 //string urlenc= Encrypt.MD5Encrypt($"{requestmethod}:{url}");
                 //HA1: HD: HA2
-                var ha1 = Encrypt.MD5Encrypt($"{username}:{realm}:{user.Password}").ToLower();
+                var ha1 = Encrypt.MD5Encrypt($"{username}:{realm}:{pwd}").ToLower();
                 var hd = $"{nonce}:{nc}:{cnonce}:{qop}";
                 var ha2 = Encrypt.MD5Encrypt($"{reqMethod}:{url}").ToLower();
                 var encrypt = Encrypt.MD5Encrypt($"{ha1}:{hd}:{ha2}").ToLower();
@@ -338,7 +399,10 @@ namespace Mozi.HttpEmbedded.Auth
                 return false;
             }
         }
-
+        /// <summary>
+        /// 生成质询信息
+        /// </summary>
+        /// <returns></returns>
         public override string GetChallenge()
         {
             List<string> clgs = new List<string>();
@@ -357,10 +421,15 @@ namespace Mozi.HttpEmbedded.Auth
             var clg = string.Join(",", clgs);
             return clg;
         }
-
+        /// <summary>
+        /// 生成认证字符串,用于客户端请求
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="pwd"></param>
+        /// <returns></returns>
         public override string GenerateAuthorization(string username, string pwd)
         {
-            return GenerateAuthorization(username, pwd, _auth.Realm, null, 1, null, "auth", null, "GET","/");
+            return GenerateAuthorization(username, pwd, Realm, null, 1, null, "auth", null, "GET","/");
         }
         /// <summary>
         /// 生成认证字符串,用于客户端请求
@@ -430,22 +499,22 @@ namespace Mozi.HttpEmbedded.Auth
     {
         public override AuthorizationType AuthType => AuthorizationType.WSSE;
 
-        public WSSE(Authenticator auth) : base(auth)
-        {
-
-        }
-
         public override string GetChallenge()
         {
             throw new NotImplementedException();
         }
 
-        public override bool Check(string statement, string reqMethod)
+        public override string GenerateAuthorization(string username, string pwd)
         {
             throw new NotImplementedException();
         }
 
-        public override string GenerateAuthorization(string username, string pwd)
+        public override string ParseUsername(string statement)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Check(string username, string pwd, string statement, string reqMethod)
         {
             throw new NotImplementedException();
         }

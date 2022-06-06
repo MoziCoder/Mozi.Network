@@ -18,7 +18,7 @@ namespace Mozi.Encode
         /// <summary>
         /// 转字节流
         /// </summary>
-        /// <param name="data"></param>
+        /// <param name="info"></param>
         /// <returns></returns>
         public abstract byte[] Pack(CBORData info);
         /// <summary>

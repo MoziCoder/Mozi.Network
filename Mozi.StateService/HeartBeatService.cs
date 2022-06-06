@@ -19,7 +19,9 @@ namespace Mozi.StateService
         private ushort _port = DefaultPort;
 
         private string _host = "127.0.0.1";
-
+        /// <summary>
+        /// 服务器Socket对象
+        /// </summary>
         protected Socket _sc;
 
         private bool active = false;
@@ -43,15 +45,21 @@ namespace Mozi.StateService
         /// 套接字是否已初始化
         /// </summary>
         private bool _socketInitialized = false;
-
+        /// <summary>
+        /// 默认侦听端口
+        /// </summary>
         public const int DefaultPort = 13453; 
-
+        /// <summary>
+        /// 
+        /// </summary>
         public HeartBeatService()
         {
             InitRemoteEndpoint();
             _timeLooper = new Timer(TimerCallbackInvoker, this, Timeout.Infinite, Timeout.Infinite);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         ~HeartBeatService()
         {
             if (_timeLooper != null)
@@ -108,6 +116,9 @@ namespace Mozi.StateService
             get { return _interval; }
             set { _interval = value; }
         }
+        /// <summary>
+        /// 服务器Socket对象
+        /// </summary>
         public Socket SocketMain
         {
             get { return _sc; }

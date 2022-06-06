@@ -29,11 +29,11 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 请求成功。
         /// 成功的含义取决于HTTP方法：
-        //        GET：资源已被提取并在消息正文中传输。
-        //        HEAD：实体标头位于消息正文中。
-        //        POST：描述动作结果的资源在消息体中传输。
-        //        TRACE：消息正文包含服务器收到的请求消息
-        /// </summary>
+        ///        GET：资源已被提取并在消息正文中传输。
+        ///        HEAD：实体标头位于消息正文中。
+        ///        POST：描述动作结果的资源在消息体中传输。
+        ///        TRACE：消息正文包含服务器收到的请求消息
+        ///</summary>
         public static StatusCode Success = new StatusCode(200, "OK");
         /// <summary>
         /// 该请求已成功，并因此创建了一个新的资源。这通常是在POST请求，或是某些PUT请求之后返回的响应。

@@ -15,8 +15,13 @@ namespace Mozi.Encode.CBOR
         private byte sign=0;
         private byte exponent=0;
         private ushort fraction=0;
-
+        /// <summary>
+        /// 最大值
+        /// </summary>
         public static float MaxValue=(float)(1.1111111111f *Math.Pow(2,15)); 
+        /// <summary>
+        /// 最小值
+        /// </summary>
         public static float MinValue=(float)(-1*Math.Pow(2,-14));
 
         /// <summary>
@@ -62,7 +67,10 @@ namespace Mozi.Encode.CBOR
                 return dec;
             }
         }
-
+        /// <summary>
+        /// 从浮点类型进行实例化
+        /// </summary>
+        /// <param name="value"></param>
         public HalfFloat(float value)
         {
             
@@ -89,7 +97,9 @@ namespace Mozi.Encode.CBOR
                 //若进位后发生尾数溢出，则取消进位
                 fraction -= 1;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public HalfFloat()
         {
 
@@ -111,7 +121,11 @@ namespace Mozi.Encode.CBOR
             hf.exponent = (byte)(((byte)(data[0] & 0b01111100))>>2);
             return hf;
         }
-
+        /// <summary>
+        /// 编码成字节数组
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static byte[] Encode(HalfFloat data)
         {
             byte[] half = new byte[2] { 0x00, 0x00 };
@@ -124,31 +138,59 @@ namespace Mozi.Encode.CBOR
             half[1] = (byte)(half[1] | fract[1]);
             return half;
         }
-
+        /// <summary>
+        /// 比较运算符>
+        /// </summary>
+        /// <param name="thi"></param>
+        /// <param name="that"></param>
+        /// <returns></returns>
         public static bool operator>(HalfFloat thi, HalfFloat that)
         {
             return thi.Value > that.Value;
         }
-
+        /// <summary>
+        /// 比较运算符<
+        /// </summary>
+        /// <param name="thi"></param>
+        /// <param name="that"></param>
+        /// <returns></returns>
         public static bool operator<(HalfFloat thi, HalfFloat that)
         {
             return thi.Value < that.Value;
         }
-
+        /// <summary>
+        /// 比较运算符=
+        /// </summary>
+        /// <param name="thi"></param>
+        /// <param name="that"></param>
+        /// <returns></returns>
         public static bool operator==(HalfFloat thi, HalfFloat that)
         {
             return thi.Value == that.Value;
         }
-
+        /// <summary>
+        /// 比较运算符!=
+        /// </summary>
+        /// <param name="thi"></param>
+        /// <param name="that"></param>
+        /// <returns></returns>
         public static bool operator!=(HalfFloat thi, HalfFloat that)
         {
             return thi.Value != that.Value;
         }
-
+        /// <summary>
+        /// 比较运算符equals
+        /// </summary>
+        /// <param name="that"></param>
+        /// <returns></returns>
         public override bool Equals(object that)
         {
             return (that!=null)&&(that is HalfFloat)&&this.Value == ((HalfFloat)that).Value;
         }
+        /// <summary>
+        /// 获取Hash值
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             return sign*(exponent*fraction);

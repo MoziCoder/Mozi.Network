@@ -21,11 +21,17 @@ namespace Mozi.HttpEmbedded
     /// </summary>
     public class HttpClient
     {
-       
+        /// <summary>
+        /// 编码类型
+        /// </summary>
         public string Charset = "UTF-8";
-        private string _userAgent = "Mozilla/5.0 (Linux;Android 4.4.2;OEM Device) AppleWebKit/537.36 (KHTML,like Gecko) Chrome/39.0.2171.71  Mozi/1.3.8";
+        private string _userAgent = "Mozilla/5.0 (Linux;Android 4.4.2;OEM Device) AppleWebKit/537.36 (KHTML,like Gecko) Chrome/39.0.2171.71  Mozi/1.4.3";
         private const string Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
         private const string AcceptEncoding = "gzip, deflate";
+
+        private Auth.User _user;
+
+        private Auth.AuthScheme _authScheme;
 
         //public Dictionary<HeaderProperty, string> DefaultHeader = new Dictionary<HeaderProperty, string>() 
         //{
@@ -81,6 +87,7 @@ namespace Mozi.HttpEmbedded
             req.SetHeader(HeaderProperty.AcceptEncoding, AcceptEncoding);
             req.SetBody(body);
 
+            //设置头信息
             if (headers != null)
             {
                 foreach (KeyValuePair<HeaderProperty, string> h in headers)
@@ -88,6 +95,13 @@ namespace Mozi.HttpEmbedded
                     req.SetHeader(h.Key, h.Value);
                 }
             }
+
+            //设置认证用户
+            if (_user != null && _authScheme != null)
+            {
+                req.SetHeader(HeaderProperty.Authorization,_authScheme.GenerateAuthorization(_user.UserName, _user.Password));
+            }
+
             Send(url, req, callback);
         }
         /// <summary>
@@ -132,6 +146,7 @@ namespace Mozi.HttpEmbedded
                 });
 
                 sc.Connect(uri.Host, uri.Port == 0 ? 80 : uri.Port);
+
                 if (sc.Connected)
                 {
                     sc.SendTo(req.GetBuffer());
@@ -425,6 +440,23 @@ namespace Mozi.HttpEmbedded
         internal void LoadCert(FileStream fs)
         {
 
+        }
+        /// <summary>
+        /// 设置认证类型
+        /// </summary>
+        /// <param name="schema"></param>
+        public void SetAuthorization(Auth.AuthScheme schema)
+        {
+            _authScheme = schema;
+        }
+        /// <summary>
+        /// 设置用户名和密码
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="pwd"></param>
+        public void SetUser(string username,string pwd)
+        {
+            _user = new Auth.User() { UserName = username, Password = pwd, UserGroup = Auth.UserGroup.User };
         }
     }
 

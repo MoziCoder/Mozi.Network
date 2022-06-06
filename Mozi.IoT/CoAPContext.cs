@@ -34,10 +34,17 @@ namespace Mozi.IoT
         /// 客户端端口
         /// </summary>
         public int ClientPort { get; set; }
+        /// <summary>
+        /// 析构
+        /// </summary>
         ~CoAPContext()
         {
             Dispose(disposing: false);
         }
+        /// <summary>
+        /// 销毁
+        /// </summary>
+        /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposedValue)
@@ -51,6 +58,9 @@ namespace Mozi.IoT
                 _disposedValue = true;
             }
         }
+        /// <summary>
+        /// 销毁
+        /// </summary>
         public void Dispose()
         {
             Dispose(disposing: true);

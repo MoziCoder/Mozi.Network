@@ -30,6 +30,11 @@ namespace Mozi.Encode.CBOR
             }
             return sb.ToString();
         }
+        /// <summary>
+        /// 原型<see cref="To(string, string[])"/>
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
         public static string To(string source)
         {
             return To(source, null);
@@ -62,7 +67,11 @@ namespace Mozi.Encode.CBOR
             string result = Encoding.Default.GetString(data);
             return result;
         }
-
+        /// <summary>
+        /// 原型<see cref="From(string, string[])"/>
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
         public static string From(string source)
         {
             return From(source, null);

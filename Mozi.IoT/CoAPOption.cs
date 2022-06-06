@@ -49,37 +49,90 @@ namespace Mozi.IoT
     //特别注意，填入的Option Delta值不可能为15（0x0f）当遇到15时，该包无效
 
     /// <summary>
-    /// 选项值定义
+    /// 选项值定义，CoAP中的选项可以理解为HTTP中的头属性名，CoAP为了压缩数据对各个头属性名进行了编号
     /// </summary>
     public class CoAPOptionDefine : AbsClassEnum
     {
         private string _name = "";
-
+        /// <summary>
+        /// 选项定义If-Match
+        /// </summary>
         public static CoAPOptionDefine IfMatch              = new CoAPOptionDefine("If-Match", 1);
+        /// <summary>
+        /// 选项定义Uri-Host
+        /// </summary>
         public static CoAPOptionDefine UriHost              = new CoAPOptionDefine("Uri-Host", 3);
+        /// <summary>
+        /// 选项定义ETag
+        /// </summary>
         public static CoAPOptionDefine ETag                 = new CoAPOptionDefine("ETag", 4);
+        /// <summary>
+        /// 选项定义If-None-Match
+        /// </summary>
         public static CoAPOptionDefine IfNoneMatch          = new CoAPOptionDefine("If-None-Match", 5);
+        /// <summary>
+        /// 选项定义Extended-Token-Length
+        /// </summary>
         public static CoAPOptionDefine ExtendedTokenLength  = new CoAPOptionDefine("Extended-Token-Length", 6); //RFC8974
-
+        /// <summary>
+        /// 选项定义Uri-Port
+        /// </summary>
         public static CoAPOptionDefine UriPort              = new CoAPOptionDefine("Uri-Port", 7);
+        /// <summary>
+        /// 选项定义Location-Path
+        /// </summary>
         public static CoAPOptionDefine LocationPath         = new CoAPOptionDefine("Location-Path", 8);
+        /// <summary>
+        /// 选项定义Uri-Path
+        /// </summary>
         public static CoAPOptionDefine UriPath              = new CoAPOptionDefine("Uri-Path", 11);
+        /// <summary>
+        /// 选项定义Content-Format
+        /// </summary>
         public static CoAPOptionDefine ContentFormat        = new CoAPOptionDefine("Content-Format", 12);
+        /// <summary>
+        /// 选项定义Max-Age
+        /// </summary>
         public static CoAPOptionDefine MaxAge               = new CoAPOptionDefine("Max-Age", 14);
+        /// <summary>
+        /// 选项定义Uri-Query
+        /// </summary>
         public static CoAPOptionDefine UriQuery             = new CoAPOptionDefine("Uri-Query", 15);
+        /// <summary>
+        /// 选项定义Accept
+        /// </summary>
         public static CoAPOptionDefine Accept               = new CoAPOptionDefine("Accept", 17);
+        /// <summary>
+        /// 选项定义Location-Query
+        /// </summary>
         public static CoAPOptionDefine LocationQuery        = new CoAPOptionDefine("Location-Query", 20);
-
+        /// <summary>
+        /// 选项定义Block2
+        /// </summary>
         public static CoAPOptionDefine Block2               = new CoAPOptionDefine("Block2", 23);              //RFC 7959
+        /// <summary>
+        /// 选项定义Block1
+        /// </summary>
         public static CoAPOptionDefine Block1               = new CoAPOptionDefine("Block1", 27);              //RFC 7959
-
+        /// <summary>
+        /// 选项定义Size2
+        /// </summary>
         public static CoAPOptionDefine Size2                = new CoAPOptionDefine("Size2", 28);               //RFC 7959
-
+        /// <summary>
+        /// 选项定义Proxy-Uri
+        /// </summary>
         public static CoAPOptionDefine ProxyUri             = new CoAPOptionDefine("Proxy-Uri", 35);
+        /// <summary>
+        /// 选项定义Proxy-Scheme
+        /// </summary>
         public static CoAPOptionDefine ProxyScheme          = new CoAPOptionDefine("Proxy-Scheme", 39);
-
+        /// <summary>
+        /// 选项定义Size1
+        /// </summary>
         public static CoAPOptionDefine Size1                = new CoAPOptionDefine("Size1", 60);
-
+        /// <summary>
+        /// 选项定义Unknown
+        /// </summary>
         public static CoAPOptionDefine Unknown              = new CoAPOptionDefine("Unknown", 0);
         /// <summary>
         /// 选项名称

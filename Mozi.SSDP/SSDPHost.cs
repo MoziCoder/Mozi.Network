@@ -311,6 +311,7 @@ namespace Mozi.SSDP
         /// <param name="timeout"></param>
         /// <param name="callbackurl"></param>
         /// <param name="statevar"></param>
+        /// <param name="callback"></param>
         public void Subscribe(SSDPService service, string publishPath, int timeout, string callbackurl, string statevar,RequestComplete callback)
         {
              service.Subscribe(publishPath, timeout, callbackurl, statevar, callback);
@@ -322,6 +323,7 @@ namespace Mozi.SSDP
         /// <param name="publishPath"></param>
         /// <param name="timeout"></param>
         /// <param name="sid"></param>
+        /// <param name="callback"></param>
         public void Subscribe(SSDPService service, string publishPath, int timeout, string sid, RequestComplete callback)
         {
             service.Subscribe(publishPath, timeout, sid, callback);
@@ -330,7 +332,9 @@ namespace Mozi.SSDP
         /// 取消订阅
         /// </summary>
         /// <param name="service"></param>
-        /// <param name="pk"></param>
+        /// <param name="publishPath"></param>
+        /// <param name="sid"></param>
+        /// <param name="callback"></param>
         public void UnSubscribe(SSDPService service, string publishPath,string sid, RequestComplete callback)
         {
              service.UnSubscribe(publishPath,sid,callback);

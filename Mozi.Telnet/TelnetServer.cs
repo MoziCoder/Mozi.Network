@@ -497,6 +497,7 @@ namespace Mozi.Telnet
         /// WONT DONT 发送者希望使某选项无效，接受者必须接受该请求
         /// DONT WONT 发送者希望对方使某选项无效，接受者必须接受该请求
         /// </summary>
+        /// <param name="sessionId"></param>
         /// <param name="so"></param>
         /// <param name="np"></param>
         public virtual void Negotiate(string sessionId, Socket so, NegotiatePack np)

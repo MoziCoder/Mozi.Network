@@ -12,7 +12,9 @@ namespace Mozi.HttpEmbedded.Auth
         /// </summary>
         public static readonly AuthorizationType Basic = new AuthorizationType("Basic");
 
-        //TODO 未实现高级认证
+        /// <summary>
+        /// Digest摘要认证
+        /// </summary>
         public static AuthorizationType Digest = new AuthorizationType("Digest");
 
         internal static AuthorizationType WSSE = new AuthorizationType("WSSE");
@@ -27,13 +29,17 @@ namespace Mozi.HttpEmbedded.Auth
         public static AuthorizationType None = new AuthorizationType("none");
 
         private string _name;
-
+        /// <summary>
+        /// 认证类型的名称，区分大小写
+        /// </summary>
         public string Name
         {
             get { return _name; }
             set { _name = value; }
         }
-
+        /// <summary>
+        /// 唯一标识符号
+        /// </summary>
         protected override string Tag
         {
             get { return _name; }

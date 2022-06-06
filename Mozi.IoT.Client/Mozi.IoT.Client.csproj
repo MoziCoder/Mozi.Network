@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Mozi.IoT.Client.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -43,8 +44,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="License.md" />
     <None Include="Mozi.IoT.Client.nuspec" />
-    <None Include="Readme.md" />
+    <Content Include="Readme.md" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mozi.IoT\Mozi.IoT.csproj">

@@ -40,7 +40,7 @@ namespace Mozi.HttpEmbedded.Common
                 try
                 {
                     _writeLock.EnterWriteLock();
-                    StreamWriter sw = new StreamWriter(LogDir + name + "_" + DateTime.Now.ToString("yyyyMMdd") + LogFileExt, true);
+                    StreamWriter sw = new StreamWriter(LogDir + name + LogFileExt, true);
                     string loginfo = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + " " + Enum.GetName(typeof(LogLevel), level) + " | " + info;
                     sw.WriteLine(loginfo);
                     Console.WriteLine(loginfo);
@@ -78,10 +78,18 @@ namespace Mozi.HttpEmbedded.Common
         {
             Save(DefaultLoggerName, info, LogLevel.Error);
         }
+        /// <summary>
+        /// 调试
+        /// </summary>
+        /// <param name="info"></param>
         public static void Debug(string info)
         {
             Save(DefaultLoggerName, info, LogLevel.Debug);
         }
+        /// <summary>
+        /// 警告
+        /// </summary>
+        /// <param name="info"></param>
         public static void Warn(string info)
         {
             Save(DefaultLoggerName, info, LogLevel.Warn);

@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Mozi.HttpEmbedded.Encode
 {
+    /// <summary>
+    /// 加密解密
+    /// </summary>
     public class Encrypt
     {
         /// <summary>

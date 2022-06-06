@@ -11,8 +11,10 @@ namespace Mozi.IoT
     /// </summary>
     public class ResourceManager
     {
-        public static ResourceManager _rm;
-
+        private static ResourceManager _rm;
+        /// <summary>
+        /// 默认单例对象
+        /// </summary>
         public static ResourceManager Default
         {
             get
@@ -32,7 +34,10 @@ namespace Mozi.IoT
             //载入内部接口API
             LoadInternalApi();
         }
-
+        /// <summary>
+        /// 取得所有接口
+        /// </summary>
+        /// <returns></returns>
         public List<ResourceInfo> GetAll()
         {
             return _apis;

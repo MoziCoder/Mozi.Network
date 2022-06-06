@@ -8,6 +8,9 @@ namespace Mozi.HttpEmbedded.Generic
     /// </summary>
     public abstract class AbsClassEnum
     {
+        /// <summary>
+        /// 唯一标识符，这个值能区分不同的静态属性
+        /// </summary>
         protected abstract string Tag { get; }
         /// <summary>
         /// 获取方法 不区分标识符大小写
@@ -26,7 +29,7 @@ namespace Mozi.HttpEmbedded.Generic
                     if (((T)oc).Tag.Equals(name, StringComparison.OrdinalIgnoreCase))
                     {
                         return (T)oc;
-                    };
+                    }
                 }
             }
             return null;
@@ -34,7 +37,7 @@ namespace Mozi.HttpEmbedded.Generic
         /// <summary>
         /// 此处判断标识符是否相等,区分大小写
         /// <para>
-        ///     如果要判断子对象是否等于<see cref="null"/>，请使用<see cref="object.Equals(object, object)"/>
+        ///     如果要判断子对象是否等于null，请使用<see cref="object.Equals(object, object)"/>
         /// </para>
         /// </summary>
         /// <param name="obj"></param>
@@ -46,7 +49,7 @@ namespace Mozi.HttpEmbedded.Generic
         /// <summary>
         /// 重载==
         /// <para>
-        ///     如果要判断子对象是否等于<see cref="null"/>，请使用<see cref="object.Equals(object, object)"/>
+        ///     如果要判断子对象是否等于null，请使用<see cref="object.Equals(object, object)"/>
         /// </para>
         /// </summary>
         /// <param name="a"></param>
@@ -60,7 +63,7 @@ namespace Mozi.HttpEmbedded.Generic
         /// <summary>
         /// 重载!=
         /// <para>
-        ///     如果要判断子对象是否等于<see cref="null"/>，请使用<see cref="object.Equals(object, object)"/>
+        ///     如果要判断子对象是否等于null，请使用<see cref="object.Equals(object, object)"/>
         /// </para>
         /// </summary>
         /// <param name="a"></param>
@@ -70,7 +73,10 @@ namespace Mozi.HttpEmbedded.Generic
         {
             return (object)a == null || (object)b == null || !a.Tag.Equals(b.Tag);
         }
-
+        /// <summary>
+        /// 获取Tag的Hash值
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             return Tag.GetHashCode();

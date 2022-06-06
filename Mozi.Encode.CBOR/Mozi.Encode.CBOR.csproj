@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Mozi.Encode.CBOR.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -58,8 +59,9 @@
     <Compile Include="UrlEncoder.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="License.md" />
     <None Include="Mozi.Encode.CBOR.nuspec" />
-    <None Include="Readme.md" />
+    <Content Include="Readme.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

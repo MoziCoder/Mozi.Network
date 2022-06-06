@@ -1,8 +1,7 @@
 ﻿using System;
 
-/// <summary>
-/// 属性标记还需要统筹设计
-/// </summary>
+
+// 属性标记还需要统筹设计
 namespace Mozi.HttpEmbedded.Attributes
 {
     /// <summary>

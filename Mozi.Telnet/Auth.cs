@@ -15,13 +15,17 @@ namespace Mozi.Telnet
         public static readonly AuthorizationType Basic = new AuthorizationType("Basic");
 
         private string _name;
-
+        /// <summary>
+        /// 认证类型名
+        /// </summary>
         public string Name
         {
             get { return _name; }
             set { _name = value; }
         }
-
+        /// <summary>
+        /// 类型唯一标识符
+        /// </summary>
         protected override string Tag
         {
             get { return Name; }
@@ -40,9 +44,16 @@ namespace Mozi.Telnet
     public class Authenticator
     {
         private readonly List<User> _users = new List<User>();
-
+        /// <summary>
+        /// 认证类型
+        /// </summary>
         public AuthorizationType AuthType { get; private set; }
-
+        /// <summary>
+        /// 校验登陆信息
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
         public virtual bool Check(string username,string password)
         {
             //解密部分

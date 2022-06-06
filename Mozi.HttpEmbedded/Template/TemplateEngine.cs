@@ -298,7 +298,9 @@ namespace Mozi.HttpEmbedded.Template
             return this;
         }
         /// <summary>
+        /// <![CDATA[
         /// == != <> > < >= <=， &&　|| ，+ - * / %
+        /// ]]>
         /// </summary>
         /// <returns></returns>
         private TemplateEngine ParseOperator()

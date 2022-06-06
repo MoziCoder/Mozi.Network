@@ -9,6 +9,7 @@
         private readonly ushort _code = 0;
 
         protected override string Tag { get { return _tag; } }
+
         public ushort Code { get { return _code; } }
 
         public static readonly TLSVersion SSL30 = new TLSVersion("SSL30", 0);

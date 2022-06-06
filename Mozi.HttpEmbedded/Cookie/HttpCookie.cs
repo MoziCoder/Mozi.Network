@@ -12,24 +12,55 @@ namespace Mozi.HttpEmbedded.Cookie
     /// </remarks>
     public class HttpCookie
     {
+        /// <summary>
+        /// Cookie名
+        /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// Cookie值
+        /// </summary>
         public string Value { get; set; }
         [Obsolete("HTTP/1.1不再使用此值")]
         public string Expires { get; set; }
+        /// <summary>
+        /// 最长寿命
+        /// </summary>
         public int MaxAge { get; set; }
+        /// <summary>
+        /// 路径
+        /// </summary>
         public string Path { get; set; }
+        /// <summary>
+        /// 域名信息
+        /// </summary>
         public string Domain { get; set; }
+        /// <summary>
+        /// 同站点
+        /// </summary>
         public SameSiteMode SameSite { get; set; }
+        /// <summary>
+        /// 是否安全传输，仅HTTPS会把Cookie下发到浏览器
+        /// </summary>
         public bool Secure { get; set; }
+        /// <summary>
+        /// 是否仅HTTP
+        /// </summary>
         public bool HttpOnly { get; set; }
         //Secure和HttpOnly
 
+        /// <summary>
+        /// 
+        /// </summary>
         public HttpCookie()
         {
             Path = "/";
             Domain = "";
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
         public HttpCookie(string name, string value) : this()
         {
             Name = name;

@@ -115,6 +115,7 @@ namespace Mozi.NTP
         /// <summary>
         /// 启动服务器
         /// </summary>
+        /// <param name="multicastGroupAddress"></param>
         /// <param name="multicastGroupPort"></param>
         public void StartServer(string multicastGroupAddress, int multicastGroupPort)
         {

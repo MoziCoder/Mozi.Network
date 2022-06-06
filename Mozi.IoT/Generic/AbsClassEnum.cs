@@ -8,6 +8,9 @@ namespace Mozi.IoT.Generic
     /// </summary>
     public abstract class AbsClassEnum
     {
+        /// <summary>
+        /// 唯一对象标识符号
+        /// </summary>
         protected abstract string Tag { get; }
         /// <summary>
         /// 获取方法 不区分标识符大小写
@@ -34,7 +37,7 @@ namespace Mozi.IoT.Generic
         /// <summary>
         /// 此处判断标识符是否相等,区分大小写
         /// <para>
-        ///     如果要判断子对象是否等于<see cref="null"/>，请使用<see cref="object.Equals(object, object)"/>
+        ///     如果要判断子对象是否等于 null ，请使用<see cref="object.Equals(object, object)"/>
         /// </para>
         /// </summary>
         /// <param name="obj"></param>
@@ -46,7 +49,7 @@ namespace Mozi.IoT.Generic
         /// <summary>
         /// 重载==
         /// <para>
-        ///     如果要判断子对象是否等于<see cref="null"/>，请使用<see cref="object.Equals(object, object)"/>
+        ///     如果要判断子对象是否等于 null ，请使用<see cref="object.Equals(object, object)"/>
         /// </para>
         /// </summary>
         /// <param name="a"></param>
@@ -60,7 +63,7 @@ namespace Mozi.IoT.Generic
         /// <summary>
         /// 重载!=
         /// <para>
-        ///     如果要判断子对象是否等于<see cref="null"/>，请使用<see cref="object.Equals(object, object)"/>
+        ///     如果要判断子对象是否等于 null ，请使用<see cref="object.Equals(object, object)"/>
         /// </para>
         /// </summary>
         /// <param name="a"></param>
@@ -70,7 +73,10 @@ namespace Mozi.IoT.Generic
         {
             return (object)a == null || (object)b == null || !a.Tag.Equals(b.Tag);
         }
-
+        /// <summary>
+        /// Hash值
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             return Tag.GetHashCode();

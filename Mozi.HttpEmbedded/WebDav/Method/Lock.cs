@@ -19,7 +19,6 @@ namespace Mozi.HttpEmbedded.WebDav.Method
         /// <see cref="HttpContext" /> 
         ///  </param>
         /// <param name="store"><see cref="IWebDavStore" /> <see cref="WebDAVServer" /></param>
-        /// <exception cref="WebDavPreconditionFailedException"></exception>
         public StatusCode Invoke(WebDAVServer server, HttpContext context, IWebDavStore store)
         {
             //头部信息

@@ -13,11 +13,11 @@
     /// <summary>
     /// Restfull Api抽象类
     /// </summary>
-    internal abstract class BaseRestApi
+    internal interface BaseRestApi
     {
-        public abstract ResponseMessage Get();
-        public abstract ResponseMessage Post();
-        public abstract ResponseMessage Put();
-        public abstract ResponseMessage Delete();
+        ResponseMessage Get();
+        ResponseMessage Post();
+        ResponseMessage Put();
+        ResponseMessage Delete();
     }
 }

@@ -9,10 +9,25 @@ namespace Mozi.StateService
     /// </summary>
     public enum ClientLifeState
     {
+        /// <summary>
+        /// 未知
+        /// </summary>
         Unknown = 0,
+        /// <summary>
+        /// 在线
+        /// </summary>
         Alive = 0x31,
+        /// <summary>
+        /// 离线
+        /// </summary>
         Byebye = 0x32,
+        /// <summary>
+        /// 繁忙
+        /// </summary>
         Busy = 0x33,
+        /// <summary>
+        /// 空闲
+        /// </summary>
         Idle = 0x34
     }
     //statename:alive|byebye|busy|idle|offline
@@ -22,7 +37,13 @@ namespace Mozi.StateService
     /// </summary>
     public enum HeartBeatProtocolVersion
     {
+        /// <summary>
+        /// 版本1
+        /// </summary>
         Version1 = 0x31,
+        /// <summary>
+        /// 版本2
+        /// </summary>
         Version2 = 0x32,
     }
     ///// <summary>
@@ -48,7 +69,11 @@ namespace Mozi.StateService
         /// 包荷载长度
         /// </summary>
         public ushort PackageBodyLength { get; set; }
-
+        /// <summary>
+        /// 解析心跳包
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static BasicHeartBeatPackage Parse(byte[] data)
         {
             BasicHeartBeatPackage pack = new BasicHeartBeatPackage
@@ -74,21 +99,33 @@ namespace Mozi.StateService
         /// 状态名
         /// </summary>
         public byte StateName { get; set; }
+        /// <summary>
+        /// 设备名长度
+        /// </summary>
         public ushort DeviceNameLength { get; set; }
         /// <summary>
         /// 设备名 区分业务群
         /// </summary>
         public string DeviceName { get; set; }
+        /// <summary>
+        /// 设备编号长度
+        /// </summary>
         public ushort DeviceIdLength { get; set; }
         /// <summary>
         /// 设备唯一标识
         /// </summary>
         public string DeviceId { get; set; }
+        /// <summary>
+        /// 终端应用程序版本字段长度
+        /// </summary>
         public ushort AppVersionLength { get; set; }
         /// <summary>
         /// 终端应用程序版本
         /// </summary>
         public string AppVersion { get; set; }
+        /// <summary>
+        /// 用户名长度
+        /// </summary>
         public ushort UserNameLength { get; set; }
         /// <summary>
         /// 登录用户名 可自定义或承载一定的业务功能
@@ -179,12 +216,26 @@ namespace Mozi.StateService
     /// </summary>
     public class HeartBeatPublishPackage : BasicHeartBeatPackage
     {
+        /// <summary>
+        /// {HOST}:{PORT}的总长度
+        /// </summary>
         public ushort HostLength { get; set; }
+        /// <summary>
+        /// 源主机地址
+        /// </summary>
         public string SrcHost { get; set; }
+        /// <summary>
+        /// 源地址
+        /// </summary>
         public ushort SrcPort { get; set; }
-
+        /// <summary>
+        /// 被包裹的心跳数据包
+        /// </summary>
         public HeartBeatPackage HeartBeat { get; set; }
-
+        /// <summary>
+        /// 打包
+        /// </summary>
+        /// <returns></returns>
         public byte[] Pack()
         {
             List<byte> data = new List<byte>();

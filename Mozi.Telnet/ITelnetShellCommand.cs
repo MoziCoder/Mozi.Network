@@ -23,6 +23,7 @@ namespace Mozi.Telnet
         /// <summary>
         /// 命令调用过程
         /// </summary>
+        /// <param name="message"></param>
         /// <param name="args">参数为空格分割</param>
         bool Invoke(ref string message, params string[] args);
     }

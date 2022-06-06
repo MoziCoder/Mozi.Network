@@ -18,7 +18,9 @@ namespace Mozi.SSDP
     {
 
         private string _host = "";
-
+        /// <summary>
+        /// HOST属性
+        /// </summary>
         public string HOST
         {
             get
@@ -43,11 +45,22 @@ namespace Mozi.SSDP
                 }
             }
         }
+        /// <summary>
+        /// 路径属性
+        /// </summary>
         public string Path { get; set; }
-
+        /// <summary>
+        /// HOST的IP值
+        /// </summary>
         public string HostIp { get; private set; }
+        /// <summary>
+        /// HOST的PORT值 
+        /// </summary>
         public int HostPort { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public AbsAdvertisePackage()
         {
             _host = string.Format("{0}:{1}", SSDPProtocol.MulticastAddress, SSDPProtocol.MulticastPort);
@@ -55,7 +68,10 @@ namespace Mozi.SSDP
             //HostPort = SSDPProtocol.ProtocolPort;
             Path = "*";
         }
-
+        /// <summary>
+        /// 获取所有的头属性信息
+        /// </summary>
+        /// <returns></returns>
         public abstract TransformHeader GetHeaders();
     }
     /// <summary>

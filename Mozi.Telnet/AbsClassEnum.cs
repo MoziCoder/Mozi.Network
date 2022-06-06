@@ -34,7 +34,7 @@ namespace Mozi.Telnet
         /// <summary>
         /// 此处判断标识符是否相等,区分大小写
         /// <para>
-        ///     如果要判断子对象是否等于<see cref="null"/>，请使用<see cref="object.Equals(object, object)"/>
+        ///     如果要判断子对象是否等于null，请使用<see cref="object.Equals(object, object)"/>
         /// </para>
         /// </summary>
         /// <param name="obj"></param>
@@ -46,7 +46,7 @@ namespace Mozi.Telnet
         /// <summary>
         /// 重载==
         /// <para>
-        ///     如果要判断子对象是否等于<see cref="null"/>，请使用<see cref="object.Equals(object, object)"/>
+        ///     如果要判断子对象是否等于null，请使用<see cref="object.Equals(object, object)"/>
         /// </para>
         /// </summary>
         /// <param name="a"></param>
@@ -59,7 +59,7 @@ namespace Mozi.Telnet
         /// <summary>
         /// 重载!=
         /// <para>
-        ///     如果要判断子对象是否等于<see cref="null"/>，请使用<see cref="object.Equals(object, object)"/>
+        ///     如果要判断子对象是否等于null，请使用<see cref="object.Equals(object, object)"/>
         /// </para>
         /// </summary>
         /// <param name="a"></param>
@@ -70,6 +70,10 @@ namespace Mozi.Telnet
             return (object)a == null || (object)b == null || !a.Tag.Equals(b.Tag);
         }
 
+        /// <summary>
+        /// 获取Tag的Hash值
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             return Tag.GetHashCode();

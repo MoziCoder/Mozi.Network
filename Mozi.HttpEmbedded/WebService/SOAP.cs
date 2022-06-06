@@ -42,7 +42,7 @@ namespace Mozi.HttpEmbedded.WebService
             Body = new SoapBody();
         }
         /// <summary>
-        /// 构造xml文档 父元素增加类命名空间定义<see href="XmlDocument.CreateElement(prefix,localName, namespaceUri)"后，创建子元素时命名空间地址会被隐去，此时可以随意添加前缀
+        /// 构造xml文档 父元素增加类命名空间定义<see href="XmlDocument.CreateElement(prefix,localName, namespaceUri)"/>后,创建子元素时命名空间地址会被隐去，此时可以随意添加前缀
         /// </summary>
         ///<returns></returns>
         public string CreateDocument()
@@ -127,6 +127,7 @@ namespace Mozi.HttpEmbedded.WebService
         /// 解析SOAP文件
         /// </summary>
         /// <param name="content"></param>
+        /// <param name="version"></param>
         /// <returns></returns>
         public static SoapEnvelope Parse(string content,SoapVersion version)
         {

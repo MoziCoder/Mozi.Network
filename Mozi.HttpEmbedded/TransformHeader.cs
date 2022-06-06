@@ -29,13 +29,22 @@ namespace Mozi.HttpEmbedded
             return HeaderData.ContainsKey(key);
         }
         /// <summary>
-        /// 获取值
+        /// 获取头属性值
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
         public string GetValue(string key)
         {
             return HeaderData.ContainsKey(key) ? HeaderData[key] : null;
+        }
+        /// <summary>
+        /// 获取头属性值，参见<see cref="GetValue(string)"/>
+        /// </summary>
+        /// <param name="header"></param>
+        /// <returns></returns>
+        public string GetValue(HeaderProperty header)
+        {
+            return GetValue(header.PropertyName);
         }
         /// <summary>
         /// 增加头部信息
@@ -59,6 +68,7 @@ namespace Mozi.HttpEmbedded
         /// 增加头部信息
         /// </summary>
         /// <param name="header"></param>
+        /// <param name="value"></param>
         /// <returns></returns>
         public TransformHeader Add(HeaderProperty header, string value)
         {
