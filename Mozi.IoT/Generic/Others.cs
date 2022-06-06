@@ -29,27 +29,46 @@ namespace Mozi.IoT.Generic
             var mills = (date.ToUniversalTime() - new DateTime(1970, 1, 1, 0, 0, 0)).TotalMilliseconds;
             return (long)mills;
         }
-
+        /// <summary>
+        /// 转为字节数组
+        /// </summary>
+        /// <param name="num"></param>
+        /// <returns></returns>
         public static byte[] ToBytes(this ushort num)
         {
             return BitConverter.GetBytes(num);
         }
+        /// <summary>
+        /// 转为字节数组
+        /// </summary>
+        /// <param name="num"></param>
+        /// <returns></returns>
         public static byte[] ToBytes(this long num)
         {
             return BitConverter.GetBytes(num);
         }
-
+        /// <summary>
+        /// 截取UInt16数据
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="startIndex"></param>
+        /// <returns></returns>
         public static ushort ToUInt16(this byte[] data, int startIndex)
         {
             return BitConverter.ToUInt16(data, startIndex);
         }
-
+        /// <summary>
+        /// 截取UInt32数据
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="startIndex"></param>
+        /// <returns></returns>
         public static uint ToUInt32(this byte[] data, int startIndex)
         {
             return BitConverter.ToUInt32(data, startIndex);
         }
         /// <summary>
-        /// 
+        /// 截取UInt64数据
         /// </summary>
         /// <param name="data"></param>
         /// <param name="startIndex"></param>

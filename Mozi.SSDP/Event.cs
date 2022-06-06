@@ -164,16 +164,34 @@ namespace Mozi.SSDP
     /// </summary>
     public class EventLevel : AbsClassEnum
     {
-
+        /// <summary>
+        /// 
+        /// </summary>
         public static EventLevel Emergency =new EventLevel("upnp","emergency");
+        /// <summary>
+        /// 
+        /// </summary>
         public static EventLevel Fault=new EventLevel("upnp","fault");
+        /// <summary>
+        /// 
+        /// </summary>
         public static EventLevel Warning = new EventLevel("upnp","warning");
+        /// <summary>
+        /// 
+        /// </summary>
         public static EventLevel Info = new EventLevel("upnp","info");
+        /// <summary>
+        /// 
+        /// </summary>
         public static EventLevel Debug = new EventLevel("upnp","debug");
+        /// <summary>
+        /// 
+        /// </summary>
         public static EventLevel General = new EventLevel("upnp","general");
 
         private string _levelName = "";
         private string _domain = "";
+
 
         public override string ToString()
         {

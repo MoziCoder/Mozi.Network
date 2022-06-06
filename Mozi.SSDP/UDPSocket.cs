@@ -42,7 +42,9 @@ namespace Mozi.SSDP
         /// </summary>
         public bool AllowLoopbackMessage { get; set; }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
         public UDPSocket()
         {
 
@@ -71,6 +73,9 @@ namespace Mozi.SSDP
         {
             get { return _multicastGroupPort; }
         }
+        /// <summary>
+        /// 本地Socket对象
+        /// </summary>
         public Socket SocketMain
         {
             get { return _sc; }

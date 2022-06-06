@@ -457,7 +457,6 @@ namespace Mozi.HttpEmbedded.Source
         /// 增加脚本扩展类型
         /// </summary>
         /// <param name="ext"></param>
-        /// <param name="contentType"></param>
         public static void AddScript(string ext)
         {
             if (!ScriptExts.Contains(ext))

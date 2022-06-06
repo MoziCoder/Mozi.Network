@@ -79,7 +79,6 @@ namespace Mozi.IoT
         /// GET方法
         /// </summary>
         /// <param name="ctx"></param>
-        /// <param name="request"></param>
         /// <returns></returns>
         public virtual CoAPPackage OnGet(CoAPContext ctx)
         {
@@ -90,7 +89,6 @@ namespace Mozi.IoT
         /// Post方法
         /// </summary>
         /// <param name="ctx"></param>
-        /// <param name="request"></param>
         /// <returns></returns>
         public virtual CoAPPackage OnPost(CoAPContext ctx)
         {
@@ -101,7 +99,6 @@ namespace Mozi.IoT
         /// PUT方法
         /// </summary>
         /// <param name="ctx"></param>
-        /// <param name="request"></param>
         /// <returns></returns>
         public virtual CoAPPackage OnPut(CoAPContext ctx)
         {
@@ -112,7 +109,6 @@ namespace Mozi.IoT
         /// Delete方法
         /// </summary>
         /// <param name="ctx"></param>
-        /// <param name="request"></param>
         /// <returns></returns>
         public virtual CoAPPackage OnDelete(CoAPContext ctx)
         {

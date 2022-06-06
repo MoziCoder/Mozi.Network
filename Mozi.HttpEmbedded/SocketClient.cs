@@ -258,8 +258,6 @@ namespace Mozi.HttpEmbedded
         /// 向指定地址发送数据
         /// </summary>
         /// <param name="buffer"></param>
-        /// <param name="host"></param>
-        /// <param name="port"></param>
         public void SendTo(byte[] buffer)
         {
             if (_connected)

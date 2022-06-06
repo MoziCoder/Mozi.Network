@@ -4,19 +4,63 @@ using System.Collections.Generic;
 namespace Mozi.HttpEmbedded.Cache
 {
 
+    /// <summary>
+    /// 缓存对象接口
+    /// </summary>
     public interface ICache
     {
+        /// <summary>
+        /// 增加缓存数据
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="param"></param>
+        /// <param name="data"></param>
         void Add(string name, string param, string data);
+        /// <summary>
+        /// 增加缓存数据
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="param"></param>
+        /// <param name="data"></param>
+        /// <param name="expire"></param>
+        /// <param name="owner"></param>
+        /// <param name="isprivate"></param>
         void Add(string name, string param, string data, long expire, string owner, byte isprivate);
+        /// <summary>
+        /// 清理所有缓存数据
+        /// </summary>
         void Clear();
+        /// <summary>
+        /// 清理过期的缓存
+        /// </summary>
         void ClearExpired();
+        /// <summary>
+        /// 条件查找缓存对象
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
         CacheInfo Find(string name, string param);
+        /// <summary>
+        /// 移除
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="param"></param>
         void Remove(string name, string param);
+        /// <summary>
+        /// 恢复
+        /// </summary>
         void ReStore();
-        void Store();
-    }
+        /// <summary>
+        /// 保存
+        /// </summary>
+        void Save();
 
-    public class MemoryCache:ICache
+    }
+    /// <summary>
+    /// 内存缓存
+    /// </summary>
+    public class MemoryCache : ICache
     {
         private List<CacheInfo> _caches = new List<CacheInfo>();
 
@@ -27,7 +71,7 @@ namespace Mozi.HttpEmbedded.Cache
         /// <param name="name"></param>
         /// <param name="param"></param>
         /// <param name="data"></param>
-        public void Add(string name,string param,string data)
+        public void Add(string name, string param, string data)
         {
             Add(name, param, data, 0, "", 0);
         }
@@ -40,11 +84,11 @@ namespace Mozi.HttpEmbedded.Cache
         /// <param name="expire">过期时间 单位ms</param>
         /// <param name="owner"></param>
         /// <param name="isprivate"></param>
-        public void Add(string name,string param,string data,long expire,string owner, byte isprivate)
+        public void Add(string name, string param, string data, long expire, string owner, byte isprivate)
         {
             lock (_sync)
             {
-                var cache = _caches.Find(x => x.Name == name&&x.Param==param);
+                var cache = _caches.Find(x => x.Name == name && x.Param == param);
                 var isNew = false;
                 if (cache == null)
                 {
@@ -53,7 +97,7 @@ namespace Mozi.HttpEmbedded.Cache
                     {
                         Name = name,
                         Param = param
-                    };   
+                    };
                 }
                 cache.Data = data;
                 cache.Expire = expire;
@@ -76,7 +120,7 @@ namespace Mozi.HttpEmbedded.Cache
         {
             lock (_sync)
             {
-               return _caches.Find(x => x.Name == name && x.Param == param);
+                return _caches.Find(x => x.Name == name && x.Param == param);
             }
         }
         /// <summary>
@@ -84,7 +128,7 @@ namespace Mozi.HttpEmbedded.Cache
         /// </summary>
         /// <param name="name"></param>
         /// <param name="param"></param>
-        public void Remove(string name,string param)
+        public void Remove(string name, string param)
         {
             lock (_sync)
             {
@@ -98,9 +142,12 @@ namespace Mozi.HttpEmbedded.Cache
         {
             lock (_sync)
             {
-                _caches.RemoveAll(x => x.Expire!=0&&(DateTime.UtcNow-x.CacheTime).TotalMilliseconds>x.Expire);
+                _caches.RemoveAll(x => x.Expire != 0 && (DateTime.UtcNow - x.CacheTime).TotalMilliseconds > x.Expire);
             }
         }
+        /// <summary>
+        /// 清除所有缓存
+        /// </summary>
         public void Clear()
         {
             lock (_sync)
@@ -108,12 +155,16 @@ namespace Mozi.HttpEmbedded.Cache
                 _caches.RemoveAll(x => x != null);
             }
         }
-
-        public void Store()
+        /// <summary>
+        /// 保存缓存
+        /// </summary>
+        public void Save()
         {
 
         }
-
+        /// <summary>
+        /// 恢复数据
+        /// </summary>
         public void ReStore()
         {
 

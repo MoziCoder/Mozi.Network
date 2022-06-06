@@ -54,7 +54,6 @@ namespace Mozi.HttpEmbedded
         /// Ôö¼ÓÏî
         /// </summary>
         /// <param name="item"></param>
-        /// <param name="f"></param>
         public void Add(File item)
         {
             _files.Add(item);

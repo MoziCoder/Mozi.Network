@@ -3,20 +3,62 @@ using System.Collections.Generic;
 
 namespace Mozi.IoT.Cache
 {
-
+    /// <summary>
+    /// 缓存对象接口
+    /// </summary>
     public interface ICache
     {
+        /// <summary>
+        /// 增加缓存数据
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="param"></param>
+        /// <param name="data"></param>
         void Add(string name, string param, string data);
+        /// <summary>
+        /// 增加缓存数据
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="param"></param>
+        /// <param name="data"></param>
+        /// <param name="expire"></param>
+        /// <param name="owner"></param>
+        /// <param name="isprivate"></param>
         void Add(string name, string param, string data, long expire, string owner, byte isprivate);
+        /// <summary>
+        /// 清理所有缓存数据
+        /// </summary>
         void Clear();
+        /// <summary>
+        /// 清理过期的缓存
+        /// </summary>
         void ClearExpired();
+        /// <summary>
+        /// 条件查找缓存对象
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
         CacheInfo Find(string name, string param);
+        /// <summary>
+        /// 移除
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="param"></param>
         void Remove(string name, string param);
+        /// <summary>
+        /// 恢复
+        /// </summary>
         void ReStore();
-        void Store();
+        /// <summary>
+        /// 保存
+        /// </summary>
+        void Save();
 
     }
-
+    /// <summary>
+    /// 内存缓存
+    /// </summary>
     public class MemoryCache : ICache
     {
         private List<CacheInfo> _caches = new List<CacheInfo>();
@@ -102,6 +144,9 @@ namespace Mozi.IoT.Cache
                 _caches.RemoveAll(x => x.Expire != 0 && (DateTime.UtcNow - x.CacheTime).TotalMilliseconds > x.Expire);
             }
         }
+        /// <summary>
+        /// 清除所有缓存
+        /// </summary>
         public void Clear()
         {
             lock (_sync)
@@ -109,12 +154,16 @@ namespace Mozi.IoT.Cache
                 _caches.RemoveAll(x => x != null);
             }
         }
-
-        public void Store()
+        /// <summary>
+        /// 保存缓存
+        /// </summary>
+        public void Save()
         {
 
         }
-
+        /// <summary>
+        /// 恢复数据
+        /// </summary>
         public void ReStore()
         {
 

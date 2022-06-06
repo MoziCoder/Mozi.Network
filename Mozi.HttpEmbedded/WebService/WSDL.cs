@@ -51,7 +51,6 @@ namespace Mozi.HttpEmbedded.WebService
         /// <summary>
         /// 构建文档
         /// </summary>
-        /// <param name="desc"></param>
         /// <returns></returns>
         public string CreateDocument()
         {

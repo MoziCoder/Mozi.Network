@@ -205,7 +205,9 @@ namespace Mozi.HttpEmbedded
         /// 默认路由管理器
         /// </summary>
         public Router Router = Router.Default;
-
+        /// <summary>
+        /// 
+        /// </summary>
         public HttpServer()
         {
             StartTime = DateTime.MinValue;
@@ -797,7 +799,7 @@ namespace Mozi.HttpEmbedded
         }
         /// <summary>
         /// 设置服务器认证用户
-        /// <para>如果<see cref="F:EnableAuth"/>=<see cref="bool.False"/>,此设置就没有意义</para>
+        /// <para>如果<see cref="F:EnableAuth"/>=<see cref="Boolean.False"/>,此设置就没有意义</para>
         /// </summary>
         /// <param name="userName"></param>
         /// <param name="userPassword"></param>

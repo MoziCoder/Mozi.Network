@@ -2,6 +2,9 @@
 
 namespace Mozi.HttpEmbedded.Encode
 {
+    /// <summary>
+    /// HTML转码
+    /// </summary>
     public class HtmlEncoder
     {
         /// <summary>

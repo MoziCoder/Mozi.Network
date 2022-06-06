@@ -5,11 +5,14 @@ using System.Net.NetworkInformation;
 
 namespace Mozi.SSDP
 {
-    /// <summary>
+    ///<summary>
+    ///UUID生成器
+    ///<![CDATA[
     /// UUID = 4 * <hexOctet> “-” 2 * <hexOctet> “-” 2 * <hexOctet> “-” 2 * <hexOctet> “-” 6 * <hexOctet>
     ///     hexOctet = <hexDigit> <hexDigit>
     ///     hexDigit = “0”|“1”|“2”|“3”|“4”|“5”|“6”|“7”|“8”|“9”|“a”|“b”|“c”|“d”|“e”|“f”|“A”|“B”|“C”|“D”|“E”|“F”
-    /// </summary>
+    /// ]]>  
+    ///</summary>
     public class UUID
     {
         /// <summary>

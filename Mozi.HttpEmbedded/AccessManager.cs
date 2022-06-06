@@ -7,10 +7,13 @@ namespace Mozi.HttpEmbedded
     /// </summary>
     public class AccessManager
     {
-        public static AccessManager _access;
+        private static AccessManager _access;
 
         private readonly List<string> _blacklist = new List<string>();
 
+        /// <summary>
+        /// 单实例
+        /// </summary>
         public static AccessManager Instance
         {
             get { return _access ?? (_access = new AccessManager()); }
@@ -36,6 +39,11 @@ namespace Mozi.HttpEmbedded
         {
             _blacklist.Remove(ipAddress);
         }
+        /// <summary>
+        /// 检查是否在黑名单中
+        /// </summary>
+        /// <param name="ipAddress"></param>
+        /// <returns></returns>
         public bool CheckBlackList(string ipAddress)
         {
             return _blacklist.Exists(x => x.Equals(ipAddress));

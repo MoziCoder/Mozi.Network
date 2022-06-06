@@ -185,19 +185,39 @@ namespace Mozi.HttpEmbedded.Auth
     /// </summary>
     public abstract class AuthScheme
     {
+        /// <summary>
+        /// 认证域，在浏览器场景中会以明文的形式提供给前端
+        /// </summary>
         protected string _realm = "";
 
         public virtual string Realm { get => _realm; set => _realm = value; }
         //public readonly Dictionary<string, object> Challenge = new Dictionary<string, object>();
 
         //public Dictionary<string, object> Response = new Dictionary<string, object>();
-
+        /// <summary>
+        /// 认证类型
+        /// </summary>
         public abstract AuthorizationType AuthType { get; }
-
+        /// <summary>
+        /// 检查客户端提交的认证信息是否合法
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="pwd"></param>
+        /// <param name="statement"></param>
+        /// <param name="reqMethod"></param>
+        /// <returns></returns>
         public abstract bool Check(string username,string pwd,string statement,string reqMethod);
-
+        /// <summary>
+        /// 获取认证信息中的用户名
+        /// </summary>
+        /// <param name="statement"></param>
+        /// <returns></returns>
         public abstract string ParseUsername(string statement);
-
+        /// <summary>
+        /// 解析认证键值对
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public virtual Dictionary<string, string> Parse(string data)
         {
             Dictionary<string, string> dic = new Dictionary<string, string>();
@@ -242,8 +262,15 @@ namespace Mozi.HttpEmbedded.Auth
     /// </summary>
     public class BasicAuth : AuthScheme
     {
+        /// <summary>
+        /// 认证类型
+        /// </summary>
         public override AuthorizationType AuthType => AuthorizationType.Basic;
-
+        /// <summary>
+        /// 解析用户名
+        /// </summary>
+        /// <param name="statement"></param>
+        /// <returns></returns>
         public override string ParseUsername(string statement)
         {
             string userinfo = Base64.From(statement);
@@ -275,7 +302,12 @@ namespace Mozi.HttpEmbedded.Auth
         {
             return $"realm={Realm}";
         }
-
+        /// <summary>
+        /// 生成认证信息，HttpClient调用时使用
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="pwd"></param>
+        /// <returns></returns>
         public override string GenerateAuthorization(string username, string pwd)
         {
             return AuthType.Name+" "+Base64.To($"{username}:{pwd}");
@@ -305,6 +337,9 @@ namespace Mozi.HttpEmbedded.Auth
     /// </summary>
     public class DigestAuth : AuthScheme
     {
+        /// <summary>
+        /// 认证类型
+        /// </summary>
         public override AuthorizationType AuthType =>AuthorizationType.Digest;
 
         /// <summary>
@@ -316,7 +351,11 @@ namespace Mozi.HttpEmbedded.Auth
             string sReturn = "";
             return sReturn;
         }
-
+        /// <summary>
+        /// 解析用户名
+        /// </summary>
+        /// <param name="statement"></param>
+        /// <returns></returns>
         public override string ParseUsername(string statement)
         {
             Dictionary<string, string> arrData = Parse(statement);

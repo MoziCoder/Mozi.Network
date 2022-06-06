@@ -346,13 +346,13 @@ namespace Mozi.HttpEmbedded
                         string fieldName = string.Empty;
                         string fileName = string.Empty;
 
-                        ///<example>
-                        ///-----------------------------97671069125495\r\n
-                        ///Content-Disposition: form-data; name=\"mailaddress\"\r\n
-                        ///\r\n
-                        ///abcdefg
-                        ///\r\n
-                        ///</example>
+                        //<example>
+                        //-----------------------------97671069125495\r\n
+                        //Content-Disposition: form-data; name=\"mailaddress\"\r\n
+                        //\r\n
+                        //abcdefg
+                        //\r\n
+                        //</example>
 
                         //提取字段头属性
                         while ((posCR = Array.IndexOf(fragment, ASCIICode.CR, posCR + 1)) > 0)

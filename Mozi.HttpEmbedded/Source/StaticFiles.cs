@@ -187,7 +187,7 @@ namespace Mozi.HttpEmbedded.Source
         /// </summary>
         /// <param name="path"></param>
         /// <param name="ifModifiedSince"></param>
-        /// <returns><see cref="bool:true">Modified</see></returns>
+        /// <returns><see cref="Boolean.True">Modified</see></returns>
         public bool CheckIfModified(string path, string ifModifiedSince)
         {
             var filepath = _root + path;

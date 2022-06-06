@@ -187,7 +187,6 @@ namespace Mozi.IoT.Encode
         /// link-format集合转为字符串
         /// </summary>
         /// <param name="infos"></param>
-        /// <param name="info"></param>
         /// <returns></returns>
         public static string ToString(IEnumerable infos)
         {
@@ -403,7 +402,6 @@ namespace Mozi.IoT.Encode
         /// 增加项
         /// </summary>
         /// <param name="item"></param>
-        /// <param name="f"></param>
         public void Add(LinkInfo item)
         {
             _items.Add(item);

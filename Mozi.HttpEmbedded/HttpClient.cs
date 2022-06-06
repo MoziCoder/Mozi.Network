@@ -21,7 +21,9 @@ namespace Mozi.HttpEmbedded
     /// </summary>
     public class HttpClient
     {
-       
+        /// <summary>
+        /// 编码类型
+        /// </summary>
         public string Charset = "UTF-8";
         private string _userAgent = "Mozilla/5.0 (Linux;Android 4.4.2;OEM Device) AppleWebKit/537.36 (KHTML,like Gecko) Chrome/39.0.2171.71  Mozi/1.4.3";
         private const string Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";

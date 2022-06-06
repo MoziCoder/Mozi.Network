@@ -8,6 +8,9 @@ namespace Mozi.SSDP
     /// </summary>
     public class UDPStateObject : StateObject
     {
+        /// <summary>
+        /// 终结点信息
+        /// </summary>
         public EndPoint RemoteEndPoint;
     }
 }
