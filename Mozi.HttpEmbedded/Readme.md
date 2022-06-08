@@ -1,7 +1,6 @@
 ﻿# Mozi.HttpEmbedded 嵌入式Web服务器
 
-Mozi.HttpEmbedded是一个基于.Net构建的轻量型HTTP服务器，为.Net应用程序提供HTTP服务功能。项目实现了HTTP/1.1的大部分规范，但并不会实现非常丰富的大型Web服务器功能。项目基于.Net Framework 4.0开发,也可转换为.Net Core/.Net Standard项目,亦可作为.Net5.0项目的引用库。
-
+Mozi.HttpEmbedded是一个基于.Net构建的轻量型HTTP服务器，为.Net应用程序提供HTTP服务功能。项目实现了HTTP/1.1的大部分规范，但并不会实现非常丰富的大型Web服务器功能。项目没有引用Windows下的特殊程序集，可作为跨平台工具的一部分。
 ## 特点
 
 Mozi.HttpEmbedded在Socket之上使用异步单线程模型，构建了一个HTTP服务器，项目自行开发了Http协议包解析器，使HTTP协议解析和TCP通讯高度分离。该项目针对的是不能使用Kestrel/IIS的部署环境，比如中间件，服务程序等。
@@ -91,6 +90,12 @@ Mozi.HttpEmbedded在Socket之上使用异步单线程模型，构建了一个HTT
     HttpServer hs = new HttpServer();
     //配置端口并启动服务器
     hs.SetPort(9000).Start();
+
+    //控制台输出请求信息
+    hs.Request = (host, port, request) =>
+    {
+        Console.WriteLine($"{host}:{port} {request.RequestLineString}");
+    };
 
     //开启认证
     hs.UseAuth(AuthorizationType.Basic).SetUser("admin", "admin");
