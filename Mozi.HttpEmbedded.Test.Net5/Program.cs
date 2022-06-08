@@ -69,7 +69,7 @@ namespace Mozi.HttpEmbedded.Test.Net5
             HeartBeatService state = new HeartBeatService()
             {
                 Port = 12353,
-                RemoteHost = "100.100.0.105"
+                RemoteHost = "127.0.0.1"
             };
 
             state.ApplyDevice("Mozi.StateService", "80018001","1.2.3");

@@ -24,7 +24,11 @@ namespace Mozi.HttpEmbedded.Test
             //TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
             HttpServer hs = new HttpServer();
-
+            //控制台输出请求信息
+            hs.Request = (host, port, request) =>
+            {
+                Console.WriteLine($"{host}:{port} {request.RequestLineString}");
+            };
             //启用HTTPS 
             //hs.UseHttps().LoadCert(AppDomain.CurrentDomain.BaseDirectory + @"Cert\ServerCert.pfx", "12345678");
 
