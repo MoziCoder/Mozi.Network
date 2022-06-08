@@ -13,7 +13,7 @@
     <copyright>Copyright © Jason 2021-2022</copyright>
     <tags>IoT Client 物联网客户端</tags>
 	<dependencies>
-		<dependency id="Mozi.IoT" version="[1.4.4,]" />
+		<dependency id="Mozi.IoT" version="[1.4.6,]" />
 	</dependencies>
   </metadata>
 </package>
