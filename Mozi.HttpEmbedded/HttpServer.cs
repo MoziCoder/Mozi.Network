@@ -50,7 +50,9 @@ namespace Mozi.HttpEmbedded
     /// </summary>
     public class HttpServer
     {
-
+        /// <summary>
+        /// Socket对象
+        /// </summary>
         protected  SocketServer _sc = new SocketServer();
 
         private WebDav.WebDAVServer _davserver;
@@ -62,7 +64,7 @@ namespace Mozi.HttpEmbedded
         //最大文件大小
         private long _maxFileSize = 10 * 1024 * 1024;
         //最大请求尺寸
-        private long _maxRequestSize = 10 * 1024 * 1024;
+        private long _maxRequestBodySize = 10 * 1024 * 1024;
 
         //禁止直接IP访问，但应排除本地地址127.0.0.1
         private bool _forbideIPAccess = false;
@@ -76,8 +78,7 @@ namespace Mozi.HttpEmbedded
         private string _serverName = "Mozi.HttpEmbedded";
 
         //默认首页为index.html,index.htm
-
-        public string[] _indexPages = new string[] {  };
+        private string[] _indexPages = new string[] {  };
 
         /// <summary>
         /// 默认首页
@@ -94,8 +95,10 @@ namespace Mozi.HttpEmbedded
 
         //证书管理器
         private CertManager _certMg;
-        //HTTPS开启标识
-        protected bool _httpsEnabled = false;
+        /// <summary>
+        /// TLS开启标识
+        /// </summary>
+        protected bool _tlsEnabled = false;
 
         private MemoryCache _cache = new MemoryCache();
 
@@ -134,7 +137,7 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 最大请求体长度
         /// </summary>
-        public long MaxRequestBodySize { get { return _maxRequestSize; } private set { _maxRequestSize = value; } }
+        public long MaxRequestBodySize { get { return _maxRequestBodySize; } private set { _maxRequestBodySize = value; } }
         /// <summary>
         /// 服务端口
         /// </summary>
@@ -198,7 +201,7 @@ namespace Mozi.HttpEmbedded
         internal MemoryCache Cache { get { return _cache; }  }
 
         /// <summary>
-        /// 服务端收到完整请求包时触发
+        /// 服务端收到完整请求包时触发,此处不应作任何数据包的修改处理
         /// </summary>
         public Request Request;
         /// <summary>
@@ -259,6 +262,11 @@ namespace Mozi.HttpEmbedded
         /// <param name="args"></param>
         protected virtual void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
+            if (args.Data.Length==0)
+            {
+                return;
+            }
+
             HttpContext context = new HttpContext();
             context.ClientAddress = args.IP;
             context.ClientPort = args.Port;
@@ -275,7 +283,7 @@ namespace Mozi.HttpEmbedded
                 try
                 {
                     //HTTPS 协议处理
-                    if (_httpsEnabled)
+                    if (_tlsEnabled)
                     {
                         //SSL解析数据包
                         ///HelloPackage proto = TLSProtocol.ParseClientHello(args.Data);
@@ -351,7 +359,7 @@ namespace Mozi.HttpEmbedded
 
                 }
             }
-            //最后响应数据     
+            //最后发送响应数据     
             if (args.Socket != null && args.Socket.Connected&&context.Request!=null)
             {
                 
@@ -389,7 +397,8 @@ namespace Mozi.HttpEmbedded
                     chunked = true;
                 }
                 else
-                {                                       
+                { 
+                    
                 }
 
                 args.Socket.Send(context.Response.GetBuffer());
@@ -909,7 +918,7 @@ namespace Mozi.HttpEmbedded
         internal CertManager UseHttps()
         {
             _certMg = new CertManager();
-            _httpsEnabled = true;
+            _tlsEnabled = true;
             return _certMg;
         }
         /// <summary>
@@ -962,7 +971,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="size"></param>
         public void SetMaxRequestSize(long size)
         {
-            _maxRequestSize = size;
+            _maxRequestBodySize = size;
         }
         /// <summary>
         /// 设置临时文件目录
@@ -1033,6 +1042,18 @@ namespace Mozi.HttpEmbedded
             Router.RegisterGlobalMethod(name, method, handler);
         }
     }
-
+    /// <summary>
+    /// 请求接收委托
+    /// </summary>
+    /// <param name="srcHost"></param>
+    /// <param name="srcPort"></param>
+    /// <param name="request"></param>
     public delegate void Request(string srcHost, int srcPort, HttpRequest request);
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="dstHost"></param>
+    /// <param name="dstPort"></param>
+    /// <param name="response"></param>
+    public delegate void Response(string dstHost, int dstPort, HttpResponse response);
 }

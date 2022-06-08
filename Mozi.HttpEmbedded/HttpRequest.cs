@@ -12,6 +12,7 @@ namespace Mozi.HttpEmbedded
     /// <summary>
     /// HTTP请求
     /// </summary>
+    /// <remarks>该类可以处理其它类HTTP协议的请求数据包</remarks>
     public class HttpRequest
     {
 

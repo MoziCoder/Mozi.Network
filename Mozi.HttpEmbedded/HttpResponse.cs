@@ -12,6 +12,7 @@ namespace Mozi.HttpEmbedded
     /// <summary>
     /// HTTP响应
     /// </summary>
+    /// <remarks>该类可以处理其它类HTTP协议的响应数据包</remarks>
     public class HttpResponse
     {
         private byte[] _body = new byte[0];
