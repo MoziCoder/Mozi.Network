@@ -28,7 +28,10 @@ namespace Mozi.SSDP
         /// 代表ssdp:all
         /// </summary>
         public static TargetDesc All = new TargetDesc { IsAll = true };
-
+        /// <summary>
+        /// 转为字符串表达式
+        /// </summary>
+        /// <returns></returns>
         public new string ToString()
         {
             if (IsAll)
@@ -277,11 +280,19 @@ namespace Mozi.SSDP
         /// 设备UUID值
         /// </summary>
         public string DeviceId { get; set; }
+        /// <summary>
+        /// 转为字符串表达式
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return $"uuid:{DeviceId}";
         }
-
+        /// <summary>
+        /// 从字符串解析 uuid:{device-UUID}
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static UDNDesc Parse(string data)
         {
             UDNDesc desc = new UDNDesc();

@@ -11,14 +11,60 @@ namespace Mozi.SSDP
     //NTS:Notification Sub Type
     //USN:Unique Service Name
     //MX: Maximum wait time in seconds. Should be between 1 and 120 inclusive
-
+    /// <summary>
+    /// Notify ssdp:alive接收委托
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="pack"></param>
+    /// <param name="host"></param>
     public delegate void NotifyAliveReceived(object sender,AlivePackage pack,string host);
+    /// <summary>
+    /// Notify ssdp:byebye接收委托
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="pack"></param>
+    /// <param name="host"></param>
     public delegate void NotifyByebyeReceived(object sender, ByebyePackage pack, string host);
-    public delegate void SearchReceived(object sender,SearchPackage pack,string host);
-    public delegate void SearchResponsed(object sender, SearchResponsePackage resp, string host);
-    public delegate void PostReceived(object sender, HttpRequest req, string host);
-    public delegate void HttpResponsed(object sender, HttpResponse resp, string host);
+    /// <summary>
+    /// Notify upnp:update 接收委托
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="pack"></param>
+    /// <param name="host"></param>
     public delegate void NotifyUpdateReceived(object sender, UpdatePackage pack, string host);
+    /// <summary>
+    /// M-SEARCH 接收委托
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="pack"></param>
+    /// <param name="host"></param>
+    public delegate void SearchReceived(object sender,SearchPackage pack,string host);
+    /// <summary>
+    /// M-SEARCH 响应委托
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="resp"></param>
+    /// <param name="host"></param>
+    public delegate void SearchResponsed(object sender, SearchResponsePackage resp, string host);
+    /// <summary>
+    /// POST 接收委托
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="req"></param>
+    /// <param name="host"></param>
+    public delegate void PostReceived(object sender, HttpRequest req, string host);
+    /// <summary>
+    /// HTTP 响应委托 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="resp"></param>
+    /// <param name="host"></param>
+    public delegate void HttpResponsed(object sender, HttpResponse resp, string host);
+    /// <summary>
+    /// 接收到任何消息时都会触发
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
     public delegate void MessageReceived(object sender, DataTransferArgs args);
 
     //public delegate void SubscribeReceived(object sender, HttpRequest pack,string host);

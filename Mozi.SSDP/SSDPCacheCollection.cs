@@ -10,7 +10,7 @@ namespace Mozi.SSDP
     public class SSDPCacheCollection : IEnumerable
     {
 
-        public static SSDPCacheCollection _cm;
+        private static SSDPCacheCollection _cm;
         /// <summary>
         /// 单实例
         /// </summary>
@@ -25,7 +25,10 @@ namespace Mozi.SSDP
         {
 
         }
-
+        /// <summary>
+        /// 增加缓存对象
+        /// </summary>
+        /// <param name="cache"></param>
         public void Add(SSDPCache cache)
         {
             var c = _caches.Find(x => x.Host == cache.Host);
@@ -38,12 +41,26 @@ namespace Mozi.SSDP
                 c = cache;
             }
         }
-
+        /// <summary>
+        /// 移除缓存对象
+        /// </summary>
+        /// <param name="cache"></param>
         public void Remove(SSDPCache cache)
         {
             _caches.Remove(cache);
         }
-
+        /// <summary>
+        /// 移除缓存对象
+        /// </summary>
+        /// <param name="usn"></param>
+        public void Remove(USNDesc usn)
+        {
+            _caches.RemoveAll(x => x.USN.ToString() == usn.ToString());
+        }
+        /// <summary>
+        /// 迭代器
+        /// </summary>
+        /// <returns></returns>
         public IEnumerator GetEnumerator()
         {
             return new SSDPCacheCollectionEnumerator(_caches);
@@ -91,7 +108,10 @@ namespace Mozi.SSDP
         private List<SSDPCache> _collection;
 
         private SSDPCache value;
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="colletion"></param>
         public SSDPCacheCollectionEnumerator(List<SSDPCache> colletion)
         {
             _collection = colletion;
@@ -101,7 +121,10 @@ namespace Mozi.SSDP
         {
             get { return value; }
         }
-
+        /// <summary>
+        /// 移动到下一项
+        /// </summary>
+        /// <returns></returns>
         public bool MoveNext()
         {
             _index++;
@@ -115,6 +138,9 @@ namespace Mozi.SSDP
             }
             return true;
         }
+        /// <summary>
+        /// 重置索引项
+        /// </summary>
         public void Reset()
         {
             _index = -1;
