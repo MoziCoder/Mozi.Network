@@ -444,7 +444,9 @@ namespace Mozi.IoT
             MesssageId = msgId;
             MessageType = msgType;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public CoAPPackage()
         {
 

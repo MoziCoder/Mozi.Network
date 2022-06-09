@@ -2,6 +2,9 @@
 
 namespace Mozi.Live.RTP
 {
+    /// <summary>
+    /// RTSP头属性
+    /// </summary>
     public class RTSPHeaderProperty
     {
         //General  Description

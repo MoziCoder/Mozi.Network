@@ -64,6 +64,7 @@ namespace Mozi.IoT.CoAP
         private static int _round = -1;
 
         private static string _url = "";
+
         //用信号量取代Action->BeginInvoke，适应.NetCore
         static SemaphoreSlim semaphore = new SemaphoreSlim(0,1);
 
