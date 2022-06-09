@@ -13,9 +13,17 @@ namespace Mozi.SSDP
     public class UDPSocket
     {
 
+        /// <summary>
+        /// 组播端口
+        /// </summary>
         protected int _multicastGroupPort = SSDPProtocol.MulticastPort;
+        /// <summary>
+        /// 组播地址
+        /// </summary>
         protected string _multicastGroupAddress  = SSDPProtocol.MulticastAddress;
-
+        /// <summary>
+        /// 本地Socket实例
+        /// </summary>
         protected Socket _sc;
 
         //private EndPoint _remoteEndPoint=new IPEndPoint(IPAddress.Any, 0);

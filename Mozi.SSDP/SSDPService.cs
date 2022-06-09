@@ -891,7 +891,7 @@ namespace Mozi.SSDP
             //如果POST被拒绝，则使用M-POST
             request.SetBody(StringEncoder.Encode(pk.Body.CreateDocument()));
             request.SetHeaders(pk.GetHeaders());
-            request.SetHeader("CONTENT-LENGTH", request.Body.Length.ToString());
+            request.AddHeader("CONTENT-LENGTH", request.Body.Length.ToString());
             HttpClient hc = new HttpClient();
             hc.Send(controlPath, request, callback);
         }
@@ -956,13 +956,13 @@ namespace Mozi.SSDP
             HttpRequest request = new HttpRequest();
             UriInfo uri=UriInfo.Parse(publishPath);
             request.SetPath(publishPath).SetMethod(RequestMethodUPnP.SUBSCRIBE);
-            request.SetHeader("HOST", $"{uri.Domain??uri.Host}:{(uri.Port>0?uri.Port:80)}");
-            request.SetHeader("NT", SSDPType.Event.ToString());
-            request.SetHeader("CALLBACK",callbackurl);
-            request.SetHeader("TIMEOUT", timeout.ToString());
+            request.AddHeader("HOST", $"{uri.Domain??uri.Host}:{(uri.Port>0?uri.Port:80)}");
+            request.AddHeader("NT", SSDPType.Event.ToString());
+            request.AddHeader("CALLBACK",callbackurl);
+            request.AddHeader("TIMEOUT", timeout.ToString());
             if (string.IsNullOrEmpty(statevar))
             {
-                request.SetHeader("STATEVAR", statevar);
+                request.AddHeader("STATEVAR", statevar);
             }
             HttpClient hc = new HttpClient();
             hc.Send(publishPath, request, callback);
@@ -979,9 +979,9 @@ namespace Mozi.SSDP
             HttpRequest request = new HttpRequest();
             UriInfo uri = UriInfo.Parse(publishPath);
             request.SetPath(publishPath).SetMethod(RequestMethodUPnP.SUBSCRIBE);
-            request.SetHeader("HOST", $"{uri.Domain ?? uri.Host}:{(uri.Port > 0 ? uri.Port : 80)}");
-            request.SetHeader("SID", $"uuid:{sid}");
-            request.SetHeader("TIMEOUT", timeout.ToString());
+            request.AddHeader("HOST", $"{uri.Domain ?? uri.Host}:{(uri.Port > 0 ? uri.Port : 80)}");
+            request.AddHeader("SID", $"uuid:{sid}");
+            request.AddHeader("TIMEOUT", timeout.ToString());
             HttpClient hc = new HttpClient();
             hc.Send(publishPath, request, callback);
         }
@@ -999,8 +999,8 @@ namespace Mozi.SSDP
         {
             HttpRequest request = new HttpRequest();
             UriInfo uri = UriInfo.Parse(publishPath);
-            request.SetHeader("HOST", $"{uri.Domain ?? uri.Host}:{(uri.Port > 0 ? uri.Port : 80)}");
-            request.SetHeader("SID", $"uuid:{sid}");
+            request.AddHeader("HOST", $"{uri.Domain ?? uri.Host}:{(uri.Port > 0 ? uri.Port : 80)}");
+            request.AddHeader("SID", $"uuid:{sid}");
             HttpClient hc = new HttpClient();
             hc.Send(publishPath, request, callback);
         }
