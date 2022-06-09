@@ -82,9 +82,9 @@ namespace Mozi.HttpEmbedded
         {
             HttpRequest req = new HttpRequest();
             req.SetMethod(method);
-            req.SetHeader(HeaderProperty.UserAgent, UserAgent);
-            req.SetHeader(HeaderProperty.Accept, Accept);
-            req.SetHeader(HeaderProperty.AcceptEncoding, AcceptEncoding);
+            req.AddHeader(HeaderProperty.UserAgent, UserAgent);
+            req.AddHeader(HeaderProperty.Accept, Accept);
+            req.AddHeader(HeaderProperty.AcceptEncoding, AcceptEncoding);
             req.SetBody(body);
 
             //设置头信息
@@ -92,14 +92,14 @@ namespace Mozi.HttpEmbedded
             {
                 foreach (KeyValuePair<HeaderProperty, string> h in headers)
                 {
-                    req.SetHeader(h.Key, h.Value);
+                    req.AddHeader(h.Key, h.Value);
                 }
             }
 
             //设置认证用户
             if (_user != null && _authScheme != null)
             {
-                req.SetHeader(HeaderProperty.Authorization,_authScheme.GenerateAuthorization(_user.UserName, _user.Password));
+                req.AddHeader(HeaderProperty.Authorization,_authScheme.GenerateAuthorization(_user.UserName, _user.Password));
             }
 
             Send(url, req, callback);

@@ -83,6 +83,9 @@ namespace Mozi.HttpEmbedded
         ///// </summary>
         //public bool AutoAddHeaderContentType = true;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public HttpResponse()
         {
             _headers = new TransformHeader();
@@ -141,6 +144,11 @@ namespace Mozi.HttpEmbedded
             _contentType = contentType;
             return this;
         }
+        /// <summary>
+        /// 设置头属性合集
+        /// </summary>
+        /// <param name="headers"></param>
+        /// <returns></returns>
         public HttpResponse SetHeaders(TransformHeader headers)
         {
             _headers = headers;
@@ -154,19 +162,38 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public HttpResponse AddHeader(HeaderProperty head, string value)
         {
-            _headers.Add(head, value);
-            return this;
+            return AddHeader(head.PropertyName, value);
         }
         /// <summary>
         /// 增加头部信息
         /// </summary>
-        /// <param name="item"></param>
+        /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public HttpResponse AddHeader(string item, string value)
+        public HttpResponse AddHeader(string key, string value)
         {
-            _headers.Add(item, value);
+            _headers.Add(key, value);
             return this;
+        }
+        /// <summary>
+        /// 增加头部 以符串", "为分割符号
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public HttpResponse AddHeader(string key,params string[] value)
+        {
+            return AddHeader(key, string.Join(", ", value));
+        }
+        /// <summary>
+        /// 增加头部  以符串", "为分割符号
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public HttpResponse AddHeader(HeaderProperty key, params string[] value)
+        {
+            return AddHeader(key.PropertyName, value);
         }
         /// <summary>
         /// 写入字节数据
@@ -441,7 +468,9 @@ namespace Mozi.HttpEmbedded
                 }
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         ~HttpResponse()
         {
             _body = null;

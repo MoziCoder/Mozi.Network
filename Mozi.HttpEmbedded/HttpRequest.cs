@@ -677,7 +677,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public HttpRequest SetHeader(string key,string value)
+        public HttpRequest AddHeader(string key,string value)
         {
             _headers.Add(key, value);
             return this;
@@ -688,10 +688,29 @@ namespace Mozi.HttpEmbedded
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public HttpRequest SetHeader(HeaderProperty key,string value)
+        public HttpRequest AddHeader(HeaderProperty key,string value)
         {
-            _headers.Add(key, value);
-            return this;
+            return AddHeader(key.PropertyName, value);
+        }
+        /// <summary>
+        /// 增加头部 组合值以符串", "为分割符号
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public HttpRequest AddHeader(string key, params string[] value)
+        {
+            return AddHeader(key, string.Join(";", value));
+        }
+        /// <summary>
+        /// 增加头部 组合值以符串", "为分割符号
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public HttpRequest AddHeader(HeaderProperty key, params string[] value)
+        {
+            return AddHeader(key.PropertyName, value);
         }
         /// <summary>
         /// 应用头信息集合 覆盖所有头属性
@@ -747,7 +766,7 @@ namespace Mozi.HttpEmbedded
             {
                 _body = data;
                 ContentLength = _body.Length.ToString();
-                SetHeader(HeaderProperty.ContentLength, data.Length.ToString());
+                AddHeader(HeaderProperty.ContentLength, data.Length.ToString());
             }
             return this;
         }
@@ -767,8 +786,8 @@ namespace Mozi.HttpEmbedded
         public HttpRequest SetUri(UriInfo uri)
         {
             //注入Host
-            SetHeader(HeaderProperty.Host, string.IsNullOrEmpty(uri.Domain) ? uri.Host : uri.Domain);
-            SetHeader(HeaderProperty.Referer, uri.Url);
+            AddHeader(HeaderProperty.Host, string.IsNullOrEmpty(uri.Domain) ? uri.Host : uri.Domain);
+            AddHeader(HeaderProperty.Referer, uri.Url);
             return this;
         }
         ~HttpRequest()

@@ -201,6 +201,7 @@
     <None Include="WebDav\README.md" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Cgi\" />
     <Folder Include="Secure\" />
     <Folder Include="WebSocket\" />
   </ItemGroup>

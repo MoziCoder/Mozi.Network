@@ -115,18 +115,32 @@ namespace Mozi.HttpEmbedded
         //通常在值为“XMLHttpRequest”时使用
         //Not standard
 
-        //SOAP
+        /// <summary>
+        /// 
+        /// </summary>
         public static HeaderProperty SOAPAction = new HeaderProperty("SOAPAction");
 
+        /// <summary>
+        /// 属性名
+        /// </summary>
         public string PropertyName { get; set; }
+        /// <summary>
+        /// 属性值
+        /// </summary>
         public string PropertyValue { get; set; }
-
+        /// <summary>
+        /// 唯一标识符 区分于其它静态字段
+        /// </summary>
         protected override string Tag { get { return PropertyName; } }
 
         private HeaderProperty()
         {
 
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tag"></param>
         public HeaderProperty(string tag)
         {
             PropertyName = tag;
