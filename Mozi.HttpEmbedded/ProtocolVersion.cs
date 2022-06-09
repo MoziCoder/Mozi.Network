@@ -13,7 +13,13 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         [Obsolete("实现HTTP/0.9没有意义")]
         public static readonly ProtocolVersion Version09 = new ProtocolVersion("HTTP", "0.9");
+        /// <summary>
+        /// HTTP/1.0
+        /// </summary>
         public static readonly ProtocolVersion Version10 = new ProtocolVersion("HTTP", "1.0");
+        /// <summary>
+        /// HTTP/2.0
+        /// </summary>
         public static readonly ProtocolVersion Version11 = new ProtocolVersion("HTTP", "1.1");
 
         /// <summary>
@@ -45,10 +51,17 @@ namespace Mozi.HttpEmbedded
         /// 协议类型
         /// </summary>
         public string Name { get { return _protoName; } }
+        /// <summary>
+        /// 唯一标识符
+        /// </summary>
         protected override string Tag { get { return _protoName.ToUpper()+"/"+_vervalue; } }
 
         private string _vervalue = "", _protoName = "";
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="protoName"></param>
+        /// <param name="vervalue"></param>
         public ProtocolVersion(string protoName, string vervalue)
         {
             _vervalue = vervalue;
