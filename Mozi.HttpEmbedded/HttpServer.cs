@@ -87,7 +87,7 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 允许的方法
         /// </summary>
-        protected  RequestMethod[] MethodAllow = new RequestMethod[] { RequestMethod.OPTIONS, RequestMethod.TRACE, RequestMethod.GET, RequestMethod.HEAD, RequestMethod.POST, RequestMethod.COPY, RequestMethod.PROPFIND, RequestMethod.LOCK, RequestMethod.UNLOCK };
+        protected RequestMethod[] MethodAllow = new RequestMethod[] { RequestMethod.OPTIONS, RequestMethod.TRACE, RequestMethod.GET, RequestMethod.HEAD, RequestMethod.POST, RequestMethod.COPY, RequestMethod.PROPFIND, RequestMethod.LOCK, RequestMethod.UNLOCK };
         /// <summary>
         /// 公开的方法
         /// </summary>
@@ -169,7 +169,7 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 服务器名称
         /// </summary>
-        public string ServerName
+        public virtual string ServerName
         {
             get { return _serverName; }
             private set { _serverName = value; }
@@ -204,6 +204,11 @@ namespace Mozi.HttpEmbedded
         /// 服务端收到完整请求包时触发,此处不应作任何数据包的修改处理
         /// </summary>
         public Request Request;
+        /// <summary>
+        /// 完成响应后触发
+        /// </summary>
+        public RequestHandled RequestHandled;
+
         /// <summary>
         /// 默认路由管理器
         /// </summary>
@@ -363,6 +368,7 @@ namespace Mozi.HttpEmbedded
             if (args.Socket != null && args.Socket.Connected&&context.Request!=null)
             {
                 
+                //注入服务器名称
                 context.Response.AddHeader(HeaderProperty.Server, ServerName);
                 context.Response.SetStatus(sc);
 
@@ -402,7 +408,11 @@ namespace Mozi.HttpEmbedded
                 }
 
                 args.Socket.Send(context.Response.GetBuffer());
-
+                //事件回调
+                if (RequestHandled != null)
+                {
+                    RequestHandled(args.IP,args.Port,context);
+                }
                 if (!chunked)
                 {
                     //等待指定的秒数，以发送完剩余数据
@@ -589,6 +599,7 @@ namespace Mozi.HttpEmbedded
 
             if (st.CheckIfModified(pathReal, ifmodifiedsince))
             {
+                //是否范围请求
                 if (string.IsNullOrEmpty(range))
                 {
                     DateTime dtModified = st.GetLastModifiedTime(pathReal).ToUniversalTime();
@@ -733,10 +744,7 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         private StatusCode HandleRequestOptions(ref HttpContext context)
         {
-            foreach (RequestMethod verb in MethodAllow)
-                context.Response.AddHeader("Allow", verb.Name);
-            foreach (RequestMethod verb in MethodPublic)
-                context.Response.AddHeader("Public", verb.Name);
+            context.Response.AddHeader(HeaderProperty.Allow, MethodAllow.Select(x=>x.Name).ToArray());
             // Sends 200 OK
             return StatusCode.Success;
         }
@@ -748,7 +756,7 @@ namespace Mozi.HttpEmbedded
             RequestMethod method = context.Request.Method;
             if (EnableWebDav)
             {
-                return _davserver.ProcessRequest(ref context);
+                return _davserver.HandleRequest(ref context);
             }
             return StatusCode.Forbidden;
             //RequestMethod.PROPFIND,RequestMethod.PROPPATCH RequestMethod.MKCOL RequestMethod.COPY RequestMethod.MOVE RequestMethod.LOCK RequestMethod.UNLOCK
@@ -786,7 +794,7 @@ namespace Mozi.HttpEmbedded
         /// 启用认证
         /// <para>此方法可连续配置用户</para>
         /// </summary>
-        /// <param name="at">访问认证类型<see cref="E:Auth.AuthType"/></param>
+        /// <param name="at">访问认证类型</param>
         /// <returns></returns>
         public HttpServer UseAuth(AuthorizationType at)
         {
@@ -1023,23 +1031,32 @@ namespace Mozi.HttpEmbedded
             }
         }
         /// <summary>
-        /// 注册简易处理方法，默认为仅响应GET请求。方法原型为<see cref="RegisterHandler(string, RequestMethod, Handler)"/>
+        /// 注册简易处理方法，默认为仅响应GET请求。方法原型为<see cref="RegisterHandler(string, RequestMethod, ApiHandler)"/>
         /// </summary>
         /// <param name="name"></param>
         /// <param name="handler"></param>
-        public void RegisterHandler(string name,Handler handler)
+        public void RegisterHandler(string name,ApiHandler handler)
         {
             Router.Get(name, handler);
         }
         /// <summary>
-        /// 
+        /// 注册API
         /// </summary>
         /// <param name="name">方法名</param>
         /// <param name="method">HTTP请求类型</param>
         /// <param name="handler">委托</param>
-        public void RegisterHandler(string name,RequestMethod method,Handler handler)
+        /// <remarks>这是一个快速注册API的方法，无需实现<see cref="BaseApi"/></remarks>
+        public void RegisterHandler(string name,RequestMethod method,ApiHandler handler)
         {
             Router.RegisterGlobalMethod(name, method, handler);
+        }
+        /// <summary>
+        /// 移除API
+        /// </summary>
+        /// <param name="name"></param>
+        public void RemoveHandler(string name)
+        {
+            Router.UnRegisterGlobalMethod(name);
         }
     }
     /// <summary>
@@ -1050,10 +1067,17 @@ namespace Mozi.HttpEmbedded
     /// <param name="request"></param>
     public delegate void Request(string srcHost, int srcPort, HttpRequest request);
     /// <summary>
-    /// 
+    /// 响应发送委托
     /// </summary>
     /// <param name="dstHost"></param>
     /// <param name="dstPort"></param>
     /// <param name="response"></param>
     public delegate void Response(string dstHost, int dstPort, HttpResponse response);
+    /// <summary>
+    /// 请求响应完成时触发
+    /// </summary>
+    /// <param name="dstHost"></param>
+    /// <param name="dstPort"></param>
+    /// <param name="context"></param>
+    public delegate void RequestHandled(string dstHost, int dstPort, HttpContext context);
 }

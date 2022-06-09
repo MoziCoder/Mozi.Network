@@ -44,7 +44,7 @@ namespace Mozi.HttpEmbedded.WebDav
         /// <param name="context"></param>
         /// <exception cref="WebDavUnauthorizedException"></exception>
         /// <exception cref="WebDavNotFoundException"></exception>
-        public StatusCode ProcessRequest(ref HttpContext context)
+        public StatusCode HandleRequest(ref HttpContext context)
         {
             RequestMethod method = context.Request.Method;
             IMethodHandler methodHandler;

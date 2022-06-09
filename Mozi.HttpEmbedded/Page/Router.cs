@@ -103,7 +103,7 @@ namespace Mozi.HttpEmbedded.Page
         /// <returns></returns>
         internal object InvokeFromGlobal(ref HttpContext ctx,AccessPoint ap)
         {
-            Handler handler = _global.Find(ctx.Request.Method.Name + "::" + ap.Action);
+            ApiHandler handler = _global.Find(ctx.Request.Method.Name + "::" + ap.Action);
             return handler.Invoke(ctx);
         }
 
@@ -293,25 +293,42 @@ namespace Mozi.HttpEmbedded.Page
             _dataserializer = ser;
         }
         /// <summary>
-        /// 注册GET简易接口
+        /// 注册GET API
         /// </summary>
         /// <param name="name"></param>
         /// <param name="handler"></param>
-        public void Get(string name,Handler handler)
+        public void Get(string name,ApiHandler handler)
         {
             RegisterGlobalMethod(name, RequestMethod.GET, handler);
         }
         /// <summary>
-        /// 注册POST简易接口
+        /// 注册POST API
         /// </summary>
         /// <param name="name"></param>
         /// <param name="handler"></param>
-        public void Post(string name,Handler handler)
+        public void Post(string name,ApiHandler handler)
         {
             RegisterGlobalMethod(name, RequestMethod.POST, handler);
         }
-
-        internal void RegisterGlobalMethod(string name, RequestMethod method,Handler hadler)
+        /// <summary>
+        /// 注册POST API
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="handler"></param>
+        public void Put(string name,ApiHandler handler)
+        {
+            RegisterGlobalMethod(name, RequestMethod.PUT, handler);
+        }
+        /// <summary>
+        /// 注册POST API
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="handler"></param>
+        public void Delete(string name,ApiHandler handler)
+        {
+            RegisterGlobalMethod(name, RequestMethod.DELETE, handler);
+        }
+        internal void RegisterGlobalMethod(string name, RequestMethod method,ApiHandler hadler)
         {
             if (name.IndexOf((char)ASCIICode.DIVIDE) != 0)
             {
