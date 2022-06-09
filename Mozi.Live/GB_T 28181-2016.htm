@@ -1,0 +1,290 @@
+
+
+ 
+
+
+<!DOCTYPE html>
+<html dir="ltr" mozdisallowselectionprint>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=1208, initial-scale=1, maximum-scale=1">
+    <meta name="google" content="notranslate">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>在线预览|GB/T 28181-2016</title>
+
+	<link href="/bzgk/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/bzgk/css/viewer.css?7">
+	<!-- This snippet is used in production (included from viewer.html) -->
+	<link rel="resource" type="application/l10n" href="/bzgk/locale/locale.properties">
+ 	<style>
+ 	.modal-dialog {
+		top: 50%;
+	    margin-top: -140px; 
+	}
+ 	.verifyCodeChange {
+	    cursor: pointer;
+	    font-size: 18px;
+	    line-height: 38px;
+	    color: #b3b3b3;
+	    margin-left: 5px;
+	    -webkit-transition: transform 218ms;
+	    -moz-transition: transform 218ms;
+	    -o-transition: transform 218ms;
+	}
+	.verifyCodeChange:hover {
+	    color: gray;
+	    transform: rotate(90deg);
+	    -ms-transform: rotate(90deg);
+	    -moz-transform: rotate(90deg);
+	    -webkit-transform: rotate(90deg);
+	    -o-transform: rotate(90deg);
+	}
+	.verifyCode {
+	    height: 40px;
+	    border: 1px solid #b39a9a;
+	    margin-left: 5px;
+	    float: left;
+	    cursor: pointer;
+	}
+ 	.page {
+ 		margin: 0 auto;
+ 		background-color: #fff;
+ 		position: relative;
+ 		margin-top: 20px;
+ 		width: 100%;
+ 		box-sizing: content-box;
+ 	}
+ 	[class^="pdfImg"]{
+	  	width: 10%;
+ 		height: 10%;
+ 		display: block;
+ 		position: absolute;
+	}
+	[class^="pdfImg-1-"]{
+	  	left: 10%;
+	}
+	[class^="pdfImg-2-"]{
+	  	left: 20%;
+	}
+	[class^="pdfImg-3-"]{
+	  	left: 30%;
+	}
+	[class^="pdfImg-4-"]{
+	  	left: 40%;
+	}
+	[class^="pdfImg-5-"]{
+	  	left: 50%;
+	}
+	[class^="pdfImg-6-"]{
+	  	left: 60%;
+	}
+	[class^="pdfImg-7-"]{
+	  	left: 70%;
+	}
+	[class^="pdfImg-8-"]{
+	  	left: 80%;
+	}
+	[class^="pdfImg-9-"]{
+	  	left: 90%;
+	}
+	[class^="pdfImg-"][class$="-1"]{
+	  	top: 10%;
+	}
+	[class^="pdfImg-"][class$="-2"]{
+	  	top: 20%;
+	}
+	[class^="pdfImg-"][class$="-3"]{
+	  	top: 30%;
+	}
+	[class^="pdfImg-"][class$="-4"]{
+	  	top: 40%;
+	}
+	[class^="pdfImg-"][class$="-5"]{
+	  	top: 50%;
+	}
+	[class^="pdfImg-"][class$="-6"]{
+	  	top: 60%;
+	}
+	[class^="pdfImg-"][class$="-7"]{
+	  	top: 70%;
+	}
+	[class^="pdfImg-"][class$="-8"]{
+	  	top: 80%;
+	}
+	[class^="pdfImg-"][class$="-9"]{
+	  	top: 90%;
+	}
+	
+ 	</style>
+  </head>
+
+  <body tabindex="1" oncontextmenu="return false">
+  <div id="outerContainer">
+  	<div id="mainContainer">
+	  	<div class="toolbar">
+	          <div id="toolbarContainer">
+	            <div id="toolbarViewer">
+	              <div id="toolbarViewerLeft">
+	                <div class="toolbarButtonSpacer"></div>
+	                <div class="splitToolbarButton hiddenSmallView">
+	                  <button class="toolbarButton pageUp" title="Previous Page" id="previous" tabindex="13" data-l10n-id="previous">
+	                    <span data-l10n-id="previous_label">Previous</span>
+	                  </button>
+	                  <div class="splitToolbarButtonSeparator"></div>
+	                  <button class="toolbarButton pageDown" title="Next Page" id="next" tabindex="14" data-l10n-id="next">
+	                    <span data-l10n-id="next_label">Next</span>
+	                  </button>
+	                </div>
+	                <input type="number" id="pageNumber" class="toolbarField pageNumber" title="Page" value="1" size="4" min="1" tabindex="15" data-l10n-id="page" autocomplete="off">
+	                <span id="numPages" class="toolbarLabel">/0</span>
+	              </div>
+	              <div id="toolbarViewerMiddle">
+	                <div class="splitToolbarButton">
+	                  <button id="zoomOut" class="toolbarButton zoomOut" title="Zoom Out" tabindex="21" data-l10n-id="zoom_out">
+	                    <span data-l10n-id="zoom_out_label">Zoom Out</span>
+	                  </button>
+	                  <div class="splitToolbarButtonSeparator"></div>
+	                  <button id="zoomIn" class="toolbarButton zoomIn" title="Zoom In" tabindex="22" data-l10n-id="zoom_in">
+	                    <span data-l10n-id="zoom_in_label">Zoom In</span>
+	                   </button>
+	                </div>
+	                <span id="scaleSelectContainer" class="dropdownToolbarButton">
+	                  <select id="scaleSelect" title="Zoom" tabindex="23" data-l10n-id="zoom">
+	                  </select>
+	                </span>
+	              </div>
+	            </div>
+	            <div id="loadingBar">
+	              <div class="progress">
+	                <div class="glimmer">
+	                </div>
+	              </div>
+	            </div>
+	          </div>
+	        </div>
+	        <div id="viewerContainer" tabindex="0">
+	          <div id="viewer" class="pdfViewer">
+	          		
+	          </div>
+	        </div>
+		</div>
+	</div>
+	
+	<div class="modal bs-example-modal-sm" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="false">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="myModalLabel">在线预览</h4>
+				</div>
+				<div class="modal-body"> 
+					<input type="text" id="verifyCode" maxlength="4" placeholder="验证码" class="necessary" style="float: left; letter-spacing: 3px; font-size: 20px; text-align: center; width: 100px; height: 40px;" onkeyDown="if(event.keyCode==13){checkCode();}">
+					<img class="verifyCode" title="" style="" onclick="refreshVerifyCode()">
+					<span class="verifyCodeChange glyphicon glyphicon-refresh" onclick="refreshVerifyCode()" title="换一张"></span>
+					<hr/>
+					<span style="color:#c4251f"><span class="glyphicon glyphicon-info-sign"></span>温馨提示：</span>本系统所提供的电子文本仅供参考，请以正式标准出版物为准。
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" onclick="checkCode();">验证</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+  </body>
+  	<script type="text/javascript" src="/bzgk/js/jquery-1.11.3.min.js"></script> 
+  	<script type="text/javascript" src='/bzgk/js/bootstrap.js'></script>
+  	<script type="text/javascript" src="/bzgk/js/compatibility.js"></script> 
+	<script>
+	var metaEl = $('meta[name="viewport"]');
+	console.log(screen.width+'/'+document.body.clientWidth);
+	metaEl.attr('content', 'width=1208, initial-scale='+(screen.width/document.body.clientWidth).toFixed(1)+', maximum-scale=1');
+	
+	document.onkeydown = function(){
+		if(window.event && window.event.keyCode == 123) {
+			window.event.keyCode=0;
+			window.event.returnValue=false;
+		}
+	}
+	
+	function valid(){
+		$('.verifyCode').click(); 
+		$('#myModal').modal('show');
+	}
+	
+	function checkCode(){
+		$.ajax({
+			url:'verifyCode',
+			data:{'verifyCode':$('#verifyCode').val()},
+			method:'post',
+			dataType:"text",
+			error:function(data){
+				alert("服务器出错，请联系管理员");
+			},
+			success:function(data){
+				if(data=='success'){
+					window.location.reload();
+					$('#myModal').modal('hide');
+	           	}else {
+	           		alert("验证码不正确，请重新输入");
+	           		$('#verifyCode').val('')
+		    		$('.verifyCode').click(); 
+	          	}
+			}
+		});
+	}
+
+	function refreshVerifyCode(){
+		$('.verifyCode').attr('src','gc?_'+ new Date().getTime()); 
+	}
+	
+	valid();
+	
+	var u = navigator.userAgent;
+	var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+	var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+
+	//判断访问终端
+	var browser={
+		versions:function(){
+			var u = navigator.userAgent, app = navigator.appVersion;
+			return {
+				trident: u.indexOf('Trident') > -1, //IE内核
+				presto: u.indexOf('Presto') > -1, //opera内核
+				webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+				gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1,//火狐内核
+				mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+				ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+				android: u.indexOf('Android') > -1 || u.indexOf('Adr') > -1, //android终端
+				iPhone: u.indexOf('iPhone') > -1 , //是否为iPhone或者QQHD浏览器
+				iPad: u.indexOf('iPad') > -1, //是否iPad
+				webApp: u.indexOf('Safari') == -1, //是否web应该程序，没有头部与底部
+				weixin: u.indexOf('MicroMessenger') > -1, //是否微信 (2015-01-22新增)
+				qq: u.match(/\sQQ/i) == " qq" //是否QQ
+			};
+		}(),
+		language:(navigator.browserLanguage || navigator.language).toLowerCase()
+	}
+	if(screen.width<(document.body.clientWidth-300)){ 
+		$('.modal-dialog').css('transform','scale('+((document.body.clientWidth-100)/600)+')');
+	}
+	//判断是否移动端
+	if(browser.versions.mobile||browser.versions.android||browser.versions.ios){ 
+		console.log(document.body.clientWidth/screen.width);
+	}
+	
+	
+   	</script>
+	<script>
+	<!-- PHPStat Start -->
+	var _trackDataType = 'web';
+	var _trackData = _trackData || [];
+	(function() {
+	var phpstat_js = document.createElement('script'); phpstat_js.type = 'text/javascript'; 
+	phpstat_js.charset = 'utf-8'; phpstat_js.id = 'phpstat_async_js_id_10002798'; phpstat_js.async = true;
+	phpstat_js.src = '//s1.topstat.cn/count/10002798/10002798.js';
+	var phpstat_cjs = document.getElementsByTagName('script')[0]; phpstat_cjs.parentNode.insertBefore(phpstat_js, phpstat_cjs);
+	})();
+	<!--/PHPStat End -->
+	</script>
+</html>
+
