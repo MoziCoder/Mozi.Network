@@ -528,15 +528,11 @@ namespace Mozi.IoT.CoAP
                 if (_round > 0)
                 {
                     loop = _round;
-                    if (loop > 100)
-                    {
-                        loop = 100;
-                    }
                 }
                 for (int i = 0; i < loop; i++)
                 {
                     cc.SendMessage(host, port, cp);
-                    Thread.Sleep(100);
+                    Thread.Sleep(10);
                 }
             }
         }
@@ -597,7 +593,7 @@ namespace Mozi.IoT.CoAP
                             "\r\n  -time                    阻塞式监听若干秒，参数值为整数，单位为秒。" +
                             "\r\n  -dump                    值为文件路径，将编码好的数据包转储到文件，不发起请求"+
                             "\r\n  -file                    需要上传的文件的路径" +
-                            "\r\n  -round                   重复发起请求的次数（最高100次），需-time参数进行配合" +
+                            "\r\n  -round                   重复发起请求的次数，需-time参数进行配合" +
                             "\r\n" +
                             "\r\n  -type                    消息类型,取值范围" +
                             "\r\n                            con   --Confirmable" +
