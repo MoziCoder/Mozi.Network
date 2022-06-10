@@ -5595,9 +5595,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\example.txt" />
-    <Content Include="RFC 7252 The Constrained Application Protocol %28CoAP%29.html" />
-    <Content Include="RFC 7959 Block-Wise Transfers in the Constrained Application Protocol %28CoAP%29.htm" />
-    <Content Include="RFC 8613 Object Security for Constrained RESTful Environments %28OSCORE%29.htm" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="admin\assets\fonts\fontawesome-webfont.eot">

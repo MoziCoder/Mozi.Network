@@ -321,7 +321,7 @@ namespace Mozi.HttpEmbedded
             return StatusCode.Found;
         }
         /// <summary>
-        /// HttpResponse反向解析
+        /// HttpResponse反向解析，类HTTP的响应数据包也可以进行解析
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
