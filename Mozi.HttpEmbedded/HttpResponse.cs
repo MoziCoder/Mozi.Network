@@ -9,6 +9,7 @@ using Mozi.HttpEmbedded.Source;
 
 namespace Mozi.HttpEmbedded
 {
+    //TODO 考虑将头部和内容分割，头部保留在内存中，内容保留到持久存储中
     /// <summary>
     /// HTTP响应
     /// </summary>
@@ -33,6 +34,10 @@ namespace Mozi.HttpEmbedded
         /// 状态码
         /// </summary>
         public StatusCode Status { get; protected set; }
+        /// <summary>
+        /// 响应状态行数据
+        /// </summary>
+        public string StatusLineString { get { return $"{Version} {Status.Code} {Status.Text}"; } }
         /// <summary>
         /// 内容长度
         /// </summary>
@@ -213,7 +218,7 @@ namespace Mozi.HttpEmbedded
             return this;
         }
         /// <summary>
-        /// 写入文本
+        /// 写入文本到数据包的末尾
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
@@ -223,13 +228,22 @@ namespace Mozi.HttpEmbedded
             return this;
         }
         /// <summary>
-        /// 写入压缩的数据
+        /// 写入压缩编码后的数据
         /// </summary>
         /// <param name="body"></param>
-        public void WriteCompressBody(byte[] body)
+        public void WriteEncodeBody(byte[] body)
         {
             _body = body;
             ContentEncoded = true;
+        }
+        /// <summary>
+        /// 写入解码的内容数据
+        /// </summary>
+        /// <param name="body"></param>
+        public void WriteDecodeBody(byte[] body)
+        {
+            _body = body;
+            ContentEncoded = false;
         }
         //TODO 此处需要调试
         //Transfer-Encoding
@@ -308,7 +322,7 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public byte[] GetStatusLine()
         {
-            return StringEncoder.Encode(string.Format("{3}/{0} {1} {2}", Version.Version, Status.Code, Status.Text,Version.Name));
+            return StringEncoder.Encode(StatusLineString);
         }
         /// <summary>
         /// 重定向302
@@ -461,12 +475,26 @@ namespace Mozi.HttpEmbedded
         {
             if (resp.Headers.Contains(HeaderProperty.ContentEncoding.PropertyName))
             {
-                resp.ContentEncoding = resp.Headers.GetValue(HeaderProperty.ContentEncoding.PropertyName);
-                if (resp.ContentEncoding != Compress.ContentEncoding.None.ToString())
+                resp.ContentEncoding = resp.Headers.GetValue(HeaderProperty.ContentEncoding);
+                //如果不是ContentEncoding: none
+                if (!Compress.ContentEncoding.None.ToString().Equals(resp.ContentEncoding,StringComparison.OrdinalIgnoreCase))
                 {
                     resp.ContentEncoded = true;
                 }
             }
+        }
+        /// <summary>
+        /// 设置Body数据
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public HttpResponse SetBody(byte[] data)
+        {
+            if (data != null)
+            {
+                _body = data;
+            }
+            return this;
         }
         /// <summary>
         /// 
