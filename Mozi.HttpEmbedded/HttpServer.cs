@@ -205,6 +205,10 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         public Request Request;
         /// <summary>
+        /// 服务端响应时触发
+        /// </summary>
+        public Response Response;
+        /// <summary>
         /// 完成响应后触发
         /// </summary>
         public RequestHandled RequestHandled;
@@ -384,7 +388,7 @@ namespace Mozi.HttpEmbedded
                     if (body.Length > ZipOption.MinContentLength)
                     {
                         body = GZip.Compress(body);
-                        context.Response.WriteCompressBody(body);
+                        context.Response.WriteEncodeBody(body);
                         context.Response.AddHeader(HeaderProperty.ContentEncoding, "gzip");
                     }
                 }
@@ -408,6 +412,10 @@ namespace Mozi.HttpEmbedded
                 }
 
                 args.Socket.Send(context.Response.GetBuffer());
+                if (Response != null)
+                {
+                    Response(args.IP, args.Port, context.Response);
+                }
                 //事件回调
                 if (RequestHandled != null)
                 {
