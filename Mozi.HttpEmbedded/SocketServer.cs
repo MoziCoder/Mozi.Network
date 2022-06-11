@@ -130,32 +130,32 @@ namespace Mozi.HttpEmbedded
             Socket server = (Socket)iar.AsyncState; 
             //接受新连接传入
             server.BeginAccept(CallbackAccept, server);
-
-            Socket client = server.EndAccept(iar);
-
-            StateObject so = new StateObject()
-            {
-                WorkSocket = client,
-                Id = Guid.NewGuid().ToString(),
-                IP = ((IPEndPoint)client.RemoteEndPoint).Address.ToString(),
-                ConnectTime = DateTime.Now,
-                RemotePort = ((IPEndPoint)client.RemoteEndPoint).Port,
-            };
-            if (OnClientConnect != null)
-            {
-                //TODO .NetCore不再支持异步委托，需要重新实现
-                OnClientConnect(this, new ClientConnectArgs()
-                {
-                    Id = so.Id,
-                    IP = so.IP,
-                    ConnectTime = so.ConnectTime,
-                    RemotePort = so.RemotePort,
-                    Client = client
-                });
-            }
-            _socketDocker.TryAdd(so.Id, client);
             try
             {
+                Socket client = server.EndAccept(iar);
+
+                StateObject so = new StateObject()
+                {
+                    WorkSocket = client,
+                    Id = Guid.NewGuid().ToString(),
+                    IP = ((IPEndPoint)client.RemoteEndPoint).Address.ToString(),
+                    ConnectTime = DateTime.Now,
+                    RemotePort = ((IPEndPoint)client.RemoteEndPoint).Port,
+                };
+                if (OnClientConnect != null)
+                {
+                    //TODO .NetCore不再支持异步委托，需要重新实现
+                    OnClientConnect(this, new ClientConnectArgs()
+                    {
+                        Id = so.Id,
+                        IP = so.IP,
+                        ConnectTime = so.ConnectTime,
+                        RemotePort = so.RemotePort,
+                        Client = client
+                    });
+                }
+                _socketDocker.TryAdd(so.Id, client);
+
                 client.BeginReceive(so.Buffer, 0, so.Buffer.Length, SocketFlags.None, CallbackReceived, so);
                 if (OnReceiveStart != null)
                 {
