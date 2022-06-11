@@ -101,20 +101,47 @@ namespace Mozi.HttpEmbedded.Encode
     /// </summary>
     public class UriInfo
     {
+        /// <summary>
+        /// 原始地址信息
+        /// </summary>
         public string Url { get; set; }
+        /// <summary>
+        /// 地址中协议信息
+        /// </summary>
         public string Protocol { get; set; }
+        /// <summary>
+        /// 主机信息
+        /// </summary>
         public string Host { get; set; }
+        /// <summary>
+        /// 域名信息
+        /// </summary>
         public string Domain { get; set; }
+        /// <summary>
+        /// 端口信息
+        /// </summary>
         public int Port { get; set; }
+        /// <summary>
+        /// 路径信息
+        /// </summary>
         public string Path { get; set; }
+        /// <summary>
+        ///  分割的路径
+        /// </summary>
         public string[] Paths { get; set; }
+        /// <summary>
+        /// 查询字符串
+        /// </summary>
         public string Query { get; set; }
-        public string[] Queries { get; set; }
+        /// <summary>
+        /// 查询字符串键值对
+        /// </summary>
+        public Dictionary<string,string> Queries { get; set; }
 
         public UriInfo()
         {
             Paths = new string[0];
-            Queries = new string[0];
+            Queries = new Dictionary<string, string>();
         }
 
         /// <summary>
@@ -122,16 +149,21 @@ namespace Mozi.HttpEmbedded.Encode
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
+        /// <remarks>如果有特殊字符请先转义，如果字符串中带有#，函数会截取#之前的数据</remarks>
         public static UriInfo Parse(string url)
         {
+            if (url.IndexOf("#") > 0)
+            {
+                url = url.Substring(0, url.IndexOf("#"));
+            }
             UriInfo uri = new UriInfo();
 
             string address = "", sPort = "", path = "";
 
             string[] paths;
             bool isDomain = false;
-
-            Regex reg = new Regex("^[a-zA-Z]+://((([a-zA-Z0-9\\.-]+){2,})|(\\[?[a-zA-Z0-9\\.:]+){2,}\\]?)(:\\d+)?((/[a-zA-Z0-9-\\.%]{0,}){0,}(\\?)?([%=a-zA-Z0-9]+(&)?){0,})$");
+            
+            Regex reg = new Regex("^[a-zA-Z]+://((([a-zA-Z0-9\\.-]+){2,})|(\\[?[a-zA-Z0-9\\.:]+){2,}\\]?)(:\\d+)?((/[a-zA-Z0-9-\\.%]{0,}){0,}(\\?)?([%=a-zA-Z0-9\\.-_#]+(&)?){0,})$");
             Regex regProto = new Regex("[a-zA-Z]+(?=://)");
             Regex regHost = new Regex("(?<=\\://)(([a-zA-Z0-9-]+\\.?){2,}|(\\[?[a-zA-Z0-9-\\.:]+){2,}]?)(:\\d+)?");
 
@@ -140,7 +172,7 @@ namespace Mozi.HttpEmbedded.Encode
             Regex regDomain = new Regex("^(([a-zA-Z0-9-]+(\\.)?){2,})|(([a-zA-Z0-9-]+(\\.)?){2,}(?=:\\d+))$");
 
             Regex regPath = new Regex("(?<=(://(([a-zA-Z0-9-]+\\.?){2,}|(\\[?[a-zA-Z0-9-\\.:]+){2,}]?)(:\\d+)?))(/[a-zA-Z0-9-\\.%]{0,}){1,}((?=\\?))?");
-            Regex regQuery = new Regex("(?<=\\?)([%=a-zA-Z0-9-]+(&)?){1,}");
+            Regex regQuery = new Regex("(?<=\\?)([%=a-zA-Z0-9\\.-_#]+(&)?){1,}");
 
             if (reg.IsMatch(url))
             {
@@ -202,7 +234,12 @@ namespace Mozi.HttpEmbedded.Encode
                 uri.Query = regQuery.Match(url).Value;
                 if (uri.Query.Length > 0)
                 {
-                    uri.Queries = uri.Query.Split(new char[] { '&' });
+                    string[] query = uri.Query.Split(new char[] { '&' });
+                    foreach(var q in query)
+                    {
+                        string[] kv = q.Split(new char[] { '=' });
+                        uri.Queries.Add(kv[0], kv.Length >= 2 ? kv[1] : null);
+                    }
                 }
             }
             else
