@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Sockets;
+using Mozi.HttpEmbedded.Compress;
 using Mozi.HttpEmbedded.Encode;
 
 namespace Mozi.HttpEmbedded
@@ -8,9 +10,30 @@ namespace Mozi.HttpEmbedded
     /// <summary>
     /// 请求完成时回调
     /// </summary>
+    /// <param name="url">请求的URL地址</param>
     /// <param name="context"></param>
-    public delegate void RequestComplete(HttpContext context);
-
+    public delegate void RequestComplete(string url,HttpContext context);
+    /// <summary>
+    /// 发起请求时回调
+    /// </summary>
+    /// <param name="url"></param>
+    /// <param name="host"></param>
+    /// <param name="req"></param>
+    public delegate void RequestSend(string url, string host, HttpRequest req);
+    /// <summary>
+    /// 接收到响应时回调
+    /// </summary>
+    /// <param name="url"></param>
+    /// <param name="host"></param>
+    /// <param name="resp"></param>
+    public delegate void ResponseReceive(string url, string host, HttpResponse resp);
+    /// <summary>
+    /// 请求异常时触发
+    /// </summary>
+    /// <param name="url"></param>
+    /// <param name="host"></param>
+    /// <param name="req"></param>
+    public delegate void RequestException(string url, string host, HttpRequest req,Exception ex);
     //DONE http客户端，因http客户端实现比较多，暂时不实现，待后期规划
     //TODO 应同步实现Https HttpQUIC(http3.0)
     //TODO 应加入TLS安全传输
@@ -25,7 +48,7 @@ namespace Mozi.HttpEmbedded
         /// 编码类型
         /// </summary>
         public string Charset = "UTF-8";
-        private string _userAgent = "Mozilla/5.0 (Linux;Android 4.4.2;OEM Device) AppleWebKit/537.36 (KHTML,like Gecko) Chrome/39.0.2171.71  Mozi/1.4.3";
+        private string _userAgent = "Mozilla/5.0 (Linux;Android 4.4.2;OEM Device) AppleWebKit/537.36 (KHTML,like Gecko) Chrome/39.0.2171.71  Mozi/1.4.6";
         private const string Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
         private const string AcceptEncoding = "gzip, deflate";
 
@@ -41,9 +64,29 @@ namespace Mozi.HttpEmbedded
         //};
 
         /// <summary>
+        /// 请求发生异常时触发
+        /// </summary>
+        public RequestException RequestException;
+        /// <summary>
         /// 接收到响应时触发回调
         /// </summary>
-        public RequestComplete ResponseReceived;
+        public RequestComplete ResponseCompleted;
+        /// <summary>
+        /// 请求发起时触发
+        /// </summary>
+        public RequestSend RequestSend;
+        /// <summary>
+        /// 接收到响应时触发
+        /// </summary>
+        public ResponseReceive ResponseReceive;
+        /// <summary>
+        /// 数据压缩选项
+        /// </summary>
+        public ContentEncoding ContentEncoding = ContentEncoding.None;
+        /// <summary>
+        /// 是否自动解码被gzip|deflate压缩过的响应内容
+        /// </summary>
+        public bool AutoDecodeBody = false;
         /// <summary>
         /// 用户代理
         /// </summary>
@@ -101,8 +144,20 @@ namespace Mozi.HttpEmbedded
             {
                 req.AddHeader(HeaderProperty.Authorization,_authScheme.GenerateAuthorization(_user.UserName, _user.Password));
             }
+            try
+            {
+                Send(url, req, callback);
+            }catch(Exception ex) {
+                if (RequestException != null)
+                {
+                    RequestException(url, req.Host, req, ex);
+                }
+                else
+                {
+                    throw ex;
+                }
+            }
 
-            Send(url, req, callback);
         }
         /// <summary>
         /// 发送HTTP请求
@@ -120,40 +175,79 @@ namespace Mozi.HttpEmbedded
 
             if (!string.IsNullOrEmpty(uri.Url))
             {
+                //注入URI信息
                 req.SetUri(uri);
-                req.SetPath(uri.Path + (string.IsNullOrEmpty(uri.Query) ? "" : "&" + uri.Query));
 
                 HttpContext ctx = new HttpContext
                 {
                     Request = req
                 };
 
-                sc.AfterReceiveEnd = new ReceiveEnd((x, y) =>
+                sc.AfterReceiveEnd = new ReceiveEnd((x, args) =>
                 {
                     //TODO 选择适当的时机关闭链接
-                    HttpResponse resp = HttpResponse.Parse(y.Data);
+                    HttpResponse resp = HttpResponse.Parse(args.Data);
                     ctx.Response = resp;
-                    if (callback != null)
+                    var cl = resp.Headers.GetValue(HeaderProperty.ContentLength);
+                    if (resp.Headers.Contains(HeaderProperty.ContentLength) &&long.Parse(cl)< resp.ContentLength)
                     {
-                        callback(ctx);
+                        args.Socket.BeginReceive(args.State.Buffer, 0, args.State.Buffer.Length, SocketFlags.None, sc.CallbackReceived, args.State);
                     }
+                    else
+                    {
+                        //判断chunked 
 
-                    if (ResponseReceived != null)
-                    {
-                        ResponseReceived(ctx);
+                        //判断Content-Encoding
+                        if (AutoDecodeBody) { 
+                            if (resp.ContentEncoding == "gzip")
+                            {
+                                resp.WriteDecodeBody(GZip.Decompress(req.Body));
+                            }else if (resp.ContentEncoding == "deflate"){
+                                resp.WriteDecodeBody(Deflate.Decompress(req.Body));
+                            }
+                        }
+                        if (callback != null)
+                        {
+                            callback(url, ctx);
+                        }
+                        if (ResponseCompleted != null)
+                        {
+                            ResponseCompleted(url, ctx);
+                        }
+                        if (ResponseReceive != null)
+                        {
+                            ResponseReceive(url, uri.Host, resp);
+                        }
+                        sc.Shutdown();
                     }
-                    sc.Shutdown();
                 });
+                int defaultPort = 80;
+                if (uri.Protocol.Equals("https",StringComparison.OrdinalIgnoreCase))
+                {
+                    defaultPort = 443;
+                }
 
-                sc.Connect(uri.Host, uri.Port == 0 ? 80 : uri.Port);
+                sc.Connect(uri.Host, uri.Port == 0 ? defaultPort : uri.Port);
 
                 if (sc.Connected)
                 {
+                    if (ContentEncoding == ContentEncoding.Gzip)
+                    {
+                        req.SetBody(GZip.Compress(req.Body));
+                        req.AddHeader(HeaderProperty.AcceptEncoding, "gzip");
+                    }else if (ContentEncoding == ContentEncoding.Deflate){
+                        req.AddHeader(HeaderProperty.AcceptEncoding, "deflate");
+                        req.SetBody(Deflate.Compress(req.Body));
+                    }
                     sc.SendTo(req.GetBuffer());
+                    if (RequestSend != null)
+                    {
+                        RequestSend(url, req.Host, req);
+                    }
                 }
                 else
                 {
-                    throw new Exception("超时时间已到，无法访问指定的服务器:" + (string.IsNullOrEmpty(uri.Domain) ? uri.Host : uri.Domain) + (uri.Port == 0 ? ":80" : (":" + uri.Port)));
+                    throw new Exception("超时时间已到，无法访问指定的服务器:" + (string.IsNullOrEmpty(uri.Domain) ? uri.Host : uri.Domain) + $":{defaultPort}");
                 }
             }
             else
@@ -161,7 +255,6 @@ namespace Mozi.HttpEmbedded
                 throw new Exception($"分析指定的地址:{url}时出错，请检查地址是否合法");
             }
         }
-
         /// <summary>
         /// HttpGet方法
         /// </summary>
@@ -191,6 +284,10 @@ namespace Mozi.HttpEmbedded
         public void Get(string url,RequestComplete callback)
         {
             Get(url, null, callback);
+        }
+        internal void GetFile(string url,RequestComplete callback)
+        {
+
         }
         /// <summary>
         /// HttpPost方法

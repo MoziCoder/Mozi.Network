@@ -48,6 +48,9 @@ namespace Mozi.HttpEmbedded
         /// 数据接收完成事件
         /// </summary>
         public  ReceiveEnd AfterReceiveEnd;
+        /// <summary>
+        /// 本地端口
+        /// </summary>
         public int LocalPort
         {
             get
@@ -149,7 +152,7 @@ namespace Mozi.HttpEmbedded
         //    //_sc.BeginAccept(new AsyncCallback(CallbackAccept), _sc);
         //}
         /// <summary>
-        /// 链接远程主机
+        /// 链接远程主机，并限定在超时时间内完成连接，默认超时为45s
         /// </summary>
         /// <param name="host"></param>
         /// <param name="port"></param>
