@@ -8,6 +8,7 @@ using Mozi.HttpEmbedded.Generic;
 namespace Mozi.HttpEmbedded
 {
     //DONE 应将 GET/POST 查询字段进行区分 
+    //TODO 考虑将头部和内容分割，头部保留在内存中，内容保留到持久存储中
 
     /// <summary>
     /// HTTP请求
@@ -534,15 +535,21 @@ namespace Mozi.HttpEmbedded
                 req.AcceptLanguage = new LanguagePriority[langs.Length];
                 try
                 {
+                    //第一项为首选语言
                     for (int i = 0; i < langs.Length; i++)
                     {
                         var lan = langs[i];
-                        var lans = lan.Split(new char[] { (char)ASCIICode.COMMA }, StringSplitOptions.RemoveEmptyEntries);
+                        var lans = lan.Split(new char[] { (char)ASCIICode.SEMICOLON }, StringSplitOptions.RemoveEmptyEntries);
                         req.AcceptLanguage[i] = new LanguagePriority()
                         {
-                            LanguageName = lans[0],
-                            Weight = lans.Length > 1 ? int.Parse(lans[1]) : 1
+                            LanguageName = lans[0].Trim(),
                         };
+
+                        if (lans.Length > 1)
+                        {
+                            var weight = lans[1].Trim(new char[] { (char)ASCIICode.SPACE,(char)ASCIICode.CHAR_q, (char)ASCIICode.EQUAL });
+                            req.AcceptLanguage[i].Weight = decimal.Parse(weight);
+                        }
                     }
                 }
                 catch
@@ -776,10 +783,19 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public byte[] GetRequestLine()
         {
-            return StringEncoder.Encode($"{Method.Name} {Path} {Version.Name}/{Version.Version}");
+            var path = Path;
+            if (String.IsNullOrEmpty(Path))
+            {
+                path = "/";
+            }
+            if (!string.IsNullOrEmpty(QueryString))
+            {
+                path += $"?{QueryString}";
+            }
+            return StringEncoder.Encode($"{Method.Name} {path} {Version}");
         }
         /// <summary>
-        /// 设置URI信息，分别注入到<see cref="HeaderProperty.Host"/>和<see cref="HeaderProperty.Referer"/>两个头属性中
+        /// 设置URI信息，分别注入到<see cref="HeaderProperty.Host"/>和<see cref="HeaderProperty.Referer"/>两个头属性中，并设置分解URL信息到 Path,Query两个字段中
         /// </summary>
         /// <param name="uri"></param>
         /// <returns></returns>
@@ -788,8 +804,15 @@ namespace Mozi.HttpEmbedded
             //注入Host
             AddHeader(HeaderProperty.Host, string.IsNullOrEmpty(uri.Domain) ? uri.Host : uri.Domain);
             AddHeader(HeaderProperty.Referer, uri.Url);
+            Host = string.IsNullOrEmpty(uri.Domain) ? uri.Host : uri.Domain;
+            Path = uri.Path;
+            QueryString = uri.Query;
+            Query = uri.Queries;
             return this;
         }
+        /// <summary>
+        /// 
+        /// </summary>
         ~HttpRequest()
         {
             //PackData = null;

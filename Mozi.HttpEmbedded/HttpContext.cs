@@ -9,6 +9,7 @@ namespace Mozi.HttpEmbedded
     /// </summary>
     public class HttpContext : IDisposable
     {
+
         private bool _disposedValue;
 
         /// <summary>
@@ -28,15 +29,24 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         public string ClientAddress { get; set; }
         /// <summary>
+        /// 是否已响应请求
+        /// </summary>
+        public bool Responsed { get { return Response != null; } }
+        /// <summary>
         /// 客户端端口
         /// </summary>
         public int ClientPort { get; set; }
-
+        /// <summary>
+        /// 
+        /// </summary>
         ~HttpContext()
         {
             Dispose(disposing: false);
         }
-
+        /// <summary>
+        /// 释放并回收
+        /// </summary>
+        /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposedValue)
@@ -50,10 +60,14 @@ namespace Mozi.HttpEmbedded
                 _disposedValue = true;
             }
         }
+        /// <summary>
+        /// 释放并回收
+        /// </summary>
         public void Dispose()
         {
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+
     }
 }
