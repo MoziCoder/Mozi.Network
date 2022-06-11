@@ -532,7 +532,8 @@ namespace Mozi.IoT.CoAP
                 for (int i = 0; i < loop; i++)
                 {
                     cc.SendMessage(host, port, cp);
-                    Thread.Sleep(10);
+                    //TODO 此处设置时间间隔
+                    //Thread.Sleep(10);
                 }
             }
         }
