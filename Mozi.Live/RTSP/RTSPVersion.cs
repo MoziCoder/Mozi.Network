@@ -1,7 +1,7 @@
 ﻿using Mozi.HttpEmbedded;
 using System.Collections.Generic;
 
-namespace Mozi.Live.RTP
+namespace Mozi.Live.RTSP
 {
     /// <summary>
     /// RTSP协议版本
@@ -11,11 +11,11 @@ namespace Mozi.Live.RTP
         /// <summary>
         /// RTSP/1.0
         /// </summary>
-        public static readonly ProtocolVersion Version10 = new ProtocolVersion("RTSP","1.0");
+        public static readonly ProtocolVersion Version10 = new ProtocolVersion("RTSP", "1.0");
         /// <summary>
         /// rtsp/2.0
         /// </summary>
-        public static readonly ProtocolVersion Version20 = new ProtocolVersion("RTSP","2.0");
+        public static readonly ProtocolVersion Version20 = new ProtocolVersion("RTSP", "2.0");
     }
     /// <summary>
     /// RTSP传输协议
@@ -36,7 +36,9 @@ namespace Mozi.Live.RTP
         public static readonly ProtocolVersion SAVPTCP = new ProtocolVersion("RTP", "SAVP/TCP");
         public static readonly ProtocolVersion SAVPFTCP = new ProtocolVersion("RTP", "SAVPF/TCP");
     }
-
+    /// <summary>
+    /// Transport属性值格式
+    /// </summary>
     public class RTSPTransportProperty
     {
         /// <summary>
@@ -87,7 +89,7 @@ namespace Mozi.Live.RTP
         /// </summary>
         public string Connection { get; set; }
 
-        
+
         public override string ToString()
         {
             List<string> ls = new List<string>();
@@ -114,7 +116,7 @@ namespace Mozi.Live.RTP
             }
             else
             {
-                ls.Add($"mode=\"{Mode}\""); 
+                ls.Add($"mode=\"{Mode}\"");
             }
             if (!string.IsNullOrEmpty(Interleaved))
             {
@@ -128,7 +130,7 @@ namespace Mozi.Live.RTP
             {
                 ls.Add($"MIKEY=\"{MIKEY}\"");
             }
-            if (TTL > 0&&"multicast".Equals(DeliveryMode))
+            if (TTL > 0 && "multicast".Equals(DeliveryMode))
             {
                 ls.Add($"ttl={TTL}");
             }

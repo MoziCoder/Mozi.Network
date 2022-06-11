@@ -1,6 +1,6 @@
 ﻿using Mozi.HttpEmbedded;
 
-namespace Mozi.Live.RTP
+namespace Mozi.Live.RTSP
 {
     /// <summary>
     /// RTSP头属性
@@ -51,24 +51,24 @@ namespace Mozi.Live.RTP
         public static HeaderProperty TerminateReason = new HeaderProperty("Terminate-Reason");
 
         //Response Description
-        public static HeaderProperty AuthenticationInfo    = new HeaderProperty("Authentication-Info");
+        public static HeaderProperty AuthenticationInfo = new HeaderProperty("Authentication-Info");
         public static HeaderProperty ConnectionCredentials = new HeaderProperty("Connection-Credentials");
-        public static HeaderProperty Location               = new HeaderProperty("Location");
-        public static HeaderProperty MTag                   = new HeaderProperty("MTag");
-        public static HeaderProperty ProxyAuthenticate     = new HeaderProperty("Proxy-Authenticate");
-        public static HeaderProperty Public                 = new HeaderProperty("Public");
-        public static HeaderProperty RetryAfter            = new HeaderProperty("Retry-After");
-        public static HeaderProperty Unsupported            = new HeaderProperty("Unsupported");
-        public static HeaderProperty WWWAuthenticate       = new HeaderProperty("WWW-Authenticate");
+        public static HeaderProperty Location = new HeaderProperty("Location");
+        public static HeaderProperty MTag = new HeaderProperty("MTag");
+        public static HeaderProperty ProxyAuthenticate = new HeaderProperty("Proxy-Authenticate");
+        public static HeaderProperty Public = new HeaderProperty("Public");
+        public static HeaderProperty RetryAfter = new HeaderProperty("Retry-After");
+        public static HeaderProperty Unsupported = new HeaderProperty("Unsupported");
+        public static HeaderProperty WWWAuthenticate = new HeaderProperty("WWW-Authenticate");
         //Message Body Description
         public static HeaderProperty Allow = new HeaderProperty("Allow");
-        public static HeaderProperty ContentBase     = new HeaderProperty("Content-Base");
+        public static HeaderProperty ContentBase = new HeaderProperty("Content-Base");
         public static HeaderProperty ContentEncoding = new HeaderProperty("Content-Encoding");
         public static HeaderProperty ContentLanguage = new HeaderProperty("Content-Language");
-        public static HeaderProperty ContentLength   = new HeaderProperty("Content-Length");
+        public static HeaderProperty ContentLength = new HeaderProperty("Content-Length");
         public static HeaderProperty ContentLocation = new HeaderProperty("Content-Location");
-        public static HeaderProperty ContentType     = new HeaderProperty("Content-Type");
+        public static HeaderProperty ContentType = new HeaderProperty("Content-Type");
         public static HeaderProperty Expires = new HeaderProperty("Expires");
-        public static HeaderProperty LastModified    = new HeaderProperty("Last-Modified");
+        public static HeaderProperty LastModified = new HeaderProperty("Last-Modified");
     }
 }

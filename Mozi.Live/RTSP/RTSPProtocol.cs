@@ -1,4 +1,4 @@
-﻿namespace Mozi.Live.RTP
+﻿namespace Mozi.Live.RTSP
 {
     public class RTSPProtocol
     {

@@ -1,6 +1,6 @@
 ﻿namespace Mozi.Live
 {
-    internal class RTSPClient
+    internal class RTSPClient : HttpEmbedded.HttpClient
     {
 
     }
