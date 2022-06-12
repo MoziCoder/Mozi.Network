@@ -69,6 +69,7 @@
     <Compile Include="Attributes\HttpMethodAttribute.cs" />
     <Compile Include="Attributes\ContentTypeAttribute.cs" />
     <Compile Include="Common\DNSResolver.cs" />
+    <Compile Include="Common\UnsignedIntegerOptionValue.cs" />
     <Compile Include="ContentRange.cs" />
     <Compile Include="Encode\Encrypt.cs" />
     <Compile Include="HttpClient.cs" />

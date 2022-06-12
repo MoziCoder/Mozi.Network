@@ -38,7 +38,9 @@ namespace Mozi.HttpEmbedded.Page
         };
 
         private Global _global = new Global();
-
+        /// <summary>
+        /// 默认实例
+        /// </summary>
         public static Router Default
         {
             get { return _r ?? (_r = new Router()); }
@@ -436,8 +438,17 @@ namespace Mozi.HttpEmbedded.Page
         /// </summary>
         public class AccessPoint
         {
+            /// <summary>
+            /// 域
+            /// </summary>
             public string Domain { get; set; }
+            /// <summary>
+            /// 控制器
+            /// </summary>
             public string Controller { get; set; }
+            /// <summary>
+            /// 动作
+            /// </summary>
             public string Action { get; set; }
         }
         /// <summary>
@@ -445,8 +456,17 @@ namespace Mozi.HttpEmbedded.Page
         /// </summary>
         public class AccessObject
         {
+            /// <summary>
+            /// 目标类型
+            /// </summary>
             public Type Target { get; set; }
+            /// <summary>
+            /// 方法
+            /// </summary>
             public MethodInfo Method { get; set; }
+            /// <summary>
+            /// 参数
+            /// </summary>
             public ParameterInfo[] Params { get; set; }
         }
     }

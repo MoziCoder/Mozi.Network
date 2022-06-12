@@ -33,6 +33,7 @@ namespace Mozi.HttpEmbedded
     /// <param name="url"></param>
     /// <param name="host"></param>
     /// <param name="req"></param>
+    /// <param name="ex"></param>
     public delegate void RequestException(string url, string host, HttpRequest req,Exception ex);
     //DONE http客户端，因http客户端实现比较多，暂时不实现，待后期规划
     //TODO 应同步实现Https HttpQUIC(http3.0)
