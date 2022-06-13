@@ -74,6 +74,7 @@
     <Compile Include="Encode\Encrypt.cs" />
     <Compile Include="HttpClient.cs" />
     <Compile Include="HttpServerQUIC.cs" />
+    <Compile Include="IHttpPackage.cs" />
     <Compile Include="Memory\BufferPool.cs" />
     <Compile Include="Middleware\IMiddleware.cs" />
     <Compile Include="SocketClient.cs" />

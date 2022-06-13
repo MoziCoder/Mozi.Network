@@ -292,5 +292,41 @@ namespace Mozi.HttpEmbedded
                 throw new Exception($"与服务的链接已断开：{_host}:{_iport}");
             }
         }
+        /// <summary>
+        /// 向指定会话发送数据
+        /// </summary>
+        /// <param name="sc"></param>
+        /// <param name="buffer"></param>
+        public void SendTo(ref Socket sc,byte[] buffer)
+        {
+            if (sc.Connected)
+            {
+                sc.Send(buffer,SocketFlags.None);
+                StateObject so = new StateObject()
+                {
+                    WorkSocket = _sc,
+                    Id = Guid.NewGuid().ToString(),
+                    IP = _host,
+                    ConnectTime = DateTime.Now,
+                    RemotePort = _iport,
+                };
+                try
+                {
+                    _sc.BeginReceive(so.Buffer, 0, so.Buffer.Length, SocketFlags.None, CallbackReceived, so);
+                    if (OnReceiveStart != null)
+                    {
+                        OnReceiveStart.Invoke(this, new DataTransferArgs() { Id = so.Id, IP = so.IP, Socket = _sc, Port = so.RemotePort, Client = _sc, State = so });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _errorCount++;
+                }
+            }
+            else
+            {
+                throw new Exception($"与服务的链接已断开：{_host}:{_iport}");
+            }
+        }
     }
 }

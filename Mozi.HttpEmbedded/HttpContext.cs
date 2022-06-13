@@ -36,6 +36,11 @@ namespace Mozi.HttpEmbedded
         /// 客户端端口
         /// </summary>
         public int ClientPort { get; set; }
+
+        //public DateTime ReceiveTime { get; set; }
+
+        //public DateTime ReceiveCompleteTime { get; set; }
+
         /// <summary>
         /// 
         /// </summary>

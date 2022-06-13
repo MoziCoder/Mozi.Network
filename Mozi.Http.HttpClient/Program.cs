@@ -65,6 +65,7 @@ namespace Mozi.Http.Client
                         cp.SetMethod(RequestMethod.GET);
 
                         RequestMethod method = RequestMethod.Get<RequestMethod>(arg0);
+
                         if (Equals(method, null))
                         {
                              method = new RequestMethod(arg0.ToUpper());
@@ -73,6 +74,7 @@ namespace Mozi.Http.Client
                         {
                        
                         }
+
                         cp.SetMethod(method);
                         _url = args[1];
 
@@ -176,10 +178,10 @@ namespace Mozi.Http.Client
                                 {
                                     if (optValue != null)
                                     {
-                                            cp.AddHeader(optName.PropertyName, optValue != null ? optValue.ToString() : "");
+                                          cp.AddHeader(optName.PropertyName, optValue != null ? optValue.ToString() : "");
                                     }
                                 }
-                                cp.SetBody(Mozi.HttpEmbedded.Encode.StringEncoder.Encode(payload));
+                                cp.SetBody(StringEncoder.Encode(payload));
                             }
 
                         }
@@ -213,73 +215,98 @@ namespace Mozi.Http.Client
         }
 
         private static void Execute(int observeSeconds, HttpRequest cp, string url)
-    {
-        try
         {
             int waitSeconds = 30;
             if (observeSeconds > 0)
             {
                 waitSeconds = observeSeconds;
             }
-
-            SendRequest(url,cp);
-            semaphore.Wait(waitSeconds * 1000);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.StackTrace);
-        }
-    }
-
-    public static void SendRequest(string url,HttpRequest cp)
-    {
-        sendrequest = true;
-        HttpClient hc = new HttpClient();
-        //本地端口
-        if (_filePathUpload != "")
-        {
-            if (cp.Method == RequestMethod.PUT || cp.Method == RequestMethod.POST)
+            if (url.IndexOf(",") > 0&&_round>0)
             {
-
-                FileCollection fc = new FileCollection();
-                fc.Add(new HttpEmbedded.File() { FileTempSavePath = _filePathUpload });
-                hc.PostFile(_url, fc, null);
-
+                throw new Exception("请求路径中有复合路径时，不支持使用-round参数");
             }
             else
             {
-
+                SendRequest(url, cp);
+                semaphore.Wait(waitSeconds * 1000);
             }
         }
-        else
+
+        public static void SendRequest(string url,HttpRequest cp)
         {
-            int loop = 1;
-            int responseCount = 0;
-            if (_round > 0)
+            sendrequest = true;
+            HttpClient hc = new HttpClient();
+            //本地端口
+            if (_filePathUpload != "")
             {
-                loop = _round;
-            }
+                if (cp.Method == RequestMethod.PUT || cp.Method == RequestMethod.POST)
+                {
 
-            for (int i = 0; i < loop; i++)
+                    FileCollection fc = new FileCollection();
+                    fc.Add(new HttpEmbedded.File() { Path = _filePathUpload });
+                    hc.PostFile(_url, fc, null);
+                }
+                else
+                {
+
+                }
+            }
+            else
             {
-                hc.Send(url, cp,(x, ctx) => {
-                    responseCount++;
-                    responsed = true;
-                    //Console.ForegroundColor = ConsoleColor.DarkGreen;
-                    //Console.ForegroundColor = ConsoleColor.Gray;
-                    Console.WriteLine(StringEncoder.Decode(ctx.Request.GetBuffer()));
-                    Console.WriteLine("");
-                    Console.WriteLine(StringEncoder.Decode(ctx.Response.GetBuffer()));
-                    if (!observeMode || (responseCount >= loop))
+                int loop = 1;
+                int responseCount = 0;
+
+                if (_round > 0)
+                {
+                    loop = _round;
+                }
+
+                if (url.IndexOf(",") > 0)
+                {
+                    string[] urls = url.Split(new char[] { ',' });
+                    hc.Send(url, urls[1].Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries),cp.Method, cp.Headers.GetAll(), cp.Body, (x, ctx) => { 
+                    
+                    });
+                }
+                else
+                {
+
+                    for (int i = 0; i < loop; i++)
                     {
-                        semaphore.Release();
+                        try
+                        {
+                            hc.Send(url, cp, (x, ctx) =>
+                            {
+                                responseCount++;
+                                responsed = true;
+
+                                Console.Title = responseCount.ToString();
+
+                                Console.ForegroundColor = ConsoleColor.Gray;
+                                Console.WriteLine(StringEncoder.Decode(ctx.Request.GetBuffer()));
+                                Console.WriteLine("");
+                                Console.ForegroundColor = ConsoleColor.DarkGreen;
+                                Console.WriteLine(StringEncoder.Decode(ctx.Response.GetBuffer()));
+                                Console.ForegroundColor = ConsoleColor.Gray;
+
+                                if (!observeMode && (responseCount >= loop))
+                                {
+                                    semaphore.Release();
+                                }
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"{DateTime.Now.ToString("u")} |{ex.Message}");
+                            Console.WriteLine(ex.StackTrace);
+                        }
+                        Thread.Sleep(100);
+                        //TODO 此处设置时间间隔
                     }
-                });
-                Thread.Sleep(100);
-                //TODO 此处设置时间间隔
+
+                }
             }
         }
-    }
 
         private static void Close()
     {

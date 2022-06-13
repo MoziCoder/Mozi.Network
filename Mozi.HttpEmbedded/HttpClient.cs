@@ -51,7 +51,6 @@ namespace Mozi.HttpEmbedded
         public string Charset = "UTF-8";
         private string _userAgent = "Mozilla/5.0 (Linux;Android 4.4.2;OEM Device) AppleWebKit/537.36 (KHTML,like Gecko) Chrome/39.0.2171.71  Mozi/1.4.6";
         private const string Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
-        private const string AcceptEncoding = "gzip, deflate";
 
         private Auth.User _user;
 
@@ -122,19 +121,16 @@ namespace Mozi.HttpEmbedded
         /// </param>
         /// <param name="body">请求包体</param>
         /// <param name="callback">回调方法</param>
-        public void Send(string url, RequestMethod method,Dictionary<HeaderProperty,string> headers,byte[] body,RequestComplete callback)
+        public void Send(string url, RequestMethod method,Dictionary<string,string> headers,byte[] body,RequestComplete callback)
         {
             HttpRequest req = new HttpRequest();
-            req.SetMethod(method);
-            req.AddHeader(HeaderProperty.UserAgent, UserAgent);
-            req.AddHeader(HeaderProperty.Accept, Accept);
-            req.AddHeader(HeaderProperty.AcceptEncoding, AcceptEncoding);
+            req.SetMethod(req.Method);
             req.SetBody(body);
 
             //设置头信息
             if (headers != null)
             {
-                foreach (KeyValuePair<HeaderProperty, string> h in headers)
+                foreach (KeyValuePair<string, string> h in headers)
                 {
                     req.AddHeader(h.Key, h.Value);
                 }
@@ -158,7 +154,6 @@ namespace Mozi.HttpEmbedded
                     throw ex;
                 }
             }
-
         }
         /// <summary>
         /// 发送HTTP请求
@@ -168,6 +163,9 @@ namespace Mozi.HttpEmbedded
         /// <param name="callback"></param>
         public void Send(string url,HttpRequest req,RequestComplete callback)
         {
+            req.AddHeader(HeaderProperty.UserAgent, UserAgent);
+            req.AddHeader(HeaderProperty.Accept, Accept);
+
             SocketClient sc = new SocketClient();
             sc.ConnectTimeout = ConnectTimeout;
            
@@ -227,7 +225,7 @@ namespace Mozi.HttpEmbedded
                 {
                     defaultPort = 443;
                 }
-
+                
                 sc.Connect(uri.Host, uri.Port == 0 ? defaultPort : uri.Port);
 
                 if (sc.Connected)
@@ -257,6 +255,50 @@ namespace Mozi.HttpEmbedded
             }
         }
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="baseurl"></param>
+        /// <param name="relativeAddress"></param>
+        /// <param name="method"></param>
+        /// <param name="headers"></param>
+        /// <param name="body"></param>
+        /// <param name="callback"></param>
+        public void Send(string baseurl,string[] relativeAddress, RequestMethod method, Dictionary<string, string> headers, byte[] body, RequestComplete callback)
+        {
+             foreach(var add in relativeAddress)
+             {
+                string path = baseurl;
+                UriInfo uri = UriInfo.Parse(baseurl);
+                if (!path.EndsWith("/"))
+                {
+
+                }
+                var revAdd = add;
+                if (add.StartsWith("./"))
+                {
+
+                }
+
+                if (add.StartsWith("../"))
+                {
+
+                }
+                path = $"{uri.Protocol}://{uri.Domain ?? uri.Host}";
+                if (uri.Paths.Length > 0)
+                {
+                    path += string.Join("", uri.Paths);
+                }
+                else
+                {
+                    path += "/";
+                }
+
+                path += revAdd;
+
+                Send(path,method,headers,body,callback);
+             }
+        }
+        /// <summary>
         /// HttpGet方法
         /// </summary>
         /// <param name="url">url地址，格式http://{host|domain}[:{port}]/[{path}[?query]]</param>
@@ -273,7 +315,7 @@ namespace Mozi.HttpEmbedded
         ///     </list>
         /// </param>
         /// <param name="callback">回调方法</param>
-        public void Get(string url, Dictionary<HeaderProperty, string> headers, RequestComplete callback)
+        public void Get(string url, Dictionary<string, string> headers, RequestComplete callback)
         {
             Send(url, RequestMethod.GET, headers,null,callback);
         }
@@ -297,16 +339,16 @@ namespace Mozi.HttpEmbedded
         /// <param name="headers">附加的头信息,参见Get方法</param>
         /// <param name="body">请求文本，文本会被编码成UTF-8格式。请求时会附加<see cref="HeaderProperty.ContentType"/>头属性</param>
         /// <param name="callback">回调方法</param>
-        public void Post(string url, Dictionary<HeaderProperty, string> headers, string body,RequestComplete callback)
+        public void Post(string url, Dictionary<string, string> headers, string body,RequestComplete callback)
         {
             byte[] payload = Encode.StringEncoder.Encode(body);
             if (headers == null)
             {
-                headers = new Dictionary<HeaderProperty, string>();
+                headers = new Dictionary<string, string>();
             }
-            if (!headers.ContainsKey(HeaderProperty.ContentType))
+            if (!headers.ContainsKey(HeaderProperty.ContentType.PropertyName))
             {
-                headers.Add(HeaderProperty.ContentType, $"text/plain; charset={Charset}");
+                headers.Add(HeaderProperty.ContentType.PropertyName, $"text/plain; charset={Charset}");
             }
             Post(url, headers, payload, callback);
         }
@@ -317,7 +359,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="headers">附加的头信息,参见Get方法</param>
         /// <param name="body"></param>
         /// <param name="callback">回调方法</param>
-        public void Post(string url, Dictionary<HeaderProperty, string> headers, byte[] body, RequestComplete callback)
+        public void Post(string url, Dictionary<string, string> headers, byte[] body, RequestComplete callback)
         {
             Send(url, RequestMethod.POST, headers, body, callback);
         }
@@ -346,7 +388,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="url"></param>
         /// <param name="headers"></param>
         /// <param name="body"></param>
-        public void Post(string url, Dictionary<HeaderProperty, string> headers, string body)
+        public void Post(string url, Dictionary<string, string> headers, string body)
         {
             Post(url, headers, body, null);
         }
@@ -377,23 +419,23 @@ namespace Mozi.HttpEmbedded
         /// <param name="headers">附加的头信息,参见Get方法</param>
         /// <param name="files">文件集合</param>
         /// <param name="callback">回调方法</param>
-        public void PostFile(string url, Dictionary<HeaderProperty, string> headers, FileCollection files,RequestComplete callback)
+        public void PostFile(string url, Dictionary<string, string> headers, FileCollection files,RequestComplete callback)
         {
             byte[] byteNewLine = new byte[] { ASCIICode.CR, ASCIICode.LF };
             string sNewLine=System.Text.Encoding.ASCII.GetString(byteNewLine);
             string boundary = "--"+CacheControl.GenerateRandom(8);
             if (headers == null)
             {
-                headers = new Dictionary<HeaderProperty, string>();
+                headers = new Dictionary<string, string>();
             }
-            headers.Add(HeaderProperty.ContentType, $"multipart/form-data; boundary={boundary}");
+            headers.Add(HeaderProperty.ContentType.PropertyName, $"multipart/form-data; boundary={boundary}");
             if (files.Count > 0)
             {
                 using (MemoryStream ms = new MemoryStream())
                 {
                     foreach (File f in files)
                     {
-                        FileInfo fi = new FileInfo(f.FileTempSavePath);
+                        FileInfo fi = new FileInfo(f.Path);
                         FileStream fs = fi.OpenRead();
                         string header = $"--{boundary}" + sNewLine;
                         header += HeaderProperty.ContentDisposition.PropertyName + $": form-data; name=\"{f.FieldName}\"; filename=\"{HtmlEncoder.StringToEntityCode(fs.Name)}\"" + sNewLine;
@@ -437,16 +479,16 @@ namespace Mozi.HttpEmbedded
         /// <param name="headers"></param>
         /// <param name="body"></param>
         /// <param name="callback"></param>
-        public void Put(string url, Dictionary<HeaderProperty, string> headers, string body, RequestComplete callback)
+        public void Put(string url, Dictionary<string, string> headers, string body, RequestComplete callback)
         {
             byte[] payload = StringEncoder.Encode(body);
             if (headers == null)
             {
-                headers = new Dictionary<HeaderProperty, string>();
+                headers = new Dictionary<string, string>();
             }
-            if (!headers.ContainsKey(HeaderProperty.ContentType))
+            if (!headers.ContainsKey(HeaderProperty.ContentType.PropertyName))
             {
-                headers.Add(HeaderProperty.ContentType, $"text/plain; charset={Charset}");
+                headers.Add(HeaderProperty.ContentType.PropertyName, $"text/plain; charset={Charset}");
             }
             Put(url, headers, payload, callback);
         }
@@ -457,7 +499,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="headers"></param>
         /// <param name="body"></param>
         /// <param name="callback"></param>
-        public void Put(string url, Dictionary<HeaderProperty, string> headers, byte[] body, RequestComplete callback)
+        public void Put(string url, Dictionary<string, string> headers, byte[] body, RequestComplete callback)
         {
             Send(url, RequestMethod.PUT, headers, body, callback);
         }
@@ -486,7 +528,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="url"></param>
         /// <param name="headers"></param>
         /// <param name="body"></param>
-        public void Put(string url, Dictionary<HeaderProperty, string> headers, string body)
+        public void Put(string url, Dictionary<string, string> headers, string body)
         {
             Post(url, headers, body, null);
         }
@@ -515,7 +557,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="url"></param>
         /// <param name="headers"></param>
         /// <param name="callback"></param>
-        public void Delete(string url, Dictionary<HeaderProperty, string> headers, RequestComplete callback)
+        public void Delete(string url, Dictionary<string, string> headers, RequestComplete callback)
         {
             Send(url, RequestMethod.GET, headers, null, callback);
         }

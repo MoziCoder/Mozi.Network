@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Mozi.HttpEmbedded
 {
@@ -8,11 +9,34 @@ namespace Mozi.HttpEmbedded
     /// </summary>
     public class File
     {
+        /// <summary>
+        /// 文件名
+        /// </summary>
         public string FileName { get; set; }
+        /// <summary>
+        /// 字段名
+        /// </summary>
         public string FieldName { get; set; }
+        /// <summary>
+        /// 文件索引
+        /// </summary>
         public int FileIndex { get; set; }
+        /// <summary>
+        /// 文件数据
+        /// </summary>
         public byte[] FileData { get; set; }
-        public string FileTempSavePath { get; set; }
+        //TODO 对文件类型或大的数据对象，写入到文件流中
+        /// <summary>
+        /// 文件流
+        /// </summary>
+        internal FileStream Stream { get; set; }
+        /// <summary>
+        /// 文件路径
+        /// </summary>
+        public string Path { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         ~File()
         {
             FileData = null;
@@ -24,8 +48,17 @@ namespace Mozi.HttpEmbedded
     public class FileCollection:IEnumerable
     {
         private readonly List<File> _files = new List<File>();
-
+        /// <summary>
+        /// 索引
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public File this[string name] { get { return GetItem(name); } }
+        /// <summary>
+        /// 索引
+        /// </summary>
+        /// <param name="ind"></param>
+        /// <returns></returns>
         public File this[int ind] { get { return _files[ind]; } }
 
         /// <summary>
@@ -36,7 +69,10 @@ namespace Mozi.HttpEmbedded
         /// 集合计数
         /// </summary>
         public int Count { get { return _files.Count; } }
-
+        /// <summary>
+        /// 迭代器
+        /// </summary>
+        /// <returns></returns>
         public IEnumerator GetEnumerator()
         {
             return new FileCollectionEnumerator(_files);
@@ -110,7 +146,10 @@ namespace Mozi.HttpEmbedded
         private List<File> _collection;
 
         private File value;
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="colletion"></param>
         public FileCollectionEnumerator(List<File> colletion)
         {
             _collection = colletion;
@@ -120,7 +159,10 @@ namespace Mozi.HttpEmbedded
         {
             get { return value; }
         }
-
+        /// <summary>
+        /// 移动到下一项
+        /// </summary>
+        /// <returns></returns>
         public bool MoveNext()
         {
             _index++;
@@ -134,6 +176,9 @@ namespace Mozi.HttpEmbedded
             }
             return true;
         }
+        /// <summary>
+        /// 重置
+        /// </summary>
         public void Reset()
         {
             _index = -1;

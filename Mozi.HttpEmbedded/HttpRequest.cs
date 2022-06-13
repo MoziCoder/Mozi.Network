@@ -14,7 +14,7 @@ namespace Mozi.HttpEmbedded
     /// HTTP请求
     /// </summary>
     /// <remarks>该类可以处理其它类HTTP协议的请求数据包</remarks>
-    public class HttpRequest
+    public class HttpRequest:IHttpPackage
     {
 
         private byte[] _body = new byte[] { };
@@ -647,6 +647,33 @@ namespace Mozi.HttpEmbedded
             {
                 req.Version = new ProtocolVersion(sProtoType, sProtoVersion);
             }
+        }
+        /// <summary>
+        /// 生成头数据,包括请求行，头信息，头和包体分割符
+        /// </summary>
+        /// <param name="headerKeyNameUpperCase">头属性名是否大写</param>
+        /// <returns></returns>
+        public byte[] GetHeaderBuffer(bool headerKeyNameUpperCase)
+        {
+            List<byte> data = new List<byte>();
+            //注入状态信息
+            data.AddRange(GetRequestLine());
+            data.AddRange(TransformHeader.Carriage);
+            //注入默认头部
+            data.AddRange(_headers.GetBuffer(headerKeyNameUpperCase));
+            //注入Cookie
+            data.AddRange(_cookies.GetBuffer());
+            //注入分割符
+            data.AddRange(TransformHeader.Carriage);
+            return data.ToArray();
+        }
+        /// <summary>
+        /// 生成头数据,包括请求行，头信息，头和包体分割符
+        /// </summary>
+        /// <returns></returns>
+        public byte[] GetHeaderBuffer()
+        {
+            return GetHeaderBuffer(false);
         }
         //TODO 此功能需要重试以进行验证
         /// <summary>
