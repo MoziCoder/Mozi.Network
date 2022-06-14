@@ -23,12 +23,15 @@
 </head>
 <body style="padding:0 0.888rem;">
     <h1 style="color: brown">${Error.Code}-${Error.Title}</h1>
-    <hr style="border: 0; border-bottom: 1px solid #dedede;"/>
     <div>
         <p><strong>时间：</strong>${Error.Time}</p>
         <p><strong>内容：</strong>${Error.Description}</p>
         <p><strong>来源：</strong></p>
         <pre>${Error.Source}</pre>
+    </div>
+    <div style="margin-top: 0.78rem;">
+        <hr style="border: 0; border-bottom: 1px solid #dedede;"/>
+        <p><label style="color:#808080;">${Error.ServerName}</label></p>
     </div>
 </body>
 </html>
