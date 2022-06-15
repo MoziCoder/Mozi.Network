@@ -48,6 +48,13 @@
       <Name>Mozi.HttpEmbedded</Name>
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
+    <ProjectReference Include="..\Mozi.TLS\Mozi.TLS.csproj">
+      <Project>{254e0b46-7d73-4968-82ff-5cb9824642a1}</Project>
+      <Name>Mozi.TLS</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Mozi.Http.HttpClient.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

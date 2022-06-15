@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>Mozi.Http.HttpClient</id>
+    <version>1.4.6</version>
+    <title>Mozi.Http.HttpClient</title>
+    <authors>Jason</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+	<projectUrl>https://gitee.com/myui_admin/mozi</projectUrl>
+    <description>Http请求工具，用于发起HTTP请求，调试接口，目前不支持HTTPS，HTTPS支持接入后会进行公布</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright © Jason 2020-2022</copyright>
+    <tags>HttpClient</tags>
+	  <dependencies>
+		  <dependency id="Mozi.HttpEmbedded" version="[1.4.6,]" />
+	  </dependencies>
+  </metadata>
+</package>

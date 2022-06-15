@@ -1,9 +1,9 @@
-﻿using Mozi.HttpEmbedded;
-using Mozi.HttpEmbedded.Encode;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using Mozi.HttpEmbedded;
+using Mozi.HttpEmbedded.Encode;
 
 namespace Mozi.Http.Client
 {
@@ -213,7 +213,12 @@ namespace Mozi.Http.Client
                 }
             }
         }
-
+        /// <summary>
+        /// 发起请求，默认阻塞30秒
+        /// </summary>
+        /// <param name="observeSeconds"></param>
+        /// <param name="cp"></param>
+        /// <param name="url"></param>
         private static void Execute(int observeSeconds, HttpRequest cp, string url)
         {
             int waitSeconds = 30;
@@ -221,7 +226,7 @@ namespace Mozi.Http.Client
             {
                 waitSeconds = observeSeconds;
             }
-            if (url.IndexOf(",") > 0&&_round>0)
+            if (url.IndexOf(",") > 0 && _round > 0)
             {
                 throw new Exception("请求路径中有复合路径时，不支持使用-round参数");
             }
@@ -264,8 +269,25 @@ namespace Mozi.Http.Client
                 if (url.IndexOf(",") > 0)
                 {
                     string[] urls = url.Split(new char[] { ',' });
-                    hc.Send(url, urls[1].Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries),cp.Method, cp.Headers.GetAll(), cp.Body, (x, ctx) => { 
-                    
+                    string[] revAdd = urls[1].Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+                    loop = revAdd.Length;
+                    hc.Send(urls[0], revAdd,cp.Method, cp.Headers.GetAll(), cp.Body, (x, ctx) => {
+                        responseCount++;
+                        responsed = true;
+
+                        Console.Title = responseCount.ToString();
+
+                        Console.ForegroundColor = ConsoleColor.Gray;
+                        Console.WriteLine(StringEncoder.Decode(ctx.Request.GetBuffer()));
+                        Console.WriteLine("");
+                        Console.ForegroundColor = ConsoleColor.DarkGreen;
+                        Console.WriteLine(StringEncoder.Decode(ctx.Response.GetBuffer()));
+                        Console.ForegroundColor = ConsoleColor.Gray;
+
+                        if (!observeMode && (responseCount >= loop))
+                        {
+                            semaphore.Release();
+                        }
                     });
                 }
                 else
@@ -293,6 +315,7 @@ namespace Mozi.Http.Client
                                 {
                                     semaphore.Release();
                                 }
+
                             });
                         }
                         catch (Exception ex)
@@ -309,14 +332,15 @@ namespace Mozi.Http.Client
         }
 
         private static void Close()
-    {
-        if (sendrequest && !responsed && !observeMode)
         {
-            Console.WriteLine("超时时间已到，尚未收到服务端响应\r\n");
+            if (sendrequest && !responsed && !observeMode)
+            {
+                Console.WriteLine("超时时间已到，尚未收到服务端响应\r\n");
+            }
+            //使用信号量代替后，此句无用
+            //Environment.Exit(0);
+            Console.ForegroundColor = ConsoleColor.Gray;
         }
-        //使用信号量代替后，此句无用
-        //Environment.Exit(0);
-    }
 
         public static void PrintHelp()
         {
@@ -343,6 +367,7 @@ namespace Mozi.Http.Client
                             "\r\n示例：" +
                             "\r\n   httpclient get http://127.0.0.1/runtime/gettime?type=1 " +
                             "\r\n";
+
             Console.Write(helpText);
         }
     }
