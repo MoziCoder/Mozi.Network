@@ -49,7 +49,7 @@ namespace Mozi.HttpEmbedded
         /// 编码类型
         /// </summary>
         public string Charset = "UTF-8";
-        private string _userAgent = "Mozilla/5.0 (Linux;Android 4.4.2;OEM Device) AppleWebKit/537.36 (KHTML,like Gecko) Chrome/39.0.2171.71  Mozi/1.4.6";
+        private string _userAgent = "Mozilla/5.0 (Linux;Android 4.4.2;OEM Device) AppleWebKit/537.36 (KHTML,like Gecko) Chrome/39.0.2171.71  Mozi/1.4.7";
         private const string Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
 
         private Auth.User _user;

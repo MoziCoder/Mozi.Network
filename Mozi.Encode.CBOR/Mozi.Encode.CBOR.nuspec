@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Mozi.Encode.CBOR</id>
-    <version>1.4.6</version>
+    <version>1.4.7</version>
     <authors>Jason</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>

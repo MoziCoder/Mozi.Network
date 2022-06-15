@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Mozi.Http.HttpClient</id>
-    <version>1.4.6</version>
+    <version>1.4.7</version>
     <title>Mozi.Http.HttpClient</title>
     <authors>Jason</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -13,7 +13,7 @@
     <copyright>Copyright © Jason 2020-2022</copyright>
     <tags>HttpClient</tags>
 	  <dependencies>
-		  <dependency id="Mozi.HttpEmbedded" version="[1.4.6,]" />
+		  <dependency id="Mozi.HttpEmbedded" version="[1.4.7,]" />
 	  </dependencies>
   </metadata>
 </package>
