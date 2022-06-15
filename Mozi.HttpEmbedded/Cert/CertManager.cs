@@ -54,4 +54,11 @@ namespace Mozi.HttpEmbedded.Cert
             //TODO 验证证书的域名绑定
         }
     }
+    /// <summary>
+    /// TLS会话层
+    /// </summary>
+    public interface ITLSSession
+    {
+
+    }
 }
