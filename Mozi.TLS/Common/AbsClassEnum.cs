@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace Mozi.TLS
+namespace Mozi.TLS.Common
 {
     /// <summary>
     /// ·ÂÃ¶¾Ù ³éÏóÀà
