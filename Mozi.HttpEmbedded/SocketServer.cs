@@ -83,7 +83,7 @@ namespace Mozi.HttpEmbedded
             _iport = port;
             if (_sc == null)
             {
-                _sc = new Socket(AddressFamily.InterNetwork, SocketType.Stream, System.Net.Sockets.ProtocolType.Tcp);
+                _sc = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             }
             else
             {

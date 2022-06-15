@@ -8,7 +8,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
     <projectUrl>https://gitee.com/myui_admin/mozi</projectUrl>
-    <description>HTTP服务器组件，使用它可以很容易地为程序引入一个HTTP服务器。A web server,http server</description>
+    <description>HTTP服务器组件，使用它可以很容易地为程序引入一个HTTP服务器。A web server,http server。内含HttpServer,HttpClient,以及HttpRequest,HttpResponse解析构造库。</description>
     <releaseNotes>嵌入式WEB服务器</releaseNotes>
     <copyright>Copyright © Jason 2020-2022</copyright>
     <tags>HTTP EMBEDDED 嵌入式 WEB 微内核 服务器 httpserver</tags>

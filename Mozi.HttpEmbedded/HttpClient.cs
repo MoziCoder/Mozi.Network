@@ -124,7 +124,7 @@ namespace Mozi.HttpEmbedded
         public void Send(string url, RequestMethod method,Dictionary<string,string> headers,byte[] body,RequestComplete callback)
         {
             HttpRequest req = new HttpRequest();
-            req.SetMethod(req.Method);
+            req.SetMethod(method);
             req.SetBody(body);
 
             //设置头信息
@@ -220,7 +220,9 @@ namespace Mozi.HttpEmbedded
                         sc.Shutdown();
                     }
                 });
+
                 int defaultPort = 80;
+
                 if (uri.Protocol.Equals("https",StringComparison.OrdinalIgnoreCase))
                 {
                     defaultPort = 443;
@@ -269,28 +271,40 @@ namespace Mozi.HttpEmbedded
              {
                 string path = baseurl;
                 UriInfo uri = UriInfo.Parse(baseurl);
-                if (!path.EndsWith("/"))
-                {
 
-                }
                 var revAdd = add;
-                if (add.StartsWith("./"))
+                if (revAdd.StartsWith("./"))
                 {
+                    revAdd = add.Substring(2);
+                } else if (revAdd.StartsWith("../")){
 
+                    while (revAdd.StartsWith("../"))
+                    {
+                        if (uri.Paths.Length > 0)
+                        {
+                            string[] paths = new string[uri.Paths.Length - 1];
+                            Array.Copy(uri.Paths, paths, uri.Paths.Length - 1);
+                            uri.Paths = paths;
+                        }
+                        revAdd = revAdd.Substring(3);
+                    }
                 }
-
-                if (add.StartsWith("../"))
+                else if(revAdd.StartsWith("/"))
                 {
-
+                    uri.Paths = new string[0];
                 }
-                path = $"{uri.Protocol}://{uri.Domain ?? uri.Host}";
+                path = $"{uri.Protocol}://{uri.Domain ?? uri.Host}"+(uri.Port>0?$":{uri.Port}":"");
+
                 if (uri.Paths.Length > 0)
                 {
                     path += string.Join("", uri.Paths);
                 }
                 else
                 {
-                    path += "/";
+                    if (!path.EndsWith("/")&&!revAdd.StartsWith("/"))
+                    {
+                        path += "/";
+                    }
                 }
 
                 path += revAdd;
