@@ -26,6 +26,7 @@ namespace Mozi.HttpEmbedded.Test
             //控制台输出请求信息
             hs.RequestHandled = (host, port, ctx) =>
             {
+                Console.Title = $"rev:{hs.TotalReceiveCount}";
                 Console.WriteLine($"{host}:{port} {ctx.Request.RequestLineString}=>{ctx.Response.StatusLineString}");
             };
             //启用HTTPS 

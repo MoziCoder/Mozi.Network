@@ -8,7 +8,6 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
     <projectUrl>https://gitee.com/myui_admin/mozi</projectUrl>
-    <iconUrl>http://icon_url_here_or_delete_this_line/</iconUrl>
     <description>TFTP服务端及客户端</description>
     <releaseNotes></releaseNotes>
     <copyright>Copyright © Jason 2020-2022</copyright>

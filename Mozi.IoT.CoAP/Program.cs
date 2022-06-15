@@ -546,6 +546,7 @@ namespace Mozi.IoT.CoAP
             }
             //使用信号量代替后，此句无用
             //Environment.Exit(0);
+            Console.ForegroundColor = ConsoleColor.Gray;
         }
         //此部分被信号量代替，不再使用
         /// <summary>

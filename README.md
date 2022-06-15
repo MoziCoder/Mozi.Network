@@ -9,7 +9,7 @@ Mozi.Network 是基于.Net Socket开发的网络应用协议基础组件套装�
 
 ### [HttpEmbedded][httpembedded]　　
 
-Http服务器
+Http服务器及HttpClient
 
 ### [IoT][iot]　　
 
