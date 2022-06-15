@@ -191,15 +191,30 @@ namespace Mozi.HttpEmbedded
             private set { _serverRoot = value; }
         }
         /// <summary>
+        /// 累计接收的请求次数
+        /// </summary>
+        public ulong TotalReceiveCount { get; set; }
+        /// <summary>
+        /// 累计发送的响应次数
+        /// </summary>
+        public ulong TotalSendCount { get; set; }
+        /// <summary>
+        /// 累计计收的字节数
+        /// </summary>
+        public ulong TotalReceivedBytes { get; set; }
+        //TODO 此处还没有实现
+        /// <summary>
+        /// 累计发送的字节数
+        /// </summary>
+        internal ulong TotalSendBytes { get; set; }
+        /// <summary>
         /// 服务器运行状态
         /// </summary>
         public bool Running
         {
             get; set;
         }
-
         internal MemoryCache Cache { get { return _cache; }  }
-
         /// <summary>
         /// 服务端收到完整请求包时触发,此处不应作任何数据包的修改处理
         /// </summary>
@@ -212,7 +227,6 @@ namespace Mozi.HttpEmbedded
         /// 完成响应后触发
         /// </summary>
         public RequestHandled RequestHandled;
-
         /// <summary>
         /// 默认路由管理器
         /// </summary>
@@ -275,7 +289,7 @@ namespace Mozi.HttpEmbedded
             {
                 return;
             }
-
+            
             HttpContext context = new HttpContext();
             context.ClientAddress = args.IP;
             context.ClientPort = args.Port;
@@ -294,8 +308,8 @@ namespace Mozi.HttpEmbedded
                     //HTTPS 协议处理
                     if (_tlsEnabled)
                     {
-                        //SSL解析数据包
-                        ///HelloPackage proto = TLSProtocol.ParseClientHello(args.Data);
+                        // SSL解析数据包
+                        // HelloPackage proto = TLSProtocol.ParseClientHello(args.Data);
                     }
                     context.Request = HttpRequest.Parse(args.Data);
                     context.Request.ClientAddress = args.IP;
@@ -345,23 +359,7 @@ namespace Mozi.HttpEmbedded
                 catch (Exception ex)
                 {
                     //50X 返回错误信息页面
-                    string doc = DocLoader.Load("Error.html");
-                    TemplateEngine pc = new TemplateEngine();
-                    pc.LoadFromText(doc);
-                    pc.Set("Error", new HandleError
-                    {
-                        Code = StatusCode.InternalServerError.Code.ToString(),
-                        Title = StatusCode.InternalServerError.Text,
-                        Time = DateTime.Now.ToUniversalTime().ToString("r"),
-                        Description = ex.Message,
-                        Source = ex.StackTrace ?? ex.StackTrace.ToString(),
-                    });
-                    pc.Prepare();
-
-                    context.Response.Write(pc.GetBuffer());
-                    context.Response.SetContentType(Mime.GetContentType("html"));
-                    sc = StatusCode.InternalServerError;
-                    Log.Error(ex.Message + ":" + ex.StackTrace ?? "");
+                    sc = HandleError(context, ex);
                 }
                 finally
                 {
@@ -411,12 +409,18 @@ namespace Mozi.HttpEmbedded
                     
                 }
 
-                args.Socket.Send(context.Response.GetBuffer());
+                //统计数据
+                TotalReceiveCount++;
+                TotalSendCount++;
+
+                //发送数据
+                Send(args.Socket, context.Response.GetBuffer());
+
+                //事件回调
                 if (Response != null)
                 {
                     Response(args.IP, args.Port, context.Response);
                 }
-                //事件回调
                 if (RequestHandled != null)
                 {
                     RequestHandled(args.IP,args.Port,context);
@@ -430,6 +434,7 @@ namespace Mozi.HttpEmbedded
             }
             GC.Collect();
         }
+
         /// <summary>
         /// 处理认证
         /// </summary>
@@ -519,7 +524,7 @@ namespace Mozi.HttpEmbedded
                         var doc = DocLoader.Load("Home.html");
                         TemplateEngine pc = new TemplateEngine();
                         pc.LoadFromText(doc);
-                        pc.Set("Info", new{ VersionName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(),Copyright="&copy;2020-2022"});
+                        pc.Set("Info", new{ Author="Jason",VersionName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(),Copyright= "&copy;2020-2022 MoziCoder" });
                         pc.Prepare();
 
                         context.Response.Write(pc.GetBuffer());
@@ -540,21 +545,7 @@ namespace Mozi.HttpEmbedded
                     else
                     {
                         //50X 返回错误信息页面
-                        string doc = DocLoader.Load("Error.html");
-                        TemplateEngine pc = new TemplateEngine();
-                        pc.LoadFromText(doc);
-                        pc.Set("Error", new HandleError
-                        {
-                            Code = StatusCode.NotFound.Code.ToString(),
-                            Title = StatusCode.NotFound.Text,
-                            Time = DateTime.Now.ToUniversalTime().ToString("r"),
-                            Description = "未找到指定的资源",
-                            Source = "路径信息："+path,
-                        });
-                        pc.Prepare();
-                        context.Response.Write(pc.GetBuffer());
-                        context.Response.SetContentType(Mime.GetContentType("html"));
-                        return StatusCode.NotFound;
+                        return HandleNotFound(context, path);
                     }
                 }
                 else
@@ -570,7 +561,7 @@ namespace Mozi.HttpEmbedded
             }
             return StatusCode.Success;
         }
- 
+
         /// <summary>
         /// 路由API和页面
         /// </summary>
@@ -594,8 +585,7 @@ namespace Mozi.HttpEmbedded
                 }
                 return StatusCode.Success;
             }
-            return StatusCode.NotFound;
-
+            return HandleNotFound(context, context.Request.Path);
         }
 
         //TODO 静态文件统一处理
@@ -768,6 +758,60 @@ namespace Mozi.HttpEmbedded
             }
             return StatusCode.Forbidden;
             //RequestMethod.PROPFIND,RequestMethod.PROPPATCH RequestMethod.MKCOL RequestMethod.COPY RequestMethod.MOVE RequestMethod.LOCK RequestMethod.UNLOCK
+        }
+        /// <summary>
+        /// 处理服务器异常50x请求
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="ex"></param>
+        /// <returns></returns>
+        private StatusCode HandleError(HttpContext context, Exception ex)
+        {
+            StatusCode sc;
+            string doc = DocLoader.Load("Error.html");
+            TemplateEngine pc = new TemplateEngine();
+            pc.LoadFromText(doc);
+            pc.Set("Error", new HandleError
+            {
+                Code = StatusCode.InternalServerError.Code.ToString(),
+                Title = StatusCode.InternalServerError.Text,
+                Time = DateTime.Now.ToUniversalTime().ToString("r"),
+                Description = ex.Message,
+                Source = ex.StackTrace ?? ex.StackTrace.ToString(),
+                ServerName = _serverName
+            }); ;
+            pc.Prepare();
+
+            context.Response.Write(pc.GetBuffer());
+            context.Response.SetContentType(Mime.GetContentType("html"));
+            sc = StatusCode.InternalServerError;
+            Log.Error(ex.Message + ":" + ex.StackTrace ?? "");
+            return sc;
+        }
+        /// <summary>
+        /// 处理40x请求
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        private StatusCode HandleNotFound(HttpContext context, string path)
+        {
+            string doc = DocLoader.Load("Error.html");
+            TemplateEngine pc = new TemplateEngine();
+            pc.LoadFromText(doc);
+            pc.Set("Error", new HandleError
+            {
+                Code = StatusCode.NotFound.Code.ToString(),
+                Title = StatusCode.NotFound.Text,
+                Time = DateTime.Now.ToUniversalTime().ToString("r"),
+                Description = "未找到指定的资源",
+                Source = "路径信息：" + path,
+                ServerName = _serverName
+            });
+            pc.Prepare();
+            context.Response.Write(pc.GetBuffer());
+            context.Response.SetContentType(Mime.GetContentType("html"));
+            return StatusCode.NotFound;
         }
         /// <summary>
         /// 取URL资源扩展名
@@ -1007,6 +1051,16 @@ namespace Mozi.HttpEmbedded
             _indexPages = pattern.Split(new char[] { ',' });
         }
         /// <summary>
+        /// 向会话接收方发送数据
+        /// </summary>
+        /// <param name="peer"></param>
+        /// <param name="data"></param>
+        internal void Send(Socket peer,byte[] data)
+        {
+            peer.Send(data);
+            TotalSendBytes++;
+        }
+        /// <summary>
         /// 发送Chunked数据
         /// </summary>
         /// <param name="peer"></param>
@@ -1030,7 +1084,7 @@ namespace Mozi.HttpEmbedded
         /// Chunked结束符号
         /// </summary>
         /// <param name="peer"></param>
-        internal void SendChunkedEndData(Socket peer)
+        internal void SendChunkedEndData(ref Socket peer)
         {
             if (peer.Connected)
             {
