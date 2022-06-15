@@ -11,14 +11,60 @@ namespace Mozi.SSDP
     //NTS:Notification Sub Type
     //USN:Unique Service Name
     //MX: Maximum wait time in seconds. Should be between 1 and 120 inclusive
-
+    /// <summary>
+    /// Notify ssdp:alive接收委托
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="pack"></param>
+    /// <param name="host"></param>
     public delegate void NotifyAliveReceived(object sender,AlivePackage pack,string host);
+    /// <summary>
+    /// Notify ssdp:byebye接收委托
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="pack"></param>
+    /// <param name="host"></param>
     public delegate void NotifyByebyeReceived(object sender, ByebyePackage pack, string host);
-    public delegate void SearchReceived(object sender,SearchPackage pack,string host);
-    public delegate void SearchResponsed(object sender, SearchResponsePackage resp, string host);
-    public delegate void PostReceived(object sender, HttpRequest req, string host);
-    public delegate void HttpResponsed(object sender, HttpResponse resp, string host);
+    /// <summary>
+    /// Notify upnp:update 接收委托
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="pack"></param>
+    /// <param name="host"></param>
     public delegate void NotifyUpdateReceived(object sender, UpdatePackage pack, string host);
+    /// <summary>
+    /// M-SEARCH 接收委托
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="pack"></param>
+    /// <param name="host"></param>
+    public delegate void SearchReceived(object sender,SearchPackage pack,string host);
+    /// <summary>
+    /// M-SEARCH 响应委托
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="resp"></param>
+    /// <param name="host"></param>
+    public delegate void SearchResponsed(object sender, SearchResponsePackage resp, string host);
+    /// <summary>
+    /// POST 接收委托
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="req"></param>
+    /// <param name="host"></param>
+    public delegate void PostReceived(object sender, HttpRequest req, string host);
+    /// <summary>
+    /// HTTP 响应委托 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="resp"></param>
+    /// <param name="host"></param>
+    public delegate void HttpResponsed(object sender, HttpResponse resp, string host);
+    /// <summary>
+    /// 接收到任何消息时都会触发
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
     public delegate void MessageReceived(object sender, DataTransferArgs args);
 
     //public delegate void SubscribeReceived(object sender, HttpRequest pack,string host);
@@ -845,7 +891,7 @@ namespace Mozi.SSDP
             //如果POST被拒绝，则使用M-POST
             request.SetBody(StringEncoder.Encode(pk.Body.CreateDocument()));
             request.SetHeaders(pk.GetHeaders());
-            request.SetHeader("CONTENT-LENGTH", request.Body.Length.ToString());
+            request.AddHeader("CONTENT-LENGTH", request.Body.Length.ToString());
             HttpClient hc = new HttpClient();
             hc.Send(controlPath, request, callback);
         }
@@ -910,13 +956,13 @@ namespace Mozi.SSDP
             HttpRequest request = new HttpRequest();
             UriInfo uri=UriInfo.Parse(publishPath);
             request.SetPath(publishPath).SetMethod(RequestMethodUPnP.SUBSCRIBE);
-            request.SetHeader("HOST", $"{uri.Domain??uri.Host}:{(uri.Port>0?uri.Port:80)}");
-            request.SetHeader("NT", SSDPType.Event.ToString());
-            request.SetHeader("CALLBACK",callbackurl);
-            request.SetHeader("TIMEOUT", timeout.ToString());
+            request.AddHeader("HOST", $"{uri.Domain??uri.Host}:{(uri.Port>0?uri.Port:80)}");
+            request.AddHeader("NT", SSDPType.Event.ToString());
+            request.AddHeader("CALLBACK",callbackurl);
+            request.AddHeader("TIMEOUT", timeout.ToString());
             if (string.IsNullOrEmpty(statevar))
             {
-                request.SetHeader("STATEVAR", statevar);
+                request.AddHeader("STATEVAR", statevar);
             }
             HttpClient hc = new HttpClient();
             hc.Send(publishPath, request, callback);
@@ -933,9 +979,9 @@ namespace Mozi.SSDP
             HttpRequest request = new HttpRequest();
             UriInfo uri = UriInfo.Parse(publishPath);
             request.SetPath(publishPath).SetMethod(RequestMethodUPnP.SUBSCRIBE);
-            request.SetHeader("HOST", $"{uri.Domain ?? uri.Host}:{(uri.Port > 0 ? uri.Port : 80)}");
-            request.SetHeader("SID", $"uuid:{sid}");
-            request.SetHeader("TIMEOUT", timeout.ToString());
+            request.AddHeader("HOST", $"{uri.Domain ?? uri.Host}:{(uri.Port > 0 ? uri.Port : 80)}");
+            request.AddHeader("SID", $"uuid:{sid}");
+            request.AddHeader("TIMEOUT", timeout.ToString());
             HttpClient hc = new HttpClient();
             hc.Send(publishPath, request, callback);
         }
@@ -953,8 +999,8 @@ namespace Mozi.SSDP
         {
             HttpRequest request = new HttpRequest();
             UriInfo uri = UriInfo.Parse(publishPath);
-            request.SetHeader("HOST", $"{uri.Domain ?? uri.Host}:{(uri.Port > 0 ? uri.Port : 80)}");
-            request.SetHeader("SID", $"uuid:{sid}");
+            request.AddHeader("HOST", $"{uri.Domain ?? uri.Host}:{(uri.Port > 0 ? uri.Port : 80)}");
+            request.AddHeader("SID", $"uuid:{sid}");
             HttpClient hc = new HttpClient();
             hc.Send(publishPath, request, callback);
         }

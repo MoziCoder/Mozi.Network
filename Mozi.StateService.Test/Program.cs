@@ -27,8 +27,7 @@ namespace Mozi.StateService.Test
 
             //服务网关
 
-            hg.AddSubscriber(new Subscriber() { Host = "100.100.0.171", Port = 13452 });
-            hg.AddSubscriber(new Subscriber() { Host = "100.100.0.105", Port = 13452 });
+            hg.AddSubscriber(new Subscriber() { Host = "192.168.1.101", Port = 13452 });
             hg.OnClientOnlineStateChange += Hg_OnClientStateChange;
             hg.OnClientMessageReceived += Hg_OnClientMessageReceived;
             hg.OnClientUserChange += Hg_OnClientUserChange;

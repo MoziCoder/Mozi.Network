@@ -1,6 +1,6 @@
 ﻿using Mozi.HttpEmbedded;
 
-namespace Mozi.Live.RTP
+namespace Mozi.Live.RTSP
 {
     /// +---------------+-----------+--------+-------------+-------------+
     /// | method        | direction | object | Server req. | Client req. |
@@ -38,15 +38,45 @@ namespace Mozi.Live.RTP
     /// </summary>
     public class RTSPMethod
     {
-        public static RequestMethod DESCRIBE        = new RequestMethod("DESCRIBE");
-        public static RequestMethod GET_PARAMETER   = new RequestMethod("GET_PARAMETER");
-        public static RequestMethod OPTIONS         = new RequestMethod("OPTIONS");
-        public static RequestMethod PAUSE           = new RequestMethod("PAUSE");
-        public static RequestMethod PLAY            = new RequestMethod("PLAY");
-        public static RequestMethod PLAY_NOTIFY     = new RequestMethod("PLAY_NOTIFY");
-        public static RequestMethod REDIRECT        = new RequestMethod("REDIRECT");
-        public static RequestMethod SETUP           = new RequestMethod("SETUP");
-        public static RequestMethod SET_PARAMETER   = new RequestMethod("SET_PARAMETER");
-        public static RequestMethod TEARDOWN        = new RequestMethod("TEARDOWN");
+        /// <summary>
+        /// DESCRIBE
+        /// </summary>
+        public static RequestMethod DESCRIBE = new RequestMethod("DESCRIBE");
+        /// <summary>
+        /// GET_PARAMETER
+        /// </summary>
+        public static RequestMethod GET_PARAMETER = new RequestMethod("GET_PARAMETER");
+        /// <summary>
+        /// OPTIONS
+        /// </summary>
+        public static RequestMethod OPTIONS = new RequestMethod("OPTIONS");
+        /// <summary>
+        /// PAUSE
+        /// </summary>
+        public static RequestMethod PAUSE = new RequestMethod("PAUSE");
+        /// <summary>
+        /// PLAY
+        /// </summary>
+        public static RequestMethod PLAY = new RequestMethod("PLAY");
+        /// <summary>
+        /// PLAY_NOTIFY
+        /// </summary>
+        public static RequestMethod PLAY_NOTIFY = new RequestMethod("PLAY_NOTIFY");
+        /// <summary>
+        /// REDIRECT
+        /// </summary>
+        public static RequestMethod REDIRECT = new RequestMethod("REDIRECT");
+        /// <summary>
+        /// SETUP
+        /// </summary>
+        public static RequestMethod SETUP = new RequestMethod("SETUP");
+        /// <summary>
+        /// SET_PARAMETER
+        /// </summary>
+        public static RequestMethod SET_PARAMETER = new RequestMethod("SET_PARAMETER");
+        /// <summary>
+        /// TEARDOWN
+        /// </summary>
+        public static RequestMethod TEARDOWN = new RequestMethod("TEARDOWN");
     }
 }

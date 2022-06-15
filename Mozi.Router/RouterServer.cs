@@ -1,6 +1,6 @@
 ﻿namespace Mozi.Router
 {
-    public class RouterServer
+    internal class RouterServer
     {
 
     }

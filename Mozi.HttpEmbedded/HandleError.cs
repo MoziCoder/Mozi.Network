@@ -1,4 +1,3 @@
-using System;
 
 namespace Mozi.HttpEmbedded
 {
@@ -13,5 +12,7 @@ namespace Mozi.HttpEmbedded
         public string Description { get; set; }
         public string Remark { get; set; }
         public string Source { get; set; }
+
+        public string ServerName { get; set; }
     }
 }

@@ -48,6 +48,9 @@ namespace Mozi.HttpEmbedded
         /// 数据接收完成事件
         /// </summary>
         public  ReceiveEnd AfterReceiveEnd;
+        /// <summary>
+        /// 本地端口
+        /// </summary>
         public int LocalPort
         {
             get
@@ -111,7 +114,7 @@ namespace Mozi.HttpEmbedded
 
         public SocketClient()
         {
-            _sc = new Socket(AddressFamily.InterNetwork, SocketType.Stream, System.Net.Sockets.ProtocolType.Tcp);
+            _sc = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             _sc.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
         }
         /// <summary>
@@ -149,7 +152,7 @@ namespace Mozi.HttpEmbedded
         //    //_sc.BeginAccept(new AsyncCallback(CallbackAccept), _sc);
         //}
         /// <summary>
-        /// 链接远程主机
+        /// 链接远程主机，并限定在超时时间内完成连接，默认超时为45s
         /// </summary>
         /// <param name="host"></param>
         /// <param name="port"></param>
@@ -263,6 +266,42 @@ namespace Mozi.HttpEmbedded
             if (_connected)
             {
                 _sc.SendTo(buffer, new IPEndPoint(IPAddress.Parse(_host), _iport));
+                StateObject so = new StateObject()
+                {
+                    WorkSocket = _sc,
+                    Id = Guid.NewGuid().ToString(),
+                    IP = _host,
+                    ConnectTime = DateTime.Now,
+                    RemotePort = _iport,
+                };
+                try
+                {
+                    _sc.BeginReceive(so.Buffer, 0, so.Buffer.Length, SocketFlags.None, CallbackReceived, so);
+                    if (OnReceiveStart != null)
+                    {
+                        OnReceiveStart.Invoke(this, new DataTransferArgs() { Id = so.Id, IP = so.IP, Socket = _sc, Port = so.RemotePort, Client = _sc, State = so });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _errorCount++;
+                }
+            }
+            else
+            {
+                throw new Exception($"与服务的链接已断开：{_host}:{_iport}");
+            }
+        }
+        /// <summary>
+        /// 向指定会话发送数据
+        /// </summary>
+        /// <param name="sc"></param>
+        /// <param name="buffer"></param>
+        public void SendTo(ref Socket sc,byte[] buffer)
+        {
+            if (sc.Connected)
+            {
+                sc.Send(buffer,SocketFlags.None);
                 StateObject so = new StateObject()
                 {
                     WorkSocket = _sc,

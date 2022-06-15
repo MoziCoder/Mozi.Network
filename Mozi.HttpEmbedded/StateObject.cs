@@ -29,6 +29,10 @@ namespace Mozi.HttpEmbedded
         public DateTime ConnectTime { get; set; }
         //TODO 此处会造成内存占用过大的问题
         //TODO 此处没有完整处理包体，会有多读取的冗余数据
+        /// <summary>
+        /// 重置缓冲区
+        /// </summary>
+        /// <param name="count"></param>
         public void ResetBuffer(int count)
         {
             byte[] data = new byte[count > 0 ? count : Buffer.Length];

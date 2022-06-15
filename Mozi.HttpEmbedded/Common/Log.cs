@@ -99,9 +99,21 @@ namespace Mozi.HttpEmbedded.Common
         /// </summary>
         public enum LogLevel
         {
+            /// <summary>
+            /// Error
+            /// </summary>
             Error = 1,
+            /// <summary>
+            /// Debug
+            /// </summary>
             Debug = 2,
+            /// <summary>
+            /// Info
+            /// </summary>
             Info = 3,
+            /// <summary>
+            /// Warn
+            /// </summary>
             Warn = 4
         }
     }

@@ -50,7 +50,9 @@ namespace Mozi.HttpEmbedded
     /// </summary>
     public class HttpServer
     {
-
+        /// <summary>
+        /// Socket对象
+        /// </summary>
         protected  SocketServer _sc = new SocketServer();
 
         private WebDav.WebDAVServer _davserver;
@@ -62,7 +64,7 @@ namespace Mozi.HttpEmbedded
         //最大文件大小
         private long _maxFileSize = 10 * 1024 * 1024;
         //最大请求尺寸
-        private long _maxRequestSize = 10 * 1024 * 1024;
+        private long _maxRequestBodySize = 10 * 1024 * 1024;
 
         //禁止直接IP访问，但应排除本地地址127.0.0.1
         private bool _forbideIPAccess = false;
@@ -76,8 +78,7 @@ namespace Mozi.HttpEmbedded
         private string _serverName = "Mozi.HttpEmbedded";
 
         //默认首页为index.html,index.htm
-
-        public string[] _indexPages = new string[] {  };
+        private string[] _indexPages = new string[] {  };
 
         /// <summary>
         /// 默认首页
@@ -86,7 +87,7 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 允许的方法
         /// </summary>
-        protected  RequestMethod[] MethodAllow = new RequestMethod[] { RequestMethod.OPTIONS, RequestMethod.TRACE, RequestMethod.GET, RequestMethod.HEAD, RequestMethod.POST, RequestMethod.COPY, RequestMethod.PROPFIND, RequestMethod.LOCK, RequestMethod.UNLOCK };
+        protected RequestMethod[] MethodAllow = new RequestMethod[] { RequestMethod.OPTIONS, RequestMethod.TRACE, RequestMethod.GET, RequestMethod.HEAD, RequestMethod.POST, RequestMethod.COPY, RequestMethod.PROPFIND, RequestMethod.LOCK, RequestMethod.UNLOCK };
         /// <summary>
         /// 公开的方法
         /// </summary>
@@ -94,8 +95,10 @@ namespace Mozi.HttpEmbedded
 
         //证书管理器
         private CertManager _certMg;
-        //HTTPS开启标识
-        protected bool _httpsEnabled = false;
+        /// <summary>
+        /// TLS开启标识
+        /// </summary>
+        protected bool _tlsEnabled = false;
 
         private MemoryCache _cache = new MemoryCache();
 
@@ -134,7 +137,7 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 最大请求体长度
         /// </summary>
-        public long MaxRequestBodySize { get { return _maxRequestSize; } private set { _maxRequestSize = value; } }
+        public long MaxRequestBodySize { get { return _maxRequestBodySize; } private set { _maxRequestBodySize = value; } }
         /// <summary>
         /// 服务端口
         /// </summary>
@@ -166,7 +169,7 @@ namespace Mozi.HttpEmbedded
         /// <summary>
         /// 服务器名称
         /// </summary>
-        public string ServerName
+        public virtual string ServerName
         {
             get { return _serverName; }
             private set { _serverName = value; }
@@ -188,19 +191,42 @@ namespace Mozi.HttpEmbedded
             private set { _serverRoot = value; }
         }
         /// <summary>
+        /// 累计接收的请求次数
+        /// </summary>
+        public ulong TotalReceiveCount { get; set; }
+        /// <summary>
+        /// 累计发送的响应次数
+        /// </summary>
+        public ulong TotalSendCount { get; set; }
+        /// <summary>
+        /// 累计计收的字节数
+        /// </summary>
+        public ulong TotalReceivedBytes { get; set; }
+        //TODO 此处还没有实现
+        /// <summary>
+        /// 累计发送的字节数
+        /// </summary>
+        internal ulong TotalSendBytes { get; set; }
+        /// <summary>
         /// 服务器运行状态
         /// </summary>
         public bool Running
         {
             get; set;
         }
-
         internal MemoryCache Cache { get { return _cache; }  }
-
         /// <summary>
-        /// 服务端收到完整请求包时触发
+        /// 服务端收到完整请求包时触发,此处不应作任何数据包的修改处理
         /// </summary>
         public Request Request;
+        /// <summary>
+        /// 服务端响应时触发
+        /// </summary>
+        public Response Response;
+        /// <summary>
+        /// 完成响应后触发
+        /// </summary>
+        public RequestHandled RequestHandled;
         /// <summary>
         /// 默认路由管理器
         /// </summary>
@@ -259,6 +285,11 @@ namespace Mozi.HttpEmbedded
         /// <param name="args"></param>
         protected virtual void Socket_AfterReceiveEnd(object sender, DataTransferArgs args)
         {
+            if (args.Data.Length==0)
+            {
+                return;
+            }
+            
             HttpContext context = new HttpContext();
             context.ClientAddress = args.IP;
             context.ClientPort = args.Port;
@@ -275,10 +306,10 @@ namespace Mozi.HttpEmbedded
                 try
                 {
                     //HTTPS 协议处理
-                    if (_httpsEnabled)
+                    if (_tlsEnabled)
                     {
-                        //SSL解析数据包
-                        ///HelloPackage proto = TLSProtocol.ParseClientHello(args.Data);
+                        // SSL解析数据包
+                        // HelloPackage proto = TLSProtocol.ParseClientHello(args.Data);
                     }
                     context.Request = HttpRequest.Parse(args.Data);
                     context.Request.ClientAddress = args.IP;
@@ -328,33 +359,18 @@ namespace Mozi.HttpEmbedded
                 catch (Exception ex)
                 {
                     //50X 返回错误信息页面
-                    string doc = DocLoader.Load("Error.html");
-                    TemplateEngine pc = new TemplateEngine();
-                    pc.LoadFromText(doc);
-                    pc.Set("Error", new HandleError
-                    {
-                        Code = StatusCode.InternalServerError.Code.ToString(),
-                        Title = StatusCode.InternalServerError.Text,
-                        Time = DateTime.Now.ToUniversalTime().ToString("r"),
-                        Description = ex.Message,
-                        Source = ex.StackTrace ?? ex.StackTrace.ToString(),
-                    });
-                    pc.Prepare();
-
-                    context.Response.Write(pc.GetBuffer());
-                    context.Response.SetContentType(Mime.GetContentType("html"));
-                    sc = StatusCode.InternalServerError;
-                    Log.Error(ex.Message + ":" + ex.StackTrace ?? "");
+                    sc = HandleError(context, ex);
                 }
                 finally
                 {
 
                 }
             }
-            //最后响应数据     
+            //最后发送响应数据     
             if (args.Socket != null && args.Socket.Connected&&context.Request!=null)
             {
                 
+                //注入服务器名称
                 context.Response.AddHeader(HeaderProperty.Server, ServerName);
                 context.Response.SetStatus(sc);
 
@@ -370,7 +386,7 @@ namespace Mozi.HttpEmbedded
                     if (body.Length > ZipOption.MinContentLength)
                     {
                         body = GZip.Compress(body);
-                        context.Response.WriteCompressBody(body);
+                        context.Response.WriteEncodeBody(body);
                         context.Response.AddHeader(HeaderProperty.ContentEncoding, "gzip");
                     }
                 }
@@ -389,11 +405,26 @@ namespace Mozi.HttpEmbedded
                     chunked = true;
                 }
                 else
-                {                                       
+                { 
+                    
                 }
 
-                args.Socket.Send(context.Response.GetBuffer());
+                //统计数据
+                TotalReceiveCount++;
+                TotalSendCount++;
 
+                //发送数据
+                Send(args.Socket, context.Response.GetBuffer());
+
+                //事件回调
+                if (Response != null)
+                {
+                    Response(args.IP, args.Port, context.Response);
+                }
+                if (RequestHandled != null)
+                {
+                    RequestHandled(args.IP,args.Port,context);
+                }
                 if (!chunked)
                 {
                     //等待指定的秒数，以发送完剩余数据
@@ -403,6 +434,7 @@ namespace Mozi.HttpEmbedded
             }
             GC.Collect();
         }
+
         /// <summary>
         /// 处理认证
         /// </summary>
@@ -492,7 +524,7 @@ namespace Mozi.HttpEmbedded
                         var doc = DocLoader.Load("Home.html");
                         TemplateEngine pc = new TemplateEngine();
                         pc.LoadFromText(doc);
-                        pc.Set("Info", new{ VersionName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(),Copyright="&copy;2020-2022"});
+                        pc.Set("Info", new{ Author="Jason",VersionName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(),Copyright= "&copy;2020-2022 MoziCoder" });
                         pc.Prepare();
 
                         context.Response.Write(pc.GetBuffer());
@@ -513,21 +545,7 @@ namespace Mozi.HttpEmbedded
                     else
                     {
                         //50X 返回错误信息页面
-                        string doc = DocLoader.Load("Error.html");
-                        TemplateEngine pc = new TemplateEngine();
-                        pc.LoadFromText(doc);
-                        pc.Set("Error", new HandleError
-                        {
-                            Code = StatusCode.NotFound.Code.ToString(),
-                            Title = StatusCode.NotFound.Text,
-                            Time = DateTime.Now.ToUniversalTime().ToString("r"),
-                            Description = "未找到指定的资源",
-                            Source = "路径信息："+path,
-                        });
-                        pc.Prepare();
-                        context.Response.Write(pc.GetBuffer());
-                        context.Response.SetContentType(Mime.GetContentType("html"));
-                        return StatusCode.NotFound;
+                        return HandleNotFound(context, path);
                     }
                 }
                 else
@@ -543,7 +561,7 @@ namespace Mozi.HttpEmbedded
             }
             return StatusCode.Success;
         }
- 
+
         /// <summary>
         /// 路由API和页面
         /// </summary>
@@ -567,8 +585,7 @@ namespace Mozi.HttpEmbedded
                 }
                 return StatusCode.Success;
             }
-            return StatusCode.NotFound;
-
+            return HandleNotFound(context, context.Request.Path);
         }
 
         //TODO 静态文件统一处理
@@ -580,6 +597,7 @@ namespace Mozi.HttpEmbedded
 
             if (st.CheckIfModified(pathReal, ifmodifiedsince))
             {
+                //是否范围请求
                 if (string.IsNullOrEmpty(range))
                 {
                     DateTime dtModified = st.GetLastModifiedTime(pathReal).ToUniversalTime();
@@ -724,10 +742,7 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         private StatusCode HandleRequestOptions(ref HttpContext context)
         {
-            foreach (RequestMethod verb in MethodAllow)
-                context.Response.AddHeader("Allow", verb.Name);
-            foreach (RequestMethod verb in MethodPublic)
-                context.Response.AddHeader("Public", verb.Name);
+            context.Response.AddHeader(HeaderProperty.Allow, MethodAllow.Select(x=>x.Name).ToArray());
             // Sends 200 OK
             return StatusCode.Success;
         }
@@ -739,10 +754,64 @@ namespace Mozi.HttpEmbedded
             RequestMethod method = context.Request.Method;
             if (EnableWebDav)
             {
-                return _davserver.ProcessRequest(ref context);
+                return _davserver.HandleRequest(ref context);
             }
             return StatusCode.Forbidden;
             //RequestMethod.PROPFIND,RequestMethod.PROPPATCH RequestMethod.MKCOL RequestMethod.COPY RequestMethod.MOVE RequestMethod.LOCK RequestMethod.UNLOCK
+        }
+        /// <summary>
+        /// 处理服务器异常50x请求
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="ex"></param>
+        /// <returns></returns>
+        private StatusCode HandleError(HttpContext context, Exception ex)
+        {
+            StatusCode sc;
+            string doc = DocLoader.Load("Error.html");
+            TemplateEngine pc = new TemplateEngine();
+            pc.LoadFromText(doc);
+            pc.Set("Error", new HandleError
+            {
+                Code = StatusCode.InternalServerError.Code.ToString(),
+                Title = StatusCode.InternalServerError.Text,
+                Time = DateTime.Now.ToUniversalTime().ToString("r"),
+                Description = ex.Message,
+                Source = ex.StackTrace ?? ex.StackTrace.ToString(),
+                ServerName = _serverName
+            }); ;
+            pc.Prepare();
+
+            context.Response.Write(pc.GetBuffer());
+            context.Response.SetContentType(Mime.GetContentType("html"));
+            sc = StatusCode.InternalServerError;
+            Log.Error(ex.Message + ":" + ex.StackTrace ?? "");
+            return sc;
+        }
+        /// <summary>
+        /// 处理40x请求
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        private StatusCode HandleNotFound(HttpContext context, string path)
+        {
+            string doc = DocLoader.Load("Error.html");
+            TemplateEngine pc = new TemplateEngine();
+            pc.LoadFromText(doc);
+            pc.Set("Error", new HandleError
+            {
+                Code = StatusCode.NotFound.Code.ToString(),
+                Title = StatusCode.NotFound.Text,
+                Time = DateTime.Now.ToUniversalTime().ToString("r"),
+                Description = "未找到指定的资源",
+                Source = "路径信息：" + path,
+                ServerName = _serverName
+            });
+            pc.Prepare();
+            context.Response.Write(pc.GetBuffer());
+            context.Response.SetContentType(Mime.GetContentType("html"));
+            return StatusCode.NotFound;
         }
         /// <summary>
         /// 取URL资源扩展名
@@ -777,7 +846,7 @@ namespace Mozi.HttpEmbedded
         /// 启用认证
         /// <para>此方法可连续配置用户</para>
         /// </summary>
-        /// <param name="at">访问认证类型<see cref="E:Auth.AuthType"/></param>
+        /// <param name="at">访问认证类型</param>
         /// <returns></returns>
         public HttpServer UseAuth(AuthorizationType at)
         {
@@ -909,7 +978,7 @@ namespace Mozi.HttpEmbedded
         internal CertManager UseHttps()
         {
             _certMg = new CertManager();
-            _httpsEnabled = true;
+            _tlsEnabled = true;
             return _certMg;
         }
         /// <summary>
@@ -962,7 +1031,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="size"></param>
         public void SetMaxRequestSize(long size)
         {
-            _maxRequestSize = size;
+            _maxRequestBodySize = size;
         }
         /// <summary>
         /// 设置临时文件目录
@@ -980,6 +1049,16 @@ namespace Mozi.HttpEmbedded
         public void SetIndexPage(string pattern)
         {
             _indexPages = pattern.Split(new char[] { ',' });
+        }
+        /// <summary>
+        /// 向会话接收方发送数据
+        /// </summary>
+        /// <param name="peer"></param>
+        /// <param name="data"></param>
+        internal void Send(Socket peer,byte[] data)
+        {
+            peer.Send(data);
+            TotalSendBytes++;
         }
         /// <summary>
         /// 发送Chunked数据
@@ -1005,7 +1084,7 @@ namespace Mozi.HttpEmbedded
         /// Chunked结束符号
         /// </summary>
         /// <param name="peer"></param>
-        internal void SendChunkedEndData(Socket peer)
+        internal void SendChunkedEndData(ref Socket peer)
         {
             if (peer.Connected)
             {
@@ -1014,25 +1093,53 @@ namespace Mozi.HttpEmbedded
             }
         }
         /// <summary>
-        /// 注册简易处理方法，默认为仅响应GET请求。方法原型为<see cref="RegisterHandler(string, RequestMethod, Handler)"/>
+        /// 注册简易处理方法，默认为仅响应GET请求。方法原型为<see cref="RegisterHandler(string, RequestMethod, ApiHandler)"/>
         /// </summary>
         /// <param name="name"></param>
         /// <param name="handler"></param>
-        public void RegisterHandler(string name,Handler handler)
+        public void RegisterHandler(string name,ApiHandler handler)
         {
             Router.Get(name, handler);
         }
         /// <summary>
-        /// 
+        /// 注册API
         /// </summary>
         /// <param name="name">方法名</param>
         /// <param name="method">HTTP请求类型</param>
         /// <param name="handler">委托</param>
-        public void RegisterHandler(string name,RequestMethod method,Handler handler)
+        /// <remarks>这是一个快速注册API的方法，无需实现<see cref="BaseApi"/></remarks>
+        public void RegisterHandler(string name,RequestMethod method,ApiHandler handler)
         {
             Router.RegisterGlobalMethod(name, method, handler);
         }
+        /// <summary>
+        /// 移除API
+        /// </summary>
+        /// <param name="name"></param>
+        public void RemoveHandler(string name)
+        {
+            Router.UnRegisterGlobalMethod(name);
+        }
     }
-
+    /// <summary>
+    /// 请求接收委托
+    /// </summary>
+    /// <param name="srcHost"></param>
+    /// <param name="srcPort"></param>
+    /// <param name="request"></param>
     public delegate void Request(string srcHost, int srcPort, HttpRequest request);
+    /// <summary>
+    /// 响应发送委托
+    /// </summary>
+    /// <param name="dstHost"></param>
+    /// <param name="dstPort"></param>
+    /// <param name="response"></param>
+    public delegate void Response(string dstHost, int dstPort, HttpResponse response);
+    /// <summary>
+    /// 请求响应完成时触发
+    /// </summary>
+    /// <param name="dstHost"></param>
+    /// <param name="dstPort"></param>
+    /// <param name="context"></param>
+    public delegate void RequestHandled(string dstHost, int dstPort, HttpContext context);
 }

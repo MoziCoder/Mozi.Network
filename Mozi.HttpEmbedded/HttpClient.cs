@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Sockets;
+using Mozi.HttpEmbedded.Compress;
 using Mozi.HttpEmbedded.Encode;
 
 namespace Mozi.HttpEmbedded
@@ -8,9 +10,31 @@ namespace Mozi.HttpEmbedded
     /// <summary>
     /// 请求完成时回调
     /// </summary>
+    /// <param name="url">请求的URL地址</param>
     /// <param name="context"></param>
-    public delegate void RequestComplete(HttpContext context);
-
+    public delegate void RequestComplete(string url,HttpContext context);
+    /// <summary>
+    /// 发起请求时回调
+    /// </summary>
+    /// <param name="url"></param>
+    /// <param name="host"></param>
+    /// <param name="req"></param>
+    public delegate void RequestSend(string url, string host, HttpRequest req);
+    /// <summary>
+    /// 接收到响应时回调
+    /// </summary>
+    /// <param name="url"></param>
+    /// <param name="host"></param>
+    /// <param name="resp"></param>
+    public delegate void ResponseReceive(string url, string host, HttpResponse resp);
+    /// <summary>
+    /// 请求异常时触发
+    /// </summary>
+    /// <param name="url"></param>
+    /// <param name="host"></param>
+    /// <param name="req"></param>
+    /// <param name="ex"></param>
+    public delegate void RequestException(string url, string host, HttpRequest req,Exception ex);
     //DONE http客户端，因http客户端实现比较多，暂时不实现，待后期规划
     //TODO 应同步实现Https HttpQUIC(http3.0)
     //TODO 应加入TLS安全传输
@@ -25,9 +49,8 @@ namespace Mozi.HttpEmbedded
         /// 编码类型
         /// </summary>
         public string Charset = "UTF-8";
-        private string _userAgent = "Mozilla/5.0 (Linux;Android 4.4.2;OEM Device) AppleWebKit/537.36 (KHTML,like Gecko) Chrome/39.0.2171.71  Mozi/1.4.3";
+        private string _userAgent = "Mozilla/5.0 (Linux;Android 4.4.2;OEM Device) AppleWebKit/537.36 (KHTML,like Gecko) Chrome/39.0.2171.71  Mozi/1.4.6";
         private const string Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
-        private const string AcceptEncoding = "gzip, deflate";
 
         private Auth.User _user;
 
@@ -41,9 +64,29 @@ namespace Mozi.HttpEmbedded
         //};
 
         /// <summary>
+        /// 请求发生异常时触发
+        /// </summary>
+        public RequestException RequestException;
+        /// <summary>
         /// 接收到响应时触发回调
         /// </summary>
-        public RequestComplete ResponseReceived;
+        public RequestComplete ResponseCompleted;
+        /// <summary>
+        /// 请求发起时触发
+        /// </summary>
+        public RequestSend RequestSend;
+        /// <summary>
+        /// 接收到响应时触发
+        /// </summary>
+        public ResponseReceive ResponseReceive;
+        /// <summary>
+        /// 数据压缩选项
+        /// </summary>
+        public ContentEncoding ContentEncoding = ContentEncoding.None;
+        /// <summary>
+        /// 是否自动解码被gzip|deflate压缩过的响应内容
+        /// </summary>
+        public bool AutoDecodeBody = false;
         /// <summary>
         /// 用户代理
         /// </summary>
@@ -78,31 +121,39 @@ namespace Mozi.HttpEmbedded
         /// </param>
         /// <param name="body">请求包体</param>
         /// <param name="callback">回调方法</param>
-        public void Send(string url, RequestMethod method,Dictionary<HeaderProperty,string> headers,byte[] body,RequestComplete callback)
+        public void Send(string url, RequestMethod method,Dictionary<string,string> headers,byte[] body,RequestComplete callback)
         {
             HttpRequest req = new HttpRequest();
             req.SetMethod(method);
-            req.SetHeader(HeaderProperty.UserAgent, UserAgent);
-            req.SetHeader(HeaderProperty.Accept, Accept);
-            req.SetHeader(HeaderProperty.AcceptEncoding, AcceptEncoding);
             req.SetBody(body);
 
             //设置头信息
             if (headers != null)
             {
-                foreach (KeyValuePair<HeaderProperty, string> h in headers)
+                foreach (KeyValuePair<string, string> h in headers)
                 {
-                    req.SetHeader(h.Key, h.Value);
+                    req.AddHeader(h.Key, h.Value);
                 }
             }
 
             //设置认证用户
             if (_user != null && _authScheme != null)
             {
-                req.SetHeader(HeaderProperty.Authorization,_authScheme.GenerateAuthorization(_user.UserName, _user.Password));
+                req.AddHeader(HeaderProperty.Authorization,_authScheme.GenerateAuthorization(_user.UserName, _user.Password));
             }
-
-            Send(url, req, callback);
+            try
+            {
+                Send(url, req, callback);
+            }catch(Exception ex) {
+                if (RequestException != null)
+                {
+                    RequestException(url, req.Host, req, ex);
+                }
+                else
+                {
+                    throw ex;
+                }
+            }
         }
         /// <summary>
         /// 发送HTTP请求
@@ -112,6 +163,9 @@ namespace Mozi.HttpEmbedded
         /// <param name="callback"></param>
         public void Send(string url,HttpRequest req,RequestComplete callback)
         {
+            req.AddHeader(HeaderProperty.UserAgent, UserAgent);
+            req.AddHeader(HeaderProperty.Accept, Accept);
+
             SocketClient sc = new SocketClient();
             sc.ConnectTimeout = ConnectTimeout;
            
@@ -120,40 +174,81 @@ namespace Mozi.HttpEmbedded
 
             if (!string.IsNullOrEmpty(uri.Url))
             {
+                //注入URI信息
                 req.SetUri(uri);
-                req.SetPath(uri.Path + (string.IsNullOrEmpty(uri.Query) ? "" : "&" + uri.Query));
 
                 HttpContext ctx = new HttpContext
                 {
                     Request = req
                 };
 
-                sc.AfterReceiveEnd = new ReceiveEnd((x, y) =>
+                sc.AfterReceiveEnd = new ReceiveEnd((x, args) =>
                 {
                     //TODO 选择适当的时机关闭链接
-                    HttpResponse resp = HttpResponse.Parse(y.Data);
+                    HttpResponse resp = HttpResponse.Parse(args.Data);
                     ctx.Response = resp;
-                    if (callback != null)
+                    var cl = resp.Headers.GetValue(HeaderProperty.ContentLength);
+                    if (resp.Headers.Contains(HeaderProperty.ContentLength) &&long.Parse(cl)< resp.ContentLength)
                     {
-                        callback(ctx);
+                        args.Socket.BeginReceive(args.State.Buffer, 0, args.State.Buffer.Length, SocketFlags.None, sc.CallbackReceived, args.State);
                     }
+                    else
+                    {
+                        //判断chunked 
 
-                    if (ResponseReceived != null)
-                    {
-                        ResponseReceived(ctx);
+                        //判断Content-Encoding
+                        if (AutoDecodeBody) { 
+                            if (resp.ContentEncoding == "gzip")
+                            {
+                                resp.WriteDecodeBody(GZip.Decompress(req.Body));
+                            }else if (resp.ContentEncoding == "deflate"){
+                                resp.WriteDecodeBody(Deflate.Decompress(req.Body));
+                            }
+                        }
+                        if (callback != null)
+                        {
+                            callback(url, ctx);
+                        }
+                        if (ResponseCompleted != null)
+                        {
+                            ResponseCompleted(url, ctx);
+                        }
+                        if (ResponseReceive != null)
+                        {
+                            ResponseReceive(url, uri.Host, resp);
+                        }
+                        sc.Shutdown();
                     }
-                    sc.Shutdown();
                 });
 
-                sc.Connect(uri.Host, uri.Port == 0 ? 80 : uri.Port);
+                int defaultPort = 80;
+
+                if (uri.Protocol.Equals("https",StringComparison.OrdinalIgnoreCase))
+                {
+                    defaultPort = 443;
+                }
+                
+                sc.Connect(uri.Host, uri.Port == 0 ? defaultPort : uri.Port);
 
                 if (sc.Connected)
                 {
+                    if (ContentEncoding == ContentEncoding.Gzip)
+                    {
+                        req.SetBody(GZip.Compress(req.Body));
+                        req.AddHeader(HeaderProperty.AcceptEncoding, "gzip");
+                    }else if (ContentEncoding == ContentEncoding.Deflate){
+                        req.AddHeader(HeaderProperty.AcceptEncoding, "deflate");
+                        req.SetBody(Deflate.Compress(req.Body));
+                    }
                     sc.SendTo(req.GetBuffer());
+                    if (RequestSend != null)
+                    {
+                        RequestSend(url, req.Host, req);
+                    }
                 }
                 else
                 {
-                    throw new Exception("超时时间已到，无法访问指定的服务器:" + (string.IsNullOrEmpty(uri.Domain) ? uri.Host : uri.Domain) + (uri.Port == 0 ? ":80" : (":" + uri.Port)));
+                    throw new Exception("超时时间已到，无法访问指定的服务器:" + (string.IsNullOrEmpty(uri.Domain) ? uri.Host : uri.Domain) + $":{defaultPort}");
                 }
             }
             else
@@ -161,7 +256,62 @@ namespace Mozi.HttpEmbedded
                 throw new Exception($"分析指定的地址:{url}时出错，请检查地址是否合法");
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="baseurl"></param>
+        /// <param name="relativeAddress"></param>
+        /// <param name="method"></param>
+        /// <param name="headers"></param>
+        /// <param name="body"></param>
+        /// <param name="callback"></param>
+        public void Send(string baseurl,string[] relativeAddress, RequestMethod method, Dictionary<string, string> headers, byte[] body, RequestComplete callback)
+        {
+             foreach(var add in relativeAddress)
+             {
+                string path = baseurl;
+                UriInfo uri = UriInfo.Parse(baseurl);
 
+                var revAdd = add;
+                if (revAdd.StartsWith("./"))
+                {
+                    revAdd = add.Substring(2);
+                } else if (revAdd.StartsWith("../")){
+
+                    while (revAdd.StartsWith("../"))
+                    {
+                        if (uri.Paths.Length > 0)
+                        {
+                            string[] paths = new string[uri.Paths.Length - 1];
+                            Array.Copy(uri.Paths, paths, uri.Paths.Length - 1);
+                            uri.Paths = paths;
+                        }
+                        revAdd = revAdd.Substring(3);
+                    }
+                }
+                else if(revAdd.StartsWith("/"))
+                {
+                    uri.Paths = new string[0];
+                }
+                path = $"{uri.Protocol}://{uri.Domain ?? uri.Host}"+(uri.Port>0?$":{uri.Port}":"");
+
+                if (uri.Paths.Length > 0)
+                {
+                    path += string.Join("", uri.Paths);
+                }
+                else
+                {
+                    if (!path.EndsWith("/")&&!revAdd.StartsWith("/"))
+                    {
+                        path += "/";
+                    }
+                }
+
+                path += revAdd;
+
+                Send(path,method,headers,body,callback);
+             }
+        }
         /// <summary>
         /// HttpGet方法
         /// </summary>
@@ -179,7 +329,7 @@ namespace Mozi.HttpEmbedded
         ///     </list>
         /// </param>
         /// <param name="callback">回调方法</param>
-        public void Get(string url, Dictionary<HeaderProperty, string> headers, RequestComplete callback)
+        public void Get(string url, Dictionary<string, string> headers, RequestComplete callback)
         {
             Send(url, RequestMethod.GET, headers,null,callback);
         }
@@ -192,6 +342,10 @@ namespace Mozi.HttpEmbedded
         {
             Get(url, null, callback);
         }
+        internal void GetFile(string url,RequestComplete callback)
+        {
+
+        }
         /// <summary>
         /// HttpPost方法
         /// </summary>
@@ -199,16 +353,16 @@ namespace Mozi.HttpEmbedded
         /// <param name="headers">附加的头信息,参见Get方法</param>
         /// <param name="body">请求文本，文本会被编码成UTF-8格式。请求时会附加<see cref="HeaderProperty.ContentType"/>头属性</param>
         /// <param name="callback">回调方法</param>
-        public void Post(string url, Dictionary<HeaderProperty, string> headers, string body,RequestComplete callback)
+        public void Post(string url, Dictionary<string, string> headers, string body,RequestComplete callback)
         {
             byte[] payload = Encode.StringEncoder.Encode(body);
             if (headers == null)
             {
-                headers = new Dictionary<HeaderProperty, string>();
+                headers = new Dictionary<string, string>();
             }
-            if (!headers.ContainsKey(HeaderProperty.ContentType))
+            if (!headers.ContainsKey(HeaderProperty.ContentType.PropertyName))
             {
-                headers.Add(HeaderProperty.ContentType, $"text/plain; charset={Charset}");
+                headers.Add(HeaderProperty.ContentType.PropertyName, $"text/plain; charset={Charset}");
             }
             Post(url, headers, payload, callback);
         }
@@ -219,7 +373,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="headers">附加的头信息,参见Get方法</param>
         /// <param name="body"></param>
         /// <param name="callback">回调方法</param>
-        public void Post(string url, Dictionary<HeaderProperty, string> headers, byte[] body, RequestComplete callback)
+        public void Post(string url, Dictionary<string, string> headers, byte[] body, RequestComplete callback)
         {
             Send(url, RequestMethod.POST, headers, body, callback);
         }
@@ -248,7 +402,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="url"></param>
         /// <param name="headers"></param>
         /// <param name="body"></param>
-        public void Post(string url, Dictionary<HeaderProperty, string> headers, string body)
+        public void Post(string url, Dictionary<string, string> headers, string body)
         {
             Post(url, headers, body, null);
         }
@@ -279,23 +433,23 @@ namespace Mozi.HttpEmbedded
         /// <param name="headers">附加的头信息,参见Get方法</param>
         /// <param name="files">文件集合</param>
         /// <param name="callback">回调方法</param>
-        public void PostFile(string url, Dictionary<HeaderProperty, string> headers, FileCollection files,RequestComplete callback)
+        public void PostFile(string url, Dictionary<string, string> headers, FileCollection files,RequestComplete callback)
         {
             byte[] byteNewLine = new byte[] { ASCIICode.CR, ASCIICode.LF };
             string sNewLine=System.Text.Encoding.ASCII.GetString(byteNewLine);
             string boundary = "--"+CacheControl.GenerateRandom(8);
             if (headers == null)
             {
-                headers = new Dictionary<HeaderProperty, string>();
+                headers = new Dictionary<string, string>();
             }
-            headers.Add(HeaderProperty.ContentType, $"multipart/form-data; boundary={boundary}");
+            headers.Add(HeaderProperty.ContentType.PropertyName, $"multipart/form-data; boundary={boundary}");
             if (files.Count > 0)
             {
                 using (MemoryStream ms = new MemoryStream())
                 {
                     foreach (File f in files)
                     {
-                        FileInfo fi = new FileInfo(f.FileTempSavePath);
+                        FileInfo fi = new FileInfo(f.Path);
                         FileStream fs = fi.OpenRead();
                         string header = $"--{boundary}" + sNewLine;
                         header += HeaderProperty.ContentDisposition.PropertyName + $": form-data; name=\"{f.FieldName}\"; filename=\"{HtmlEncoder.StringToEntityCode(fs.Name)}\"" + sNewLine;
@@ -339,16 +493,16 @@ namespace Mozi.HttpEmbedded
         /// <param name="headers"></param>
         /// <param name="body"></param>
         /// <param name="callback"></param>
-        public void Put(string url, Dictionary<HeaderProperty, string> headers, string body, RequestComplete callback)
+        public void Put(string url, Dictionary<string, string> headers, string body, RequestComplete callback)
         {
             byte[] payload = StringEncoder.Encode(body);
             if (headers == null)
             {
-                headers = new Dictionary<HeaderProperty, string>();
+                headers = new Dictionary<string, string>();
             }
-            if (!headers.ContainsKey(HeaderProperty.ContentType))
+            if (!headers.ContainsKey(HeaderProperty.ContentType.PropertyName))
             {
-                headers.Add(HeaderProperty.ContentType, $"text/plain; charset={Charset}");
+                headers.Add(HeaderProperty.ContentType.PropertyName, $"text/plain; charset={Charset}");
             }
             Put(url, headers, payload, callback);
         }
@@ -359,7 +513,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="headers"></param>
         /// <param name="body"></param>
         /// <param name="callback"></param>
-        public void Put(string url, Dictionary<HeaderProperty, string> headers, byte[] body, RequestComplete callback)
+        public void Put(string url, Dictionary<string, string> headers, byte[] body, RequestComplete callback)
         {
             Send(url, RequestMethod.PUT, headers, body, callback);
         }
@@ -388,7 +542,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="url"></param>
         /// <param name="headers"></param>
         /// <param name="body"></param>
-        public void Put(string url, Dictionary<HeaderProperty, string> headers, string body)
+        public void Put(string url, Dictionary<string, string> headers, string body)
         {
             Post(url, headers, body, null);
         }
@@ -417,7 +571,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="url"></param>
         /// <param name="headers"></param>
         /// <param name="callback"></param>
-        public void Delete(string url, Dictionary<HeaderProperty, string> headers, RequestComplete callback)
+        public void Delete(string url, Dictionary<string, string> headers, RequestComplete callback)
         {
             Send(url, RequestMethod.GET, headers, null, callback);
         }

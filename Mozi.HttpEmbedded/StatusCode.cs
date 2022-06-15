@@ -281,11 +281,19 @@ namespace Mozi.HttpEmbedded
         /// 状态码值
         /// </summary>
         public int Code { get { return _code; } }
-
+        /// <summary>
+        /// 描述文本
+        /// </summary>
         public string Text { get { return _text; } }
-
+        /// <summary>
+        /// 唯一标识符
+        /// </summary>
         protected override string Tag { get { return Code.ToString(); } }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="desc"></param>
         public StatusCode(int code, string desc)
         {
             _code = code;

@@ -4,7 +4,13 @@ namespace Mozi.HttpEmbedded
 {
 
     //TODO 实现全局调用委托
-    public delegate bool Handler(HttpContext ctx);
+
+    /// <summary>
+    /// 简易API 方法委托
+    /// </summary>
+    /// <param name="ctx"></param>
+    /// <returns></returns>
+    public delegate bool ApiHandler(HttpContext ctx);
 
     /// <summary>
     /// 全局对象
@@ -14,14 +20,14 @@ namespace Mozi.HttpEmbedded
     {
 
         //全局委托
-        private readonly Dictionary<string, Handler> _handlers = new Dictionary<string, Handler>(new Generic.StringCompareIgnoreCase());
+        private readonly Dictionary<string, ApiHandler> _handlers = new Dictionary<string, ApiHandler>(new Generic.StringCompareIgnoreCase());
 
         /// <summary>
         /// 注册委托
         /// </summary>
         /// <param name="name"></param>
         /// <param name="handler"></param>
-        public void Register(string name, Handler handler)
+        public void Register(string name, ApiHandler handler)
         {
             if (_handlers.ContainsKey(name))
             {
@@ -50,7 +56,7 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        internal Handler Find(string name)
+        internal ApiHandler Find(string name)
         {
             return _handlers.ContainsKey(name) ? _handlers[name] : null;
         }
@@ -62,7 +68,7 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         internal bool Invoke(string name, HttpContext ctx)
         {
-            Handler handler = Find(name);
+            ApiHandler handler = Find(name);
             if (handler != null)
             {
                 return handler.Invoke(ctx);

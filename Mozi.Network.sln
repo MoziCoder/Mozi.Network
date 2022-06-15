@@ -41,8 +41,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mozi.NTP.Test", "Mozi.NTP.T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mozi.IoT.Client", "Mozi.IoT.Client\Mozi.IoT.Client.csproj", "{F6C4D266-C83B-40E6-980F-771CB438AD45}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mozi.IoT.DebugTool", "Mozi.IoT.DebugTool\Mozi.IoT.DebugTool.csproj", "{4AB49A45-AF32-47D6-B8EB-EBAE34D51872}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mozi.IoT.Test", "Mozi.IoT.Test\Mozi.IoT.Test.csproj", "{EC235155-135F-489D-84B7-A4DEAAEB8F35}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mozi.IoT.Server", "Mozi.IoT.Server\Mozi.IoT.Server.csproj", "{E82D3587-E2C1-4EA9-8494-7DC3E4D4A5EA}"
@@ -62,6 +60,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mozi.IoT", "Mozi.IoT\Mozi.IoT.csproj", "{A59E18F0-30E5-41E7-9504-02993BCA949B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mozi.Live.RTSP.Test", "Mozi.Live.RTSP.Test\Mozi.Live.RTSP.Test.csproj", "{AAC93B59-699B-40E1-BEC6-EE194A8923E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mozi.Http.HttpClient", "Mozi.Http.HttpClient\Mozi.Http.HttpClient.csproj", "{CC4F520E-6562-4AB9-ADC8-D9F2A4D1F133}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -300,18 +300,6 @@ Global
 		{F6C4D266-C83B-40E6-980F-771CB438AD45}.ReleaseBinaries|Any CPU.Build.0 = Release|Any CPU
 		{F6C4D266-C83B-40E6-980F-771CB438AD45}.ReleaseBinaries|x86.ActiveCfg = Release|Any CPU
 		{F6C4D266-C83B-40E6-980F-771CB438AD45}.ReleaseBinaries|x86.Build.0 = Release|Any CPU
-		{4AB49A45-AF32-47D6-B8EB-EBAE34D51872}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4AB49A45-AF32-47D6-B8EB-EBAE34D51872}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4AB49A45-AF32-47D6-B8EB-EBAE34D51872}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{4AB49A45-AF32-47D6-B8EB-EBAE34D51872}.Debug|x86.Build.0 = Debug|Any CPU
-		{4AB49A45-AF32-47D6-B8EB-EBAE34D51872}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4AB49A45-AF32-47D6-B8EB-EBAE34D51872}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4AB49A45-AF32-47D6-B8EB-EBAE34D51872}.Release|x86.ActiveCfg = Release|Any CPU
-		{4AB49A45-AF32-47D6-B8EB-EBAE34D51872}.Release|x86.Build.0 = Release|Any CPU
-		{4AB49A45-AF32-47D6-B8EB-EBAE34D51872}.ReleaseBinaries|Any CPU.ActiveCfg = Release|Any CPU
-		{4AB49A45-AF32-47D6-B8EB-EBAE34D51872}.ReleaseBinaries|Any CPU.Build.0 = Release|Any CPU
-		{4AB49A45-AF32-47D6-B8EB-EBAE34D51872}.ReleaseBinaries|x86.ActiveCfg = Release|Any CPU
-		{4AB49A45-AF32-47D6-B8EB-EBAE34D51872}.ReleaseBinaries|x86.Build.0 = Release|Any CPU
 		{EC235155-135F-489D-84B7-A4DEAAEB8F35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EC235155-135F-489D-84B7-A4DEAAEB8F35}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC235155-135F-489D-84B7-A4DEAAEB8F35}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -432,6 +420,18 @@ Global
 		{AAC93B59-699B-40E1-BEC6-EE194A8923E5}.ReleaseBinaries|Any CPU.Build.0 = Release|Any CPU
 		{AAC93B59-699B-40E1-BEC6-EE194A8923E5}.ReleaseBinaries|x86.ActiveCfg = Release|Any CPU
 		{AAC93B59-699B-40E1-BEC6-EE194A8923E5}.ReleaseBinaries|x86.Build.0 = Release|Any CPU
+		{CC4F520E-6562-4AB9-ADC8-D9F2A4D1F133}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC4F520E-6562-4AB9-ADC8-D9F2A4D1F133}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC4F520E-6562-4AB9-ADC8-D9F2A4D1F133}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CC4F520E-6562-4AB9-ADC8-D9F2A4D1F133}.Debug|x86.Build.0 = Debug|Any CPU
+		{CC4F520E-6562-4AB9-ADC8-D9F2A4D1F133}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC4F520E-6562-4AB9-ADC8-D9F2A4D1F133}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC4F520E-6562-4AB9-ADC8-D9F2A4D1F133}.Release|x86.ActiveCfg = Release|Any CPU
+		{CC4F520E-6562-4AB9-ADC8-D9F2A4D1F133}.Release|x86.Build.0 = Release|Any CPU
+		{CC4F520E-6562-4AB9-ADC8-D9F2A4D1F133}.ReleaseBinaries|Any CPU.ActiveCfg = Release|Any CPU
+		{CC4F520E-6562-4AB9-ADC8-D9F2A4D1F133}.ReleaseBinaries|Any CPU.Build.0 = Release|Any CPU
+		{CC4F520E-6562-4AB9-ADC8-D9F2A4D1F133}.ReleaseBinaries|x86.ActiveCfg = Release|Any CPU
+		{CC4F520E-6562-4AB9-ADC8-D9F2A4D1F133}.ReleaseBinaries|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

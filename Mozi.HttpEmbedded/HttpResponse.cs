@@ -9,10 +9,12 @@ using Mozi.HttpEmbedded.Source;
 
 namespace Mozi.HttpEmbedded
 {
+    //TODO 考虑将头部和内容分割，头部保留在内存中，内容保留到持久存储中
     /// <summary>
     /// HTTP响应
     /// </summary>
-    public class HttpResponse
+    /// <remarks>该类可以处理其它类HTTP协议的响应数据包</remarks>
+    public class HttpResponse : IHttpPackage
     {
         private byte[] _body = new byte[0];
 
@@ -32,6 +34,10 @@ namespace Mozi.HttpEmbedded
         /// 状态码
         /// </summary>
         public StatusCode Status { get; protected set; }
+        /// <summary>
+        /// 响应状态行数据
+        /// </summary>
+        public string StatusLineString { get { return $"{Version} {Status.Code} {Status.Text}"; } }
         /// <summary>
         /// 内容长度
         /// </summary>
@@ -82,6 +88,9 @@ namespace Mozi.HttpEmbedded
         ///// </summary>
         //public bool AutoAddHeaderContentType = true;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public HttpResponse()
         {
             _headers = new TransformHeader();
@@ -140,6 +149,11 @@ namespace Mozi.HttpEmbedded
             _contentType = contentType;
             return this;
         }
+        /// <summary>
+        /// 设置头属性合集
+        /// </summary>
+        /// <param name="headers"></param>
+        /// <returns></returns>
         public HttpResponse SetHeaders(TransformHeader headers)
         {
             _headers = headers;
@@ -153,19 +167,38 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public HttpResponse AddHeader(HeaderProperty head, string value)
         {
-            _headers.Add(head, value);
-            return this;
+            return AddHeader(head.PropertyName, value);
         }
         /// <summary>
         /// 增加头部信息
         /// </summary>
-        /// <param name="item"></param>
+        /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public HttpResponse AddHeader(string item, string value)
+        public HttpResponse AddHeader(string key, string value)
         {
-            _headers.Add(item, value);
+            _headers.Add(key, value);
             return this;
+        }
+        /// <summary>
+        /// 增加头部 以符串", "为分割符号
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public HttpResponse AddHeader(string key,params string[] value)
+        {
+            return AddHeader(key, string.Join(", ", value));
+        }
+        /// <summary>
+        /// 增加头部  以符串", "为分割符号
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public HttpResponse AddHeader(HeaderProperty key, params string[] value)
+        {
+            return AddHeader(key.PropertyName, value);
         }
         /// <summary>
         /// 写入字节数据
@@ -185,7 +218,7 @@ namespace Mozi.HttpEmbedded
             return this;
         }
         /// <summary>
-        /// 写入文本
+        /// 写入文本到数据包的末尾
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
@@ -195,13 +228,22 @@ namespace Mozi.HttpEmbedded
             return this;
         }
         /// <summary>
-        /// 写入压缩的数据
+        /// 写入压缩编码后的数据
         /// </summary>
         /// <param name="body"></param>
-        public void WriteCompressBody(byte[] body)
+        public void WriteEncodeBody(byte[] body)
         {
             _body = body;
             ContentEncoded = true;
+        }
+        /// <summary>
+        /// 写入解码的内容数据
+        /// </summary>
+        /// <param name="body"></param>
+        public void WriteDecodeBody(byte[] body)
+        {
+            _body = body;
+            ContentEncoded = false;
         }
         //TODO 此处需要调试
         //Transfer-Encoding
@@ -234,6 +276,33 @@ namespace Mozi.HttpEmbedded
                 fs.Close();
             }
             return this;
+        }
+        /// <summary>
+        /// 生成头数据,包括请求行，头信息，头和包体分割符
+        /// </summary>
+        /// <param name="headerKeyNameUpperCase">头属性名是否大写</param>
+        /// <returns></returns>
+        public byte[] GetHeaderBuffer(bool headerKeyNameUpperCase)
+        {
+            List<byte> data = new List<byte>();
+            //注入状态信息
+            data.AddRange(GetStatusLine());
+            data.AddRange(TransformHeader.Carriage);
+            //注入默认头部
+            data.AddRange(_headers.GetBuffer(headerKeyNameUpperCase));
+            //注入Cookie
+            data.AddRange(_cookies.GetBuffer());
+            //注入分割符
+            data.AddRange(TransformHeader.Carriage);
+            return data.ToArray();
+        }
+        /// <summary>
+        /// 生成头数据,包括请求行，头信息，头和包体分割符
+        /// </summary>
+        /// <returns></returns>
+        public byte[] GetHeaderBuffer()
+        {
+            return GetHeaderBuffer(false);
         }
         //TODO 2021/05/10 如果压缩介入，就要对包体进行压缩
         /// <summary>
@@ -280,7 +349,7 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public byte[] GetStatusLine()
         {
-            return StringEncoder.Encode(string.Format("{3}/{0} {1} {2}", Version.Version, Status.Code, Status.Text,Version.Name));
+            return StringEncoder.Encode(StatusLineString);
         }
         /// <summary>
         /// 重定向302
@@ -293,7 +362,7 @@ namespace Mozi.HttpEmbedded
             return StatusCode.Found;
         }
         /// <summary>
-        /// HttpResponse反向解析
+        /// HttpResponse反向解析，类HTTP的响应数据包也可以进行解析
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
@@ -433,14 +502,30 @@ namespace Mozi.HttpEmbedded
         {
             if (resp.Headers.Contains(HeaderProperty.ContentEncoding.PropertyName))
             {
-                resp.ContentEncoding = resp.Headers.GetValue(HeaderProperty.ContentEncoding.PropertyName);
-                if (resp.ContentEncoding != Compress.ContentEncoding.None.ToString())
+                resp.ContentEncoding = resp.Headers.GetValue(HeaderProperty.ContentEncoding);
+                //如果不是ContentEncoding: none
+                if (!Compress.ContentEncoding.None.ToString().Equals(resp.ContentEncoding,StringComparison.OrdinalIgnoreCase))
                 {
                     resp.ContentEncoded = true;
                 }
             }
         }
-
+        /// <summary>
+        /// 设置Body数据
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public HttpResponse SetBody(byte[] data)
+        {
+            if (data != null)
+            {
+                _body = data;
+            }
+            return this;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         ~HttpResponse()
         {
             _body = null;

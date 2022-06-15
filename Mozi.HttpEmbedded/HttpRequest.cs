@@ -8,11 +8,13 @@ using Mozi.HttpEmbedded.Generic;
 namespace Mozi.HttpEmbedded
 {
     //DONE 应将 GET/POST 查询字段进行区分 
+    //TODO 考虑将头部和内容分割，头部保留在内存中，内容保留到持久存储中
 
     /// <summary>
     /// HTTP请求
     /// </summary>
-    public class HttpRequest
+    /// <remarks>该类可以处理其它类HTTP协议的请求数据包</remarks>
+    public class HttpRequest:IHttpPackage
     {
 
         private byte[] _body = new byte[] { };
@@ -533,15 +535,21 @@ namespace Mozi.HttpEmbedded
                 req.AcceptLanguage = new LanguagePriority[langs.Length];
                 try
                 {
+                    //第一项为首选语言
                     for (int i = 0; i < langs.Length; i++)
                     {
                         var lan = langs[i];
-                        var lans = lan.Split(new char[] { (char)ASCIICode.COMMA }, StringSplitOptions.RemoveEmptyEntries);
+                        var lans = lan.Split(new char[] { (char)ASCIICode.SEMICOLON }, StringSplitOptions.RemoveEmptyEntries);
                         req.AcceptLanguage[i] = new LanguagePriority()
                         {
-                            LanguageName = lans[0],
-                            Weight = lans.Length > 1 ? int.Parse(lans[1]) : 1
+                            LanguageName = lans[0].Trim(),
                         };
+
+                        if (lans.Length > 1)
+                        {
+                            var weight = lans[1].Trim(new char[] { (char)ASCIICode.SPACE,(char)ASCIICode.CHAR_q, (char)ASCIICode.EQUAL });
+                            req.AcceptLanguage[i].Weight = decimal.Parse(weight);
+                        }
                     }
                 }
                 catch
@@ -640,6 +648,33 @@ namespace Mozi.HttpEmbedded
                 req.Version = new ProtocolVersion(sProtoType, sProtoVersion);
             }
         }
+        /// <summary>
+        /// 生成头数据,包括请求行，头信息，头和包体分割符
+        /// </summary>
+        /// <param name="headerKeyNameUpperCase">头属性名是否大写</param>
+        /// <returns></returns>
+        public byte[] GetHeaderBuffer(bool headerKeyNameUpperCase)
+        {
+            List<byte> data = new List<byte>();
+            //注入状态信息
+            data.AddRange(GetRequestLine());
+            data.AddRange(TransformHeader.Carriage);
+            //注入默认头部
+            data.AddRange(_headers.GetBuffer(headerKeyNameUpperCase));
+            //注入Cookie
+            data.AddRange(_cookies.GetBuffer());
+            //注入分割符
+            data.AddRange(TransformHeader.Carriage);
+            return data.ToArray();
+        }
+        /// <summary>
+        /// 生成头数据,包括请求行，头信息，头和包体分割符
+        /// </summary>
+        /// <returns></returns>
+        public byte[] GetHeaderBuffer()
+        {
+            return GetHeaderBuffer(false);
+        }
         //TODO 此功能需要重试以进行验证
         /// <summary>
         /// 数据重播
@@ -676,7 +711,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public HttpRequest SetHeader(string key,string value)
+        public HttpRequest AddHeader(string key,string value)
         {
             _headers.Add(key, value);
             return this;
@@ -687,10 +722,29 @@ namespace Mozi.HttpEmbedded
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public HttpRequest SetHeader(HeaderProperty key,string value)
+        public HttpRequest AddHeader(HeaderProperty key,string value)
         {
-            _headers.Add(key, value);
-            return this;
+            return AddHeader(key.PropertyName, value);
+        }
+        /// <summary>
+        /// 增加头部 组合值以符串", "为分割符号
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public HttpRequest AddHeader(string key, params string[] value)
+        {
+            return AddHeader(key, string.Join(";", value));
+        }
+        /// <summary>
+        /// 增加头部 组合值以符串", "为分割符号
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public HttpRequest AddHeader(HeaderProperty key, params string[] value)
+        {
+            return AddHeader(key.PropertyName, value);
         }
         /// <summary>
         /// 应用头信息集合 覆盖所有头属性
@@ -746,7 +800,7 @@ namespace Mozi.HttpEmbedded
             {
                 _body = data;
                 ContentLength = _body.Length.ToString();
-                SetHeader(HeaderProperty.ContentLength, data.Length.ToString());
+                AddHeader(HeaderProperty.ContentLength, data.Length.ToString());
             }
             return this;
         }
@@ -756,20 +810,36 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public byte[] GetRequestLine()
         {
-            return StringEncoder.Encode($"{Method.Name} {Path} {Version.Name}/{Version.Version}");
+            var path = Path;
+            if (String.IsNullOrEmpty(Path))
+            {
+                path = "/";
+            }
+            if (!string.IsNullOrEmpty(QueryString))
+            {
+                path += $"?{QueryString}";
+            }
+            return StringEncoder.Encode($"{Method.Name} {path} {Version}");
         }
         /// <summary>
-        /// 设置URI信息，分别注入到<see cref="HeaderProperty.Host"/>和<see cref="HeaderProperty.Referer"/>两个头属性中
+        /// 设置URI信息，分别注入到<see cref="HeaderProperty.Host"/>和<see cref="HeaderProperty.Referer"/>两个头属性中，并设置分解URL信息到 Path,Query两个字段中
         /// </summary>
         /// <param name="uri"></param>
         /// <returns></returns>
         public HttpRequest SetUri(UriInfo uri)
         {
             //注入Host
-            SetHeader(HeaderProperty.Host, string.IsNullOrEmpty(uri.Domain) ? uri.Host : uri.Domain);
-            SetHeader(HeaderProperty.Referer, uri.Url);
+            AddHeader(HeaderProperty.Host, string.IsNullOrEmpty(uri.Domain) ? uri.Host : uri.Domain);
+            AddHeader(HeaderProperty.Referer, uri.Url);
+            Host = string.IsNullOrEmpty(uri.Domain) ? uri.Host : uri.Domain;
+            Path = uri.Path;
+            QueryString = uri.Query;
+            Query = uri.Queries;
             return this;
         }
+        /// <summary>
+        /// 
+        /// </summary>
         ~HttpRequest()
         {
             //PackData = null;

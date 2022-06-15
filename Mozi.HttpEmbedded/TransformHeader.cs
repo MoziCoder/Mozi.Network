@@ -9,7 +9,9 @@ namespace Mozi.HttpEmbedded
     /// </summary>
     public class TransformHeader
     {
-
+        /// <summary>
+        /// 默认行尾结束符 CRLF
+        /// </summary>
         public static byte[] Carriage = { ASCIICode.CR, ASCIICode.LF };
 
         /// <summary>
@@ -20,7 +22,16 @@ namespace Mozi.HttpEmbedded
 
         };
         /// <summary>
-        /// 是否包含
+        /// 是否包含某个头属性
+        /// </summary>
+        /// <param name="hp"></param>
+        /// <returns></returns>
+        public bool Contains(HeaderProperty hp)
+        {
+            return Contains(hp.PropertyName);
+        }
+        /// <summary>
+        /// 是否包含某个头属性
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -83,6 +94,11 @@ namespace Mozi.HttpEmbedded
         {
            return GetBuffer(false);
         }
+        /// <summary>
+        /// 取得缓存数据
+        /// </summary>
+        /// <param name="keyNameUpperCase"></param>
+        /// <returns></returns>
         public byte[] GetBuffer(bool keyNameUpperCase)
         {
             List<byte> buffer = new List<byte>();
@@ -93,11 +109,19 @@ namespace Mozi.HttpEmbedded
             }
             return buffer.ToArray();
         }
-
+        /// <summary>
+        /// 获取所有键值对
+        /// </summary>
+        /// <returns></returns>
         public Dictionary<string, string> GetAll()
         {
             return HeaderData;
         }
+        /// <summary>
+        /// 索引
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public string this[string key]
         {
             get 
@@ -106,7 +130,9 @@ namespace Mozi.HttpEmbedded
             }
             set { HeaderData[key] = value; }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         ~TransformHeader()
         {
 

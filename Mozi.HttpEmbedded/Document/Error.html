@@ -2,12 +2,12 @@
 <html lang="zh-cn">
 <head>
     <title>错误信息-${Error.Code}</title>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="Author" content="Jason">
-    <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,maximum-scale=1,user-scalable=no" />
     <style type="text/css">
-        * { font-size: 18px;box-sizing: border-box;-webkit-box-sizing: border-box;color: #212121;-moz-box-sizing: border-box;-webkit-user-drag: none;}
+        * { font-size: 18px;box-sizing: border-box;-webkit-box-sizing: border-box;color: #212121;-moz-box-sizing: border-box;-webkit-user-drag: none; }
         body { padding: 0; margin: 0; }
         ul { list-style-type: none;padding: 0;margin: 0; }
         body { padding: 0; margin: 0; }
@@ -23,12 +23,15 @@
 </head>
 <body style="padding:0 0.888rem;">
     <h1 style="color: brown">${Error.Code}-${Error.Title}</h1>
-    <hr style="border: 0; border-bottom: 1px solid #dedede;"/>
     <div>
         <p><strong>时间：</strong>${Error.Time}</p>
         <p><strong>内容：</strong>${Error.Description}</p>
         <p><strong>来源：</strong></p>
         <pre>${Error.Source}</pre>
+    </div>
+    <div style="margin-top: 0.78rem;">
+        <hr style="border: 0; border-bottom: 1px solid #dedede;"/>
+        <p><label style="color:#808080;">${Error.ServerName}</label></p>
     </div>
 </body>
 </html>

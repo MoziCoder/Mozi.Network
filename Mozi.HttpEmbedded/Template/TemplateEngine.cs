@@ -55,6 +55,10 @@ namespace Mozi.HttpEmbedded.Template
             _template = template;
             return this;
         }
+        /// <summary>
+        /// 准备文档
+        /// </summary>
+        /// <returns></returns>
         public TemplateEngine Prepare()
         {
             _page = _template;

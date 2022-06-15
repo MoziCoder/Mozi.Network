@@ -444,7 +444,9 @@ namespace Mozi.IoT
             MesssageId = msgId;
             MessageType = msgType;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public CoAPPackage()
         {
 
@@ -595,7 +597,13 @@ namespace Mozi.IoT
     /// </summary>
     public enum CoAPPackageToStringType
     {
+        /// <summary>
+        /// HTTP-ASCII样式
+        /// </summary>
         HttpStyle,
+        /// <summary>
+        /// 头属性也映射到对应的HTTP头属性
+        /// </summary>
         HttpMapping
     }
     /// <summary>
@@ -661,11 +669,6 @@ namespace Mozi.IoT
         {
             _name = name;
             _typeValue = typeValue;
-        }
-
-        internal static object Get<T>(int v)
-        {
-            throw new NotImplementedException();
         }
     }
     /// <summary>

@@ -16,9 +16,13 @@ namespace Mozi.HttpEmbedded
         protected int _iport = 80;
 
         protected int _maxListenCount = 100;
+
         protected readonly ConcurrentDictionary<string, Socket> _socketDocker;
+
         protected Socket _sc;
+
         private long _errorCount = 0;
+
         /// <summary>
         /// 接收错误计数
         /// </summary>

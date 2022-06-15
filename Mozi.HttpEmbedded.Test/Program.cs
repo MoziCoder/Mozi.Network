@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using System.Reflection;
 using Mozi.HttpEmbedded.Page;
 using Mozi.HttpEmbedded.Common;
-using Mozi.StateService;
 
 namespace Mozi.HttpEmbedded.Test
 {
@@ -24,7 +23,12 @@ namespace Mozi.HttpEmbedded.Test
             //TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
             HttpServer hs = new HttpServer();
-
+            //控制台输出请求信息
+            hs.RequestHandled = (host, port, ctx) =>
+            {
+                Console.Title = $"rev:{hs.TotalReceiveCount}";
+                Console.WriteLine($"{host}:{port} {ctx.Request.RequestLineString}=>{ctx.Response.StatusLineString}");
+            };
             //启用HTTPS 
             //hs.UseHttps().LoadCert(AppDomain.CurrentDomain.BaseDirectory + @"Cert\ServerCert.pfx", "12345678");
 
@@ -59,18 +63,6 @@ namespace Mozi.HttpEmbedded.Test
 
             //开启WebDAV
             //hs.UseWebDav("{path}");
-            ////开启状态服务
-            HeartBeatService state = new HeartBeatService()
-            {
-                Port = 13453,
-                RemoteHost = "127.0.0.1"
-            };
-
-            state.ApplyDevice("Mozi", "80018001", "1.2.3");
-            state.SetState(ClientLifeState.Alive);
-            state.SetUserName("StateService");
-            state.Init();
-            state.Activate();
 
             HttpClient hc = new HttpClient();
 

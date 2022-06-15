@@ -7,6 +7,12 @@ namespace Mozi.HttpEmbedded.Generic
     /// </summary>
     public class StringCompareIgnoreCase : IEqualityComparer<string>
     {
+        /// <summary>
+        /// 忽略大小写进行比较
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         public bool Equals(string x, string y)
         {
             if (x != null && y != null)
@@ -15,7 +21,11 @@ namespace Mozi.HttpEmbedded.Generic
             }
             return false;
         }
-
+        /// <summary>
+        /// 返回Hash值
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public int GetHashCode(string obj)
         {
             return obj.GetHashCode();
