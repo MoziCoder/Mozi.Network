@@ -17,8 +17,9 @@ namespace Mozi.Http.Client
         private static bool observeMode = false;
 
         private static string _filePathUpload = "";
-        private static bool _needDump = false;
         private static string _filePathDump = "";
+
+        private static bool _needDump = false;
         private static int _round = -1;
 
         private static string _url = "";
@@ -178,7 +179,7 @@ namespace Mozi.Http.Client
                                 {
                                     if (optValue != null)
                                     {
-                                          cp.AddHeader(optName.PropertyName, optValue != null ? optValue.ToString() : "");
+                                          cp.AddHeader(optName, optValue != null ? optValue.ToString() : "");
                                     }
                                 }
                                 cp.SetBody(StringEncoder.Encode(payload));
