@@ -10,7 +10,7 @@ namespace Mozi.HttpEmbedded
     /// </summary>
     /// <param name="ctx"></param>
     /// <returns></returns>
-    public delegate bool ApiHandler(HttpContext ctx);
+    public delegate object ApiHandler(HttpContext ctx);
 
     /// <summary>
     /// 全局对象
