@@ -54,7 +54,6 @@
     <Compile Include="TargetDesc.cs" />
     <Compile Include="UDPSocket.cs" />
     <Compile Include="UDPStateObject.cs" />
-    <Compile Include="UUID.cs" />
     <Compile Include="WSDiscoveryService.cs" />
   </ItemGroup>
   <ItemGroup>

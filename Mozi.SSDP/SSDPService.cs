@@ -550,7 +550,7 @@ namespace Mozi.SSDP
                     {
 
                     }
-                    if (resp.Headers.Contains(SSDPHeader.St.PropertyName))
+                    if (resp.Headers.Contains(SSDPHeader.St))
                     {
                         SearchResponsePackage sr = SearchResponsePackage.Parse(resp);
                         if (sr!=null&&OnSearchResponsed != null)
