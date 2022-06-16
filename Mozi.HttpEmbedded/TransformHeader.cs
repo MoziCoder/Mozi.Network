@@ -5,7 +5,7 @@ using Mozi.HttpEmbedded.Generic;
 namespace Mozi.HttpEmbedded
 {
     /// <summary>
-    /// 通讯头报文
+    /// 通讯报文头属性集合
     /// </summary>
     public class TransformHeader
     {

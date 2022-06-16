@@ -73,6 +73,7 @@
     <Compile Include="ContentRange.cs" />
     <Compile Include="Encode\Encrypt.cs" />
     <Compile Include="HttpClient.cs" />
+    <Compile Include="HttpFrame.cs" />
     <Compile Include="HttpServerQUIC.cs" />
     <Compile Include="IHttpPackage.cs" />
     <Compile Include="Memory\BufferPool.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="Template\Expression.cs" />
     <Compile Include="Template\Statement.cs" />
     <Compile Include="UserInfoModel.cs" />
+    <Compile Include="UUID.cs" />
     <Compile Include="WebDav\Method\Copy.cs" />
     <Compile Include="WebDav\Method\Delete.cs" />
     <Compile Include="WebDav\Method\Head.cs" />
@@ -191,6 +193,7 @@
     <None Include="RFC 7616 - HTTP Digest Access Authentication.htm" />
     <None Include="RFC 7617 - The %27Basic%27 HTTP Authentication Scheme.htm" />
     <None Include="SOAP Version 1.2 Part 1 Messaging Framework.htm" />
+    <None Include="RFC 2616 - Hypertext Transfer Protocol%28HTTP_1.1%29.html" />
     <Content Include="Source\mime.data" />
     <None Include="wsdl12-bindings.pdf" />
   </ItemGroup>

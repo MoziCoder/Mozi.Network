@@ -228,6 +228,7 @@ namespace Mozi.HttpEmbedded
         /// 用户请求非法资源，例如：由政府审查的网页。
         /// </summary>   
         public static StatusCode UnavailableForLegalReasons = new StatusCode(451, "Unavailable For Legal Reasons");
+
         //服务端响应
         /// <summary>
         /// 服务器遇到了不知道如何处理的情况。

@@ -319,10 +319,10 @@ namespace Mozi.HttpEmbedded
                     //DONE 此处应判断Content-Length然后继续读流
                     //TODO 如何解决文件传输内存占用过大的问题
                     long contentLength = -1;
-                    if (context.Request.Headers.Contains(HeaderProperty.ContentLength.PropertyName))
+                    if (context.Request.Headers.Contains(HeaderProperty.ContentLength))
                     {
 
-                        var propContentLength = context.Request.Headers.GetValue(HeaderProperty.ContentLength.PropertyName);
+                        var propContentLength = context.Request.Headers.GetValue(HeaderProperty.ContentLength);
                         contentLength = int.Parse(propContentLength);
 
                     }
@@ -359,7 +359,7 @@ namespace Mozi.HttpEmbedded
                 catch (Exception ex)
                 {
                     //50X 返回错误信息页面
-                    sc = HandleError(context, ex);
+                    sc = HandleServerError(context, ex);
                 }
                 finally
                 {
@@ -377,7 +377,7 @@ namespace Mozi.HttpEmbedded
                 //处理压缩
                 var body = context.Response.Body;
                 //判断客户机支持的压缩类型
-                var acceptEncoding = context.Request.Headers.GetValue(HeaderProperty.AcceptEncoding.PropertyName) ?? "";
+                var acceptEncoding = context.Request.Headers.GetValue(HeaderProperty.AcceptEncoding) ?? "";
                 var acceptEncodings = acceptEncoding.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
                 //忽略对媒体类型的压缩 默认GZIP作为压缩类型
@@ -393,7 +393,7 @@ namespace Mozi.HttpEmbedded
 
                 var chunked = false;
                 //Transfer-Encoding:chunked
-                if (context.Response.Headers.Contains(HeaderProperty.TransferEncoding.PropertyName))
+                if (context.Response.Headers.Contains(HeaderProperty.TransferEncoding))
                 {
                     var tranferEncoding=context.Response.Headers[HeaderProperty.TransferEncoding.PropertyName];
                     if (!string.IsNullOrEmpty(tranferEncoding) && tranferEncoding == "chunked")
@@ -442,7 +442,7 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         private StatusCode HandleAuth(ref HttpContext context)
         {
-            var authorization = context.Request.Headers.GetValue(HeaderProperty.Authorization.PropertyName);
+            var authorization = context.Request.Headers.GetValue(HeaderProperty.Authorization);
             if (!string.IsNullOrEmpty(authorization) && Auth.Check(authorization,context.Request.Method.Name))
             {
                 context.Request.IsAuthorized = true;
@@ -498,7 +498,7 @@ namespace Mozi.HttpEmbedded
                         if (st.Exists(pathReal, ""))
                         {
                             existsIndex = true;
-                            string ifmodifiedsince = context.Request.Headers.GetValue(HeaderProperty.IfModifiedSince.PropertyName);
+                            string ifmodifiedsince = context.Request.Headers.GetValue(HeaderProperty.IfModifiedSince);
                             if (st.CheckIfModified(pathReal, ifmodifiedsince))
                             {
                                 DateTime dtModified = st.GetLastModifiedTime(pathReal).ToUniversalTime();
@@ -545,7 +545,7 @@ namespace Mozi.HttpEmbedded
                     else
                     {
                         //50X 返回错误信息页面
-                        return HandleNotFound(context, path);
+                        return HandleClientFound(context, path);
                     }
                 }
                 else
@@ -567,8 +567,7 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         /// <param name="context"></param>
         private StatusCode HandleRequestRoutePages(ref HttpContext context)
-        {
-            
+        { 
             if (Router.Match(context.Request.Path) != null)
             {
                 //判断返回结果
@@ -585,14 +584,14 @@ namespace Mozi.HttpEmbedded
                 }
                 return StatusCode.Success;
             }
-            return HandleNotFound(context, context.Request.Path);
+            return HandleClientFound(context, context.Request.Path);
         }
 
         //TODO 静态文件统一处理
         private StatusCode HandleRequestStaticFile(ref HttpContext context, StaticFiles st, string pathReal,string contentType)
         {
-            string ifmodifiedsince = context.Request.Headers.GetValue(HeaderProperty.IfModifiedSince.PropertyName);
-            string range = context.Request.Headers.GetValue(HeaderProperty.Range.PropertyName);
+            string ifmodifiedsince = context.Request.Headers.GetValue(HeaderProperty.IfModifiedSince);
+            string range = context.Request.Headers.GetValue(HeaderProperty.Range);
             context.Response.AddHeader(HeaderProperty.AcceptRanges, "bytes");
 
             if (st.CheckIfModified(pathReal, ifmodifiedsince))
@@ -765,7 +764,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="context"></param>
         /// <param name="ex"></param>
         /// <returns></returns>
-        private StatusCode HandleError(HttpContext context, Exception ex)
+        private StatusCode HandleServerError(HttpContext context, Exception ex)
         {
             StatusCode sc;
             string doc = DocLoader.Load("Error.html");
@@ -794,7 +793,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="context"></param>
         /// <param name="path"></param>
         /// <returns></returns>
-        private StatusCode HandleNotFound(HttpContext context, string path)
+        private StatusCode HandleClientFound(HttpContext context, string path)
         {
             string doc = DocLoader.Load("Error.html");
             TemplateEngine pc = new TemplateEngine();
@@ -1102,7 +1101,7 @@ namespace Mozi.HttpEmbedded
             Router.Get(name, handler);
         }
         /// <summary>
-        /// 注册API
+        /// 注册API,请注意跨线程问题
         /// </summary>
         /// <param name="name">方法名</param>
         /// <param name="method">HTTP请求类型</param>
