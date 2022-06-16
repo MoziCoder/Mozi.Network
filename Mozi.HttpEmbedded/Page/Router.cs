@@ -9,6 +9,7 @@ using Mozi.HttpEmbedded.Serialize;
 namespace Mozi.HttpEmbedded.Page
 {
     //TODO 增加API下载的功能，允许客户端提取所有API，同时加入鉴权机制
+    //TODO 实现一个RestApi
 
     /// <summary>
     /// 全局路由 单例模式
@@ -85,9 +86,9 @@ namespace Mozi.HttpEmbedded.Page
 
             //确定路径映射关系
             AccessPoint ap = Match(path);
-            string name = ctx.Request.Method.Name+"::"+ap.Action;
 
-            if (_global.Exists(name))
+            //优先global
+            if (_global.Exists(ctx.Request.Method.Name + "::" + ap.Action))
             {
                 return InvokeFromGlobal(ref ctx, ap);
             }
@@ -269,20 +270,22 @@ namespace Mozi.HttpEmbedded.Page
         public AccessPoint Match(string path)
         {
             //TODO 此处要对接Global
-            foreach (var mapper in _mappers)
+            if (_global.Exists(RequestMethod.GET.Name + "::" + path) || _global.Exists(RequestMethod.POST.Name + "::" + path))
             {
-                if (mapper.Match(path))
-                {
-                    return mapper.Parse(path);
-                }
-            }
-           
-            if (_global.Exists(RequestMethod.GET.Name + "::" + path) || _global.Exists(RequestMethod.POST.Name + "::" + path)){
                 return new AccessPoint() { Domain = "", Controller = "", Action = path };
             }
+            else
+            {
+                foreach (var mapper in _mappers)
+                {
+                    if (mapper.Match(path))
+                    {
+                        return mapper.Parse(path);
+                    }
+                }
+            } 
             return null;
         }
-
         /// <summary>
         /// 配置数据序列化组件,宿主程序需要实现一个序列化/反序列化功能，然后调用本方法注册
         /// </summary>
@@ -351,7 +354,6 @@ namespace Mozi.HttpEmbedded.Page
         {
             return _apis;
         }
-
         /// <summary>
         /// 路由映射
         /// </summary>
