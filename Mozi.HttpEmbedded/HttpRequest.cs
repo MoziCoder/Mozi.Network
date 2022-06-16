@@ -493,9 +493,9 @@ namespace Mozi.HttpEmbedded
         /// <param name="req"></param>
         private static void ParseHeaderUserAgent(ref HttpRequest req)
         {
-            if (req.Headers.Contains(HeaderProperty.UserAgent.PropertyName))
+            if (req.Headers.Contains(HeaderProperty.UserAgent))
             {
-                req.UserAgent = req.Headers.GetValue(HeaderProperty.UserAgent.PropertyName);
+                req.UserAgent = req.Headers.GetValue(HeaderProperty.UserAgent);
             }
         }
         /// <summary>
@@ -504,9 +504,9 @@ namespace Mozi.HttpEmbedded
         /// <param name="req"></param>
         private static void ParseHeaderHost(ref HttpRequest req)
         {
-            if (req.Headers.Contains(HeaderProperty.Host.PropertyName))
+            if (req.Headers.Contains(HeaderProperty.Host))
             {
-                req.Host = req.Headers.GetValue(HeaderProperty.Host.PropertyName);
+                req.Host = req.Headers.GetValue(HeaderProperty.Host);
             }
         }
         /// <summary>
@@ -515,9 +515,9 @@ namespace Mozi.HttpEmbedded
         /// <param name="req"></param>
         private static void ParseHeaderReferer(ref HttpRequest req)
         {
-            if (req.Headers.Contains(HeaderProperty.Referer.PropertyName))
+            if (req.Headers.Contains(HeaderProperty.Referer))
             {
-                req.Referer = req.Headers.GetValue(HeaderProperty.Referer.PropertyName);
+                req.Referer = req.Headers.GetValue(HeaderProperty.Referer);
             }
         }
         /// <summary>
@@ -528,9 +528,9 @@ namespace Mozi.HttpEmbedded
         /// <param name="req"></param>
         private static void ParseHeaderAcceptLanguage(ref HttpRequest req)
         {
-            if (req.Headers.Contains(HeaderProperty.AcceptLanguage.PropertyName))
+            if (req.Headers.Contains(HeaderProperty.AcceptLanguage))
             {
-                var lang = req.Headers.GetValue(HeaderProperty.AcceptLanguage.PropertyName) ?? "";
+                var lang = req.Headers.GetValue(HeaderProperty.AcceptLanguage) ?? "";
                 var langs = lang.Split(new char[] { (char)ASCIICode.COMMA }, StringSplitOptions.RemoveEmptyEntries);
                 req.AcceptLanguage = new LanguagePriority[langs.Length];
                 try
@@ -564,9 +564,9 @@ namespace Mozi.HttpEmbedded
         /// <param name="req"></param>
         private static void ParseHeaderContentType(ref HttpRequest req)
         {
-            if (req.Headers.Contains(HeaderProperty.ContentType.PropertyName))
+            if (req.Headers.Contains(HeaderProperty.ContentType))
             {
-                var contentType = req.Headers.GetValue(HeaderProperty.ContentType.PropertyName);
+                var contentType = req.Headers.GetValue(HeaderProperty.ContentType);
                 string[] cts = contentType.Split(new[] { ((char)ASCIICode.SEMICOLON).ToString() + ((char)ASCIICode.SPACE).ToString() }, StringSplitOptions.RemoveEmptyEntries);
                 if (cts.Length > 0)
                 {
@@ -595,9 +595,9 @@ namespace Mozi.HttpEmbedded
         /// <param name="req"></param>
         private static void ParseCookie(ref HttpRequest req)
         {
-            if (req.Headers.Contains(HeaderProperty.Cookie.PropertyName))
+            if (req.Headers.Contains(HeaderProperty.Cookie))
             {
-                req.Cookies = RequestCookie.Parse(req.Headers.GetValue(HeaderProperty.Cookie.PropertyName));
+                req.Cookies = RequestCookie.Parse(req.Headers.GetValue(HeaderProperty.Cookie));
             }
         }
 

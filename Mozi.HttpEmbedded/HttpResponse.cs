@@ -480,9 +480,9 @@ namespace Mozi.HttpEmbedded
         /// <param name="resp"></param>
         private static void ParseHeaderContentType(ref HttpResponse resp)
         {
-            if (resp.Headers.Contains(HeaderProperty.ContentType.PropertyName))
+            if (resp.Headers.Contains(HeaderProperty.ContentType))
             {
-                var contentType = resp.Headers.GetValue(HeaderProperty.ContentType.PropertyName);
+                var contentType = resp.Headers.GetValue(HeaderProperty.ContentType);
                 string[] cts = contentType.Split(new[] { ((char)ASCIICode.SEMICOLON).ToString() + ((char)ASCIICode.SPACE).ToString() }, StringSplitOptions.RemoveEmptyEntries);
                 if (cts.Length > 0)
                 {
@@ -500,7 +500,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="resp"></param>
         private static void ParseHeaderContentEncoding(ref HttpResponse resp)
         {
-            if (resp.Headers.Contains(HeaderProperty.ContentEncoding.PropertyName))
+            if (resp.Headers.Contains(HeaderProperty.ContentEncoding))
             {
                 resp.ContentEncoding = resp.Headers.GetValue(HeaderProperty.ContentEncoding);
                 //如果不是ContentEncoding: none
