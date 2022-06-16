@@ -85,7 +85,7 @@ namespace Mozi.HttpEmbedded.WebDav.Method
             //×ª»»³É×Ö½ÚÂë
             byte[] responseBytes = StringEncoder.Encode(responseDoc.InnerXml);
             context.Response.Write(responseBytes);
-            context.Response.AddHeader(HeaderProperty.ContentType.PropertyName, "text/xml");
+            context.Response.AddHeader(HeaderProperty.ContentType, "text/xml");
 
             return StatusCode.MultiStatus;
         }

@@ -131,7 +131,7 @@ namespace Mozi.HttpEmbedded.WebDav.Method
             string resp = responseDoc.InnerXml;
             byte[] responseBytes = StringEncoder.Encode(resp);
 
-            context.Response.AddHeader(HeaderProperty.ContentType.PropertyName, "text/xml");
+            context.Response.AddHeader(HeaderProperty.ContentType, "text/xml");
 
             context.Response.Write(responseBytes);
 
