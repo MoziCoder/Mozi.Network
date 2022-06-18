@@ -227,8 +227,8 @@ namespace Mozi.HttpEmbedded
                 {
                     defaultPort = 443;
                 }
-                
-                sc.Connect(uri.Host, uri.Port == 0 ? defaultPort : uri.Port);
+                defaultPort = uri.Port == 0 ? defaultPort : uri.Port;
+                sc.Connect(uri.Host, defaultPort);
 
                 if (sc.Connected)
                 {

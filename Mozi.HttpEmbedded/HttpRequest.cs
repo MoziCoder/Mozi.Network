@@ -706,6 +706,24 @@ namespace Mozi.HttpEmbedded
             return GetBuffer(false);
         }
         /// <summary>
+        /// 获取头属性值
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public string GetHeaderValue(HeaderProperty key)
+        {
+            return GetHeaderValue(key.PropertyName);
+        }
+        /// <summary>
+        /// 获取头属性值
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public string GetHeaderValue(string key)
+        {
+            return _headers.GetValue(key);
+        }
+        /// <summary>
         /// 设置头信息
         /// </summary>
         /// <param name="key"></param>

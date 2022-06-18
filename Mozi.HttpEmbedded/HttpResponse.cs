@@ -150,14 +150,22 @@ namespace Mozi.HttpEmbedded
             return this;
         }
         /// <summary>
-        /// 设置头属性合集
+        /// 获取头属性值
         /// </summary>
-        /// <param name="headers"></param>
+        /// <param name="key"></param>
         /// <returns></returns>
-        public HttpResponse SetHeaders(TransformHeader headers)
+        public string GetHeaderValue(HeaderProperty key)
         {
-            _headers = headers;
-            return this;
+            return GetHeaderValue(key.PropertyName);
+        }
+        /// <summary>
+        /// 获取头属性值
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public string GetHeaderValue(string key)
+        {
+            return _headers.GetValue(key);
         }
         /// <summary>
         /// 增加头部信息
@@ -199,6 +207,16 @@ namespace Mozi.HttpEmbedded
         public HttpResponse AddHeader(HeaderProperty key, params string[] value)
         {
             return AddHeader(key.PropertyName, value);
+        }
+        /// <summary>
+        /// 设置头属性合集
+        /// </summary>
+        /// <param name="headers"></param>
+        /// <returns></returns>
+        public HttpResponse SetHeaders(TransformHeader headers)
+        {
+            _headers = headers;
+            return this;
         }
         /// <summary>
         /// 写入字节数据
@@ -359,7 +377,7 @@ namespace Mozi.HttpEmbedded
         public StatusCode Redirect(string path)
         {
             _headers.Add(HeaderProperty.Location.PropertyName, path);
-            return StatusCode.Found;
+            return StatusCode.TemporaryRedirect;
         }
         /// <summary>
         /// HttpResponse反向解析，类HTTP的响应数据包也可以进行解析
