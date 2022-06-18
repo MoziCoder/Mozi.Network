@@ -128,6 +128,15 @@ namespace Mozi.HttpEmbedded.Source
             return false;
         }
         /// <summary>
+        /// 判断是否是服务端脚本
+        /// </summary>
+        /// <param name="ext"></param>
+        /// <returns></returns>
+        public bool IsScript(string ext)
+        {
+            return Mime.IsScript(ext);
+        }
+        /// <summary>
         /// 检查文件是否存在
         /// </summary>
         /// <param name="path"></param>
