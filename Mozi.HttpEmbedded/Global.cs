@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Mozi.HttpEmbedded.Page;
+using System.Collections.Generic;
 
 namespace Mozi.HttpEmbedded
 {
@@ -9,7 +10,7 @@ namespace Mozi.HttpEmbedded
     /// 简易API 方法委托
     /// </summary>
     /// <param name="ctx"></param>
-    /// <returns></returns>
+    /// <returns>object对象较灵活，建议统一使用标准的<see cref="ResponseMessage"/></returns>
     public delegate object ApiHandler(HttpContext ctx);
 
     /// <summary>
@@ -66,7 +67,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="name"></param>
         /// <param name="ctx"></param>
         /// <returns></returns>
-        internal bool Invoke(string name, HttpContext ctx)
+        internal object Invoke(string name, HttpContext ctx)
         {
             ApiHandler handler = Find(name);
             if (handler != null)
@@ -75,7 +76,7 @@ namespace Mozi.HttpEmbedded
             }
             else
             {
-                return false;
+                return null;
             }
         }
     }
