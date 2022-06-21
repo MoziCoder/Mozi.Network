@@ -24,6 +24,9 @@ namespace Mozi.HttpEmbedded.Source
         private static readonly char PathSeparator = Path.AltDirectorySeparatorChar;
 
         public bool Enabled { get; set; }
+        /// <summary>
+        /// 默认
+        /// </summary>
         public static StaticFiles Default
         {
             get { return _staticfiles ?? (_staticfiles = new StaticFiles()); }
@@ -196,7 +199,7 @@ namespace Mozi.HttpEmbedded.Source
         /// </summary>
         /// <param name="path"></param>
         /// <param name="ifModifiedSince"></param>
-        /// <returns><see cref="Boolean.True">Modified</see></returns>
+        /// <returns>Modified</returns>
         public bool CheckIfModified(string path, string ifModifiedSince)
         {
             var filepath = _root + path;

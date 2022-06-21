@@ -2,6 +2,6 @@
 {
     public class RTSPProtocol
     {
-        public const int RTSPPort = 554;
+        public const int Port = 554;
     }
 }

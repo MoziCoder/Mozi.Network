@@ -80,7 +80,10 @@ namespace Mozi.HttpEmbedded.Test
                 Console.WriteLine("call reboot");
                 return true;
             });
-
+            hs.RegisterHandler("log/save",RequestMethod.POST,(x) =>
+            {
+                return true;
+            });
             Console.ReadLine();
 
             //路径信息

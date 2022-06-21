@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Mozi.Live.RTP
 {
@@ -59,6 +60,11 @@ namespace Mozi.Live.RTP
         /// 荷载部分
         /// </summary>
         public byte[] Payload { get; set; }
+
+        internal byte[] GetBuffer()
+        {
+            throw new NotImplementedException();
+        }
     }
     /// <summary>
     /// RTP头扩展

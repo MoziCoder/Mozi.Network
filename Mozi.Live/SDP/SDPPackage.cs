@@ -94,7 +94,10 @@ namespace Mozi.Live.SDP
         /// 会话及时间描述信息
         /// </summary>
         public SDPTimeDescription TimeDescription { get; set; }
-
+        /// <summary>
+        /// 输出SDP格式文档
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             List<string> sb = new List<string>
@@ -353,7 +356,7 @@ namespace Mozi.Live.SDP
         /// <returns></returns>
         public override string ToString()
         {
-            return $"{UserName} {SessionId} {SessionVersion} {NetType} {AddressType} {Address}";
+            return $"{UserName??"-"} {SessionId} {SessionVersion} {NetType} {AddressType} {Address}";
         }
         /// <summary>
         /// 解析

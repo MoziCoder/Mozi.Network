@@ -1,8 +1,12 @@
 ﻿using Mozi.HttpEmbedded.Generic;
+using System;
 using System.Collections.Generic;
 
 namespace Mozi.Live.RTP
 {
+    /// <summary>
+    /// RTCP数据报文抽象类
+    /// </summary>
     public abstract class AbsRTCPPackage
     {
         /// <summary>
@@ -25,8 +29,15 @@ namespace Mozi.Live.RTP
         /// 16bits  整包长度-1
         /// </summary>
         public int Length { get; set; }
-    }
 
+        internal byte[] GetBuffer()
+        {
+            throw new NotImplementedException();
+        }
+    }
+    /// <summary>
+    /// RTCP SR报文
+    /// </summary>
     public class RTCPSenderPackage:AbsRTCPPackage
     {
         /// <summary>
@@ -43,6 +54,9 @@ namespace Mozi.Live.RTP
         public List<RTCPReportBlock> Reports { get; set; }
         public byte[] Extension { get; set; }
     }
+    /// <summary>
+    /// RTCP RR报文
+    /// </summary>
     public class RTCPReceiverPackage:AbsRTCPPackage
     {
         /// <summary>
@@ -59,7 +73,9 @@ namespace Mozi.Live.RTP
         public List<RTCPReportBlock> Reports { get; set; }
         public byte[] Extension { get; set; }
     }
-
+    /// <summary>
+    /// RTCP Report块
+    /// </summary>
     public class RTCPReportBlock
     {
         /// <summary>
@@ -91,7 +107,9 @@ namespace Mozi.Live.RTP
         /// </summary>
         public int DelaySinceLastReport { get; set; }
     }
-
+    /// <summary>
+    /// RTCP BYE报文
+    /// </summary>
     public class RTCPGoodbyePackage : AbsRTCPPackage
     {
         /// <summary>
@@ -101,7 +119,9 @@ namespace Mozi.Live.RTP
         public byte ReasonLength { get; set; }
         public string Reason { get; set; }
     }
-
+    /// <summary>
+    /// RTCP APP报文
+    /// </summary>
     public class RTCPAppPackage : AbsRTCPPackage
     {
         /// <summary>

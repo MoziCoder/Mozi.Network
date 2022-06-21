@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Mozi.Live.RTP
 {
+    /// <summary>
+    /// RTCP SDES报文
+    /// </summary>
     public class RTCPSourceDescriptionPackage : AbsRTCPPackage
     {
         public List<RTCPSourceDescriptionChunk> Chunks { get; set; }

@@ -172,7 +172,7 @@ namespace Mozi.HttpEmbedded
         public virtual string ServerName
         {
             get { return _serverName; }
-            private set { _serverName = value; }
+            protected set { _serverName = value; }
         }
         /// <summary>
         /// 临时文件目录

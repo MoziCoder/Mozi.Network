@@ -78,5 +78,10 @@ namespace Mozi.Live.RTSP
         /// TEARDOWN
         /// </summary>
         public static RequestMethod TEARDOWN = new RequestMethod("TEARDOWN");
+
+        //RTSP 1.0
+
+        public static RequestMethod ANNOUNCE = new RequestMethod("ANNOUNCE");
+        public static RequestMethod RECORD = new RequestMethod("ANNOUNCE");
     }
 }

@@ -42,18 +42,23 @@
   <ItemGroup>
     <Compile Include="MediaLayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RTCPPackageReceive.cs" />
+    <Compile Include="RTCPServer.cs" />
+    <Compile Include="RTPServer.cs" />
     <Compile Include="RTP\RTCPPackage.cs" />
     <Compile Include="RTP\RTCPSourceDescriptionPackage.cs" />
     <Compile Include="RTP\RTPPackage.cs" />
     <Compile Include="RTSP\RTSPHeaderProperty.cs" />
     <Compile Include="RTSP\RTSPMethod.cs" />
     <Compile Include="RTSP\RTSPStatus.cs" />
+    <Compile Include="RTSP\RTSPTransportProperty.cs" />
     <Compile Include="RTSP\RTSPVersion.cs" />
     <Compile Include="SDP\SDPPackage.cs" />
     <Compile Include="RTSPClient.cs" />
     <Compile Include="RTSP\RTSPProtocol.cs" />
     <Compile Include="RTSPServer.cs" />
     <Compile Include="ServerEvent.cs" />
+    <Compile Include="SessionManager.cs" />
     <Compile Include="StateObject.cs" />
     <Compile Include="UDPSocket.cs" />
     <Compile Include="UDPSocketIOCP.cs" />
