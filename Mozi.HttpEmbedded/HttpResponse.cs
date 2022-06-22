@@ -405,7 +405,7 @@ namespace Mozi.HttpEmbedded
                 Array.Copy(data, posCaret, fragement, 0, posCR - posCaret);
                 if (index == 0)
                 {
-                    ParseRequestLine(ref resp, fragement);
+                    ParseStatusLine(ref resp, fragement);
                 }
                 else
                 {
@@ -441,21 +441,22 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         /// <param name="resp"></param>
         /// <param name="data"></param>
-        private static void ParseRequestLine(ref HttpResponse resp, byte[] data)
+        private static void ParseStatusLine(ref HttpResponse resp, byte[] data)
         {
             //解析起始行
-            var RequestLineString = Encoding.UTF8.GetString(data);
-            string[] sFirst = RequestLineString.Split(new[] { (char)ASCIICode.SPACE }, StringSplitOptions.None);
+            var statusLine = Encoding.UTF8.GetString(data);
+            string[] sFirst = statusLine.Split(new[] { (char)ASCIICode.SPACE }, StringSplitOptions.None);
             //协议 状态 描述 
             string sProtocol = sFirst[0];
             string sStatusCode = sFirst[1];
-            string sStatusDescription = sFirst[2];
+            string sStatusDescription = statusLine.Substring(statusLine.IndexOf((char)ASCIICode.SPACE,statusLine.IndexOf(sStatusCode)));
 
             string sProtoType = sProtocol.Substring(0, sProtocol.IndexOf((char)ASCIICode.DIVIDE));
             string sProtoVersion = sProtocol.Substring(sProtocol.IndexOf((char)ASCIICode.DIVIDE) + 1);
 
             resp.Status = AbsClassEnum.Get<StatusCode>(sStatusCode);
             resp.Version = AbsClassEnum.Get<ProtocolVersion>(sProtocol);
+
             if (Equals(resp.Version, null))
             {
                 resp.Version = new ProtocolVersion(sProtoType, sProtoVersion);

@@ -613,6 +613,7 @@ namespace Mozi.HttpEmbedded
             req.RequestLineData = data;
             req.RequestLineString = Encoding.UTF8.GetString(data);
             string[] sFirst = req.RequestLineString.Split(new[] { (char)ASCIICode.SPACE }, StringSplitOptions.None);
+
             //方法 查询 协议 
             string sMethod = sFirst[0];
             string sUrl = sFirst[1];
@@ -626,22 +627,23 @@ namespace Mozi.HttpEmbedded
             {
                 req.Method = new RequestMethod(sMethod);
             }
-            string[] urls = sUrl.Split(new[] { (char)ASCIICode.QUESTION }, StringSplitOptions.RemoveEmptyEntries);
-            req.Path = urls[0];
-            if (urls.Length > 1)
+
+            //URL中分解出查询字符串
+            if (!string.IsNullOrEmpty(sUrl))
             {
-                req.QueryString = urls[1];
-                req.Query = UrlEncoder.ParseQuery(urls[1]);
+                string[] urls = sUrl.Split(new[] { (char)ASCIICode.QUESTION }, StringSplitOptions.RemoveEmptyEntries);
+                req.Path = urls[0];
+                if (urls.Length > 1)
+                {
+                    req.QueryString = urls[1];
+                    req.Query = UrlEncoder.ParseQuery(urls[1]);
+                }
             }
 
+            //协议分解
             string sProtoType = sProtocol.Substring(0, sProtocol.IndexOf((char)ASCIICode.DIVIDE));
             string sProtoVersion = sProtocol.Substring(sProtocol.IndexOf((char)ASCIICode.DIVIDE) + 1);
 
-            //req.Protocol = AbsClassEnum.Get<ProtocolType>(sProtoType);
-            //if (Equals(req.Protocol, null))
-            //{
-            //    req.Protocol = new ProtocolType(sProtoType) ;
-            //}
             req.Version = AbsClassEnum.Get<ProtocolVersion>(sProtocol);
             if (Equals(req.Version, null))
             {

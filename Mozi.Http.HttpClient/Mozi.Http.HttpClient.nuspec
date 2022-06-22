@@ -8,7 +8,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
 	<projectUrl>https://gitee.com/myui_admin/mozi</projectUrl>
-    <description>Http请求工具，用于HTTP接口调试，目前不支持HTTPS，HTTPS支持接入后会进行公布</description>
+    <description>Http请求命令行工具，用于HTTP接口调试。目前不支持HTTPS，HTTPS支持接入后会进行公布</description>
     <releaseNotes></releaseNotes>
     <copyright>Copyright © Jason 2020-2022</copyright>
     <tags>HttpClient</tags>

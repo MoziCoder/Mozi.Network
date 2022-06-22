@@ -24,6 +24,14 @@ namespace Mozi.HttpEmbedded
         /// 服务器对象
         /// </summary>
         public HttpServer Server { get; set; }
+        ///// <summary>
+        ///// 本地绑定地址
+        ///// </summary>
+        //public string ServerAddress { get; set; }
+        ///// <summary>
+        ///// 本地绑定端口
+        ///// </summary>
+        //public int ServerPort { get; set; }
         /// <summary>
         /// 客户端地址
         /// </summary>
