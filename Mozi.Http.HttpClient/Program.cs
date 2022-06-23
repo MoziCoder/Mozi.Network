@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using Mozi.HttpEmbedded;
@@ -316,12 +317,24 @@ namespace Mozi.Http.Client
 
                                 if (ctx.Response.Status==StatusCode.Success&&_needDump&&!string.IsNullOrEmpty(_filePathDump))
                                 {
+                                    //TODO 写入文件相关信息
+                                    //TODO 判断文件修改相关参数
                                     string filename = _filePathDump;
                                     filename = filename.Replace("\\", "/");
                                     filename += filename.EndsWith("/") || filename.EndsWith("\\") ? "" : "/";
                                     filename += UrlEncoder.Encode(url);
-                                    FileStream fs = new FileStream(filename, FileMode.OpenOrCreate);
+                                    FileInfo fi = new FileInfo(filename);
+                                    fi.CreationTime = DateTime.Now;
+                                    var ifModifiedSince = ctx.Response.GetHeaderValue(HeaderProperty.Date);
+                                    if (!string.IsNullOrEmpty(ifModifiedSince))
+                                    {
+                                        fi.LastWriteTimeUtc = DateTime.ParseExact(ifModifiedSince, "ddd, dd MMM yyyy HH:mm:ss GMT", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal).ToLocalTime();
+                                    }
+
+                                    FileStream fs = fi.Open(FileMode.OpenOrCreate);
                                     fs.Write(ctx.Response.Body,0,ctx.Response.Body.Length);
+
+
                                     fs.Flush();
                                     fs.Close();
                                 }
@@ -335,7 +348,7 @@ namespace Mozi.Http.Client
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"{DateTime.Now.ToString("u")} |{ex.Message}");
+                            Console.WriteLine($"{DateTime.Now:u} |{ex.Message}");
                             Console.WriteLine(ex.StackTrace);
                         }
                         Thread.Sleep(100);
