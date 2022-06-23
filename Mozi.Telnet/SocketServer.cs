@@ -275,5 +275,48 @@ namespace Mozi.Telnet
         {
             _sc.SendTo(buffer, new IPEndPoint(IPAddress.Parse(host), port));
         }
+        /// <summary>
+        /// 向指定会话发送数据
+        /// </summary>
+        /// <param name="peer"></param>
+        /// <param name="buffer"></param>
+        public void SendTo(Socket peer, byte[] buffer)
+        {
+            peer.Send(buffer);
+        }
+        /// <summary>
+        /// 检查连接是否断开
+        /// </summary>
+        /// <param name="peer"></param>
+        /// <returns></returns>
+        public bool CheckIfClosed(Socket peer)
+        {
+            if (peer.Poll(-1, SelectMode.SelectRead))
+            {
+                if (peer.Receive(new byte[4]) == 0)
+                {
+
+                    return true;
+                }
+            }
+            return false;
+        }
+        /// <summary>
+        /// 关闭连接会话
+        /// </summary>
+        /// <param name="peer"></param>
+        public void CloseSocket(Socket peer)
+        {
+            peer.Close();
+        }
+        /// <summary>
+        /// 关闭连接会话
+        /// </summary>
+        /// <param name="peer"></param>
+        /// <param name="waitSeconds"></param>
+        public void CloseSocket(Socket peer, int waitSeconds)
+        {
+            peer.Close(waitSeconds);
+        }
     }
 }
