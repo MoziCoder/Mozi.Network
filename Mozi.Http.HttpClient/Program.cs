@@ -7,6 +7,9 @@ using Mozi.HttpEmbedded.Encode;
 
 namespace Mozi.Http.Client
 {
+    //TODO 2022/06/23 增加文件下载方法
+    //TODO 2022/06/23 丰富和简化命令参数
+
     class Program
     {
 
@@ -186,20 +189,17 @@ namespace Mozi.Http.Client
                             }
 
                         }
-                        if (!_needDump)
-                        {
-                            Execute(observeSeconds, cp, _url);
-                        }
-                        else
-                        {
-                            FileStream fs = new FileStream(_filePathDump, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-                            StreamWriter sw = new StreamWriter(fs);
-                            sw.Write(BitConverter.ToString(cp.GetBuffer()));
-                            sw.Flush();
-                            sw.Close();
-                            fs.Close();
-                            Console.WriteLine($"Hex bytes dumped to \"{_filePathDump}\"");
-                        }
+                        Execute(observeSeconds, cp, _url);
+                        //else
+                        //{
+                        //    FileStream fs = new FileStream(_filePathDump, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                        //    StreamWriter sw = new StreamWriter(fs);
+                        //    sw.Write(BitConverter.ToString(cp.GetBuffer()));
+                        //    sw.Flush();
+                        //    sw.Close();
+                        //    fs.Close();
+                        //    Console.WriteLine($"Hex bytes dumped to \"{_filePathDump}\"");
+                        //}
                     }
                     else
                     {
@@ -311,6 +311,20 @@ namespace Mozi.Http.Client
                                 Console.ForegroundColor = ConsoleColor.DarkGreen;
                                 Console.WriteLine(StringEncoder.Decode(ctx.Response.GetBuffer()));
                                 Console.ForegroundColor = ConsoleColor.Gray;
+
+                                //输出文件
+
+                                if (ctx.Response.Status==StatusCode.Success&&_needDump&&!string.IsNullOrEmpty(_filePathDump))
+                                {
+                                    string filename = _filePathDump;
+                                    filename = filename.Replace("\\", "/");
+                                    filename += filename.EndsWith("/") || filename.EndsWith("\\") ? "" : "/";
+                                    filename += UrlEncoder.Encode(url);
+                                    FileStream fs = new FileStream(filename, FileMode.OpenOrCreate);
+                                    fs.Write(ctx.Response.Body,0,ctx.Response.Body.Length);
+                                    fs.Flush();
+                                    fs.Close();
+                                }
 
                                 if (!observeMode && (responseCount >= loop))
                                 {
