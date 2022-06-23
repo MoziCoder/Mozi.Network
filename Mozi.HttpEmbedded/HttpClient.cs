@@ -188,13 +188,13 @@ namespace Mozi.HttpEmbedded
                     HttpResponse resp = HttpResponse.Parse(args.Data);
                     ctx.Response = resp;
                     var cl = resp.Headers.GetValue(HeaderProperty.ContentLength);
-                    if (resp.Headers.Contains(HeaderProperty.ContentLength) &&long.Parse(cl)< resp.ContentLength)
+                    if ((resp.Headers.Contains(HeaderProperty.ContentLength) &&long.Parse(cl)< resp.ContentLength)||args.Socket.Available>0)
                     {
                         args.Socket.BeginReceive(args.State.Buffer, 0, args.State.Buffer.Length, SocketFlags.None, sc.CallbackReceived, args.State);
                     }
                     else
                     {
-                        //判断chunked 
+                        //TODO 判断chunked 
 
                         //判断Content-Encoding
                         if (AutoDecodeBody) { 
