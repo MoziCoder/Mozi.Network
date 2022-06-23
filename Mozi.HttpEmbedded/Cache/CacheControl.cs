@@ -13,6 +13,9 @@ namespace Mozi.HttpEmbedded
     {
         private static CacheControl _control;
 
+        /// <summary>
+        /// 默认实例
+        /// </summary>
         public CacheControl Instance
         {
             get { return _control ?? (_control = new CacheControl()); }
@@ -30,8 +33,9 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public static string GenerateETag(DateTime lastModifyTime,int fileSize)
         {
+            //TODO 此处没有将HEX补全，是否考虑补全？
             var time = BitConverter.ToString(BitConverter.GetBytes(lastModifyTime.ToUniversalTime().ToTimestamp())).Replace("-","").ToLower();
-            return string.Format("{0}:{1}",time, fileSize);
+            return string.Format("{0}:{1:X2}",time, fileSize);
         }
         /// <summary>
         /// 生成真随机数

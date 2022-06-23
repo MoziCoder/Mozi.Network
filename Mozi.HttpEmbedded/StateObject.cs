@@ -40,6 +40,12 @@ namespace Mozi.HttpEmbedded
             Data.AddRange(data);
             Buffer = new byte[BufferSize];
         }
+
+        public void Clear()
+        {
+            Data.Clear();
+            Buffer = new byte[BufferSize * 4];
+        }
         ~StateObject()
         {
             Data.Clear();

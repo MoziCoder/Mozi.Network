@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using Mozi.HttpEmbedded.Auth;
 using Mozi.HttpEmbedded.Cache;
@@ -101,7 +102,10 @@ namespace Mozi.HttpEmbedded
         protected bool _tlsEnabled = false;
 
         private MemoryCache _cache = new MemoryCache();
-
+        /// <summary>
+        /// 请求完成后自动关闭线程
+        /// </summary>
+        public bool AutoCloseSession = true;
         /// <summary>
         /// 服务器启动时间
         /// </summary>
@@ -119,7 +123,7 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         public Authenticator Auth { get; private set; }
         /// <summary>
-        /// 是否启用访问控制 IP策略
+        /// 是否启用访问控制 IP策略。请访问AccessManager.Instance进行访问控制
         /// </summary>
         public bool EnableAccessControl { get; private set; }
         /// <summary>
@@ -202,18 +206,14 @@ namespace Mozi.HttpEmbedded
         /// 累计计收的字节数
         /// </summary>
         public ulong TotalReceivedBytes { get; set; }
-        //TODO 此处还没有实现
         /// <summary>
         /// 累计发送的字节数
         /// </summary>
-        internal ulong TotalSendBytes { get; set; }
+        public ulong TotalSendBytes { get; set; }
         /// <summary>
         /// 服务器运行状态
         /// </summary>
-        public bool Running
-        {
-            get; set;
-        }
+        public bool Running{ get; set; }
         internal MemoryCache Cache { get { return _cache; }  }
         /// <summary>
         /// 服务端收到完整请求包时触发,此处不应作任何数据包的修改处理
@@ -291,11 +291,16 @@ namespace Mozi.HttpEmbedded
             }
             
             HttpContext context = new HttpContext();
+            
+            //context.ServerAddress =args.LocalAddress;
+            //context.ServerPort = args.LocalPort;
+
             context.ClientAddress = args.IP;
             context.ClientPort = args.Port;
             context.Response = new HttpResponse();
             context.Server = this;
             StatusCode sc = StatusCode.Success;
+          
             //如果启用了访问IP黑名单控制
             if (EnableAccessControl && CheckIfAccessBlocked(args.IP))
             {
@@ -324,7 +329,6 @@ namespace Mozi.HttpEmbedded
 
                         var propContentLength = context.Request.Headers.GetValue(HeaderProperty.ContentLength);
                         contentLength = int.Parse(propContentLength);
-
                     }
                     if (contentLength == -1 || contentLength <= context.Request.Body.Length)
                     {
@@ -425,12 +429,25 @@ namespace Mozi.HttpEmbedded
                 {
                     RequestHandled(args.IP,args.Port,context);
                 }
-                if (!chunked)
+
+                //TODO 链接断开策略，此处应该在充分保障通讯正常的情况下断开链接
+                var reqConnection = context.Request.GetHeaderValue(HeaderProperty.Connection);
+                var clientAskClose = !string.IsNullOrEmpty(reqConnection) || "close".Equals(reqConnection);
+                if ((!chunked && AutoCloseSession) || clientAskClose)
                 {
                     //等待指定的秒数，以发送完剩余数据
-                    args.Socket.Close(12);
+                    _sc.CloseSocket(args.Socket, 12);
                 }
-
+                else if(args.Socket.Available>0)
+                {
+                    args.State.Clear();
+                    args.Socket.BeginReceive(args.State.Buffer, 0, args.State.Buffer.Length, SocketFlags.None, _sc.CallbackReceived, args.State);
+                }
+                else
+                {
+                    //等待指定的秒数，以发送完剩余数据
+                    _sc.CloseSocket(args.Socket, 12);
+                }
             }
             GC.Collect();
         }
@@ -505,7 +522,7 @@ namespace Mozi.HttpEmbedded
                                 context.Response.Write(st.Load(pathReal, ""));
 
                                 //ETag 仅测试 不具备判断缓存的能力
-                                context.Response.AddHeader(HeaderProperty.ETag, CacheControl.GenerateETag(dtModified.ToUniversalTime(), context.Response.ContentLength));
+                                context.Response.AddHeader(HeaderProperty.ETag, CacheControl.GenerateETag(dtModified, context.Response.ContentLength));
                                 context.Response.SetContentType(Mime.GetContentType("html"));
 
                                 return StatusCode.Success;
@@ -544,7 +561,7 @@ namespace Mozi.HttpEmbedded
                     else
                     {
                         //50X 返回错误信息页面
-                        return HandleClientFound(context, path);
+                        return HandleClientError(context, path);
                     }
                 }
                 else
@@ -583,7 +600,7 @@ namespace Mozi.HttpEmbedded
                 }
                 return StatusCode.Success;
             }
-            return HandleClientFound(context, context.Request.Path);
+            return HandleClientError(context, context.Request.Path);
         }
 
         //TODO 静态文件统一处理
@@ -602,7 +619,7 @@ namespace Mozi.HttpEmbedded
                     context.Response.AddHeader(HeaderProperty.LastModified, dtModified.ToString("r"));
                     context.Response.Write(st.Load(pathReal, ""));
                     //ETag 仅测试 不具备判断缓存的能力
-                    context.Response.AddHeader(HeaderProperty.ETag, string.Format("{0:x2}:{1:x2}", dtModified.ToUniversalTime().Ticks, context.Response.ContentLength));
+                    context.Response.AddHeader(HeaderProperty.ETag, CacheControl.GenerateETag(dtModified, context.Response.ContentLength));
                     return StatusCode.Success;
                 }
                 else
@@ -765,7 +782,6 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         private StatusCode HandleServerError(HttpContext context, Exception ex)
         {
-            StatusCode sc;
             string doc = DocLoader.Load("Error.html");
             TemplateEngine pc = new TemplateEngine();
             pc.LoadFromText(doc);
@@ -782,9 +798,10 @@ namespace Mozi.HttpEmbedded
 
             context.Response.Write(pc.GetBuffer());
             context.Response.SetContentType(Mime.GetContentType("html"));
-            sc = StatusCode.InternalServerError;
+
             Log.Error(ex.Message + ":" + ex.StackTrace ?? "");
-            return sc;
+
+            return StatusCode.InternalServerError;
         }
         /// <summary>
         /// 处理40x请求
@@ -792,7 +809,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="context"></param>
         /// <param name="path"></param>
         /// <returns></returns>
-        private StatusCode HandleClientFound(HttpContext context, string path)
+        private StatusCode HandleClientError(HttpContext context, string path)
         {
             string doc = DocLoader.Load("Error.html");
             TemplateEngine pc = new TemplateEngine();
@@ -866,7 +883,7 @@ namespace Mozi.HttpEmbedded
         }
         /// <summary>
         /// 设置服务器认证用户
-        /// <para>如果<see cref="F:EnableAuth"/>=<see cref="Boolean.False"/>,此设置就没有意义</para>
+        /// <para>如果<see cref="EnableAuth"/>=false,此设置就没有意义</para>
         /// </summary>
         /// <param name="userName"></param>
         /// <param name="userPassword"></param>
@@ -1053,17 +1070,16 @@ namespace Mozi.HttpEmbedded
         /// </summary>
         /// <param name="peer"></param>
         /// <param name="data"></param>
-        internal void Send(Socket peer,byte[] data)
+        protected void Send(Socket peer,byte[] data)
         {
-            peer.Send(data);
-            TotalSendBytes++;
+            TotalSendBytes+=(ulong)peer.Send(data);
         }
         /// <summary>
         /// 发送Chunked数据
         /// </summary>
         /// <param name="peer"></param>
         /// <param name="data"></param>
-        internal void SendChunkedData(Socket peer,byte[] data)
+        protected void SendChunkedData(Socket peer,byte[] data)
         {
             if (peer.Connected)
             {
@@ -1072,22 +1088,22 @@ namespace Mozi.HttpEmbedded
                     Value = data.Length
                 };
                 string len=Hex.To(ui.Pack);
-                peer.Send(StringEncoder.Encode(len));
-                peer.Send(new byte[] { ASCIICode.CR, ASCIICode.LF });
-                peer.Send(data);
-                peer.Send(new byte[] { ASCIICode.CR, ASCIICode.LF });
+                TotalSendBytes += (ulong)peer.Send(StringEncoder.Encode(len));
+                TotalSendBytes += (ulong)peer.Send(new byte[] { ASCIICode.CR, ASCIICode.LF });
+                TotalSendBytes += (ulong)peer.Send(data);
+                TotalSendBytes += (ulong)peer.Send(new byte[] { ASCIICode.CR, ASCIICode.LF });
             }
         }
         /// <summary>
         /// Chunked结束符号
         /// </summary>
         /// <param name="peer"></param>
-        internal void SendChunkedEndData(ref Socket peer)
+        protected void SendChunkedEndData(ref Socket peer)
         {
             if (peer.Connected)
             {
                 string end = "0\r\n\r\n";
-                peer.Send(StringEncoder.Encode(end));
+                TotalSendBytes += (ulong)peer.Send(StringEncoder.Encode(end));
             }
         }
         /// <summary>

@@ -188,6 +188,9 @@ namespace Mozi.HttpEmbedded
                     HttpResponse resp = HttpResponse.Parse(args.Data);
                     ctx.Response = resp;
                     var cl = resp.Headers.GetValue(HeaderProperty.ContentLength);
+                    var contentEncoding = resp.Headers.GetValue(HeaderProperty.ContentEncoding);
+                    var chunked = string.IsNullOrEmpty(contentEncoding) && "chunked".Equals(contentEncoding);
+
                     if ((resp.Headers.Contains(HeaderProperty.ContentLength) &&long.Parse(cl)< resp.ContentLength)||args.Socket.Available>0)
                     {
                         args.Socket.BeginReceive(args.State.Buffer, 0, args.State.Buffer.Length, SocketFlags.None, sc.CallbackReceived, args.State);

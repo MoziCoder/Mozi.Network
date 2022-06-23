@@ -64,6 +64,8 @@ namespace Mozi.HttpEmbedded
         //IPV4
         public string IP { get; set; }
         public int Port { get; set; }
+        //public string LocalAddress { get; set; }
+        //public int LocalPort { get; set; }
         public Socket Socket { get; set; }
         public Socket Client { get; internal set; }
         public StateObject State { get; internal set; }
