@@ -27,7 +27,9 @@ namespace Mozi.SSDP
                 return _services.ToArray();
             }
         }
-
+        /// <summary>
+        /// 将SSDP服务绑定到所有的端口上
+        /// </summary>
         public static SSDPHost Instance
         {
             get { return _host ?? (_host = new SSDPHost()); }
@@ -37,12 +39,12 @@ namespace Mozi.SSDP
         {
             //开启SSDP服务
             var interfaces = NetworkInterface.GetAllNetworkInterfaces();
-            foreach (var r in interfaces)
+            foreach (var it in interfaces)
             {
                 //遍历所有可用网卡，过滤临时地址
-                if (r.SupportsMulticast && r.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+                if (it.SupportsMulticast && it.NetworkInterfaceType != NetworkInterfaceType.Loopback)
                 {
-                    foreach (var ip in r.GetIPProperties().UnicastAddresses)
+                    foreach (var ip in it.GetIPProperties().UnicastAddresses)
                     {
                         //排除未正确获取IP的网卡
                         if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork && !ip.Address.ToString().StartsWith("169.254"))
@@ -58,7 +60,7 @@ namespace Mozi.SSDP
                             
                             //初始化并加入多播组
                             _services.Add(ssdp);
-                            Console.WriteLine("Binding {0},{1}", ip.Address, r.Name);
+                            Console.WriteLine("Binding {0},{1}", ip.Address, it.Name);
                         }
                     }
                 }
