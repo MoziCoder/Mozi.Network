@@ -31,7 +31,6 @@ namespace Mozi.HttpEmbedded.Auth
         /// 认证类型
         /// </summary>
         public override AuthorizationType AuthType =>AuthorizationType.Digest;
-
         /// <summary>
         /// 取得返回字符串
         /// </summary>

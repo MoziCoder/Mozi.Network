@@ -539,15 +539,15 @@ namespace Mozi.HttpEmbedded
                     for (int i = 0; i < langs.Length; i++)
                     {
                         var lan = langs[i];
-                        var lans = lan.Split(new char[] { (char)ASCIICode.SEMICOLON }, StringSplitOptions.RemoveEmptyEntries);
+                        var lanInfo = lan.Split(new char[] { (char)ASCIICode.SEMICOLON }, StringSplitOptions.RemoveEmptyEntries);
                         req.AcceptLanguage[i] = new LanguagePriority()
                         {
-                            LanguageName = lans[0].Trim(),
+                            LanguageName = lanInfo[0].Trim(),
                         };
 
-                        if (lans.Length > 1)
+                        if (lanInfo.Length > 1)
                         {
-                            var weight = lans[1].Trim(new char[] { (char)ASCIICode.SPACE,(char)ASCIICode.CHAR_q, (char)ASCIICode.EQUAL });
+                            var weight = lanInfo[1].Trim(new char[] { (char)ASCIICode.SPACE,(char)ASCIICode.CHAR_q, (char)ASCIICode.EQUAL });
                             req.AcceptLanguage[i].Weight = decimal.Parse(weight);
                         }
                     }
@@ -615,23 +615,23 @@ namespace Mozi.HttpEmbedded
             string[] sFirst = req.RequestLineString.Split(new[] { (char)ASCIICode.SPACE }, StringSplitOptions.None);
 
             //方法 查询 协议 
-            string sMethod = sFirst[0];
-            string sUrl = sFirst[1];
-            string sProtocol = sFirst[2];
+            string method = sFirst[0];
+            string path = sFirst[1];
+            string protocol = sFirst[2];
 
-            RequestMethod rm = AbsClassEnum.Get<RequestMethod>(sMethod);
+            RequestMethod rm = AbsClassEnum.Get<RequestMethod>(method);
             req.Method = rm;
 
             //判断方法是否是已知方法
             if (Equals(req.Method,null))
             {
-                req.Method = new RequestMethod(sMethod);
+                req.Method = new RequestMethod(method);
             }
 
             //URL中分解出查询字符串
-            if (!string.IsNullOrEmpty(sUrl))
+            if (!string.IsNullOrEmpty(path))
             {
-                string[] urls = sUrl.Split(new[] { (char)ASCIICode.QUESTION }, StringSplitOptions.RemoveEmptyEntries);
+                string[] urls = path.Split(new[] { (char)ASCIICode.QUESTION }, StringSplitOptions.RemoveEmptyEntries);
                 req.Path = urls[0];
                 if (urls.Length > 1)
                 {
@@ -641,10 +641,10 @@ namespace Mozi.HttpEmbedded
             }
 
             //协议分解
-            string sProtoType = sProtocol.Substring(0, sProtocol.IndexOf((char)ASCIICode.DIVIDE));
-            string sProtoVersion = sProtocol.Substring(sProtocol.IndexOf((char)ASCIICode.DIVIDE) + 1);
+            string sProtoType = protocol.Substring(0, protocol.IndexOf((char)ASCIICode.DIVIDE));
+            string sProtoVersion = protocol.Substring(protocol.IndexOf((char)ASCIICode.DIVIDE) + 1);
 
-            req.Version = AbsClassEnum.Get<ProtocolVersion>(sProtocol);
+            req.Version = AbsClassEnum.Get<ProtocolVersion>(protocol);
             if (Equals(req.Version, null))
             {
                 req.Version = new ProtocolVersion(sProtoType, sProtoVersion);
