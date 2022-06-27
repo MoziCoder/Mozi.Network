@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
+using Mozi.HttpEmbedded.Auth;
 using Mozi.HttpEmbedded.Compress;
 using Mozi.HttpEmbedded.Encode;
 
@@ -52,9 +53,9 @@ namespace Mozi.HttpEmbedded
         private string _userAgent = "Mozilla/5.0 (Linux;Android 4.4.2;OEM Device) AppleWebKit/537.36 (KHTML,like Gecko) Chrome/39.0.2171.71  Mozi/1.4.7";
         private const string Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
 
-        private Auth.User _user;
+        private User _user;
 
-        private Auth.AuthScheme _authScheme;
+        private AuthScheme _authScheme;
 
         //public Dictionary<HeaderProperty, string> DefaultHeader = new Dictionary<HeaderProperty, string>() 
         //{
@@ -91,7 +92,6 @@ namespace Mozi.HttpEmbedded
         /// 用户代理
         /// </summary>
         public string UserAgent { get => _userAgent; set => _userAgent = value; }
-
         /// <summary>
         /// 连接超时时间
         /// </summary>
@@ -136,11 +136,6 @@ namespace Mozi.HttpEmbedded
                 }
             }
 
-            //设置认证用户
-            if (_user != null && _authScheme != null)
-            {
-                req.AddHeader(HeaderProperty.Authorization,_authScheme.GenerateAuthorization(_user.UserName, _user.Password));
-            }
             try
             {
                 Send(url, req, callback);
@@ -174,8 +169,26 @@ namespace Mozi.HttpEmbedded
 
             if (!string.IsNullOrEmpty(uri.Url))
             {
+
                 //注入URI信息
                 req.SetUri(uri);
+
+                //设置认证用户
+                if (_user != null && _authScheme != null)
+                {
+                    //Basic
+                    if (_authScheme.AuthType == AuthorizationType.Basic)
+                    {
+                        req.AddHeader(HeaderProperty.Authorization, _authScheme.GenerateAuthorization(_user.UserName, _user.Password));
+                    }
+                    //Digest
+                    else if (_authScheme.AuthType == AuthorizationType.Digest)
+                    {
+                        req.AddHeader(HeaderProperty.Authorization, (_authScheme as DigestAuth).GenerateAuthorization(_user.UserName, _user.Password, req.Method.Name,uri.Path));
+                    }else if (_authScheme.AuthType == AuthorizationType.WSSE){
+
+                    }
+                }
 
                 HttpContext ctx = new HttpContext
                 {
@@ -358,7 +371,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="callback">回调方法</param>
         public void Post(string url, Dictionary<string, string> headers, string body,RequestComplete callback)
         {
-            byte[] payload = Encode.StringEncoder.Encode(body);
+            byte[] payload = StringEncoder.Encode(body);
             if (headers == null)
             {
                 headers = new Dictionary<string, string>();
@@ -613,7 +626,7 @@ namespace Mozi.HttpEmbedded
         /// <param name="pwd"></param>
         public void SetUser(string username,string pwd)
         {
-            _user = new Auth.User() { UserName = username, Password = pwd, UserGroup = Auth.UserGroup.User };
+            _user = new Auth.User() { UserName = username, Password = pwd, UserGroup = UserGroup.User };
         }
     }
 
