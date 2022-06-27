@@ -16,7 +16,9 @@ namespace Mozi.HttpEmbedded.Auth
         /// Digest摘要认证
         /// </summary>
         public static AuthorizationType Digest = new AuthorizationType("Digest");
-
+        /// <summary>
+        /// HTTP扩展认证
+        /// </summary>
         internal static AuthorizationType WSSE = new AuthorizationType("WSSE");
 
         //Bearer

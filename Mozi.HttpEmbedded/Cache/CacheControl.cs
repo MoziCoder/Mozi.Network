@@ -45,7 +45,7 @@ namespace Mozi.HttpEmbedded
         /// <returns></returns>
         public static string GenerateRandom(int len, int isPureNumber = 0)
         {
-            var seads = isPureNumber == 1 ? "0123456789" : "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            var seads = isPureNumber == 1 ? "0123456789" : "0123456789abcdefghijklmnopqrstuvwxyz";
             string gr = "";
             byte[] bytes = new byte[4];
             var rng = new RNGCryptoServiceProvider();

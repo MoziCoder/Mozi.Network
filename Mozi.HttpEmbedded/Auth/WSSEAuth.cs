@@ -10,8 +10,7 @@ namespace Mozi.HttpEmbedded.Auth
     ///                        profile="UsernameToken"    //服务器期望你用UsernameToken规则生成回应  UsernameToken规则：客户端生成一个nonce，然后根据该nonce，密码和当前日时来算出哈希值。
     /// 响应
     /// Authorization: WSSE profile="UsernameToken"
-    ///                    X-WSSE:UsernameToken
-    ///                    username="Mufasa",
+    /// X-WSSE:UsernameToken username="Mufasa",
     ///                    PasswordDigest="Z2Y......",
     ///                    Nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093",//客户端将生成一个nonce值，并以该nonce值，密码，当前日时为基础，算出哈希值返回给服务器。
     ///                    Created="2010-01-01T09:00:00Z"

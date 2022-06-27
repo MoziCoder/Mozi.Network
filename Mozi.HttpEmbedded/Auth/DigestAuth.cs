@@ -71,6 +71,7 @@ namespace Mozi.HttpEmbedded.Auth
                 string cnonce = arrData["cnonce"];
                 string qop = arrData["qop"];
                 string opaque = arrData["opaque"];
+                string algorithm= arrData["algorithm"];
                 string url = arrData.ContainsKey("uri")?arrData["uri"]:"";
                 string response = arrData["response"];
 
@@ -101,7 +102,7 @@ namespace Mozi.HttpEmbedded.Auth
             clgs.Add($"opaque=\"{CacheControl.GenerateRandom(32)}\"");
             //nonce过期标识
             //clgs.Add($"stale=\"\"");
-            clgs.Add($"algorithm=\"MD5\"");
+            clgs.Add($"algorithm=MD5");
             clgs.Add($"qop=\"auth\"");
             //OPTIONAL
             //charset
@@ -119,6 +120,18 @@ namespace Mozi.HttpEmbedded.Auth
         public override string GenerateAuthorization(string username, string pwd)
         {
             return GenerateAuthorization(username, pwd, Realm, null, 1, null, "auth", null, "GET","/");
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="pwd"></param>
+        /// <param name="method"></param>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public string GenerateAuthorization(string username,string pwd,string method,string url)
+        {
+            return GenerateAuthorization(username, pwd, Realm, null, 1, null, "auth", null, method, url);
         }
         /// <summary>
         /// 生成认证字符串,用于客户端请求
